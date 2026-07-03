@@ -897,6 +897,87 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
     ? students.filter(s => s.grade === selectedGrade)
     : students;
 
+  const toggleUserActive = (id) => {
+    setUsers(prev => prev.map(u => {
+      if (u.id === id) {
+        return { ...u, active: !u.active };
+      }
+      return u;
+    }));
+  };
+
+  // --- VIEW: Login ---
+  if (!currentUser) {
+    return (
+      <div className="login-container">
+        <div className="login-bg-decor"></div>
+        <div className="login-bg-decor-2"></div>
+        <div className="glass-panel login-card animate-fade-in">
+          <div className="login-header">
+            <div className="logo">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+              </svg>
+              <div>Control<span>Académico</span></div>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Registro Digital Virtual - Gestión de Calificaciones</p>
+          </div>
+
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="form-group">
+              <label>Correo Electrónico</label>
+              <input 
+                type="email" 
+                placeholder="ejemplo@school.edu" 
+                className="form-input"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Contraseña</label>
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                className="form-input"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {loginError && (
+              <div style={{ color: 'var(--danger)', fontSize: '0.85rem', fontWeight: 600 }}>
+                ⚠️ {loginError}
+              </div>
+            )}
+
+            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem' }}>
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <div className="demo-box">
+            <div className="demo-title">Acceso de Demostración Rápido</div>
+            <div className="demo-buttons">
+              <button className="btn-demo" onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
+                <span className="role">Administrador</span>
+                <span className="email">admin@school.edu</span>
+              </button>
+              <button className="btn-demo" onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
+                <span className="role">Prof. Matemáticas</span>
+                <span className="email">profesor.mate@school.edu</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // --- VIEW: Admin Dashboard ---
   if (currentUser.role === 'admin') {
     return (
