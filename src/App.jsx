@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 // Global configuration
@@ -16,7 +16,7 @@ const DEFAULT_USERS = [
     email: 'admin@school.edu', 
     password: 'admin123', 
     role: 'admin', 
-    assignments: [], // Admin bypasses assignments (has access to all)
+    assignments: [], 
     active: true 
   },
   { 
@@ -58,22 +58,78 @@ const DEFAULT_USERS = [
   }
 ];
 
+// 4 Grades per subject
 const DEFAULT_STUDENTS = [
-  // 1ro A
-  { id: 's1', name: 'Sofía Rodriguez', email: 'sofia.rod@school.edu', grade: '1ro A', math: 95, science: 88, language: 92, history: 90, present: 18, total: 20 },
-  { id: 's2', name: 'Santiago Pérez', email: 'santi.per@school.edu', grade: '1ro A', math: 89, science: 92, language: 88, history: 85, present: 20, total: 20 },
-  { id: 's3', name: 'Carlos Mendoza', email: 'carlos.men@school.edu', grade: '1ro A', math: 75, science: 80, language: 78, history: 74, present: 16, total: 20 },
-  
-  // 1ro B
-  { id: 's4', name: 'Ana Ruiz', email: 'ana.ruiz@school.edu', grade: '1ro B', math: 88, science: 84, language: 95, history: 89, present: 19, total: 20 },
-  
-  // 10° A
-  { id: 's5', name: 'Mateo Gómez', email: 'mateo.gom@school.edu', grade: '10° A', math: 82, science: 90, language: 85, history: 80, present: 19, total: 20 },
-  { id: 's6', name: 'Juan Castro', email: 'juan.cas@school.edu', grade: '10° A', math: 65, science: 70, language: 72, history: 68, present: 15, total: 20 },
-
-  // 10° B
-  { id: 's7', name: 'Valentina Martínez', email: 'val.mar@school.edu', grade: '10° B', math: 71, science: 75, language: 80, history: 85, present: 15, total: 20 },
-  { id: 's8', name: 'Lucía Fernández', email: 'lucia.fer@school.edu', grade: '10° B', math: 60, science: 70, language: 68, history: 72, present: 17, total: 20 }
+  { 
+    id: 's1', 
+    name: 'Sofía Rodriguez', 
+    email: 'sofia.rod@school.edu', 
+    grade: '1ro A', 
+    grades: {
+      math: [95, 90, 88, 92],
+      science: [88, 85, 90, 80],
+      language: [92, 95, 88, 90],
+      history: [90, 88, 95, 92]
+    },
+    present: 18, 
+    total: 20 
+  },
+  { 
+    id: 's2', 
+    name: 'Santiago Pérez', 
+    email: 'santi.per@school.edu', 
+    grade: '1ro A', 
+    grades: {
+      math: [85, 88, 82, 90],
+      science: [92, 90, 95, 88],
+      language: [88, 85, 90, 86],
+      history: [85, 80, 88, 92]
+    },
+    present: 20, 
+    total: 20 
+  },
+  { 
+    id: 's3', 
+    name: 'Carlos Mendoza', 
+    email: 'carlos.men@school.edu', 
+    grade: '1ro A', 
+    grades: {
+      math: [70, 75, 80, 72],
+      science: [80, 78, 82, 80],
+      language: [78, 80, 74, 82],
+      history: [74, 70, 78, 75]
+    },
+    present: 16, 
+    total: 20 
+  },
+  { 
+    id: 's4', 
+    name: 'Ana Ruiz', 
+    email: 'ana.ruiz@school.edu', 
+    grade: '1ro B', 
+    grades: {
+      math: [85, 88, 82, 90],
+      science: [84, 86, 80, 90],
+      language: [95, 92, 90, 98],
+      history: [89, 85, 92, 90]
+    },
+    present: 19, 
+    total: 20 
+  },
+  { 
+    id: 's5', 
+    name: 'Mateo Gómez', 
+    email: 'mateo.gom@school.edu', 
+    grade: '10° A', 
+    grades: {
+      math: [80, 82, 85, 80],
+      science: [90, 88, 92, 90],
+      language: [85, 80, 88, 84],
+      history: [80, 78, 82, 85]
+    },
+    present: 19, 
+    total: 20 
+  }
 ];
 
 const DEFAULT_EVENTS = [
@@ -83,26 +139,149 @@ const DEFAULT_EVENTS = [
   { id: 'e4', date: '2026-07-24', title: 'Entrega Proy. Historia', desc: 'Límite para cargar el informe del periodo en Historia.', type: 'warning' }
 ];
 
+// Pre-populated socio-cognitive evaluation configurations per Grade + Subject (4 evaluations each)
+const DEFAULT_EVALUATION_CONFIGS = {
+  "1ro A_math": [
+    {
+      id: 0,
+      activity: "Resolución de Ecuaciones",
+      competence: "Pensamiento lógico y resolución de problemas algebraicos.",
+      indicator: "Resuelve ecuaciones lineales y valida las soluciones en ejercicios cotidianos.",
+      type: "rubrica",
+      criteria: ["Planteamiento", "Proceso de despeje", "Comprobación de la respuesta"],
+      levels: {
+        preformal: "Tiene nociones vagas de variables, pero no logra plantear la igualdad.",
+        receptivo: "Plantea la ecuación básica, pero tiene dificultades para ordenar los términos.",
+        resolutivo: "Despeja la incógnita de forma ordenada y encuentra el valor numérico.",
+        autonomo: "Resuelve el problema paso a paso y justifica verbalmente cada despeje.",
+        estrategico: "Resuelve de forma óptima, comprueba el resultado y propone otro método."
+      }
+    },
+    {
+      id: 1,
+      activity: "Fracciones y Proporciones",
+      competence: "Uso del razonamiento cuantitativo en contextos variados.",
+      indicator: "Utiliza fracciones equivalentes para resolver problemas de repartición.",
+      type: "lista",
+      criteria: ["Simplifica fracciones correctamente", "Suma fracciones con distinto denominador", "Resuelve problemas de reparto"],
+      levels: {
+        preformal: "Confunde el numerador y el denominador.",
+        receptivo: "Sabe representar gráficamente una fracción, pero no operar.",
+        resolutivo: "Opera fracciones simples.",
+        autonomo: "Resuelve operaciones combinadas y simplifica el resultado.",
+        estrategico: "Aplica fracciones para resolver problemas contextualizados y evalúa soluciones."
+      }
+    },
+    {
+      id: 2,
+      activity: "Taller de Geometría Plana",
+      competence: "Pensamiento espacial y razonamiento geométrico.",
+      indicator: "Calcula perímetros y áreas de polígonos regulares.",
+      type: "escala",
+      criteria: ["Aplica fórmulas correctas", "Precisión en los cálculos", "Rotulado de unidades (cm² / m²)"],
+      levels: {
+        preformal: "Confunde área con perímetro.",
+        receptivo: "Identifica la fórmula básica pero falla en la sustitución de valores.",
+        resolutivo: "Calcula correctamente perímetros y áreas sencillas.",
+        autonomo: "Aplica las fórmulas correctas en figuras compuestas.",
+        estrategico: "Optimiza los cálculos de áreas reales y justifica la elección de la unidad."
+      }
+    },
+    {
+      id: 3,
+      activity: "Examen de Razonamiento Lógico",
+      competence: "Estructuración del pensamiento abstracto.",
+      indicator: "Identifica patrones numéricos y de sucesiones progresivas.",
+      type: "rubrica",
+      criteria: ["Identificación de la regla", "Cálculo de términos futuros", "Expresión matemática general"],
+      levels: {
+        preformal: "No identifica la secuencia lógica.",
+        receptivo: "Completa la secuencia pero no comprende el patrón subyacente.",
+        resolutivo: "Identifica la regla de cambio y calcula los siguientes términos.",
+        autonomo: "Genera la expresión general de la sucesión numérica.",
+        estrategico: "Propone variaciones lógicas del patrón y explica su ley de formación."
+      }
+    }
+  ]
+};
+
+// AI Suggestions Mock Databases for Gemini/Copilot simulation
+const AI_DATABASE = {
+  math: {
+    competence: "Pensamiento matemático y resolución de problemas.",
+    indicator: "Aplica algoritmos matemáticos e interpreta resultados de forma crítica.",
+    criteria: ["Precisión algorítmica", "Orden en el procedimiento", "Verificación lógica del resultado"],
+    levels: {
+      preformal: "Realiza operaciones sencillas pero sin estructura conceptual básica.",
+      receptivo: "Reconoce fórmulas y conceptos básicos al ser guiado directamente.",
+      resolutivo: "Resuelve problemas estándar utilizando métodos establecidos.",
+      autonomo: "Justifica de manera lógica e independiente cada paso de la solución.",
+      estrategico: "Evalúa diferentes alternativas, optimiza la solución y la contextualiza."
+    }
+  },
+  science: {
+    competence: "Comprensión del entorno natural y pensamiento científico.",
+    indicator: "Aplica el método científico para modelar fenómenos y extraer conclusiones.",
+    criteria: ["Planteamiento de hipótesis", "Rigurosidad en el registro experimental", "Análisis crítico de conclusiones"],
+    levels: {
+      preformal: "Observa fenómenos pero no identifica las variables científicas en juego.",
+      receptivo: "Registra datos experimentales bajo supervisión directa.",
+      resolutivo: "Realiza experimentos básicos y extrae conclusiones elementales.",
+      autonomo: "Relaciona de forma independiente la teoría con los resultados observados.",
+      estrategico: "Diseña experimentos alternativos, evalúa errores y publica conclusiones sólidas."
+    }
+  },
+  language: {
+    competence: "Comunicación oral, escrita y comprensión lectora.",
+    indicator: "Escribe y analiza textos complejos estructurando ideas con coherencia y cohesión.",
+    criteria: ["Coherencia y cohesión textual", "Ortografía y gramática correctas", "Estructura narrativa o argumentativa"],
+    levels: {
+      preformal: "Escribe ideas aisladas con errores gramaticales frecuentes.",
+      receptivo: "Produce textos básicos copiando estructuras preestablecidas.",
+      resolutivo: "Redacta textos con una estructura clara y pocos errores de redacción.",
+      autonomo: "Desarrolla argumentos originales con un vocabulario amplio y preciso.",
+      estrategico: "Adapta el estilo de escritura al público, evalúa su impacto y revisa críticamente."
+    }
+  },
+  history: {
+    competence: "Pensamiento histórico y comprensión crítica de la sociedad.",
+    indicator: "Analiza causas y consecuencias de hechos históricos mediante diversas fuentes.",
+    criteria: ["Contraste de fuentes históricas", "Análisis multicausal", "Redacción con perspectiva histórica"],
+    levels: {
+      preformal: "Enumera fechas e hitos históricos de forma memorística sin conexión.",
+      receptivo: "Identifica hechos y personajes principales de un suceso determinado.",
+      resolutivo: "Describe las causas directas de un evento a través de un texto base.",
+      autonomo: "Construye una postura independiente contrastando múltiples fuentes históricas.",
+      estrategico: "Relaciona eventos pasados con problemáticas del presente y propone alternativas."
+    }
+  }
+};
+
 export default function App() {
   // --- Core States ---
   const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('school_users');
+    const saved = localStorage.getItem('s_users');
     return saved ? JSON.parse(saved) : DEFAULT_USERS;
   });
 
   const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('school_current_user');
+    const saved = localStorage.getItem('s_current_user');
     return saved ? JSON.parse(saved) : null;
   });
 
   const [students, setStudents] = useState(() => {
-    const saved = localStorage.getItem('school_students');
+    const saved = localStorage.getItem('s_students');
     return saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
   });
 
   const [calendarEvents, setCalendarEvents] = useState(() => {
-    const saved = localStorage.getItem('school_events');
+    const saved = localStorage.getItem('s_events');
     return saved ? JSON.parse(saved) : DEFAULT_EVENTS;
+  });
+
+  const [evaluationConfigs, setEvaluationConfigs] = useState(() => {
+    const saved = localStorage.getItem('s_eval_configs');
+    return saved ? JSON.parse(saved) : DEFAULT_EVALUATION_CONFIGS;
   });
 
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -110,12 +289,21 @@ export default function App() {
     return localStorage.getItem('theme') || 'light';
   });
 
-  // --- Teacher UI Filter States ---
+  // --- Filtering States ---
   const [selectedGrade, setSelectedGrade] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-
-  // --- Admin UI Filter States ---
+  const [selectedSubject, setSelectedSubject] = useState('math');
   const [activeAdminGrade, setActiveAdminGrade] = useState('1ro A');
+
+  // --- Modal Assessment State ---
+  const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false);
+  const [activeAssessment, setActiveAssessment] = useState(null); // { studentId, subjectKey, evalIdx, config }
+  const [selectedTobonLevel, setSelectedTobonLevel] = useState('');
+  const [checklistChecks, setChecklistChecks] = useState([false, false, false]);
+
+  // --- AI copilot simulation state ---
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [aiActivityPrompt, setAiActivityPrompt] = useState('');
+  const [aiTypingText, setAiTypingText] = useState('');
 
   // Login inputs
   const [loginEmail, setLoginEmail] = useState('');
@@ -125,49 +313,58 @@ export default function App() {
   // Search Filter
   const [searchQuery, setSearchQuery] = useState('');
 
-  // --- Add Student Form Inputs (Admin) ---
+  // Form states
   const [studentForm, setStudentForm] = useState({ name: '', email: '' });
-
-  // --- Add Teacher/User Form Inputs (Admin) ---
   const [teacherForm, setTeacherForm] = useState({ name: '', email: '', password: '', role: 'teacher' });
   const [newAssignment, setNewAssignment] = useState({ grade: '1ro A', subject: 'math' });
-
-  // --- Add Event Form Inputs (Admin) ---
   const [newEvent, setNewEvent] = useState({ date: '2026-07-01', title: '', desc: '', type: 'primary' });
 
-  // --- Evaluation Weights State ---
-  const [weights, setWeights] = useState({ exam: 40, project: 30, homework: 20, attendance: 10 });
-  const [weightErrors, setWeightErrors] = useState('');
-  
-  // Weighted calculator temporary state
-  const [calcScores, setCalcScores] = useState({ exam: '', project: '', homework: '', attendance: '' });
-  const [calcResult, setCalcResult] = useState(null);
+  // Excel text import state
+  const [excelImportText, setExcelImportText] = useState('');
+
+  // Active instrument config index (0 to 3) in Instruments Tab
+  const [activeInstrumentIdx, setActiveInstrumentIdx] = useState(0);
+
+  // Form state for editing instrument in Instruments Tab
+  const [instrumentEditState, setInstrumentEditState] = useState({
+    activity: '',
+    competence: '',
+    indicator: '',
+    type: 'rubrica',
+    criteriaText: '' // Comma separated criteria
+  });
+
+  // File input ref for CSV import
+  const fileInputRef = useRef(null);
 
   // --- Sync Effects ---
   useEffect(() => {
-    localStorage.setItem('school_users', JSON.stringify(users));
+    localStorage.setItem('s_users', JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('school_current_user', JSON.stringify(currentUser));
-      // Refresh current user if modified in main list
-      const latestUser = users.find(u => u.id === currentUser.id);
-      if (latestUser && JSON.stringify(latestUser) !== JSON.stringify(currentUser)) {
-        setCurrentUser(latestUser);
+      localStorage.setItem('s_current_user', JSON.stringify(currentUser));
+      const latest = users.find(u => u.id === currentUser.id);
+      if (latest && JSON.stringify(latest) !== JSON.stringify(currentUser)) {
+        setCurrentUser(latest);
       }
     } else {
-      localStorage.removeItem('school_current_user');
+      localStorage.removeItem('s_current_user');
     }
   }, [currentUser, users]);
 
   useEffect(() => {
-    localStorage.setItem('school_students', JSON.stringify(students));
+    localStorage.setItem('s_students', JSON.stringify(students));
   }, [students]);
 
   useEffect(() => {
-    localStorage.setItem('school_events', JSON.stringify(calendarEvents));
+    localStorage.setItem('s_events', JSON.stringify(calendarEvents));
   }, [calendarEvents]);
+
+  useEffect(() => {
+    localStorage.setItem('s_eval_configs', JSON.stringify(evaluationConfigs));
+  }, [evaluationConfigs]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -184,7 +381,7 @@ export default function App() {
     }
   }, [currentUser]);
 
-  // When selectedGrade changes, automatically set selectedSubject to the first subject available in that grade
+  // When selectedGrade changes, automatically set selectedSubject
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher' && selectedGrade) {
       const gradeSubjects = currentUser.assignments
@@ -195,6 +392,33 @@ export default function App() {
       }
     }
   }, [selectedGrade, currentUser]);
+
+  // Sync edit state in Instruments Tab
+  useEffect(() => {
+    if (currentUser && selectedGrade && selectedSubject) {
+      const configKey = `${selectedGrade}_${selectedSubject}`;
+      const configs = evaluationConfigs[configKey] || [];
+      const activeConf = configs[activeInstrumentIdx];
+
+      if (activeConf) {
+        setInstrumentEditState({
+          activity: activeConf.activity || '',
+          competence: activeConf.competence || '',
+          indicator: activeConf.indicator || '',
+          type: activeConf.type || 'rubrica',
+          criteriaText: (activeConf.criteria || []).join(', ')
+        });
+      } else {
+        setInstrumentEditState({
+          activity: '',
+          competence: '',
+          indicator: '',
+          type: 'rubrica',
+          criteriaText: ''
+        });
+      }
+    }
+  }, [activeInstrumentIdx, selectedGrade, selectedSubject, evaluationConfigs, currentUser]);
 
   // --- Handlers ---
   const toggleTheme = () => {
@@ -231,7 +455,7 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     setSelectedGrade('');
-    setSelectedSubject('');
+    setSelectedSubject('math');
     setActiveTab('dashboard');
   };
 
@@ -249,7 +473,7 @@ export default function App() {
     if (currentUser.role !== 'admin') return;
 
     if (!studentForm.name || !studentForm.email) {
-      alert('Por favor llene los campos requeridos.');
+      alert('Por favor llene los campos.');
       return;
     }
 
@@ -258,17 +482,18 @@ export default function App() {
       name: studentForm.name,
       email: studentForm.email,
       grade: activeAdminGrade,
-      math: 80,
-      science: 80,
-      language: 80,
-      history: 80,
+      grades: {
+        math: [80, 80, 80, 80],
+        science: [80, 80, 80, 80],
+        language: [80, 80, 80, 80],
+        history: [80, 80, 80, 80]
+      },
       present: 20,
       total: 20
     };
 
     setStudents(prev => [...prev, created]);
     setStudentForm({ name: '', email: '' });
-    alert(`Alumno agregado exitosamente a ${activeAdminGrade}. Se replicará en todas las materias.`);
   };
 
   const handleDeleteStudent = (id) => {
@@ -278,13 +503,81 @@ export default function App() {
     }
   };
 
+  // --- Admin: Bulk Students Importer ---
+  const parseAndAddStudents = (textData) => {
+    const lines = textData.split('\n');
+    const addedStudents = [];
+
+    lines.forEach(line => {
+      if (!line.trim()) return;
+
+      // split by comma, tab, or semicolon
+      let parts = line.split(/[,\t;]/);
+      let name = parts[0]?.trim();
+      let email = parts[1]?.trim();
+
+      if (name) {
+        if (!email) {
+          // auto generate email if empty
+          const sanitizedName = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '.');
+          email = `${sanitizedName}@school.edu`;
+        }
+
+        addedStudents.push({
+          id: 's_' + Math.random().toString(36).substr(2, 9),
+          name: name,
+          email: email,
+          grade: activeAdminGrade,
+          grades: {
+            math: [80, 80, 80, 80],
+            science: [80, 80, 80, 80],
+            language: [80, 80, 80, 80],
+            history: [80, 80, 80, 80]
+          },
+          present: 20,
+          total: 20
+        });
+      }
+    });
+
+    if (addedStudents.length > 0) {
+      setStudents(prev => [...prev, ...addedStudents]);
+      alert(`Se importaron con éxito ${addedStudents.length} alumnos al grado ${activeAdminGrade}.`);
+    } else {
+      alert('No se pudo encontrar ningún dato de alumno válido. Formato: Nombre, Correo');
+    }
+  };
+
+  const handleTextImportSubmit = (e) => {
+    e.preventDefault();
+    if (!excelImportText.trim()) return;
+    parseAndAddStudents(excelImportText);
+    setExcelImportText('');
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const csvText = event.target.result;
+      parseAndAddStudents(csvText);
+    };
+    reader.readAsText(file);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   // --- Admin Teacher Management ---
   const handleCreateTeacher = (e) => {
     e.preventDefault();
     if (currentUser.role !== 'admin') return;
 
     if (!teacherForm.name || !teacherForm.email || !teacherForm.password) {
-      alert('Por favor llene todos los campos del docente.');
+      alert('Por favor llene todos los campos.');
       return;
     }
 
@@ -300,32 +593,27 @@ export default function App() {
       email: teacherForm.email,
       password: teacherForm.password,
       role: teacherForm.role,
-      assignments: [], // start empty
+      assignments: [],
       active: true
     };
 
     setUsers(prev => [...prev, created]);
     setTeacherForm({ name: '', email: '', password: '', role: 'teacher' });
-    alert('Usuario creado con éxito. Ahora puedes añadir asignaciones.');
+    alert('Docente registrado.');
   };
 
   const handleAddAssignment = (userId) => {
     if (currentUser.role !== 'admin') return;
-
     setUsers(prev => prev.map(u => {
       if (u.id === userId) {
-        // Avoid duplicate assignments
         const exists = u.assignments.some(
           a => a.grade === newAssignment.grade && a.subject === newAssignment.subject
         );
         if (exists) {
-          alert('Este docente ya tiene asignada esta materia en este grado.');
+          alert('Asignación duplicada.');
           return u;
         }
-        return {
-          ...u,
-          assignments: [...u.assignments, { ...newAssignment }]
-        };
+        return { ...u, assignments: [...u.assignments, { ...newAssignment }] };
       }
       return u;
     }));
@@ -344,56 +632,207 @@ export default function App() {
     }));
   };
 
-  const toggleUserActive = (id) => {
-    if (currentUser.role !== 'admin') return;
-    if (id === currentUser.id) {
-      alert('No puedes desactivarte a ti mismo.');
-      return;
-    }
-    setUsers(prev => prev.map(u => {
-      if (u.id === id) {
-        return { ...u, active: !u.active };
-      }
-      return u;
-    }));
-  };
-
   const handleDeleteUser = (id) => {
     if (currentUser.role !== 'admin') return;
     if (id === currentUser.id) return;
-    if (window.confirm('¿Eliminar esta cuenta permanentemente?')) {
+    if (window.confirm('¿Eliminar esta cuenta?')) {
       setUsers(prev => prev.filter(u => u.id !== id));
     }
   };
 
-  // --- Grade Updates ---
-  const handleUpdateGrade = (studentId, subject, value) => {
-    // Permission check: admin has total access, teacher must have the matching assignment
+  // --- Docente: Instrument Configuration ---
+  const handleSaveInstrument = (e) => {
+    e.preventDefault();
+    if (!selectedGrade || !selectedSubject) return;
+
+    const configKey = `${selectedGrade}_${selectedSubject}`;
+    const currentConfigs = evaluationConfigs[configKey] || [
+      { id: 0, activity: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
+      { id: 1, activity: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
+      { id: 2, activity: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
+      { id: 3, activity: '', competence: '', indicator: '', type: 'rubrica', criteria: [] }
+    ];
+
+    const parsedCriteria = instrumentEditState.criteriaText
+      .split(',')
+      .map(c => c.trim())
+      .filter(c => c.length > 0);
+
+    const generatedLevels = {
+      preformal: `Desempeño pre-formal en ${instrumentEditState.activity}. No alcanza los criterios mínimos (50-59).`,
+      receptivo: `Desempeño receptivo en ${instrumentEditState.activity}. Ejecuta acciones con supervisión (60-69).`,
+      resolutivo: `Desempeño resolutivo en ${instrumentEditState.activity}. Resuelve de forma autónoma problemas estándar (70-79).`,
+      autonomo: `Desempeño autónomo en ${instrumentEditState.activity}. Argumenta y soluciona con independencia (80-89).`,
+      estrategico: `Desempeño estratégico en ${instrumentEditState.activity}. Propone mejoras creativas e innova (90-100).`
+    };
+
+    const updatedConfig = {
+      id: activeInstrumentIdx,
+      activity: instrumentEditState.activity,
+      competence: instrumentEditState.competence,
+      indicator: instrumentEditState.indicator,
+      type: instrumentEditState.type,
+      criteria: parsedCriteria,
+      levels: generatedLevels
+    };
+
+    const nextConfigs = [...currentConfigs];
+    nextConfigs[activeInstrumentIdx] = updatedConfig;
+
+    setEvaluationConfigs(prev => ({
+      ...prev,
+      [configKey]: nextConfigs
+    }));
+
+    alert(`Instrumento de la Evaluación ${activeInstrumentIdx + 1} guardado correctamente.`);
+  };
+
+  // Gemini / Copilot simulation generator
+  const runAiCopilotSimulation = () => {
+    if (!instrumentEditState.activity) {
+      alert('Escribe primero el nombre de la actividad para que la IA proponga los indicadores.');
+      return;
+    }
+
+    setIsAiGenerating(true);
+    setAiTypingText('Gemini está analizando la actividad...');
+
+    // Simulate AI response delay
+    setTimeout(() => {
+      const template = AI_DATABASE[selectedSubject] || AI_DATABASE.math;
+      setAiTypingText(`[Gemini/Copilot]:
+Competencia sugerida: "${template.competence}"
+Indicador sugerido: "${template.indicator}"
+Criterios sugeridos: [${template.criteria.join(', ')}]`);
+
+      setInstrumentEditState(prev => ({
+        ...prev,
+        competence: template.competence,
+        indicator: `${template.indicator} para la actividad "${prev.activity}"`,
+        criteriaText: template.criteria.join(', ')
+      }));
+      setIsAiGenerating(false);
+    }, 1500);
+  };
+
+  // --- Grading Sheet and Attendance Handlers ---
+  const handleCellGradeChange = (studentId, subject, evalIdx, value) => {
     const canEdit = currentUser.role === 'admin' || (
-      currentUser.role === 'teacher' && 
+      currentUser.role === 'teacher' &&
       currentUser.assignments.some(a => a.grade === selectedGrade && a.subject === subject)
     );
-
     if (!canEdit) return;
 
     const numeric = Math.min(100, Math.max(0, Number(value) || 0));
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
-        return { ...s, [subject]: numeric };
+        const nextGrades = { ...s.grades };
+        const currentArr = [...(nextGrades[subject] || [80, 80, 80, 80])];
+        currentArr[evalIdx] = numeric;
+        nextGrades[subject] = currentArr;
+        return { ...s, grades: nextGrades };
       }
       return s;
     }));
   };
 
-  // --- Calendar Event Management ---
+  const handleUpdateAttendance = (studentId, type) => {
+    if (!currentUser.active) return;
+    setStudents(prev => prev.map(s => {
+      if (s.id === studentId) {
+        let present = s.present;
+        let total = s.total;
+        if (type === 'present') {
+          present = Math.min(total + 1, present + 1);
+          total = Math.max(present, total);
+        } else if (type === 'absent') {
+          total += 1;
+        } else if (type === 'reset') {
+          present = 0;
+          total = 0;
+        }
+        return { ...s, present, total };
+      }
+      return s;
+    }));
+  };
+
+  // --- Modal Assessment Execution ---
+  const openAssessmentModal = (studentId, subjectKey, evalIdx) => {
+    const configKey = `${selectedGrade}_${subjectKey}`;
+    const configs = evaluationConfigs[configKey] || [];
+    const config = configs[evalIdx] || {
+      id: evalIdx,
+      activity: `Evaluación ${evalIdx + 1}`,
+      competence: 'Competencia General',
+      indicator: 'Indicador Académico',
+      type: 'rubrica',
+      criteria: ['Criterio General'],
+      levels: {
+        preformal: 'Nivel inicial preformal (55)',
+        receptivo: 'Nivel básico receptivo (65)',
+        resolutivo: 'Nivel resolutivo estándar (75)',
+        autonomo: 'Nivel autónomo independiente (85)',
+        estrategico: 'Nivel estratégico de alta excelencia (95)'
+      }
+    };
+
+    const student = students.find(s => s.id === studentId);
+    const currentGrade = student?.grades[subjectKey]?.[evalIdx] || 80;
+
+    // Reset modal status
+    setActiveAssessment({ studentId, subjectKey, evalIdx, config, studentName: student?.name });
+    setChecklistChecks([false, false, false]);
+
+    // pre-highlight based on current grade
+    if (currentGrade >= 90) setSelectedTobonLevel('estrategico');
+    else if (currentGrade >= 80) setSelectedTobonLevel('autonomo');
+    else if (currentGrade >= 70) setSelectedTobonLevel('resolutivo');
+    else if (currentGrade >= 60) setSelectedTobonLevel('receptivo');
+    else setSelectedTobonLevel('preformal');
+
+    setIsAssessmentModalOpen(true);
+  };
+
+  const handleApplyAssessment = () => {
+    if (!activeAssessment) return;
+    const { studentId, subjectKey, evalIdx, config } = activeAssessment;
+
+    let computedScore = 80;
+    if (config.type === 'rubrica' || config.type === 'escala') {
+      if (selectedTobonLevel === 'preformal') computedScore = 55;
+      else if (selectedTobonLevel === 'receptivo') computedScore = 65;
+      else if (selectedTobonLevel === 'resolutivo') computedScore = 75;
+      else if (selectedTobonLevel === 'autonomo') computedScore = 85;
+      else if (selectedTobonLevel === 'estrategico') computedScore = 98;
+    } else if (config.type === 'lista') {
+      // checklists score calculation: 0 checks = 50, 1 check = 70, 2 checks = 85, 3 checks = 100
+      const checkCount = checklistChecks.filter(c => c).length;
+      if (checkCount === 0) computedScore = 50;
+      else if (checkCount === 1) computedScore = 70;
+      else if (checkCount === 2) computedScore = 85;
+      else if (checkCount === 3) computedScore = 100;
+    }
+
+    setStudents(prev => prev.map(s => {
+      if (s.id === studentId) {
+        const nextGrades = { ...s.grades };
+        const currentArr = [...(nextGrades[subjectKey] || [80, 80, 80, 80])];
+        currentArr[evalIdx] = computedScore;
+        nextGrades[subjectKey] = currentArr;
+        return { ...s, grades: nextGrades };
+      }
+      return s;
+    }));
+
+    setIsAssessmentModalOpen(false);
+    setActiveAssessment(null);
+  };
+
+  // --- Calendar Add Event Handler ---
   const handleAddEvent = (e) => {
     e.preventDefault();
     if (currentUser.role !== 'admin') return;
-
-    if (!newEvent.title) {
-      alert('Por favor especifica un título.');
-      return;
-    }
 
     const created = {
       id: 'ev_' + Date.now().toString(),
@@ -408,41 +847,44 @@ export default function App() {
     alert('Evento escolar agendado.');
   };
 
-  const handleDeleteEvent = (id) => {
-    if (currentUser.role !== 'admin') return;
-    setCalendarEvents(prev => prev.filter(ev => ev.id !== id));
+  // --- Calculations for stats ---
+  const totalStudents = students.length;
+  
+  const calculateStudentAvg = (s) => {
+    const math = (s.grades?.math?.reduce((a, b) => a + b, 0) / 4) || 0;
+    const science = (s.grades?.science?.reduce((a, b) => a + b, 0) / 4) || 0;
+    const language = (s.grades?.language?.reduce((a, b) => a + b, 0) / 4) || 0;
+    const history = (s.grades?.history?.reduce((a, b) => a + b, 0) / 4) || 0;
+    return (math + science + language + history) / 4;
   };
 
-  // --- Instruments Weighing Calculation ---
-  const handleUpdateWeights = (e) => {
-    e.preventDefault();
-    const sum = Number(weights.exam) + Number(weights.project) + Number(weights.homework) + Number(weights.attendance);
-    if (sum !== 100) {
-      setWeightErrors(`La suma de los porcentajes debe ser exactamente 100%. Actualmente es ${sum}%.`);
-      return;
-    }
-    setWeightErrors('');
-    alert('Ponderaciones guardadas correctamente para la sesión.');
+  const globalAverage = totalStudents > 0 
+    ? (students.reduce((acc, s) => acc + calculateStudentAvg(s), 0) / totalStudents).toFixed(1)
+    : 0;
+
+  const averageAttendance = totalStudents > 0
+    ? (students.reduce((acc, s) => acc + (s.total > 0 ? (s.present / s.total) * 100 : 0), 0) / totalStudents).toFixed(1)
+    : 0;
+
+  const passingRate = totalStudents > 0 
+    ? ((students.filter(s => calculateStudentAvg(s) >= 70).length / totalStudents) * 100).toFixed(0)
+    : 0;
+
+  // Specific subject averages (averaging their 4 sub-grades across all students)
+  const getSubjectAverage = (subKey) => {
+    if (totalStudents === 0) return 0;
+    const totalSum = students.reduce((acc, s) => {
+      const arr = s.grades?.[subKey] || [80, 80, 80, 80];
+      return acc + (arr.reduce((a, b) => a + b, 0) / 4);
+    }, 0);
+    return (totalSum / totalStudents).toFixed(1);
   };
 
-  const handleCalculatorRun = (e) => {
-    e.preventDefault();
-    const examRaw = Number(calcScores.exam) || 0;
-    const projectRaw = Number(calcScores.project) || 0;
-    const homeworkRaw = Number(calcScores.homework) || 0;
-    const attendanceRaw = Number(calcScores.attendance) || 0;
+  const mathAvg = getSubjectAverage('math');
+  const scienceAvg = getSubjectAverage('science');
+  const langAvg = getSubjectAverage('language');
+  const historyAvg = getSubjectAverage('history');
 
-    const result = (
-      (examRaw * (weights.exam / 100)) +
-      (projectRaw * (weights.project / 100)) +
-      (homeworkRaw * (weights.homework / 100)) +
-      (attendanceRaw * (weights.attendance / 100))
-    ).toFixed(1);
-
-    setCalcResult(result);
-  };
-
-  // --- Filter Logic helper arrays ---
   const teacherUniqueGrades = currentUser && currentUser.role === 'teacher'
     ? [...new Set(currentUser.assignments.map(a => a.grade))]
     : [];
@@ -454,96 +896,6 @@ export default function App() {
   const studentsFilteredByGrade = selectedGrade
     ? students.filter(s => s.grade === selectedGrade)
     : students;
-
-  // --- Global Stats counts ---
-  const adminStudentCount = students.length;
-  const adminStudentAvg = adminStudentCount > 0 
-    ? (students.reduce((acc, s) => acc + ((s.math + s.science + s.language + s.history) / 4), 0) / adminStudentCount).toFixed(1)
-    : 0;
-
-  const mathAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.math, 0) / adminStudentCount).toFixed(1) : 0;
-  const scienceAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.science, 0) / adminStudentCount).toFixed(1) : 0;
-  const langAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.language, 0) / adminStudentCount).toFixed(1) : 0;
-  const historyAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.history, 0) / adminStudentCount).toFixed(1) : 0;
-
-  // --- VIEW: Login ---
-  if (!currentUser) {
-    return (
-      <div className="login-container">
-        <div className="login-bg-decor"></div>
-        <div className="login-bg-decor-2"></div>
-        <div className="glass-panel login-card animate-fade-in">
-          <div className="login-header">
-            <div className="logo">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
-              </svg>
-              <span>Control<span>Académico</span></span>
-            </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Iniciar sesión en el Registro Virtual</p>
-          </div>
-
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label>Correo Electrónico</label>
-              <input 
-                type="email" 
-                placeholder="ejemplo@school.edu" 
-                className="form-input"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Contraseña</label>
-              <input 
-                type="password" 
-                placeholder="••••••••" 
-                className="form-input"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            {loginError && (
-              <div style={{ color: 'var(--danger)', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 550 }}>
-                ⚠️ {loginError}
-              </div>
-            )}
-
-            <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-              Entrar
-            </button>
-          </form>
-
-          <div className="demo-box">
-            <div className="demo-title">Cuentas de prueba rápida</div>
-            <div className="demo-buttons">
-              <button className="btn-demo" onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
-                <span className="role">Administrador</span>
-                <span className="email">Acceso Total</span>
-              </button>
-              <button className="btn-demo" onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
-                <span className="role">Prof. Mateo (Mate)</span>
-                <span className="email">Mate/Historia en 1roA</span>
-              </button>
-              <button className="btn-demo" onClick={() => handleQuickLogin('profesor.ciencias@school.edu', 'profe123')}>
-                <span className="role">Prof. Clara (Ciencias)</span>
-                <span className="email">Ciencias 1roA / 10°B</span>
-              </button>
-              <button className="btn-demo" onClick={() => handleQuickLogin('profesor.lengua@school.edu', 'profe123')}>
-                <span className="role">Prof. Luis (Lengua)</span>
-                <span className="email">Lengua 1roB / 10°A</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // --- VIEW: Admin Dashboard ---
   if (currentUser.role === 'admin') {
@@ -588,10 +940,10 @@ export default function App() {
         </header>
 
         {/* Dashboard Layout */}
-        <div className="main-content">
+        <div className="main-content animate-fade-in">
           <div className="dashboard-layout">
             
-            {/* Admin Sidebar */}
+            {/* Sidebar */}
             <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
               <div className="sidebar-nav">
                 <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
@@ -612,18 +964,18 @@ export default function App() {
               </div>
             </aside>
 
-            {/* Admin Content Area */}
-            <section className="content-area animate-fade-in">
+            {/* Content Area */}
+            <section className="content-area">
               
-              {/* ADMIN: Tab Dashboard */}
+              {/* Tab: Dashboard */}
               {activeTab === 'dashboard' && (
                 <div>
                   <h2>Vista General del Administrador</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Estadísticas globales de la escuela.</p>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Métricas globales escolares.</p>
 
                   <div className="stats-grid">
                     <div className="glass-card" style={{ padding: '1.25rem' }}>
-                      <h3>{adminStudentCount}</h3>
+                      <h3>{totalStudents}</h3>
                       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Alumnos</p>
                     </div>
                     <div className="glass-card" style={{ padding: '1.25rem' }}>
@@ -631,13 +983,13 @@ export default function App() {
                       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Profesores Registrados</p>
                     </div>
                     <div className="glass-card" style={{ padding: '1.25rem' }}>
-                      <h3>{adminStudentAvg}%</h3>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Rendimiento Promedio</p>
+                      <h3>{globalAverage}/100</h3>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Rendimiento Escolar</p>
                     </div>
                   </div>
 
                   <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-                    <h3 style={{ marginBottom: '1rem' }}>Resumen por Asignatura</h3>
+                    <h3 style={{ marginBottom: '1rem' }}>Resumen de Promedios por Asignatura (Escala de 4 Evaluaciones)</h3>
                     <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', listStyle: 'none' }}>
                       <li>Matemáticas: <strong>{mathAvg}%</strong></li>
                       <li>Ciencias: <strong>{scienceAvg}%</strong></li>
@@ -648,15 +1000,14 @@ export default function App() {
                 </div>
               )}
 
-              {/* ADMIN: Tab Teachers (Docentes y Asignaciones) */}
+              {/* Tab: Teachers */}
               {activeTab === 'teachers' && (
                 <div>
                   <h2>Docentes y Asignación de Materias/Grados</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Administra la planilla de profesores y vincula en qué grados y materias dictan clases.</p>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Vincula a tus docentes con las aulas.</p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
                     
-                    {/* List of Teachers */}
                     <div className="custom-table-container">
                       <table className="custom-table">
                         <thead>
@@ -673,7 +1024,7 @@ export default function App() {
                               <td>
                                 <div style={{ fontWeight: 600 }}>{u.name}</div>
                                 <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{u.email}</div>
-                                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Contraseña: {u.password}</div>
+                                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Clave: {u.password}</div>
                               </td>
                               <td>
                                 <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }} onClick={() => toggleUserActive(u.id)}>
@@ -689,17 +1040,15 @@ export default function App() {
                                         <button 
                                           style={{ border: 'none', background: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 'bold' }}
                                           onClick={() => handleRemoveAssignment(u.id, idx)}
-                                          title="Remover"
                                         >
                                           ✕
                                         </button>
                                       </div>
                                     ))
                                   ) : (
-                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sin asignaciones de materias.</span>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sin asignaciones.</span>
                                   )}
                                   
-                                  {/* Add assignment inline */}
                                   <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem' }}>
                                     <select 
                                       className="form-select" 
@@ -742,7 +1091,6 @@ export default function App() {
                       </table>
                     </div>
 
-                    {/* Create Teacher Form */}
                     <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
                       <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Registrar Docente</h3>
                       <form onSubmit={handleCreateTeacher}>
@@ -786,21 +1134,19 @@ export default function App() {
                 </div>
               )}
 
-              {/* ADMIN: Tab Students (Inscripción por Grados y replicación automática) */}
+              {/* Tab: Students (With CSV and Copy-Paste Importers) */}
               {activeTab === 'students' && (
                 <div>
-                  <h2>Planilla de Estudiantes por Grado</h2>
+                  <h2>Estudiantes por Grado</h2>
                   <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                    Agrega los alumnos a un Grado/Curso. Automáticamente pertenecerán a todas las asignaturas de ese grado.
+                    Registra o importa alumnos de forma masiva a un Grado. Se replicarán en todas las asignaturas de ese grado.
                   </p>
 
-                  {/* Filter grade bar */}
                   <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
                     {['1ro A', '1ro B', '10° A', '10° B'].map(g => (
                       <button 
                         key={g} 
                         className={`btn-secondary ${activeAdminGrade === g ? 'btn-primary' : ''}`}
-                        style={{ padding: '0.5rem 1rem', fontWeight: 600 }}
                         onClick={() => setActiveAdminGrade(g)}
                       >
                         {g}
@@ -808,17 +1154,59 @@ export default function App() {
                     ))}
                   </div>
 
+                  {/* Mass Importers Card */}
+                  <div className="glass-card" style={{ marginBottom: '1.5rem' }}>
+                    <h3 style={{ marginBottom: '1rem' }}>Importador Masivo de Alumnos (Grado: {activeAdminGrade})</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                      
+                      {/* Drag/Drop CSV Zone */}
+                      <div>
+                        <h4 style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Opción A: Subir Archivo CSV</h4>
+                        <div className="import-zone" onClick={() => fileInputRef.current.click()}>
+                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                          </svg>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Seleccionar Archivo .CSV</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Formatos aceptados: Nombre, Correo</span>
+                        </div>
+                        <input 
+                          type="file" 
+                          ref={fileInputRef} 
+                          style={{ display: 'none' }} 
+                          accept=".csv" 
+                          onChange={handleFileUpload} 
+                        />
+                      </div>
+
+                      {/* Excel Copy-Paste Box */}
+                      <div>
+                        <h4 style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Opción B: Copiar y Pegar desde Excel</h4>
+                        <form onSubmit={handleTextImportSubmit}>
+                          <textarea 
+                            className="textarea-excel-import"
+                            placeholder="Sofia Perez, sofia@correo.com&#10;Carlos Gomez, carlos@correo.com"
+                            value={excelImportText}
+                            onChange={(e) => setExcelImportText(e.target.value)}
+                          />
+                          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem', padding: '0.5rem' }}>
+                            Procesar Listado Pegado
+                          </button>
+                        </form>
+                      </div>
+
+                    </div>
+                  </div>
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
                     
-                    {/* Students list */}
+                    {/* Alumns table */}
                     <div className="custom-table-container">
                       <table className="custom-table">
                         <thead>
                           <tr>
                             <th>Nombre</th>
-                            <th>Correo de Contacto</th>
+                            <th>Contacto</th>
                             <th>Grado</th>
-                            <th>Materias Habilitadas en Grado</th>
                             <th>Acciones</th>
                           </tr>
                         </thead>
@@ -829,15 +1217,6 @@ export default function App() {
                               <td style={{ color: 'var(--text-secondary)' }}>{s.email}</td>
                               <td><span className="badge badge-success">{s.grade}</span></td>
                               <td>
-                                <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                                  {Object.keys(SUBJECTS).map(subKey => (
-                                    <span key={subKey} className="badge" style={{ backgroundColor: SUBJECTS[subKey].bg, color: SUBJECTS[subKey].color, fontSize: '0.72rem' }}>
-                                      {SUBJECTS[subKey].name}
-                                    </span>
-                                  ))}
-                                </div>
-                              </td>
-                              <td>
                                 <button className="btn-danger" style={{ padding: '0.35rem 0.75rem' }} onClick={() => handleDeleteStudent(s.id)}>
                                   Eliminar
                                 </button>
@@ -846,7 +1225,7 @@ export default function App() {
                           ))}
                           {students.filter(s => s.grade === activeAdminGrade).length === 0 && (
                             <tr>
-                              <td colSpan="5" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                              <td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
                                 No hay estudiantes inscritos en {activeAdminGrade}.
                               </td>
                             </tr>
@@ -855,11 +1234,9 @@ export default function App() {
                       </table>
                     </div>
 
-                    {/* Add student to current grade */}
+                    {/* Single Student Form */}
                     <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
-                      <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-                        Inscribir en {activeAdminGrade}
-                      </h3>
+                      <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Inscribir Individual</h3>
                       <form onSubmit={handleAddStudent}>
                         <div className="form-group">
                           <label>Nombre Completo del Alumno</label>
@@ -882,7 +1259,7 @@ export default function App() {
                           />
                         </div>
                         <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                          Inscribir Alumno
+                          Guardar Registro
                         </button>
                       </form>
                     </div>
@@ -891,20 +1268,18 @@ export default function App() {
                 </div>
               )}
 
-              {/* ADMIN: Tab Calendar */}
+              {/* Tab: Calendar */}
               {activeTab === 'calendar' && (
                 <div>
                   <h2>Calendario Escolar</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Configura exámenes y eventos de la institución.</p>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Exámenes y eventos del ciclo.</p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
                     <div className="glass-panel" style={{ padding: '1.5rem' }}>
                       <div className="calendar-grid">
-                        {/* Day headers */}
                         {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => (
                           <div key={d} className="calendar-day-header">{d}</div>
                         ))}
-                        {/* Simple rendering for July 2026 (Starts on Wed=index 3) */}
                         {Array.from({ length: 3 }).map((_, idx) => (
                           <div key={`empty-${idx}`} className="calendar-day-cell other-month"></div>
                         ))}
@@ -929,7 +1304,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Add Event Form */}
                     <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
                       <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Agendar Evento</h3>
                       <form onSubmit={handleAddEvent}>
@@ -947,7 +1321,6 @@ export default function App() {
                           <label>Título del Evento</label>
                           <input 
                             type="text" 
-                            placeholder="Ej. Parcial de Matemáticas" 
                             className="form-input" 
                             value={newEvent.title} 
                             onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
@@ -970,14 +1343,14 @@ export default function App() {
                             value={newEvent.type} 
                             onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value }))}
                           >
-                            <option value="primary">Académico (Azul)</option>
-                            <option value="success">Evento Social (Verde)</option>
-                            <option value="warning">Urgente (Amarillo)</option>
-                            <option value="danger">Administrativo (Rojo)</option>
+                            <option value="primary">Académico</option>
+                            <option value="success">Social</option>
+                            <option value="warning">Urgente</option>
+                            <option value="danger">Administrativo</option>
                           </select>
                         </div>
                         <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-                          Registrar en Calendario
+                          Agendar
                         </button>
                       </form>
                     </div>
@@ -985,38 +1358,23 @@ export default function App() {
                 </div>
               )}
 
-              {/* ADMIN: Tab Instructions (Instructivo) */}
+              {/* Tab: Instructions */}
               {activeTab === 'instructions' && (
                 <div>
-                  <h2>Manual de Uso del Administrador</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Guía rápida para la configuración completa de la plataforma.</p>
-
+                  <h2>Guía del Administrador</h2>
                   <div className="glass-card instruction-card">
                     <div className="instruction-step">
                       <div className="instruction-step-num">1</div>
                       <div>
-                        <strong>Crear Cuentas de Docentes</strong>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          Ve a la pestaña <em>Asignación Docentes</em> y registra a los profesores de la institución.
-                        </p>
+                        <strong>Crear Docentes y Asignar Grados/Materias</strong>
+                        <p style={{ fontSize: '0.85rem' }}>Ve a la sección "Asignación Docentes" para registrar a los maestros e indicar en qué cursos dictan clases.</p>
                       </div>
                     </div>
                     <div className="instruction-step">
                       <div className="instruction-step-num">2</div>
                       <div>
-                        <strong>Asignar Grados y Materias por Docente</strong>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          En la misma pestaña, selecciona el grado y la materia en el selector de cada docente y haz clic en "Asignar". Un docente puede tener múltiples asignaciones (por ejemplo, dictar Matemáticas en 1ro A y Ciencias en 10° B).
-                        </p>
-                      </div>
-                    </div>
-                    <div className="instruction-step">
-                      <div className="instruction-step-num">3</div>
-                      <div>
-                        <strong>Inscribir Alumnos por Grados</strong>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          Ve a <em>Estudiantes por Grado</em>, selecciona el grado deseado (ej. 1ro A) e inscribe a los alumnos. Estos alumnos se replicarán automáticamente en todas las materias de ese grado. El docente verá a estos alumnos de inmediato al ingresar.
-                        </p>
+                        <strong>Importar Estudiantes Masivamente</strong>
+                        <p style={{ fontSize: '0.85rem' }}>Ve a "Estudiantes por Grado", selecciona el curso y carga un archivo CSV o pega el listado directamente desde Excel para registrarlos al instante.</p>
                       </div>
                     </div>
                   </div>
@@ -1029,7 +1387,7 @@ export default function App() {
         </div>
 
         <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-          <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Administrador Principal.</p>
+          <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Administrador.</p>
         </footer>
       </div>
     );
@@ -1076,22 +1434,22 @@ export default function App() {
         </div>
       </header>
 
-      {/* Layout content */}
-      <div className="main-content">
+      {/* Main Layout */}
+      <div className="main-content animate-fade-in">
         <div className="dashboard-layout">
           
-          {/* Teacher Sidebar Menu (Left Sidebar) */}
+          {/* Teacher Sidebar Menu */}
           <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
             <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
-                Seleccionar Curso / Grado
+                Seleccionar Grado / Curso
               </label>
               <select 
                 className="form-select" 
                 value={selectedGrade}
                 onChange={(e) => {
                   setSelectedGrade(e.target.value);
-                  setActiveTab('grades'); // auto switch to grades view
+                  setActiveTab('grades');
                 }}
               >
                 {teacherUniqueGrades.map(g => (
@@ -1122,14 +1480,14 @@ export default function App() {
             </div>
           </aside>
 
-          {/* Teacher Content Area */}
-          <section className="content-area animate-fade-in">
+          {/* Teacher Screen Area */}
+          <section className="content-area">
             
             {/* TEACHER: Tab Dashboard */}
             {activeTab === 'dashboard' && (
               <div>
                 <h2>Dashboard Docente</h2>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Información general y asignaturas a tu cargo.</p>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Tus asignaturas a cargo.</p>
 
                 <div className="stats-grid">
                   <div className="glass-panel" style={{ padding: '1.25rem' }}>
@@ -1156,26 +1514,26 @@ export default function App() {
               </div>
             )}
 
-            {/* TEACHER: Tab Grades (Planilla Calificaciones con Barra Horizontal de Asignaturas) */}
+            {/* TEACHER: Tab Grades (With 4 Evaluations, Horizontal subject navigation, and Assessment Dialog Button) */}
             {activeTab === 'grades' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div>
                     <h2>Planilla de Notas: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
-                    <p style={{ color: 'var(--text-secondary)' }}>Usa los inputs para cargar o modificar notas del periodo.</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Haz clic en el icono <svg style={{ display: 'inline', verticalAlign: 'middle' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><polyline points="10 9 9 9 8 9"/></svg> al lado de la nota para evaluar usando la Rúbrica de Tobón o Lista de Cotejo.</p>
                   </div>
                   <input 
                     type="text" 
                     placeholder="Buscar estudiante..." 
                     className="form-input" 
-                    style={{ maxWidth: '200px', padding: '0.4rem 0.75rem', fontSize: '0.88rem' }}
+                    style={{ maxWidth: '200px', padding: '0.4rem 0.75rem' }}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
 
-                {/* HORIZONTAL SUBJECTS BAR FOR CURRENT GRADE */}
-                {selectedGrade ? (
+                {/* Horizontal Subjects Bar */}
+                {selectedGrade && (
                   <div className="subject-tabs-container">
                     {teacherGradeSubjects.map(subKey => (
                       <button 
@@ -1187,48 +1545,70 @@ export default function App() {
                         {SUBJECTS[subKey].name}
                       </button>
                     ))}
-                    {teacherGradeSubjects.length === 0 && (
-                      <span style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>No dictas materias en este grado.</span>
-                    )}
                   </div>
-                ) : null}
+                )}
 
-                {/* Grades Table */}
+                {/* Spreadsheet Table */}
                 {selectedGrade && selectedSubject ? (
                   <div className="custom-table-container">
                     <table className="custom-table">
                       <thead>
                         <tr>
                           <th>Estudiante</th>
-                          <th>Correo</th>
-                          <th style={{ width: '150px' }}>Calificación ({SUBJECTS[selectedSubject].name})</th>
+                          <th style={{ width: '130px', textAlign: 'center' }}>Ev 1</th>
+                          <th style={{ width: '130px', textAlign: 'center' }}>Ev 2</th>
+                          <th style={{ width: '130px', textAlign: 'center' }}>Ev 3</th>
+                          <th style={{ width: '130px', textAlign: 'center' }}>Ev 4</th>
+                          <th style={{ textAlign: 'center' }}>Promedio Final</th>
                           <th>Estado</th>
-                          <th>Asistencia Acumulada</th>
-                          <th>Registrar Asistencia Hoy</th>
+                          <th>Asistencia</th>
                         </tr>
                       </thead>
                       <tbody>
                         {studentsFilteredByGrade
                           .filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
                           .map(s => {
-                            const gradeValue = s[selectedSubject];
-                            const isPassing = gradeValue >= 70;
-                            const attPercent = s.total > 0 ? ((s.present / s.total) * 100).toFixed(0) : 0;
+                            const studentGrades = s.grades?.[selectedSubject] || [80, 80, 80, 80];
+                            const avg = (studentGrades.reduce((a, b) => a + b, 0) / 4);
+                            const isPassing = avg >= 70;
 
                             return (
                               <tr key={s.id}>
                                 <td style={{ fontWeight: 600 }}>{s.name}</td>
-                                <td style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{s.email}</td>
-                                <td>
-                                  <input 
-                                    type="number" 
-                                    className="form-input" 
-                                    style={{ padding: '0.4rem', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}
-                                    value={gradeValue}
-                                    onChange={(e) => handleUpdateGrade(s.id, selectedSubject, e.target.value)}
-                                    min="0"
-                                    max="100"
-                                  />
+                                
+                                {/* 4 Evaluations Columns */}
+                                {[0, 1, 2, 3].map(evalIdx => (
+                                  <td key={evalIdx}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                      <input 
+                                        type="number" 
+                                        className="form-input" 
+                                        style={{ padding: '0.35rem', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}
+                                        value={studentGrades[evalIdx]}
+                                        onChange={(e) => handleCellGradeChange(s.id, selectedSubject, evalIdx, e.target.value)}
+                                        min="0"
+                                        max="100"
+                                      />
+                                      <button 
+                                        className="btn-secondary" 
+                                        style={{ padding: '0.35rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        onClick={() => openAssessmentModal(s.id, selectedSubject, evalIdx)}
+                                        title="Evaluar con Instrumento"
+                                      >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                          <polyline points="14 2 14 8 20 8"/>
+                                          <line x1="16" y1="13" x2="8" y2="13"/>
+                                          <line x1="16" y1="17" x2="8" y2="17"/>
+                                          <polyline points="10 9 9 9 8 9"/>
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </td>
+                                ))}
+
+                                <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', fontSize: '1.05rem', color: isPassing ? 'var(--success)' : 'var(--danger)' }}>
+                                  {avg.toFixed(1)}
                                 </td>
                                 <td>
                                   <span className={`badge ${isPassing ? 'badge-success' : 'badge-danger'}`}>
@@ -1236,36 +1616,27 @@ export default function App() {
                                   </span>
                                 </td>
                                 <td>
-                                  <span className={`badge ${attPercent >= 85 ? 'badge-success' : 'badge-warning'}`} style={{ fontFamily: 'var(--font-mono)' }}>
-                                    {s.present}/{s.total} ({attPercent}%)
-                                  </span>
-                                </td>
-                                <td>
-                                  <div style={{ display: 'flex', gap: '0.35rem' }}>
-                                    <button className="btn-primary" style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleUpdateAttendance(s.id, 'present')}>
-                                      Presente
+                                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                    <button className="btn-primary" style={{ padding: '0.25rem 0.4rem', fontSize: '0.72rem' }} onClick={() => handleUpdateAttendance(s.id, 'present')}>
+                                      P
                                     </button>
-                                    <button className="btn-secondary" style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleUpdateAttendance(s.id, 'absent')}>
-                                      Ausente
+                                    <button className="btn-secondary" style={{ padding: '0.25rem 0.4rem', fontSize: '0.72rem' }} onClick={() => handleUpdateAttendance(s.id, 'absent')}>
+                                      A
                                     </button>
+                                    <span style={{ fontSize: '0.72rem', alignSelf: 'center', fontFamily: 'var(--font-mono)', marginLeft: '0.25rem' }}>
+                                      {((s.present / s.total) * 100).toFixed(0)}%
+                                    </span>
                                   </div>
                                 </td>
                               </tr>
                             );
                           })}
-                        {studentsFilteredByGrade.length === 0 && (
-                          <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-                              No hay alumnos matriculados en {selectedGrade}. Contacta al administrador para agregarlos.
-                            </td>
-                          </tr>
-                        )}
                       </tbody>
                     </table>
                   </div>
                 ) : (
                   <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
-                    Por favor selecciona un Curso y una Asignatura para ver la planilla.
+                    Por favor selecciona un Grado y Asignatura.
                   </div>
                 )}
               </div>
@@ -1275,8 +1646,6 @@ export default function App() {
             {activeTab === 'calendar' && (
               <div>
                 <h2>Calendario Escolar</h2>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Cronograma de actividades escolares y evaluaciones.</p>
-
                 <div className="calendar-wrapper">
                   <div className="glass-panel" style={{ padding: '1.5rem' }}>
                     <div className="calendar-grid">
@@ -1307,18 +1676,13 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* List of Calendar Events */}
                   <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
-                    <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Eventos Programados</h3>
-                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Eventos</h3>
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       {calendarEvents.map(ev => (
-                        <li key={ev.id} style={{ padding: '0.75rem', borderLeft: `4px solid ${ev.type === 'primary' ? 'var(--primary)' : ev.type === 'success' ? 'var(--success)' : ev.type === 'warning' ? 'var(--warning)' : 'var(--danger)'}`, backgroundColor: 'var(--bg-secondary)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                            <span style={{ color: 'var(--text-secondary)' }}>{ev.date}</span>
-                            <span className={`badge badge-${ev.type}`} style={{ fontSize: '0.65rem' }}>{ev.type}</span>
-                          </div>
-                          <strong style={{ fontSize: '0.9rem', display: 'block', color: 'var(--text-primary)' }}>{ev.title}</strong>
-                          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{ev.desc}</p>
+                        <li key={ev.id} style={{ padding: '0.5rem', borderLeft: `3px solid ${ev.type === 'primary' ? 'var(--primary)' : 'var(--success)'}`, backgroundColor: 'var(--bg-secondary)', borderRadius: '4px', border: '1px solid var(--border-color)', fontSize: '0.8rem' }}>
+                          <strong>{ev.title}</strong> - {ev.date}
+                          <p style={{ color: 'var(--text-secondary)' }}>{ev.desc}</p>
                         </li>
                       ))}
                     </ul>
@@ -1327,200 +1691,157 @@ export default function App() {
               </div>
             )}
 
-            {/* TEACHER: Tab Evaluation Instruments */}
+            {/* TEACHER: Tab Instruments (Edit Rubric, Checklist, Scale with simulated Copilot IA assistant) */}
             {activeTab === 'instruments' && (
               <div>
                 <h2>Instrumentos de Evaluación Ponderada</h2>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Establece los porcentajes de ponderación para calcular la nota acumulada de las asignaturas.</p>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                  Define las competencias, indicadores y actividades para cada una de las 4 evaluaciones de la asignatura.
+                </p>
 
-                <div className="instruments-layout">
-                  {/* Weights Settings Form */}
-                  <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                    <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Configuración de Ponderación</h3>
-                    <form onSubmit={handleUpdateWeights}>
-                      <div className="form-group" style={{ marginBottom: '1rem' }}>
-                        <div className="weight-input-card">
-                          <label>Examen Escrito / Evaluaciones</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <input 
-                              type="number" 
-                              className="form-input" 
-                              style={{ width: '80px', textAlign: 'center' }} 
-                              value={weights.exam}
-                              onChange={(e) => setWeights(prev => ({ ...prev, exam: Number(e.target.value) || 0 }))}
-                              required 
-                            />
-                            <span className="weight-percentage">%</span>
-                          </div>
-                        </div>
+                {selectedGrade && selectedSubject ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '1.5rem' }}>
+                    
+                    {/* Evaluations list selector */}
+                    <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignSelf: 'start' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>
+                        Evaluaciones del Periodo
+                      </span>
+                      {[0, 1, 2, 3].map(idx => (
+                        <button 
+                          key={idx}
+                          className={`nav-item ${activeInstrumentIdx === idx ? 'active' : ''}`}
+                          onClick={() => setActiveInstrumentIdx(idx)}
+                          style={{ textAlign: 'left', justifyContent: 'flex-start' }}
+                        >
+                          Evaluación {idx + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Edit form with AI button */}
+                    <div className="glass-panel" style={{ padding: '1.5rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
+                        <h3>Configuración del Instrumento: Evaluación {activeInstrumentIdx + 1}</h3>
+                        <button className="ai-copilot-badge" onClick={runAiCopilotSimulation} type="button">
+                          ⚡ Generar con IA (Gemini/Copilot)
+                        </button>
                       </div>
 
-                      <div className="form-group" style={{ marginBottom: '1rem' }}>
-                        <div className="weight-input-card">
-                          <label>Proyectos / Exposiciones</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <form onSubmit={handleSaveInstrument}>
+                        <div className="form-group">
+                          <label>Nombre de la Actividad</label>
+                          <input 
+                            type="text" 
+                            className="form-input"
+                            value={instrumentEditState.activity}
+                            onChange={(e) => setInstrumentEditState(prev => ({ ...prev, activity: e.target.value }))}
+                            placeholder="Ej. Taller de ecuaciones algebraicas"
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Competencia Fundamental</label>
+                          <input 
+                            type="text" 
+                            className="form-input"
+                            value={instrumentEditState.competence}
+                            onChange={(e) => setInstrumentEditState(prev => ({ ...prev, competence: e.target.value }))}
+                            placeholder="Ej. Pensamiento crítico y resolución de problemas"
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Indicador de Logro</label>
+                          <input 
+                            type="text" 
+                            className="form-input"
+                            value={instrumentEditState.indicator}
+                            onChange={(e) => setInstrumentEditState(prev => ({ ...prev, indicator: e.target.value }))}
+                            placeholder="Ej. Desarrolla despejes lineales complejos en ejercicios contextualizados"
+                            required
+                          />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label>Tipo de Instrumento</label>
+                            <select 
+                              className="form-select"
+                              value={instrumentEditState.type}
+                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, type: e.target.value }))}
+                            >
+                              <option value="rubrica">Rúbrica Socio-cognitiva</option>
+                              <option value="lista">Lista de Cotejo</option>
+                              <option value="escala">Escala Estimativa</option>
+                            </select>
+                          </div>
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label>Criterios de Evaluación (Separados por comas)</label>
                             <input 
-                              type="number" 
-                              className="form-input" 
-                              style={{ width: '80px', textAlign: 'center' }} 
-                              value={weights.project}
-                              onChange={(e) => setWeights(prev => ({ ...prev, project: Number(e.target.value) || 0 }))}
-                              required 
+                              type="text" 
+                              className="form-input"
+                              value={instrumentEditState.criteriaText}
+                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, criteriaText: e.target.value }))}
+                              placeholder="Ej. Algoritmo, Signos, Resultado"
                             />
-                            <span className="weight-percentage">%</span>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="form-group" style={{ marginBottom: '1rem' }}>
-                        <div className="weight-input-card">
-                          <label>Tareas / Taller Escrito</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <input 
-                              type="number" 
-                              className="form-input" 
-                              style={{ width: '80px', textAlign: 'center' }} 
-                              value={weights.homework}
-                              onChange={(e) => setWeights(prev => ({ ...prev, homework: Number(e.target.value) || 0 }))}
-                              required 
-                            />
-                            <span className="weight-percentage">%</span>
+                        {/* AI simulation text popup output */}
+                        {isAiGenerating && (
+                          <div className="ai-prompt-box">
+                            <span className="badge" style={{ backgroundColor: 'purple', color: '#fff', alignSelf: 'start', fontSize: '0.7rem' }}>Analizando...</span>
+                            <div className="ai-typing-effect">Esbozando rúbrica socio-cognitiva basada en Tobón para tu actividad...</div>
                           </div>
-                        </div>
-                      </div>
-
-                      <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                        <div className="weight-input-card">
-                          <label>Asistencia y Participación</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <input 
-                              type="number" 
-                              className="form-input" 
-                              style={{ width: '80px', textAlign: 'center' }} 
-                              value={weights.attendance}
-                              onChange={(e) => setWeights(prev => ({ ...prev, attendance: Number(e.target.value) || 0 }))}
-                              required 
-                            />
-                            <span className="weight-percentage">%</span>
+                        )}
+                        
+                        {aiTypingText && !isAiGenerating && (
+                          <div className="ai-prompt-box" style={{ borderColor: 'var(--primary)' }}>
+                            <span className="badge" style={{ backgroundColor: 'var(--primary)', color: '#fff', alignSelf: 'start', fontSize: '0.7rem' }}>Gemini Sugiere:</span>
+                            <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                              {aiTypingText}
+                            </pre>
+                            <button className="btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', alignSelf: 'flex-end' }} onClick={() => setAiTypingText('')}>
+                              Cerrar Sugerencia
+                            </button>
                           </div>
-                        </div>
-                      </div>
+                        )}
 
-                      {weightErrors && (
-                        <div style={{ color: 'var(--danger)', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
-                          ⚠️ {weightErrors}
-                        </div>
-                      )}
+                        <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+                          Guardar Configuración de Instrumento
+                        </button>
+                      </form>
+                    </div>
 
-                      <button type="submit" className="btn-primary" style={{ width: '100%' }}>
-                        Actualizar Ponderaciones
-                      </button>
-                    </form>
                   </div>
-
-                  {/* Calculator Widget */}
-                  <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
-                    <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Calculadora de Nota Ponderada</h3>
-                    <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                      Ingresa las notas parciales (escala 0-100) para calcular la nota acumulada definitiva según las ponderaciones activas.
-                    </p>
-
-                    <form onSubmit={handleCalculatorRun}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                        <div className="form-group">
-                          <label>Examen ({weights.exam}%)</label>
-                          <input 
-                            type="number" 
-                            className="form-input" 
-                            value={calcScores.exam} 
-                            onChange={(e) => setCalcScores(prev => ({ ...prev, exam: e.target.value }))}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Proyecto ({weights.project}%)</label>
-                          <input 
-                            type="number" 
-                            className="form-input" 
-                            value={calcScores.project} 
-                            onChange={(e) => setCalcScores(prev => ({ ...prev, project: e.target.value }))}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Tareas ({weights.homework}%)</label>
-                          <input 
-                            type="number" 
-                            className="form-input" 
-                            value={calcScores.homework} 
-                            onChange={(e) => setCalcScores(prev => ({ ...prev, homework: e.target.value }))}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Asistencia ({weights.attendance}%)</label>
-                          <input 
-                            type="number" 
-                            className="form-input" 
-                            value={calcScores.attendance} 
-                            onChange={(e) => setCalcScores(prev => ({ ...prev, attendance: e.target.value }))}
-                          />
-                        </div>
-                      </div>
-                      <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-                        Calcular Nota Final
-                      </button>
-                    </form>
-
-                    {calcResult !== null && (
-                      <div className="glass-panel" style={{ marginTop: '1.25rem', padding: '1rem', textAlign: 'center', backgroundColor: 'var(--primary-glow)', borderColor: 'var(--primary)' }}>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block' }}>Calificación Definitiva</span>
-                        <strong style={{ fontSize: '2rem', color: 'var(--primary)' }}>{calcResult} / 100</strong>
-                      </div>
-                    )}
+                ) : (
+                  <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
+                    Por favor selecciona un Grado y Asignatura en la barra lateral.
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {/* TEACHER: Tab Instructions */}
             {activeTab === 'instructions' && (
               <div>
-                <h2>Manual de Uso del Docente</h2>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Guía paso a paso sobre el manejo de la planilla.</p>
-
+                <h2>Manual del Docente</h2>
                 <div className="glass-card instruction-card">
                   <div className="instruction-step">
                     <div className="instruction-step-num">1</div>
                     <div>
-                      <strong>Seleccionar Curso / Grado</strong>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        En el panel lateral izquierdo, selecciona el curso que deseas evaluar (ej. 1ro A).
-                      </p>
+                      <strong>Establece el Instrumento Evaluativo</strong>
+                      <p style={{ fontSize: '0.85rem' }}>Ve a la pestaña "Instrumentos de Eval.", selecciona la evaluación (1 a 4) y escribe la actividad, competencia y criterios. Puedes usar el botón de **Gemini/Copilot** para autocompletar.</p>
                     </div>
                   </div>
                   <div className="instruction-step">
                     <div className="instruction-step-num">2</div>
                     <div>
-                      <strong>Seleccionar Asignatura Horizontal</strong>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        En la parte superior verás las asignaturas que tienes asignadas en ese grado. Haz clic en una de ellas (ej. Matemáticas).
-                      </p>
-                    </div>
-                  </div>
-                  <div className="instruction-step">
-                    <div className="instruction-step-num">3</div>
-                    <div>
-                      <strong>Ingresar o Modificar Calificaciones</strong>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        Modifica el número en la columna "Calificación". La planilla guardará el resultado de inmediato en el sistema.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="instruction-step">
-                    <div className="instruction-step-num">4</div>
-                    <div>
-                      <strong>Tomar Asistencia Diaria</strong>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        Usa los botones rápidos de "Presente" o "Ausente" para llevar la cuenta de la participación diaria de los estudiantes.
-                      </p>
+                      <strong>Evalúa con Rúbrica o Lista de Cotejo</strong>
+                      <p style={{ fontSize: '0.85rem' }}>Ve a "Planilla Calificaciones", haz clic en el icono de libreta al lado de la nota del alumno. El sistema cargará el instrumento configurado. Selecciona el nivel de desempeño del alumno y el puntaje se inyectará automáticamente en la celda.</p>
                     </div>
                   </div>
                 </div>
@@ -1531,6 +1852,155 @@ export default function App() {
 
         </div>
       </div>
+
+      {/* ASSESSMENT MODAL WINDOW */}
+      {isAssessmentModalOpen && activeAssessment && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            
+            <div className="modal-header">
+              <div>
+                <h3 style={{ fontSize: '1.2rem' }}>Evaluación del Estudiante: {activeAssessment.studentName}</h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Asignatura: <strong>{SUBJECTS[activeAssessment.subjectKey].name}</strong> | Grado: <strong>{selectedGrade}</strong> | Evaluación {activeAssessment.evalIdx + 1}
+                </span>
+              </div>
+              <button 
+                style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                onClick={() => setIsAssessmentModalOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="glass-panel" style={{ padding: '1rem', marginBottom: '1.5rem', backgroundColor: 'var(--bg-primary)' }}>
+                <p style={{ marginBottom: '0.25rem' }}><strong>Actividad:</strong> {activeAssessment.config.activity || `Taller Evaluado ${activeAssessment.evalIdx + 1}`}</p>
+                <p style={{ marginBottom: '0.25rem' }}><strong>Competencia:</strong> {activeAssessment.config.competence || 'Competencia Escolar'}</p>
+                <p style={{ marginBottom: '0.25rem' }}><strong>Indicador:</strong> {activeAssessment.config.indicator || 'Desempeña tareas de acuerdo a las directrices'}</p>
+                <p style={{ marginBottom: 0 }}><strong>Tipo de Instrumento:</strong> <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{activeAssessment.config.type === 'rubrica' ? 'Rúbrica Socio-cognitiva' : activeAssessment.config.type === 'lista' ? 'Lista de Cotejo' : 'Escala Estimativa'}</span></p>
+              </div>
+
+              {/* View: Rubric or Rating Scale (Renders Tobon levels) */}
+              {(activeAssessment.config.type === 'rubrica' || activeAssessment.config.type === 'escala') ? (
+                <div>
+                  <h4 style={{ marginBottom: '0.75rem', fontSize: '0.95rem' }}>Selecciona el Nivel de Desempeño (Taxonomía Socio-cognitiva de Tobón)</h4>
+                  
+                  {/* Estrategico */}
+                  <div 
+                    className={`tobon-level-card estrategico ${selectedTobonLevel === 'estrategico' ? 'selected' : ''}`}
+                    onClick={() => setSelectedTobonLevel('estrategico')}
+                  >
+                    <span className="tobon-level-name">Estratégico</span>
+                    <div className="tobon-level-desc">
+                      {activeAssessment.config.levels?.estrategico || 'Desempeño estratégico de excelencia.'}
+                      <span className="tobon-score-indicator">(90-100 pts)</span>
+                    </div>
+                  </div>
+
+                  {/* Autonomo */}
+                  <div 
+                    className={`tobon-level-card autonomo ${selectedTobonLevel === 'autonomo' ? 'selected' : ''}`}
+                    onClick={() => setSelectedTobonLevel('autonomo')}
+                  >
+                    <span className="tobon-level-name">Autónomo</span>
+                    <div className="tobon-level-desc">
+                      {activeAssessment.config.levels?.autonomo || 'Desempeño autónomo independiente.'}
+                      <span className="tobon-score-indicator">(80-89 pts)</span>
+                    </div>
+                  </div>
+
+                  {/* Resolutivo */}
+                  <div 
+                    className={`tobon-level-card resolutivo ${selectedTobonLevel === 'resolutivo' ? 'selected' : ''}`}
+                    onClick={() => setSelectedTobonLevel('resolutivo')}
+                  >
+                    <span className="tobon-level-name">Resolutivo</span>
+                    <div className="tobon-level-desc">
+                      {activeAssessment.config.levels?.resolutivo || 'Desempeño resolutivo estándar.'}
+                      <span className="tobon-score-indicator">(70-79 pts)</span>
+                    </div>
+                  </div>
+
+                  {/* Receptivo */}
+                  <div 
+                    className={`tobon-level-card receptivo ${selectedTobonLevel === 'receptivo' ? 'selected' : ''}`}
+                    onClick={() => setSelectedTobonLevel('receptivo')}
+                  >
+                    <span className="tobon-level-name">Receptivo</span>
+                    <div className="tobon-level-desc">
+                      {activeAssessment.config.levels?.receptivo || 'Desempeño básico receptivo.'}
+                      <span className="tobon-score-indicator">(60-69 pts)</span>
+                    </div>
+                  </div>
+
+                  {/* Preformal */}
+                  <div 
+                    className={`tobon-level-card preformal ${selectedTobonLevel === 'preformal' ? 'selected' : ''}`}
+                    onClick={() => setSelectedTobonLevel('preformal')}
+                  >
+                    <span className="tobon-level-name">Pre-formal</span>
+                    <div className="tobon-level-desc">
+                      {activeAssessment.config.levels?.preformal || 'Nivel de inicio preformal.'}
+                      <span className="tobon-score-indicator">(50-59 pts)</span>
+                    </div>
+                  </div>
+
+                </div>
+              ) : (
+                /* View: Checklist */
+                <div>
+                  <h4 style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>Lista de Cotejo: Cumplimiento de Criterios</h4>
+                  <table className="eval-checklist-table">
+                    <tbody>
+                      {(activeAssessment.config.criteria || ['Criterio 1', 'Criterio 2', 'Criterio 3']).map((crit, idx) => (
+                        <tr key={idx}>
+                          <td style={{ width: '40px' }}>
+                            <input 
+                              type="checkbox" 
+                              style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                              checked={checklistChecks[idx] || false}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                setChecklistChecks(prev => {
+                                  const next = [...prev];
+                                  next[idx] = checked;
+                                  return next;
+                                });
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <strong style={{ fontSize: '0.95rem' }}>{crit}</strong>
+                            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Indicador verificado para la actividad.</p>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p style={{ marginTop: '1.25rem', fontSize: '0.82rem', color: 'var(--text-secondary)', textAlign: 'right' }}>
+                    * Calificación estimada: {
+                      checklistChecks.filter(c => c).length === 0 ? '50 / 100' :
+                      checklistChecks.filter(c => c).length === 1 ? '70 / 100' :
+                      checklistChecks.filter(c => c).length === 2 ? '85 / 100' : '100 / 100'
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setIsAssessmentModalOpen(false)}>
+                Cancelar
+              </button>
+              <button className="btn-primary" onClick={handleApplyAssessment}>
+                Aplicar Nota Evaluada
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
         <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Docente Activo.</p>

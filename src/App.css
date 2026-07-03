@@ -534,3 +534,220 @@
   font-weight: bold;
   flex-shrink: 0;
 }
+
+/* ==========================================================================
+   Student Mass Importer Styles
+   ========================================================================== */
+.import-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.import-zone:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-glow);
+}
+
+.import-zone svg {
+  color: var(--text-secondary);
+}
+
+.import-zone:hover svg {
+  color: var(--primary);
+}
+
+.textarea-excel-import {
+  width: 100%;
+  height: 120px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  resize: vertical;
+  outline: none;
+}
+
+.textarea-excel-import:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* ==========================================================================
+   Modal Backdrop and Box Styles
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 750px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background-color: var(--bg-primary);
+}
+
+/* ==========================================================================
+   Tobon Performance Level Cards
+   ========================================================================== */
+.tobon-level-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.tobon-level-card:hover {
+  border-color: var(--primary);
+  transform: translateX(3px);
+}
+
+.tobon-level-card.selected {
+  border-color: var(--primary);
+  background-color: var(--primary-glow);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.tobon-level-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.tobon-level-card.preformal .tobon-level-name { background-color: var(--danger-bg); color: var(--danger); }
+.tobon-level-card.receptivo .tobon-level-name { background-color: var(--warning-bg); color: var(--warning); }
+.tobon-level-card.resolutivo .tobon-level-name { background-color: var(--primary-glow); color: var(--primary); }
+.tobon-level-card.autonomo .tobon-level-name { background-color: rgba(20, 184, 166, 0.1); color: hsl(170, 75%, 40%); }
+.tobon-level-card.estrategico .tobon-level-name { background-color: var(--success-bg); color: var(--success); }
+
+.tobon-level-desc {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.tobon-score-indicator {
+  font-family: var(--font-mono);
+  font-weight: bold;
+  float: right;
+}
+
+/* ==========================================================================
+   AI Assistant / Copilot UI Panel
+   ========================================================================== */
+.ai-copilot-badge {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ai-copilot-badge:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.ai-prompt-box {
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(to right, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ai-typing-effect {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  border-left: 3px solid #a855f7;
+  padding-left: 0.75rem;
+}
+
+.eval-checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.eval-checklist-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.eval-checklist-table tr:hover td {
+  background-color: var(--bg-primary);
+}
