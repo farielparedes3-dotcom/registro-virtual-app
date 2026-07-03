@@ -604,7 +604,7 @@
 
 .modal-card {
   width: 100%;
-  max-width: 750px;
+  max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
   background-color: var(--bg-secondary);
@@ -638,104 +638,196 @@
 }
 
 /* ==========================================================================
-   Tobon Performance Level Cards
+   Tobon Performance Level Cards and Criterion Evaluation UI
    ========================================================================== */
-.tobon-level-card {
+.criterion-eval-card {
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
-  background-color: var(--bg-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 1rem;
-  align-items: center;
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  background-color: var(--bg-primary);
+  margin-bottom: 1.5rem;
+}
+
+.criterion-title {
+  font-size: 1rem;
+  font-weight: 700;
   margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.tobon-level-card:hover {
+.criterion-levels-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 650px) {
+  .criterion-levels-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.criterion-level-btn {
+  background-color: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem;
+  font-size: 0.76rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.criterion-level-btn:hover {
   border-color: var(--primary);
-  transform: translateX(3px);
+  background-color: var(--primary-glow);
 }
 
-.tobon-level-card.selected {
+.criterion-level-btn.selected {
   border-color: var(--primary);
   background-color: var(--primary-glow);
   box-shadow: 0 0 0 2px var(--primary);
 }
 
-.tobon-level-name {
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.tobon-level-card.preformal .tobon-level-name { background-color: var(--danger-bg); color: var(--danger); }
-.tobon-level-card.receptivo .tobon-level-name { background-color: var(--warning-bg); color: var(--warning); }
-.tobon-level-card.resolutivo .tobon-level-name { background-color: var(--primary-glow); color: var(--primary); }
-.tobon-level-card.autonomo .tobon-level-name { background-color: rgba(20, 184, 166, 0.1); color: hsl(170, 75%, 40%); }
-.tobon-level-card.estrategico .tobon-level-name { background-color: var(--success-bg); color: var(--success); }
-
-.tobon-level-desc {
-  font-size: 0.88rem;
-  color: var(--text-primary);
-  line-height: 1.4;
-}
-
-.tobon-score-indicator {
-  font-family: var(--font-mono);
+.criterion-level-btn span.level-label {
   font-weight: bold;
-  float: right;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.criterion-level-btn.preformal.selected span.level-label { color: var(--danger); }
+.criterion-level-btn.receptivo.selected span.level-label { color: var(--warning); }
+.criterion-level-btn.resolutivo.selected span.level-label { color: var(--primary); }
+.criterion-level-btn.autonomo.selected span.level-label { color: hsl(170, 75%, 40%); }
+.criterion-level-btn.estrategico.selected span.level-label { color: var(--success); }
+
+.criterion-level-btn span.level-score {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.criterion-level-desc-tooltip {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-top: 0.25rem;
+  text-align: left;
 }
 
 /* ==========================================================================
-   AI Assistant / Copilot UI Panel
+   Interactive AI Chat Box Styles
    ========================================================================== */
-.ai-copilot-badge {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.ai-copilot-badge:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.ai-prompt-box {
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  border-radius: var(--radius-sm);
-  background: linear-gradient(to right, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
-  padding: 1rem;
-  margin-top: 1rem;
+.ai-chat-container {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  height: 380px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
 }
 
-.ai-typing-effect {
-  font-family: var(--font-sans);
+.ai-chat-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ai-chat-bubble {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
   font-size: 0.88rem;
-  line-height: 1.5;
+  line-height: 1.45;
+}
+
+.ai-chat-bubble.user {
+  background-color: var(--primary-glow);
   color: var(--text-primary);
-  border-left: 3px solid #a855f7;
-  padding-left: 0.75rem;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+  border: 1px solid var(--primary);
+}
+
+.ai-chat-bubble.ai {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-chat-bubble pre {
+  white-space: pre-wrap;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  margin-top: 0.5rem;
+  background-color: var(--bg-primary);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.ai-chat-input-row {
+  padding: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ai-chat-input {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.ai-chat-input:focus {
+  border-color: var(--primary);
+}
+
+.ai-chat-apply-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.ai-chat-apply-btn:hover {
+  opacity: 0.9;
 }
 
 .eval-checklist-table {

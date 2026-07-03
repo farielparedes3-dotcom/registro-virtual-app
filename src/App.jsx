@@ -148,7 +148,7 @@ const DEFAULT_EVALUATION_CONFIGS = {
       competence: "Pensamiento lógico y resolución de problemas algebraicos.",
       indicator: "Resuelve ecuaciones lineales y valida las soluciones en ejercicios cotidianos.",
       type: "rubrica",
-      criteria: ["Planteamiento", "Proceso de despeje", "Comprobación de la respuesta"],
+      criteria: ["Planteamiento algebraico", "Proceso de despeje", "Comprobación de la respuesta"],
       levels: {
         preformal: "Tiene nociones vagas de variables, pero no logra plantear la igualdad.",
         receptivo: "Plantea la ecuación básica, pero tiene dificultades para ordenar los términos.",
@@ -205,58 +205,6 @@ const DEFAULT_EVALUATION_CONFIGS = {
   ]
 };
 
-// AI Suggestions Mock Databases for Gemini/Copilot simulation
-const AI_DATABASE = {
-  math: {
-    competence: "Pensamiento matemático y resolución de problemas.",
-    indicator: "Aplica algoritmos matemáticos e interpreta resultados de forma crítica.",
-    criteria: ["Precisión algorítmica", "Orden en el procedimiento", "Verificación lógica del resultado"],
-    levels: {
-      preformal: "Realiza operaciones sencillas pero sin estructura conceptual básica.",
-      receptivo: "Reconoce fórmulas y conceptos básicos al ser guiado directamente.",
-      resolutivo: "Resuelve problemas estándar utilizando métodos establecidos.",
-      autonomo: "Justifica de manera lógica e independiente cada paso de la solución.",
-      estrategico: "Evalúa diferentes alternativas, optimiza la solución y la contextualiza."
-    }
-  },
-  science: {
-    competence: "Comprensión del entorno natural y pensamiento científico.",
-    indicator: "Aplica el método científico para modelar fenómenos y extraer conclusiones.",
-    criteria: ["Planteamiento de hipótesis", "Rigurosidad en el registro experimental", "Análisis crítico de conclusiones"],
-    levels: {
-      preformal: "Observa fenómenos pero no identifica las variables científicas en juego.",
-      receptivo: "Registra datos experimentales bajo supervisión directa.",
-      resolutivo: "Realiza experimentos básicos y extrae conclusiones elementales.",
-      autonomo: "Relaciona de forma independiente la teoría con los resultados observados.",
-      estrategico: "Diseña experimentos alternativos, evalúa errores y publica conclusiones sólidas."
-    }
-  },
-  language: {
-    competence: "Comunicación oral, escrita y comprensión lectora.",
-    indicator: "Escribe y analiza textos complejos estructurando ideas con coherencia y cohesión.",
-    criteria: ["Coherencia y cohesión textual", "Ortografía y gramática correctas", "Estructura narrativa o argumentativa"],
-    levels: {
-      preformal: "Escribe ideas aisladas con errores gramaticales frecuentes.",
-      receptivo: "Produce textos básicos copiando estructuras preestablecidas.",
-      resolutivo: "Redacta textos con una estructura clara y pocos errores de redacción.",
-      autonomo: "Desarrolla argumentos originales con un vocabulario amplio y preciso.",
-      estrategico: "Adapta el estilo de escritura al público, evalúa su impacto y revisa críticamente."
-    }
-  },
-  history: {
-    competence: "Pensamiento histórico y comprensión crítica de la sociedad.",
-    indicator: "Analiza causas y consecuencias de hechos históricos mediante diversas fuentes.",
-    criteria: ["Contraste de fuentes históricas", "Análisis multicausal", "Redacción con perspectiva histórica"],
-    levels: {
-      preformal: "Enumera fechas e hitos históricos de forma memorística sin conexión.",
-      receptivo: "Identifica hechos y personajes principales de un suceso determinado.",
-      resolutivo: "Describe las causas directas de un evento a través de un texto base.",
-      autonomo: "Construye una postura independiente contrastando múltiples fuentes históricas.",
-      estrategico: "Relaciona eventos pasados con problemáticas del presente y propone alternativas."
-    }
-  }
-};
-
 export default function App() {
   // --- Core States ---
   const [users, setUsers] = useState(() => {
@@ -284,6 +232,14 @@ export default function App() {
     return saved ? JSON.parse(saved) : DEFAULT_EVALUATION_CONFIGS;
   });
 
+  // State to store student detailed criteria scores/checks
+  // Key: studentId_subjectKey_evalIdx
+  // Value: { [criterionName]: 'autonomo' | 'preformal' | ... } or { [criterionName]: true/false }
+  const [studentAssessments, setStudentAssessments] = useState(() => {
+    const saved = localStorage.getItem('s_student_assessments');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
@@ -296,14 +252,21 @@ export default function App() {
 
   // --- Modal Assessment State ---
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false);
-  const [activeAssessment, setActiveAssessment] = useState(null); // { studentId, subjectKey, evalIdx, config }
-  const [selectedTobonLevel, setSelectedTobonLevel] = useState('');
-  const [checklistChecks, setChecklistChecks] = useState([false, false, false]);
+  const [activeAssessment, setActiveAssessment] = useState(null); // { studentId, subjectKey, evalIdx, config, studentName }
+  
+  // Temporary assessment selections inside modal (flushed to studentAssessments on Save)
+  const [tempCriteriaRatings, setTempCriteriaRatings] = useState({}); // { [criterionName]: 'autonomo' | ... }
 
-  // --- AI copilot simulation state ---
-  const [isAiGenerating, setIsAiGenerating] = useState(false);
-  const [aiActivityPrompt, setAiActivityPrompt] = useState('');
-  const [aiTypingText, setAiTypingText] = useState('');
+  // --- Interactive AI Assistant States ---
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiChatHistory, setAiChatHistory] = useState([
+    {
+      sender: 'ai',
+      text: '¡Hola! Soy tu asistente de Inteligencia Artificial (Gemini/Copilot). Escríbeme qué instrumento necesitas, la materia, la actividad y qué criterios te gustaría incluir, y yo diseñaré la configuración perfecta para ti.'
+    }
+  ]);
+  const [aiIsTyping, setAiIsTyping] = useState(false);
+  const [latestAiGeneratedInstrument, setLatestAiGeneratedInstrument] = useState(null);
 
   // Login inputs
   const [loginEmail, setLoginEmail] = useState('');
@@ -365,6 +328,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('s_eval_configs', JSON.stringify(evaluationConfigs));
   }, [evaluationConfigs]);
+
+  useEffect(() => {
+    localStorage.setItem('s_student_assessments', JSON.stringify(studentAssessments));
+  }, [studentAssessments]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -511,14 +478,12 @@ export default function App() {
     lines.forEach(line => {
       if (!line.trim()) return;
 
-      // split by comma, tab, or semicolon
       let parts = line.split(/[,\t;]/);
       let name = parts[0]?.trim();
       let email = parts[1]?.trim();
 
       if (name) {
         if (!email) {
-          // auto generate email if empty
           const sanitizedName = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '.');
           email = `${sanitizedName}@school.edu`;
         }
@@ -565,7 +530,6 @@ export default function App() {
       parseAndAddStudents(csvText);
     };
     reader.readAsText(file);
-    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -642,7 +606,7 @@ export default function App() {
 
   // --- Docente: Instrument Configuration ---
   const handleSaveInstrument = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!selectedGrade || !selectedSubject) return;
 
     const configKey = `${selectedGrade}_${selectedSubject}`;
@@ -672,7 +636,7 @@ export default function App() {
       competence: instrumentEditState.competence,
       indicator: instrumentEditState.indicator,
       type: instrumentEditState.type,
-      criteria: parsedCriteria,
+      criteria: parsedCriteria.length > 0 ? parsedCriteria : ["Criterio General"],
       levels: generatedLevels
     };
 
@@ -687,32 +651,118 @@ export default function App() {
     alert(`Instrumento de la Evaluación ${activeInstrumentIdx + 1} guardado correctamente.`);
   };
 
-  // Gemini / Copilot simulation generator
-  const runAiCopilotSimulation = () => {
-    if (!instrumentEditState.activity) {
-      alert('Escribe primero el nombre de la actividad para que la IA proponga los indicadores.');
-      return;
-    }
+  // --- Interactive AI Assistant chatbot prompt processing ---
+  const handleSendAiMessage = (e) => {
+    e.preventDefault();
+    if (!aiPrompt.trim()) return;
 
-    setIsAiGenerating(true);
-    setAiTypingText('Gemini está analizando la actividad...');
+    const userMsg = { sender: 'user', text: aiPrompt };
+    setAiChatHistory(prev => [...prev, userMsg]);
+    const currentPrompt = aiPrompt.toLowerCase();
+    setAiPrompt('');
+    setAiIsTyping(true);
 
-    // Simulate AI response delay
     setTimeout(() => {
-      const template = AI_DATABASE[selectedSubject] || AI_DATABASE.math;
-      setAiTypingText(`[Gemini/Copilot]:
-Competencia sugerida: "${template.competence}"
-Indicador sugerido: "${template.indicator}"
-Criterios sugeridos: [${template.criteria.join(', ')}]`);
+      // Analyze prompt to generate customized instrument structure
+      let type = 'rubrica';
+      if (currentPrompt.includes('cotejo') || currentPrompt.includes('check') || currentPrompt.includes('lista')) {
+        type = 'lista';
+      } else if (currentPrompt.includes('escala') || currentPrompt.includes('estimativa')) {
+        type = 'escala';
+      }
 
-      setInstrumentEditState(prev => ({
-        ...prev,
-        competence: template.competence,
-        indicator: `${template.indicator} para la actividad "${prev.activity}"`,
-        criteriaText: template.criteria.join(', ')
-      }));
-      setIsAiGenerating(false);
+      // Extract criteria or generate custom criteria based on keywords
+      let criteria = [];
+      let activity = 'Proyecto de Clase';
+      let competence = 'Pensamiento crítico y resolución de problemas.';
+      let indicator = 'Desempeña tareas de acuerdo a criterios técnicos.';
+
+      // Subject analysis
+      if (selectedSubject === 'math') {
+        activity = 'Taller de Álgebra y Despejes';
+        competence = 'Pensamiento lógico y razonamiento cuantitativo.';
+        indicator = 'Aplica algoritmos y fórmulas en problemas cotidianos.';
+        criteria = ['Planteamiento de igualdad', 'Procedimiento algebraico', 'Verificación final'];
+      } else if (selectedSubject === 'science') {
+        activity = 'Informe de Laboratorio Práctico';
+        competence = 'Comprensión del entorno físico mediante el método científico.';
+        indicator = 'Elabora y contrasta hipótesis experimentales.';
+        criteria = ['Planteamiento científico', 'Registro experimental', 'Conclusiones obtenidas'];
+      } else if (selectedSubject === 'language') {
+        activity = 'Redacción de Ensayo Crítico';
+        competence = 'Comprensión lectora y comunicación escrita coherente.';
+        indicator = 'Construye y defiende argumentos de forma lógica.';
+        criteria = ['Estructura y cohesión', 'Argumentación crítica', 'Ortografía y gramática'];
+      } else {
+        activity = 'Análisis de Fuentes Históricas';
+        competence = 'Comprensión espacio-temporal y perspectiva crítica de la historia.';
+        indicator = 'Relaciona hechos del pasado con implicaciones actuales.';
+        criteria = ['Contraste de fuentes', 'Comprensión del contexto', 'Redacción histórica'];
+      }
+
+      // Customize if specific keywords found in prompt
+      if (currentPrompt.includes('ensayo') || currentPrompt.includes('redac')) {
+        activity = 'Redacción de Ensayo Temático';
+        criteria = ['Introducción y tesis', 'Argumentación principal', 'Ortografía', 'Referencias bibliográficas'];
+      } else if (currentPrompt.includes('exposi') || currentPrompt.includes('exponer') || currentPrompt.includes('oral')) {
+        activity = 'Exposición y Debate Oral';
+        criteria = ['Dominio del tema', 'Tono y expresión corporal', 'Uso de recursos visuales', 'Respuesta a preguntas'];
+      } else if (currentPrompt.includes('experimento') || currentPrompt.includes('maqueta') || currentPrompt.includes('fisica') || currentPrompt.includes('quimica')) {
+        activity = 'Proyecto y Demostración Experimental';
+        criteria = ['Planteamiento de hipótesis', 'Metodología y materiales', 'Precisión de resultados', 'Trabajo en equipo'];
+      } else if (currentPrompt.includes('examen') || currentPrompt.includes('prueba') || currentPrompt.includes('taller')) {
+        activity = 'Taller Evaluado de la Asignatura';
+        criteria = ['Planteamiento correcto', 'Algoritmo y secuencia', 'Resultado verificado'];
+      }
+
+      // If user typed list of criteria explicitly, parse it (e.g. "criterios: intro, desarrollo, conclusion")
+      const criteriaMatch = currentPrompt.match(/(?:criterios|criterio|criterios de):\s*([^.]+)/);
+      if (criteriaMatch && criteriaMatch[1]) {
+        const parsed = criteriaMatch[1].split(',').map(c => c.trim()).filter(c => c.length > 0);
+        if (parsed.length > 0) {
+          criteria = parsed.map(c => c.charAt(0).toUpperCase() + c.slice(1));
+        }
+      }
+
+      const generatedInstrument = {
+        activity: activity,
+        competence: competence,
+        indicator: indicator,
+        type: type,
+        criteria: criteria
+      };
+
+      setLatestAiGeneratedInstrument(generatedInstrument);
+
+      const aiResponse = {
+        sender: 'ai',
+        text: `[Gemini/Copilot]: He creado un instrumento de tipo **${type === 'rubrica' ? 'Rúbrica' : type === 'lista' ? 'Lista de Cotejo' : 'Escala Estimativa'}** para la actividad: **"${activity}"**.
+        
+* **Competencia:** ${competence}
+* **Indicador de Logro:** ${indicator}
+* **Criterios de Evaluación:** [${criteria.join(', ')}]
+
+Puedes hacer clic en **"Aplicar este instrumento"** aquí abajo para cargarlo directamente en el formulario y guardarlo. ¿Te gustaría realizar algún ajuste?`
+      };
+
+      setAiChatHistory(prev => [...prev, aiResponse]);
+      setAiIsTyping(false);
     }, 1500);
+  };
+
+  const handleApplyAiInstrument = () => {
+    if (!latestAiGeneratedInstrument) return;
+
+    setInstrumentEditState({
+      activity: latestAiGeneratedInstrument.activity,
+      competence: latestAiGeneratedInstrument.competence,
+      indicator: latestAiGeneratedInstrument.indicator,
+      type: latestAiGeneratedInstrument.type,
+      criteriaText: latestAiGeneratedInstrument.criteria.join(', ')
+    });
+
+    setLatestAiGeneratedInstrument(null);
+    alert('Instrumento cargado en el formulario. ¡No olvides hacer clic en "Guardar Configuración" para finalizar!');
   };
 
   // --- Grading Sheet and Attendance Handlers ---
@@ -747,9 +797,6 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
           total = Math.max(present, total);
         } else if (type === 'absent') {
           total += 1;
-        } else if (type === 'reset') {
-          present = 0;
-          total = 0;
         }
         return { ...s, present, total };
       }
@@ -767,7 +814,7 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
       competence: 'Competencia General',
       indicator: 'Indicador Académico',
       type: 'rubrica',
-      criteria: ['Criterio General'],
+      criteria: ['Criterio 1', 'Criterio 2', 'Criterio 3'],
       levels: {
         preformal: 'Nivel inicial preformal (55)',
         receptivo: 'Nivel básico receptivo (65)',
@@ -778,19 +825,24 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
     };
 
     const student = students.find(s => s.id === studentId);
-    const currentGrade = student?.grades[subjectKey]?.[evalIdx] || 80;
+    
+    // Retrieve previous ratings for this assessment
+    const assessmentKey = `${studentId}_${subjectKey}_${evalIdx}`;
+    const savedAssessment = studentAssessments[assessmentKey] || {};
 
-    // Reset modal status
+    // Build temp state
+    const initialTemp = {};
+    config.criteria.forEach(crit => {
+      if (config.type === 'lista') {
+        initialTemp[crit] = savedAssessment[crit] === true;
+      } else {
+        // default to resolutivo if not graded yet
+        initialTemp[crit] = savedAssessment[crit] || 'resolutivo';
+      }
+    });
+
     setActiveAssessment({ studentId, subjectKey, evalIdx, config, studentName: student?.name });
-    setChecklistChecks([false, false, false]);
-
-    // pre-highlight based on current grade
-    if (currentGrade >= 90) setSelectedTobonLevel('estrategico');
-    else if (currentGrade >= 80) setSelectedTobonLevel('autonomo');
-    else if (currentGrade >= 70) setSelectedTobonLevel('resolutivo');
-    else if (currentGrade >= 60) setSelectedTobonLevel('receptivo');
-    else setSelectedTobonLevel('preformal');
-
+    setTempCriteriaRatings(initialTemp);
     setIsAssessmentModalOpen(true);
   };
 
@@ -798,27 +850,37 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
     if (!activeAssessment) return;
     const { studentId, subjectKey, evalIdx, config } = activeAssessment;
 
-    let computedScore = 80;
-    if (config.type === 'rubrica' || config.type === 'escala') {
-      if (selectedTobonLevel === 'preformal') computedScore = 55;
-      else if (selectedTobonLevel === 'receptivo') computedScore = 65;
-      else if (selectedTobonLevel === 'resolutivo') computedScore = 75;
-      else if (selectedTobonLevel === 'autonomo') computedScore = 85;
-      else if (selectedTobonLevel === 'estrategico') computedScore = 98;
-    } else if (config.type === 'lista') {
-      // checklists score calculation: 0 checks = 50, 1 check = 70, 2 checks = 85, 3 checks = 100
-      const checkCount = checklistChecks.filter(c => c).length;
-      if (checkCount === 0) computedScore = 50;
-      else if (checkCount === 1) computedScore = 70;
-      else if (checkCount === 2) computedScore = 85;
-      else if (checkCount === 3) computedScore = 100;
-    }
+    const criteriaCount = config.criteria.length;
+    let sumScores = 0;
 
+    config.criteria.forEach(crit => {
+      const val = tempCriteriaRatings[crit];
+      if (config.type === 'rubrica' || config.type === 'escala') {
+        if (val === 'preformal') sumScores += 55;
+        else if (val === 'receptivo') sumScores += 65;
+        else if (val === 'resolutivo') sumScores += 75;
+        else if (val === 'autonomo') sumScores += 85;
+        else if (val === 'estrategico') sumScores += 98;
+      } else if (config.type === 'lista') {
+        sumScores += val === true ? 100 : 50;
+      }
+    });
+
+    const computedAverage = Math.round(sumScores / criteriaCount);
+
+    // Save detailed ratings to persistent state
+    const assessmentKey = `${studentId}_${subjectKey}_${evalIdx}`;
+    setStudentAssessments(prev => ({
+      ...prev,
+      [assessmentKey]: tempCriteriaRatings
+    }));
+
+    // Save final calculated average score to student grades array
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const currentArr = [...(nextGrades[subjectKey] || [80, 80, 80, 80])];
-        currentArr[evalIdx] = computedScore;
+        currentArr[evalIdx] = computedAverage;
         nextGrades[subjectKey] = currentArr;
         return { ...s, grades: nextGrades };
       }
@@ -829,7 +891,6 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
     setActiveAssessment(null);
   };
 
-  // --- Calendar Add Event Handler ---
   const handleAddEvent = (e) => {
     e.preventDefault();
     if (currentUser.role !== 'admin') return;
@@ -862,15 +923,6 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
     ? (students.reduce((acc, s) => acc + calculateStudentAvg(s), 0) / totalStudents).toFixed(1)
     : 0;
 
-  const averageAttendance = totalStudents > 0
-    ? (students.reduce((acc, s) => acc + (s.total > 0 ? (s.present / s.total) * 100 : 0), 0) / totalStudents).toFixed(1)
-    : 0;
-
-  const passingRate = totalStudents > 0 
-    ? ((students.filter(s => calculateStudentAvg(s) >= 70).length / totalStudents) * 100).toFixed(0)
-    : 0;
-
-  // Specific subject averages (averaging their 4 sub-grades across all students)
   const getSubjectAverage = (subKey) => {
     if (totalStudents === 0) return 0;
     const totalSum = students.reduce((acc, s) => {
@@ -1215,7 +1267,7 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
                 </div>
               )}
 
-              {/* Tab: Students (With CSV and Copy-Paste Importers) */}
+              {/* Tab: Students */}
               {activeTab === 'students' && (
                 <div>
                   <h2>Estudiantes por Grado</h2>
@@ -1595,13 +1647,13 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
               </div>
             )}
 
-            {/* TEACHER: Tab Grades (With 4 Evaluations, Horizontal subject navigation, and Assessment Dialog Button) */}
+            {/* TEACHER: Tab Grades */}
             {activeTab === 'grades' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div>
                     <h2>Planilla de Notas: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
-                    <p style={{ color: 'var(--text-secondary)' }}>Haz clic en el icono <svg style={{ display: 'inline', verticalAlign: 'middle' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><polyline points="10 9 9 9 8 9"/></svg> al lado de la nota para evaluar usando la Rúbrica de Tobón o Lista de Cotejo.</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Haz clic en el icono de libreta para calificar cada criterio de la rúbrica.</p>
                   </div>
                   <input 
                     type="text" 
@@ -1664,7 +1716,7 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
                                       <input 
                                         type="number" 
                                         className="form-input" 
-                                        style={{ padding: '0.35rem', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}
+                                        style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}
                                         value={studentGrades[evalIdx]}
                                         onChange={(e) => handleCellGradeChange(s.id, selectedSubject, evalIdx, e.target.value)}
                                         min="0"
@@ -1674,7 +1726,7 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
                                         className="btn-secondary" 
                                         style={{ padding: '0.35rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                         onClick={() => openAssessmentModal(s.id, selectedSubject, evalIdx)}
-                                        title="Evaluar con Instrumento"
+                                        title="Calificar con Criterios"
                                       >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1772,12 +1824,12 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
               </div>
             )}
 
-            {/* TEACHER: Tab Instruments (Edit Rubric, Checklist, Scale with simulated Copilot IA assistant) */}
+            {/* TEACHER: Tab Instruments (AI chatbot & Edit Form) */}
             {activeTab === 'instruments' && (
               <div>
                 <h2>Instrumentos de Evaluación Ponderada</h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  Define las competencias, indicadores y actividades para cada una de las 4 evaluaciones de la asignatura.
+                  Define las competencias, indicadores y criterios específicos para cada una de las 4 evaluaciones de tu asignatura.
                 </p>
 
                 {selectedGrade && selectedSubject ? (
@@ -1800,103 +1852,134 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
                       ))}
                     </div>
 
-                    {/* Edit form with AI button */}
-                    <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
-                        <h3>Configuración del Instrumento: Evaluación {activeInstrumentIdx + 1}</h3>
-                        <button className="ai-copilot-badge" onClick={runAiCopilotSimulation} type="button">
-                          ⚡ Generar con IA (Gemini/Copilot)
-                        </button>
-                      </div>
-
-                      <form onSubmit={handleSaveInstrument}>
-                        <div className="form-group">
-                          <label>Nombre de la Actividad</label>
-                          <input 
-                            type="text" 
-                            className="form-input"
-                            value={instrumentEditState.activity}
-                            onChange={(e) => setInstrumentEditState(prev => ({ ...prev, activity: e.target.value }))}
-                            placeholder="Ej. Taller de ecuaciones algebraicas"
-                            required
-                          />
+                    {/* Chat AI and edit settings */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      
+                      {/* Interactive IA prompt box */}
+                      <div className="ai-chat-container">
+                        <div className="ai-chat-header">
+                          <strong style={{ fontSize: '0.9rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <span>✨</span> Asistente Inteligente Copilot/Gemini
+                          </strong>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Escribe tu prompt para diseñar rúbricas y criterios</span>
                         </div>
 
-                        <div className="form-group">
-                          <label>Competencia Fundamental</label>
-                          <input 
-                            type="text" 
-                            className="form-input"
-                            value={instrumentEditState.competence}
-                            onChange={(e) => setInstrumentEditState(prev => ({ ...prev, competence: e.target.value }))}
-                            placeholder="Ej. Pensamiento crítico y resolución de problemas"
-                            required
-                          />
+                        <div className="ai-chat-messages">
+                          {aiChatHistory.map((msg, idx) => (
+                            <div key={idx} className={`ai-chat-bubble ${msg.sender}`}>
+                              <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: 'bold', marginBottom: '0.2rem', color: msg.sender === 'ai' ? '#a855f7' : 'var(--primary)' }}>
+                                {msg.sender === 'ai' ? 'Gemini / Copilot' : 'Tú (Docente)'}
+                              </span>
+                              <div style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>
+                            </div>
+                          ))}
+
+                          {aiIsTyping && (
+                            <div className="ai-chat-bubble ai">
+                              <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: 'bold', color: '#a855f7' }}>Gemini / Copilot</span>
+                              <div className="ai-typing-effect">Diseñando instrumento a medida...</div>
+                            </div>
+                          )}
                         </div>
 
-                        <div className="form-group">
-                          <label>Indicador de Logro</label>
-                          <input 
-                            type="text" 
-                            className="form-input"
-                            value={instrumentEditState.indicator}
-                            onChange={(e) => setInstrumentEditState(prev => ({ ...prev, indicator: e.target.value }))}
-                            placeholder="Ej. Desarrolla despejes lineales complejos en ejercicios contextualizados"
-                            required
-                          />
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>Tipo de Instrumento</label>
-                            <select 
-                              className="form-select"
-                              value={instrumentEditState.type}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, type: e.target.value }))}
-                            >
-                              <option value="rubrica">Rúbrica Socio-cognitiva</option>
-                              <option value="lista">Lista de Cotejo</option>
-                              <option value="escala">Escala Estimativa</option>
-                            </select>
-                          </div>
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>Criterios de Evaluación (Separados por comas)</label>
-                            <input 
-                              type="text" 
-                              className="form-input"
-                              value={instrumentEditState.criteriaText}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, criteriaText: e.target.value }))}
-                              placeholder="Ej. Algoritmo, Signos, Resultado"
-                            />
-                          </div>
-                        </div>
-
-                        {/* AI simulation text popup output */}
-                        {isAiGenerating && (
-                          <div className="ai-prompt-box">
-                            <span className="badge" style={{ backgroundColor: 'purple', color: '#fff', alignSelf: 'start', fontSize: '0.7rem' }}>Analizando...</span>
-                            <div className="ai-typing-effect">Esbozando rúbrica socio-cognitiva basada en Tobón para tu actividad...</div>
-                          </div>
-                        )}
-                        
-                        {aiTypingText && !isAiGenerating && (
-                          <div className="ai-prompt-box" style={{ borderColor: 'var(--primary)' }}>
-                            <span className="badge" style={{ backgroundColor: 'var(--primary)', color: '#fff', alignSelf: 'start', fontSize: '0.7rem' }}>Gemini Sugiere:</span>
-                            <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                              {aiTypingText}
-                            </pre>
-                            <button className="btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', alignSelf: 'flex-end' }} onClick={() => setAiTypingText('')}>
-                              Cerrar Sugerencia
+                        {latestAiGeneratedInstrument && (
+                          <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+                            <button className="ai-chat-apply-btn" onClick={handleApplyAiInstrument}>
+                              ⚡ Aplicar este instrumento al formulario
                             </button>
                           </div>
                         )}
 
-                        <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                          Guardar Configuración de Instrumento
-                        </button>
-                      </form>
-                    </div>
+                        <form onSubmit={handleSendAiMessage} className="ai-chat-input-row">
+                          <input 
+                            type="text" 
+                            className="ai-chat-input"
+                            value={aiPrompt}
+                            onChange={(e) => setAiPrompt(e.target.value)}
+                            placeholder="Ej. 'Crea una lista de cotejo para un debate sobre calentamiento global con 3 criterios'"
+                            disabled={aiIsTyping}
+                          />
+                          <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1rem' }} disabled={aiIsTyping}>
+                            Enviar
+                          </button>
+                        </form>
+                      </div>
 
+                      {/* Edit form */}
+                      <div className="glass-panel" style={{ padding: '1.5rem' }}>
+                        <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
+                          Configuración Técnica: Instrumento {activeInstrumentIdx + 1}
+                        </h3>
+
+                        <form onSubmit={handleSaveInstrument}>
+                          <div className="form-group">
+                            <label>Nombre de la Actividad</label>
+                            <input 
+                              type="text" 
+                              className="form-input"
+                              value={instrumentEditState.activity}
+                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, activity: e.target.value }))}
+                              placeholder="Ej. Taller de ecuaciones algebraicas"
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Competencia Fundamental</label>
+                            <input 
+                              type="text" 
+                              className="form-input"
+                              value={instrumentEditState.competence}
+                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, competence: e.target.value }))}
+                              placeholder="Ej. Pensamiento crítico y resolución de problemas"
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Indicador de Logro</label>
+                            <input 
+                              type="text" 
+                              className="form-input"
+                              value={instrumentEditState.indicator}
+                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, indicator: e.target.value }))}
+                              placeholder="Ej. Desarrolla despejes lineales complejos en ejercicios contextualizados"
+                              required
+                            />
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label>Tipo de Instrumento</label>
+                              <select 
+                                className="form-select"
+                                value={instrumentEditState.type}
+                                onChange={(e) => setInstrumentEditState(prev => ({ ...prev, type: e.target.value }))}
+                              >
+                                <option value="rubrica">Rúbrica Socio-cognitiva</option>
+                                <option value="lista">Lista de Cotejo (Sí/No)</option>
+                                <option value="escala">Escala Estimativa</option>
+                              </select>
+                            </div>
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label>Criterios de Evaluación (Separados por comas)</label>
+                              <input 
+                                type="text" 
+                                className="form-input"
+                                value={instrumentEditState.criteriaText}
+                                onChange={(e) => setInstrumentEditState(prev => ({ ...prev, criteriaText: e.target.value }))}
+                                placeholder="Ej. Algoritmo, Signos, Resultado"
+                              />
+                            </div>
+                          </div>
+
+                          <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+                            Guardar Configuración de Instrumento
+                          </button>
+                        </form>
+                      </div>
+
+                    </div>
                   </div>
                 ) : (
                   <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
@@ -1914,15 +1997,15 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
                   <div className="instruction-step">
                     <div className="instruction-step-num">1</div>
                     <div>
-                      <strong>Establece el Instrumento Evaluativo</strong>
-                      <p style={{ fontSize: '0.85rem' }}>Ve a la pestaña "Instrumentos de Eval.", selecciona la evaluación (1 a 4) y escribe la actividad, competencia y criterios. Puedes usar el botón de **Gemini/Copilot** para autocompletar.</p>
+                      <strong>Establece los Criterios con la IA Interactiva</strong>
+                      <p style={{ fontSize: '0.85rem' }}>Ve a la pestaña "Instrumentos de Eval.", abre el chat de Gemini y escribe qué actividad quieres calificar. Gemini te dará los criterios específicos y podrás cargarlos al formulario con un clic.</p>
                     </div>
                   </div>
                   <div className="instruction-step">
                     <div className="instruction-step-num">2</div>
                     <div>
-                      <strong>Evalúa con Rúbrica o Lista de Cotejo</strong>
-                      <p style={{ fontSize: '0.85rem' }}>Ve a "Planilla Calificaciones", haz clic en el icono de libreta al lado de la nota del alumno. El sistema cargará el instrumento configurado. Selecciona el nivel de desempeño del alumno y el puntaje se inyectará automáticamente en la celda.</p>
+                      <strong>Califica Criterio por Criterio</strong>
+                      <p style={{ fontSize: '0.85rem' }}>Ve a la planilla, haz clic en el icono de libreta al lado de la nota del alumno. El modal te permitirá seleccionar el nivel de logro de cada criterio de forma independiente. La nota definitiva será calculada automáticamente.</p>
                     </div>
                   </div>
                 </div>
@@ -1934,14 +2017,14 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
         </div>
       </div>
 
-      {/* ASSESSMENT MODAL WINDOW */}
+      {/* PERSISTENT CRITERIA-LEVEL ASSESSMENT MODAL WINDOW */}
       {isAssessmentModalOpen && activeAssessment && (
         <div className="modal-backdrop">
-          <div className="modal-card">
+          <div className="modal-card animate-fade-in">
             
             <div className="modal-header">
               <div>
-                <h3 style={{ fontSize: '1.2rem' }}>Evaluación del Estudiante: {activeAssessment.studentName}</h3>
+                <h3 style={{ fontSize: '1.2rem' }}>Evaluación Detallada: {activeAssessment.studentName}</h3>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                   Asignatura: <strong>{SUBJECTS[activeAssessment.subjectKey].name}</strong> | Grado: <strong>{selectedGrade}</strong> | Evaluación {activeAssessment.evalIdx + 1}
                 </span>
@@ -1954,120 +2037,145 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
               </button>
             </div>
 
-            <div className="modal-body">
-              <div className="glass-panel" style={{ padding: '1rem', marginBottom: '1.5rem', backgroundColor: 'var(--bg-primary)' }}>
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="glass-panel" style={{ padding: '1rem', backgroundColor: 'var(--bg-primary)', fontSize: '0.88rem' }}>
                 <p style={{ marginBottom: '0.25rem' }}><strong>Actividad:</strong> {activeAssessment.config.activity || `Taller Evaluado ${activeAssessment.evalIdx + 1}`}</p>
-                <p style={{ marginBottom: '0.25rem' }}><strong>Competencia:</strong> {activeAssessment.config.competence || 'Competencia Escolar'}</p>
-                <p style={{ marginBottom: '0.25rem' }}><strong>Indicador:</strong> {activeAssessment.config.indicator || 'Desempeña tareas de acuerdo a las directrices'}</p>
-                <p style={{ marginBottom: 0 }}><strong>Tipo de Instrumento:</strong> <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{activeAssessment.config.type === 'rubrica' ? 'Rúbrica Socio-cognitiva' : activeAssessment.config.type === 'lista' ? 'Lista de Cotejo' : 'Escala Estimativa'}</span></p>
+                <p style={{ marginBottom: '0.25rem' }}><strong>Competencia:</strong> {activeAssessment.config.competence}</p>
+                <p style={{ marginBottom: '0.25rem' }}><strong>Indicador:</strong> {activeAssessment.config.indicator}</p>
+                <p style={{ marginBottom: 0 }}><strong>Instrumento:</strong> <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{activeAssessment.config.type === 'rubrica' ? 'Rúbrica Socio-cognitiva' : activeAssessment.config.type === 'lista' ? 'Lista de Cotejo (Sí/No)' : 'Escala Estimativa'}</span></p>
               </div>
 
-              {/* View: Rubric or Rating Scale (Renders Tobon levels) */}
-              {(activeAssessment.config.type === 'rubrica' || activeAssessment.config.type === 'escala') ? (
-                <div>
-                  <h4 style={{ marginBottom: '0.75rem', fontSize: '0.95rem' }}>Selecciona el Nivel de Desempeño (Taxonomía Socio-cognitiva de Tobón)</h4>
-                  
-                  {/* Estrategico */}
-                  <div 
-                    className={`tobon-level-card estrategico ${selectedTobonLevel === 'estrategico' ? 'selected' : ''}`}
-                    onClick={() => setSelectedTobonLevel('estrategico')}
-                  >
-                    <span className="tobon-level-name">Estratégico</span>
-                    <div className="tobon-level-desc">
-                      {activeAssessment.config.levels?.estrategico || 'Desempeño estratégico de excelencia.'}
-                      <span className="tobon-score-indicator">(90-100 pts)</span>
-                    </div>
-                  </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <h4 style={{ fontSize: '0.95rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.4rem', color: 'var(--text-secondary)' }}>
+                  Calificación por Criterios de Evaluación
+                </h4>
 
-                  {/* Autonomo */}
-                  <div 
-                    className={`tobon-level-card autonomo ${selectedTobonLevel === 'autonomo' ? 'selected' : ''}`}
-                    onClick={() => setSelectedTobonLevel('autonomo')}
-                  >
-                    <span className="tobon-level-name">Autónomo</span>
-                    <div className="tobon-level-desc">
-                      {activeAssessment.config.levels?.autonomo || 'Desempeño autónomo independiente.'}
-                      <span className="tobon-score-indicator">(80-89 pts)</span>
-                    </div>
-                  </div>
+                {activeAssessment.config.criteria.map((crit, idx) => {
+                  const currentVal = tempCriteriaRatings[crit];
 
-                  {/* Resolutivo */}
-                  <div 
-                    className={`tobon-level-card resolutivo ${selectedTobonLevel === 'resolutivo' ? 'selected' : ''}`}
-                    onClick={() => setSelectedTobonLevel('resolutivo')}
-                  >
-                    <span className="tobon-level-name">Resolutivo</span>
-                    <div className="tobon-level-desc">
-                      {activeAssessment.config.levels?.resolutivo || 'Desempeño resolutivo estándar.'}
-                      <span className="tobon-score-indicator">(70-79 pts)</span>
-                    </div>
-                  </div>
+                  return (
+                    <div key={idx} className="criterion-eval-card">
+                      <div className="criterion-title">
+                        <span>{idx + 1}. {crit}</span>
+                        {activeAssessment.config.type === 'lista' ? (
+                          <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', color: currentVal === true ? 'var(--success)' : 'var(--danger)' }}>
+                            {currentVal === true ? 'CUMPLE (100 pts)' : 'NO CUMPLE (50 pts)'}
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', color: 'var(--primary)' }}>
+                            {currentVal === 'preformal' ? 'Pre-formal (55 pts)' :
+                             currentVal === 'receptivo' ? 'Receptivo (65 pts)' :
+                             currentVal === 'resolutivo' ? 'Resolutivo (75 pts)' :
+                             currentVal === 'autonomo' ? 'Autónomo (85 pts)' : 'Estratégico (98 pts)'}
+                          </span>
+                        )}
+                      </div>
 
-                  {/* Receptivo */}
-                  <div 
-                    className={`tobon-level-card receptivo ${selectedTobonLevel === 'receptivo' ? 'selected' : ''}`}
-                    onClick={() => setSelectedTobonLevel('receptivo')}
-                  >
-                    <span className="tobon-level-name">Receptivo</span>
-                    <div className="tobon-level-desc">
-                      {activeAssessment.config.levels?.receptivo || 'Desempeño básico receptivo.'}
-                      <span className="tobon-score-indicator">(60-69 pts)</span>
-                    </div>
-                  </div>
+                      {/* If rubric or rating scale: render 5 levels of Tobon */}
+                      {(activeAssessment.config.type === 'rubrica' || activeAssessment.config.type === 'escala') ? (
+                        <div className="criterion-levels-row">
+                          
+                          {/* Preformal */}
+                          <button 
+                            type="button"
+                            className={`criterion-level-btn preformal ${currentVal === 'preformal' ? 'selected' : ''}`}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: 'preformal' }))}
+                          >
+                            <span className="level-label">Pre-formal</span>
+                            <span className="level-score">55</span>
+                          </button>
 
-                  {/* Preformal */}
-                  <div 
-                    className={`tobon-level-card preformal ${selectedTobonLevel === 'preformal' ? 'selected' : ''}`}
-                    onClick={() => setSelectedTobonLevel('preformal')}
-                  >
-                    <span className="tobon-level-name">Pre-formal</span>
-                    <div className="tobon-level-desc">
-                      {activeAssessment.config.levels?.preformal || 'Nivel de inicio preformal.'}
-                      <span className="tobon-score-indicator">(50-59 pts)</span>
-                    </div>
-                  </div>
+                          {/* Receptivo */}
+                          <button 
+                            type="button"
+                            className={`criterion-level-btn receptivo ${currentVal === 'receptivo' ? 'selected' : ''}`}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: 'receptivo' }))}
+                          >
+                            <span className="level-label">Receptivo</span>
+                            <span className="level-score">65</span>
+                          </button>
 
-                </div>
-              ) : (
-                /* View: Checklist */
-                <div>
-                  <h4 style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>Lista de Cotejo: Cumplimiento de Criterios</h4>
-                  <table className="eval-checklist-table">
-                    <tbody>
-                      {(activeAssessment.config.criteria || ['Criterio 1', 'Criterio 2', 'Criterio 3']).map((crit, idx) => (
-                        <tr key={idx}>
-                          <td style={{ width: '40px' }}>
-                            <input 
-                              type="checkbox" 
-                              style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                              checked={checklistChecks[idx] || false}
-                              onChange={(e) => {
-                                const checked = e.target.checked;
-                                setChecklistChecks(prev => {
-                                  const next = [...prev];
-                                  next[idx] = checked;
-                                  return next;
-                                });
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <strong style={{ fontSize: '0.95rem' }}>{crit}</strong>
-                            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Indicador verificado para la actividad.</p>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <p style={{ marginTop: '1.25rem', fontSize: '0.82rem', color: 'var(--text-secondary)', textAlign: 'right' }}>
-                    * Calificación estimada: {
-                      checklistChecks.filter(c => c).length === 0 ? '50 / 100' :
-                      checklistChecks.filter(c => c).length === 1 ? '70 / 100' :
-                      checklistChecks.filter(c => c).length === 2 ? '85 / 100' : '100 / 100'
-                    }
-                  </p>
-                </div>
-              )}
+                          {/* Resolutivo */}
+                          <button 
+                            type="button"
+                            className={`criterion-level-btn resolutivo ${currentVal === 'resolutivo' ? 'selected' : ''}`}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: 'resolutivo' }))}
+                          >
+                            <span className="level-label">Resolutivo</span>
+                            <span className="level-score">75</span>
+                          </button>
+
+                          {/* Autonomo */}
+                          <button 
+                            type="button"
+                            className={`criterion-level-btn autonomo ${currentVal === 'autonomo' ? 'selected' : ''}`}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: 'autonomo' }))}
+                          >
+                            <span className="level-label">Autónomo</span>
+                            <span className="level-score">85</span>
+                          </button>
+
+                          {/* Estrategico */}
+                          <button 
+                            type="button"
+                            className={`criterion-level-btn estrategico ${currentVal === 'estrategico' ? 'selected' : ''}`}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: 'estrategico' }))}
+                          >
+                            <span className="level-label">Estratégico</span>
+                            <span className="level-score">98</span>
+                          </button>
+
+                        </div>
+                      ) : (
+                        /* If Checklist: Cumple / No Cumple toggles */
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                          <button
+                            type="button"
+                            className={`btn-secondary ${currentVal === true ? 'btn-primary' : ''}`}
+                            style={{ flex: 1, padding: '0.5rem' }}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: true }))}
+                          >
+                            ✓ Sí Cumple (100 pts)
+                          </button>
+                          <button
+                            type="button"
+                            className={`btn-secondary ${currentVal === false ? 'btn-danger' : ''}`}
+                            style={{ flex: 1, padding: '0.5rem' }}
+                            onClick={() => setTempCriteriaRatings(prev => ({ ...prev, [crit]: false }))}
+                          >
+                            ✕ No Cumple (50 pts)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Real-time calculated live estimated grade indicator */}
+              <div className="glass-panel" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--primary-glow)', borderColor: 'var(--primary)' }}>
+                <span style={{ fontWeight: 650, color: 'var(--text-primary)' }}>Nota Promediada Estimada:</span>
+                <strong style={{ fontSize: '1.4rem', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
+                  {(() => {
+                    const criteriaCount = activeAssessment.config.criteria.length;
+                    let totalSum = 0;
+                    activeAssessment.config.criteria.forEach(crit => {
+                      const val = tempCriteriaRatings[crit];
+                      if (activeAssessment.config.type === 'lista') {
+                        totalSum += val === true ? 100 : 50;
+                      } else {
+                        if (val === 'preformal') totalSum += 55;
+                        else if (val === 'receptivo') totalSum += 65;
+                        else if (val === 'resolutivo') totalSum += 75;
+                        else if (val === 'autonomo') totalSum += 85;
+                        else if (val === 'estrategico') totalSum += 98;
+                      }
+                    });
+                    return Math.round(totalSum / criteriaCount);
+                  })()} / 100
+                </strong>
+              </div>
+
             </div>
 
             <div className="modal-footer">
@@ -2075,7 +2183,7 @@ Criterios sugeridos: [${template.criteria.join(', ')}]`);
                 Cancelar
               </button>
               <button className="btn-primary" onClick={handleApplyAssessment}>
-                Aplicar Nota Evaluada
+                Aplicar Calificación al Alumno
               </button>
             </div>
 
