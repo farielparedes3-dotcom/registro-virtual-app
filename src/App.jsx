@@ -1322,21 +1322,52 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       <div className="login-container">
         <div className="login-bg-decor"></div>
         <div className="login-bg-decor-2"></div>
-        <div className="glass-panel login-card animate-fade-in">
+        
+        <div className="login-card animate-fade-in" style={{ borderTop: '8px solid var(--primary)' }}>
           <div className="login-header">
-            <div className="logo">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+            {/* MINERD Official Dome Logo */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <svg viewBox="0 0 100 80" width="70" height="55" fill="#003876" style={{ marginBottom: '4px' }}>
+                <path d="M 50 15 A 25 25 0 0 1 75 40 L 71 40 A 21 21 0 0 0 50 19 A 21 21 0 0 0 29 40 L 25 40 A 25 25 0 0 1 50 15 Z" />
+                <path d="M 50 24 A 16 16 0 0 1 66 40 L 62 40 A 12 12 0 0 0 50 28 A 12 12 0 0 0 38 40 L 34 40 A 16 16 0 0 1 50 24 Z" />
+                <rect x="48" y="10" width="4" height="8" rx="1" />
+                <rect x="49" y="4" width="2" height="6" />
+                <line x1="20" y1="42" x2="80" y2="42" stroke="#003876" strokeWidth="3" strokeLinecap="round" />
               </svg>
-              <div>Control<span>Académico</span></div>
+              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, color: '#003876', lineHeight: 1.1 }}>
+                Gobierno de la
+              </div>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 800, color: '#003876', lineHeight: 1.1 }}>
+                República Dominicana
+              </div>
+              <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 700, color: '#c8102e', borderTop: '1px solid #ebdcb9', marginTop: '4px', paddingTop: '2px', width: '100%', textAlign: 'center' }}>
+                Educación
+              </div>
             </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Registro Digital Virtual - Gestión de Calificaciones</p>
+
+            {/* School details */}
+            <div style={{ marginTop: '0.5rem', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.8rem', color: '#c8102e', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Registro de Evaluación Digital
+              </div>
+              <h1 className="school-title-highlight" style={{ fontSize: '1.65rem', margin: '0.25rem 0', color: 'var(--primary)', lineHeight: 1.2 }}>
+                Liceo Ana Rosa Castillo
+              </h1>
+              <span className="district-badge">Distrito Educativo 14-01 Nagua</span>
+            </div>
+            
+            {/* Value Proposition / Intention */}
+            <div style={{ backgroundColor: '#faf6eb', border: '1px solid #ebdcb9', padding: '1rem 1.25rem', borderRadius: '10px', textAlign: 'left', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '1.1rem', color: '#003876' }}>🛡️</span>
+              <div>
+                <strong>Base de datos autónoma de Registro Escolar</strong>: Diseñada para mitigar errores de cálculo, asegurar la evidencia del registro de calificaciones por competencias mediante instrumentos y automatizar la evaluación académica en el centro educativo.
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="form-group">
-              <label>Correo Electrónico</label>
+              <label style={{ color: 'var(--primary)' }}>Correo Electrónico</label>
               <input 
                 type="email" 
                 placeholder="ejemplo@school.edu" 
@@ -1348,7 +1379,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
 
             <div className="form-group">
-              <label>Contraseña</label>
+              <label style={{ color: 'var(--primary)' }}>Contraseña</label>
               <input 
                 type="password" 
                 placeholder="••••••••" 
@@ -1365,24 +1396,41 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
             )}
 
-            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem' }}>
-              Iniciar Sesión
+            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem', backgroundColor: '#003876' }}>
+              Acceder al Registro
             </button>
           </form>
 
-          <div className="demo-box">
-            <div className="demo-title">Acceso de Demostración Rápido</div>
+          <div className="demo-box" style={{ borderTopColor: '#ebdcb9' }}>
+            <div className="demo-title" style={{ color: 'var(--text-secondary)' }}>Ingreso Rápido de Demostración</div>
             <div className="demo-buttons">
-              <button className="btn-demo" onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
-                <span className="role">Administrador</span>
+              <button className="btn-demo" style={{ borderColor: '#ebdcb9' }} onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
+                <span className="role" style={{ color: '#003876' }}>Administrador</span>
                 <span className="email">admin@school.edu</span>
               </button>
-              <button className="btn-demo" onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
-                <span className="role">Prof. Matemáticas</span>
+              <button className="btn-demo" style={{ borderColor: '#ebdcb9' }} onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
+                <span className="role" style={{ color: '#003876' }}>Prof. Matemáticas</span>
                 <span className="email">profesor.mate@school.edu</span>
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Circular Pencil Emblem */}
+        <div className="minerd-pencil-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#003876" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+            <path d="m15 5 4 4"/>
+          </svg>
+        </div>
+
+        {/* Multicolor cover page footer stripes */}
+        <div className="minerd-multicolor-strip">
+          <div className="minerd-strip-blue"></div>
+          <div className="minerd-strip-green"></div>
+          <div className="minerd-strip-yellow"></div>
+          <div className="minerd-strip-orange"></div>
+          <div className="minerd-strip-red"></div>
         </div>
       </div>
     );
@@ -1392,13 +1440,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   if (currentUser.role === 'admin') {
     return (
       <div className="app-container">
-        <header className="header">
-          <div className="header-logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-              <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+        <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
+          <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <svg viewBox="0 0 100 80" width="28" height="24" fill="#003876">
+              <path d="M 50 15 A 25 25 0 0 1 75 40 L 71 40 A 21 21 0 0 0 50 19 A 21 21 0 0 0 29 40 L 25 40 A 25 25 0 0 1 50 15 Z" />
+              <path d="M 50 24 A 16 16 0 0 1 66 40 L 62 40 A 12 12 0 0 0 50 28 A 12 12 0 0 0 38 40 L 34 40 A 16 16 0 0 1 50 24 Z" />
+              <rect x="48" y="10" width="4" height="8" rx="1" />
+              <rect x="49" y="4" width="2" height="6" />
+              <line x1="20" y1="42" x2="80" y2="42" stroke="#003876" strokeWidth="3" strokeLinecap="round" />
             </svg>
-            <div>Control<span>Académico</span> <span className="read-only-badge" style={{ verticalAlign: 'middle', marginLeft: '0.5rem' }}>Admin</span></div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)' }}>Liceo Ana Rosa Castillo</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Distrito 14-01 Nagua</span>
+            </div>
+            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold' }}>Admin</span>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -1684,13 +1739,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   return (
     <div className="app-container">
-      <header className="header">
-        <div className="header-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-            <path d="M6 12v5c0 2 2 3 6 3s6-1 6 3v-5"/>
+      <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
+        <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <svg viewBox="0 0 100 80" width="28" height="24" fill="#003876">
+            <path d="M 50 15 A 25 25 0 0 1 75 40 L 71 40 A 21 21 0 0 0 50 19 A 21 21 0 0 0 29 40 L 25 40 A 25 25 0 0 1 50 15 Z" />
+            <path d="M 50 24 A 16 16 0 0 1 66 40 L 62 40 A 12 12 0 0 0 50 28 A 12 12 0 0 0 38 40 L 34 40 A 16 16 0 0 1 50 24 Z" />
+            <rect x="48" y="10" width="4" height="8" rx="1" />
+            <rect x="49" y="4" width="2" height="6" />
+            <line x1="20" y1="42" x2="80" y2="42" stroke="#003876" strokeWidth="3" strokeLinecap="round" />
           </svg>
-          <div>Control<span>Académico</span></div>
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)' }}>Liceo Ana Rosa Castillo</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Distrito 14-01 Nagua</span>
+          </div>
+          <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold' }}>Docente</span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>

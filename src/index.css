@@ -4,32 +4,32 @@
   --font-mono: 'JetBrains Mono', monospace;
 
   /* HSL Color System - Light Mode */
-  --bg-primary: hsl(210, 40%, 98%);
-  --bg-secondary: hsl(0, 0%, 100%);
-  --bg-glass: rgba(255, 255, 255, 0.7);
-  --bg-glass-hover: rgba(255, 255, 255, 0.85);
+  --bg-primary: #faf6eb; /* Cream/Beige official registry cover background */
+  --bg-secondary: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-hover: rgba(255, 255, 255, 0.95);
   
-  --border-color: hsl(214, 32%, 91%);
-  --border-glass: rgba(255, 255, 255, 0.4);
+  --border-color: #ebdcb9; /* Warm tint border */
+  --border-glass: rgba(235, 220, 185, 0.5);
   
-  --text-primary: hsl(222, 47%, 11%);
-  --text-secondary: hsl(215, 16%, 47%);
-  --text-muted: hsl(215, 13%, 70%);
+  --text-primary: #1c2b3d;
+  --text-secondary: #5d6770;
+  --text-muted: #8c96a0;
 
-  --primary: hsl(230, 75%, 55%);
-  --primary-hover: hsl(230, 75%, 48%);
-  --primary-glow: rgba(79, 70, 229, 0.15);
+  --primary: #003876; /* DR Official Navy Blue */
+  --primary-hover: #00224a;
+  --primary-glow: rgba(0, 56, 118, 0.12);
   
-  --success: hsl(142, 71%, 45%);
-  --success-bg: hsl(143, 85%, 96%);
-  --warning: hsl(38, 92%, 50%);
-  --warning-bg: hsl(40, 96%, 95%);
-  --danger: hsl(346, 84%, 61%);
-  --danger-bg: hsl(345, 100%, 97%);
+  --success: #2e7d32; /* Registry Grade 1 green */
+  --success-bg: #e8f5e9;
+  --warning: #f57c00; /* Registry Grade 3 orange */
+  --warning-bg: #fff3e0;
+  --danger: #c8102e; /* DR Official Coat Red */
+  --danger-bg: #ffebee;
 
-  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 16px -6px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 8px -2px rgba(93, 103, 112, 0.08);
+  --shadow-md: 0 10px 25px -5px rgba(93, 103, 112, 0.08), 0 8px 16px -6px rgba(93, 103, 112, 0.08);
+  --shadow-lg: 0 20px 40px -10px rgba(93, 103, 112, 0.12);
   
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -340,4 +340,58 @@ h1, h2, h3, h4, h5, h6 {
 .form-select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* MINERD Specific Cover Layouts */
+.minerd-multicolor-strip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr 3fr;
+  z-index: 10;
+}
+.minerd-strip-blue { background-color: #003876; }
+.minerd-strip-green { background-color: #2e7d32; }
+.minerd-strip-yellow { background-color: #fbc02d; }
+.minerd-strip-orange { background-color: #f57c00; }
+.minerd-strip-red { background-color: #c8102e; }
+
+.minerd-pencil-badge {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 4px solid #c8102e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+}
+
+.school-title-highlight {
+  font-family: var(--font-sans);
+  color: #003876;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.district-badge {
+  display: inline-block;
+  background-color: #e8f0fe;
+  color: #003876;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  border: 1px solid #ebdcb9;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
 }
