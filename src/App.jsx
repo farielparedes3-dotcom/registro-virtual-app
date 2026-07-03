@@ -186,45 +186,81 @@ const INITIAL_CRITERIA_MATH = [
   }
 ];
 
+const migrateConfig = (oldConfig) => {
+  if (!oldConfig) {
+    return { p1: [], p2: [], p3: [], p4: [] };
+  }
+  if (Array.isArray(oldConfig)) {
+    return {
+      p1: oldConfig[0] && oldConfig[0].activity ? [{ ...oldConfig[0], id: oldConfig[0].id || 'inst_p1_0', weight: 100 }] : [],
+      p2: oldConfig[1] && oldConfig[1].activity ? [{ ...oldConfig[1], id: oldConfig[1].id || 'inst_p2_0', weight: 100 }] : [],
+      p3: oldConfig[2] && oldConfig[2].activity ? [{ ...oldConfig[2], id: oldConfig[2].id || 'inst_p3_0', weight: 100 }] : [],
+      p4: oldConfig[3] && oldConfig[3].activity ? [{ ...oldConfig[3], id: oldConfig[3].id || 'inst_p4_0', weight: 100 }] : []
+    };
+  }
+  return {
+    p1: Array.isArray(oldConfig.p1) ? oldConfig.p1 : [],
+    p2: Array.isArray(oldConfig.p2) ? oldConfig.p2 : [],
+    p3: Array.isArray(oldConfig.p3) ? oldConfig.p3 : [],
+    p4: Array.isArray(oldConfig.p4) ? oldConfig.p4 : []
+  };
+};
+
 const DEFAULT_EVALUATION_CONFIGS = {
-  "1ro A_math": [
-    {
-      id: 0,
-      activity: "Álgebra y Ecuaciones",
-      competence: "Resolución de problemas cotidianos usando herramientas algebraicas.",
-      indicator: "Resuelve ecuaciones lineales aplicando propiedades de la igualdad.",
-      type: "rubrica",
-      criteria: INITIAL_CRITERIA_MATH
-    },
-    {
-      id: 1,
-      activity: "Geometría del Triángulo",
-      competence: "Pensamiento espacial y modelamiento geométrico.",
-      indicator: "Calcula perímetros y áreas aplicando teoremas básicos.",
-      type: "rubrica",
-      criteria: INITIAL_CRITERIA_MATH
-    },
-    {
-      id: 2,
-      activity: "Sistemas de Fracciones",
-      competence: "Razonamiento cuantitativo y operaciones fraccionarias.",
-      indicator: "Resuelve problemas de reparto aplicando sumas de fracciones.",
-      type: "lista",
-      criteria: [
-        { name: "Simplifica fracciones", levels: { cumple: "Sí simplifica", nocumple: "No simplifica" } },
-        { name: "Suma con distinto denominador", levels: { cumple: "Sí suma", nocumple: "No suma" } },
-        { name: "Resuelve problemas de reparto", levels: { cumple: "Sí resuelve", nocumple: "No resuelve" } }
-      ]
-    },
-    {
-      id: 3,
-      activity: "Examen de Razonamiento",
-      competence: "Estructuración lógica abstracta.",
-      indicator: "Completa secuencias numéricas justificando la ley de cambio.",
-      type: "rubrica",
-      criteria: INITIAL_CRITERIA_MATH
-    }
-  ]
+  "1ro A_math": {
+    p1: [
+      {
+        id: "inst_p1_0",
+        activity: "Álgebra y Ecuaciones",
+        topic: "Ecuaciones lineales",
+        competence: "Resolución de problemas cotidianos usando herramientas algebraicas.",
+        indicator: "Resuelve ecuaciones lineales aplicando propiedades de la igualdad.",
+        type: "rubrica",
+        weight: 100,
+        criteria: INITIAL_CRITERIA_MATH
+      }
+    ],
+    p2: [
+      {
+        id: "inst_p2_0",
+        activity: "Geometría del Triángulo",
+        topic: "Teorema de Pitágoras",
+        competence: "Pensamiento espacial y modelamiento geométrico.",
+        indicator: "Calcula perímetros y áreas aplicando teoremas básicos.",
+        type: "rubrica",
+        weight: 100,
+        criteria: INITIAL_CRITERIA_MATH
+      }
+    ],
+    p3: [
+      {
+        id: "inst_p3_0",
+        activity: "Sistemas de Fracciones",
+        topic: "Suma de fracciones",
+        competence: "Razonamiento cuantitativo y operaciones fraccionarias.",
+        indicator: "Resuelve problemas de reparto aplicando sumas de fracciones.",
+        type: "lista",
+        weight: 100,
+        criteria: [
+          { name: "Simplifica fracciones", levels: { cumple: "Sí simplifica", nocumple: "No simplifica" } },
+          { name: "Suma con distinto denominador", levels: { cumple: "Sí suma", nocumple: "No suma" } },
+          { name: "Resuelve problemas de reparto", levels: { cumple: "Sí resuelve", nocumple: "No resuelve" } }
+        ]
+      }
+    ],
+    p4: [
+      {
+        id: "inst_p4_0",
+        activity: "Examen de Razonamiento",
+        topic: "Secuencias numéricas",
+        competence: "Estructuración lógica abstracta.",
+        indicator: "Completa secuencias numéricas justificando la ley de cambio.",
+        type: "rubrica",
+        weight: 100,
+        criteria: INITIAL_CRITERIA_MATH
+      }
+    ]
+  }
 };
 
 const normalizeCriteria = (criteriaArray, type = 'rubrica') => {
@@ -379,7 +415,19 @@ export default function App() {
 
   const [evaluationConfigs, setEvaluationConfigs] = useState(() => {
     const saved = localStorage.getItem('s_eval_configs');
-    return saved ? JSON.parse(saved) : DEFAULT_EVALUATION_CONFIGS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const migrated = {};
+        Object.keys(parsed).forEach(key => {
+          migrated[key] = migrateConfig(parsed[key]);
+        });
+        return migrated;
+      } catch (e) {
+        console.error("Error migrating evaluationConfigs", e);
+      }
+    }
+    return DEFAULT_EVALUATION_CONFIGS;
   });
 
   const [studentAssessments, setStudentAssessments] = useState(() => {
@@ -442,8 +490,9 @@ export default function App() {
   // Excel text import state
   const [excelImportText, setExcelImportText] = useState('');
 
-  // Active instrument config index (0 to 3) in Instruments Tab
-  const [activeInstrumentIdx, setActiveInstrumentIdx] = useState(0);
+  // Active evaluation parameter ('p1' | 'p2' | 'p3' | 'p4') and instrument ID in Instruments Tab
+  const [activePKey, setActivePKey] = useState('p1');
+  const [activeInstrumentId, setActiveInstrumentId] = useState('');
 
   // Form state for editing instrument in Instruments Tab
   const [instrumentEditState, setInstrumentEditState] = useState({
@@ -452,6 +501,7 @@ export default function App() {
     competence: '',
     indicator: '',
     type: 'rubrica',
+    weight: 100,
     criteria: [] // Array of criteria objects
   });
 
@@ -537,8 +587,9 @@ export default function App() {
   useEffect(() => {
     if (currentUser && selectedGrade && selectedSubject) {
       const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
-      const configs = evaluationConfigs[configKey] || [];
-      const activeConf = configs[activeInstrumentIdx];
+      const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+      const list = blockConfig[activePKey] || [];
+      const activeConf = list.find(inst => inst.id === activeInstrumentId) || list[0];
 
       if (activeConf) {
         setInstrumentEditState({
@@ -547,8 +598,12 @@ export default function App() {
           competence: activeConf.competence || '',
           indicator: activeConf.indicator || '',
           type: activeConf.type || 'rubrica',
+          weight: activeConf.weight || 100,
           criteria: activeConf.criteria ? normalizeCriteria(activeConf.criteria, activeConf.type) : []
         });
+        if (activeConf.id !== activeInstrumentId) {
+          setActiveInstrumentId(activeConf.id);
+        }
       } else {
         setInstrumentEditState({
           activity: '',
@@ -556,11 +611,15 @@ export default function App() {
           competence: '',
           indicator: '',
           type: 'rubrica',
+          weight: 100,
           criteria: []
         });
+        if (activeInstrumentId !== '') {
+          setActiveInstrumentId('');
+        }
       }
     }
-  }, [activeInstrumentIdx, selectedGrade, selectedSubject, activeBloque, evaluationConfigs, currentUser]);
+  }, [activePKey, activeInstrumentId, selectedGrade, selectedSubject, activeBloque, evaluationConfigs, currentUser]);
 
   // --- Handlers ---
   const toggleTheme = () => {
@@ -785,25 +844,24 @@ export default function App() {
     if (!selectedGrade || !selectedSubject) return;
 
     if (!instrumentEditState.activity.trim() || !instrumentEditState.topic.trim() || !instrumentEditState.competence.trim() || !instrumentEditState.indicator.trim()) {
-      alert("Por favor complete todos los campos obligatorios: Nombre de la Actividad, Tema/Contenido, Competencia Fundamental e Indicador de Logro.");
+      alert("Por favor complete todos los campos obligatorios: Nombre de la Actividad, Tema/Contenido, Competencia a Evaluar e Indicador de Logro.");
       return;
     }
 
     const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
-    const currentConfigs = evaluationConfigs[configKey] || [
-      { id: 0, activity: '', topic: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
-      { id: 1, activity: '', topic: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
-      { id: 2, activity: '', topic: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
-      { id: 3, activity: '', topic: '', competence: '', indicator: '', type: 'rubrica', criteria: [] }
-    ];
+    const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+    
+    const currentList = blockConfig[activePKey] || [];
+    const instId = activeInstrumentId || `inst_${Date.now()}`;
 
     const updatedConfig = {
-      id: activeInstrumentIdx,
+      id: instId,
       activity: instrumentEditState.activity,
       topic: instrumentEditState.topic,
       competence: instrumentEditState.competence,
       indicator: instrumentEditState.indicator,
       type: instrumentEditState.type,
+      weight: Number(instrumentEditState.weight) || 100,
       criteria: instrumentEditState.criteria.length > 0 ? instrumentEditState.criteria : [
         {
           name: "Criterio General",
@@ -817,15 +875,153 @@ export default function App() {
       ]
     };
 
-    const nextConfigs = [...currentConfigs];
-    nextConfigs[activeInstrumentIdx] = updatedConfig;
+    let nextList = [...currentList];
+    const matchIdx = nextList.findIndex(inst => inst.id === instId);
+    if (matchIdx >= 0) {
+      nextList[matchIdx] = updatedConfig;
+    } else {
+      nextList.push(updatedConfig);
+    }
 
-    setEvaluationConfigs(prev => ({
-      ...prev,
-      [configKey]: nextConfigs
+    const nextBlockConfig = {
+      ...blockConfig,
+      [activePKey]: nextList
+    };
+
+    const nextEvaluationConfigs = {
+      ...evaluationConfigs,
+      [configKey]: nextBlockConfig
+    };
+
+    setEvaluationConfigs(nextEvaluationConfigs);
+
+    // Recalculate grades for all students in this grade
+    setStudents(prev => prev.map(s => {
+      if (s.grade === selectedGrade) {
+        const nextGrades = { ...s.grades };
+        const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
+        const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+        
+        const finalGrades = getCalculatedBlockGrades(
+          s.id,
+          s.grade,
+          selectedSubject,
+          activeBloque,
+          nextEvaluationConfigs,
+          studentAssessments,
+          baseGrades
+        );
+        
+        subjectBlocks[activeBloque] = finalGrades;
+        nextGrades[selectedSubject] = subjectBlocks;
+        return { ...s, grades: nextGrades };
+      }
+      return s;
     }));
 
-    alert(`Instrumento de la Evaluación ${activeInstrumentIdx + 1} guardado correctamente.`);
+    if (!activeInstrumentId) {
+      setActiveInstrumentId(instId);
+    }
+
+    alert(`Instrumento de la Evaluación guardado correctamente.`);
+  };
+
+  const handleDeleteInstrument = (instrumentIdToDelete) => {
+    if (!selectedGrade || !selectedSubject) return;
+    if (!window.confirm("¿Está seguro de eliminar este instrumento? Se perderán las calificaciones asociadas a él.")) return;
+
+    const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+    const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+    const currentList = blockConfig[activePKey] || [];
+    
+    const nextList = currentList.filter(inst => inst.id !== instrumentIdToDelete);
+    const nextBlockConfig = {
+      ...blockConfig,
+      [activePKey]: nextList
+    };
+
+    const nextEvaluationConfigs = {
+      ...evaluationConfigs,
+      [configKey]: nextBlockConfig
+    };
+
+    setEvaluationConfigs(nextEvaluationConfigs);
+
+    // Recalculate grades for all students in this grade
+    setStudents(prev => prev.map(s => {
+      if (s.grade === selectedGrade) {
+        const nextGrades = { ...s.grades };
+        const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
+        const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+        
+        const finalGrades = getCalculatedBlockGrades(
+          s.id,
+          s.grade,
+          selectedSubject,
+          activeBloque,
+          nextEvaluationConfigs,
+          studentAssessments,
+          baseGrades
+        );
+        
+        subjectBlocks[activeBloque] = finalGrades;
+        nextGrades[selectedSubject] = subjectBlocks;
+        return { ...s, grades: nextGrades };
+      }
+      return s;
+    }));
+
+    setActiveInstrumentId('');
+    alert("Instrumento eliminado correctamente.");
+  };
+
+  const handleAddNewInstrument = (pKey) => {
+    if (!selectedGrade || !selectedSubject) return;
+
+    const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+    const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+    const currentList = blockConfig[pKey] || [];
+
+    const existingSum = currentList.reduce((acc, inst) => acc + (inst.weight || 0), 0);
+    const remainingWeight = Math.max(0, 100 - existingSum);
+
+    const newInstId = `inst_${Date.now()}`;
+    const newInstrument = {
+      id: newInstId,
+      activity: `Nueva Actividad P${pKey.replace('p', '')}`,
+      topic: '',
+      competence: '',
+      indicator: '',
+      type: 'rubrica',
+      weight: remainingWeight > 0 ? remainingWeight : 20,
+      criteria: [
+        {
+          name: "Criterio General",
+          levels: {
+            estrategico: "Desempeño estratégico excelente.",
+            autonomo: "Desempeño autónomo muy bueno.",
+            resolutivo: "Desempeño resolutivo bueno.",
+            receptivo: "Desempeño receptivo regular."
+          }
+        }
+      ]
+    };
+
+    const nextList = [...currentList, newInstrument];
+    const nextBlockConfig = {
+      ...blockConfig,
+      [pKey]: nextList
+    };
+
+    const nextEvaluationConfigs = {
+      ...evaluationConfigs,
+      [configKey]: nextBlockConfig
+    };
+
+    setEvaluationConfigs(nextEvaluationConfigs);
+    
+    setActivePKey(pKey);
+    setActiveInstrumentId(newInstId);
   };
 
   const handleAddCriterionRow = () => {
@@ -1110,39 +1306,37 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   // --- Detailed Grading Spreadsheet Cells handlers ---
-  const handleUpdateStudentCriterionScore = (studentId, subjectKey, evalIdx, critName, scoreValue) => {
+  const handleUpdateStudentCriterionScore = (studentId, subjectKey, pKey, instrumentId, critName, scoreValue) => {
     // Save detailed score
-    const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${evalIdx}`;
+    const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${pKey}_${instrumentId}`;
     const studentAssessment = studentAssessments[assessmentKey] || {};
     const nextAssessment = { ...studentAssessment, [critName]: Number(scoreValue) || 0 };
 
-    setStudentAssessments(prev => ({
-      ...prev,
+    const nextAssessmentsObject = {
+      ...studentAssessments,
       [assessmentKey]: nextAssessment
-    }));
+    };
 
-    // Calculate sum of all criteria and update student grades
-    const configKey = `${selectedGrade}_${subjectKey}_${activeBloque}`;
-    const config = evaluationConfigs[configKey]?.[evalIdx] || { criteria: [] };
-    const criteriaList = normalizeCriteria(config.criteria, config.type);
-    
-    let sum = 0;
-    criteriaList.forEach(c => {
-      // Check if it's currently being updated, otherwise fetch from state
-      if (c.name === critName) {
-        sum += Number(scoreValue) || 0;
-      } else {
-        sum += Number(studentAssessment[c.name]) || 0;
-      }
-    });
+    setStudentAssessments(nextAssessmentsObject);
 
+    // Recalculate grades using helper
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
-        const currentArr = [...(subjectBlocks[activeBloque] || [80, 80, 80, 80])];
-        currentArr[evalIdx] = Math.min(100, Math.max(0, sum));
-        subjectBlocks[activeBloque] = currentArr;
+        const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+        
+        const finalGrades = getCalculatedBlockGrades(
+          studentId,
+          s.grade,
+          subjectKey,
+          activeBloque,
+          evaluationConfigs,
+          nextAssessmentsObject,
+          baseGrades
+        );
+        
+        subjectBlocks[activeBloque] = finalGrades;
         nextGrades[subjectKey] = subjectBlocks;
         return { ...s, grades: nextGrades };
       }
@@ -1269,11 +1463,56 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return originalGrade;
   };
 
+  const getCalculatedBlockGrades = (studentId, gradeName, subjectKey, bloqueKey, currentConfigs, currentAssessments, originalGrades) => {
+    const configKey = `${gradeName}_${subjectKey}_${bloqueKey}`;
+    const blockConfig = migrateConfig(currentConfigs[configKey]);
+    
+    const finalGrades = [...originalGrades];
+    const pKeys = ['p1', 'p2', 'p3', 'p4'];
+    
+    pKeys.forEach((pKey, pIdx) => {
+      const list = blockConfig[pKey] || [];
+      if (list.length > 0) {
+        let sum = 0;
+        list.forEach(inst => {
+          const criteriaList = normalizeCriteria(inst.criteria, inst.type);
+          const maxCritScore = criteriaList.length > 0 ? Math.floor(inst.weight / criteriaList.length) : inst.weight;
+          const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
+          const savedAssessment = currentAssessments[assessmentKey] || {};
+          
+          let instSum = 0;
+          criteriaList.forEach(c => {
+            const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
+            instSum += score;
+          });
+          sum += instSum;
+        });
+        finalGrades[pIdx] = Math.min(100, Math.max(0, sum));
+      }
+    });
+    
+    return finalGrades;
+  };
+
   const calculateBlockAvg = (studentId, subjectKey, bloqueKey, studentGradesObject) => {
     const subjectData = studentGradesObject?.[subjectKey] || {};
     const baseGrades = subjectData[bloqueKey] || [80, 80, 80, 80];
+    
+    const student = students.find(s => s.id === studentId);
+    const gradeName = student?.grade || selectedGrade;
+
+    const blockArray = getCalculatedBlockGrades(
+      studentId,
+      gradeName,
+      subjectKey,
+      bloqueKey,
+      evaluationConfigs,
+      studentAssessments,
+      baseGrades
+    );
+
     let sum = 0;
-    baseGrades.forEach((g, idx) => {
+    blockArray.forEach((g, idx) => {
       sum += getEffectiveGrade(studentId, subjectKey, bloqueKey, idx, g);
     });
     return sum / 4;
@@ -1934,7 +2173,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 <tbody>
                                   {studentsFilteredByGrade.map(s => {
                                     const subjectData = s.grades?.[selectedSubject] || {};
-                                    const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
+                                    const blockArray = getCalculatedBlockGrades(s.id, s.grade, selectedSubject, activeBloque, evaluationConfigs, studentAssessments, subjectData[activeBloque] || [80, 80, 80, 80]);
                                     
                                     const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
                                     const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
@@ -2521,7 +2760,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   }</strong>. Modifica los textos directamente en la cuadrícula de la rúbrica.
                 </p>
 
-                {selectedGrade && selectedSubject ? (
+{selectedGrade && selectedSubject ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)', gap: '1.5rem' }}>
                     
                     {/* Evaluations selector */}
@@ -2529,90 +2768,73 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>
                         Evaluaciones por Bloque
                       </span>
-                      
-                      {/* Bloque CE1 */}
-                      <div style={{ marginBottom: '0.75rem' }}>
-                        <div style={{ fontSize: '0.72rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.25rem', paddingLeft: '0.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.2rem' }}>Bloque CE1</div>
-                        {Array.from({ length: 4 }).map((_, idx) => {
-                          const isSel = activeBloque === 'bloque1' && activeInstrumentIdx === idx;
-                          return (
-                            <button
-                              key={`b1_${idx}`}
-                              className={`nav-item ${isSel ? 'active' : ''}`}
-                              onClick={() => {
-                                setActiveBloque('bloque1');
-                                setActiveInstrumentIdx(idx);
-                              }}
-                              style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.76rem', padding: '0.35rem 0.5rem', width: '100%' }}
-                            >
-                              Evaluación {idx + 1}
-                            </button>
-                          );
-                        })}
-                      </div>
 
-                      {/* Bloque CE2-CE3 */}
-                      <div style={{ marginBottom: '0.75rem' }}>
-                        <div style={{ fontSize: '0.72rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.25rem', paddingLeft: '0.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.2rem' }}>Bloque CE2-CE3</div>
-                        {Array.from({ length: 4 }).map((_, idx) => {
-                          const isSel = activeBloque === 'bloque2' && activeInstrumentIdx === idx;
-                          return (
-                            <button
-                              key={`b2_${idx}`}
-                              className={`nav-item ${isSel ? 'active' : ''}`}
-                              onClick={() => {
-                                setActiveBloque('bloque2');
-                                setActiveInstrumentIdx(idx);
-                              }}
-                              style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.76rem', padding: '0.35rem 0.5rem', width: '100%' }}
-                            >
-                              Evaluación {idx + 1}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Bloque CE4-CE7 */}
-                      <div style={{ marginBottom: '0.75rem' }}>
-                        <div style={{ fontSize: '0.72rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.25rem', paddingLeft: '0.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.2rem' }}>Bloque CE4-CE7</div>
-                        {Array.from({ length: 4 }).map((_, idx) => {
-                          const isSel = activeBloque === 'bloque3' && activeInstrumentIdx === idx;
-                          return (
-                            <button
-                              key={`b3_${idx}`}
-                              className={`nav-item ${isSel ? 'active' : ''}`}
-                              onClick={() => {
-                                setActiveBloque('bloque3');
-                                setActiveInstrumentIdx(idx);
-                              }}
-                              style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.76rem', padding: '0.35rem 0.5rem', width: '100%' }}
-                            >
-                              Evaluación {idx + 1}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Bloque CE5-CE6 */}
-                      <div>
-                        <div style={{ fontSize: '0.72rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.25rem', paddingLeft: '0.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.2rem' }}>Bloque CE5-CE6</div>
-                        {Array.from({ length: 4 }).map((_, idx) => {
-                          const isSel = activeBloque === 'bloque4' && activeInstrumentIdx === idx;
-                          return (
-                            <button
-                              key={`b4_${idx}`}
-                              className={`nav-item ${isSel ? 'active' : ''}`}
-                              onClick={() => {
-                                setActiveBloque('bloque4');
-                                setActiveInstrumentIdx(idx);
-                              }}
-                              style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.76rem', padding: '0.35rem 0.5rem', width: '100%' }}
-                            >
-                              Evaluación {idx + 1}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {/* Blocks list with parameters and instruments */}
+                      {[
+                        { key: 'bloque1', label: 'Bloque CE1' },
+                        { key: 'bloque2', label: 'Bloque CE2-CE3' },
+                        { key: 'bloque3', label: 'Bloque CE4-CE7' },
+                        { key: 'bloque4', label: 'Bloque CE5-CE6' }
+                      ].map(block => {
+                        const blockKey = `${selectedGrade}_${selectedSubject}_${block.key}`;
+                        const blockConfig = migrateConfig(evaluationConfigs[blockKey]);
+                        
+                        return (
+                          <div key={block.key} style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.4rem', paddingLeft: '0.25rem' }}>
+                              {block.label}
+                            </div>
+                            
+                            {/* P1..P4 parameters */}
+                            {['p1', 'p2', 'p3', 'p4'].map((pKey, pIdx) => {
+                              const list = blockConfig[pKey] || [];
+                              const pLabel = `P${pIdx + 1}`;
+                              
+                              return (
+                                <div key={pKey} style={{ paddingLeft: '0.5rem', marginBottom: '0.35rem' }}>
+                                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0.2rem 0' }}>
+                                    <span>{pLabel}</span>
+                                    <button 
+                                      type="button" 
+                                      style={{ padding: 0, background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: 'bold' }}
+                                      onClick={() => {
+                                        setActiveBloque(block.key);
+                                        handleAddNewInstrument(pKey);
+                                      }}
+                                    >
+                                      ＋ Agregar
+                                    </button>
+                                  </div>
+                                  
+                                  {/* List instruments */}
+                                  {list.map(inst => {
+                                    const isSel = activeBloque === block.key && activePKey === pKey && activeInstrumentId === inst.id;
+                                    return (
+                                      <button
+                                        key={inst.id}
+                                        className={`nav-item ${isSel ? 'active' : ''}`}
+                                        onClick={() => {
+                                          setActiveBloque(block.key);
+                                          setActivePKey(pKey);
+                                          setActiveInstrumentId(inst.id);
+                                        }}
+                                        style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.74rem', padding: '0.25rem 0.5rem', width: '100%', marginBottom: '0.15rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: 'auto' }}
+                                      >
+                                        <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: '100%' }}>
+                                          {inst.activity || 'Actividad Sin Nombre'}
+                                        </div>
+                                        <div style={{ fontSize: '0.66rem', color: isSel ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>
+                                          Ponderación: {inst.weight || 100} pts
+                                        </div>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -2709,11 +2931,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                       {/* Fully Editable Matrix Form (exactly like Google Doc sample!) */}
                       <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                        <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
-                          Configuración General de Evaluación {activeInstrumentIdx + 1}
-                        </h3>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
+                          <h3 style={{ margin: 0 }}>
+                            Configuración de Instrumento ({activePKey.toUpperCase()})
+                          </h3>
+                          {activeInstrumentId && (
+                            <button 
+                              type="button" 
+                              className="btn-danger" 
+                              style={{ padding: '0.35rem 0.75rem', fontSize: '0.82rem' }}
+                              onClick={() => handleDeleteInstrument(activeInstrumentId)}
+                            >
+                              ✕ Eliminar Instrumento
+                            </button>
+                          )}
+                        </div>
+
+                        {(() => {
+                          const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+                          const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+                          const currentList = blockConfig[activePKey] || [];
+                          const currentWeightSum = currentList.reduce((acc, inst) => acc + (inst.weight || 0), 0);
+                          
+                          if (currentWeightSum !== 100 && currentList.length > 0) {
+                            return (
+                              <div style={{ backgroundColor: 'rgba(245, 124, 0, 0.08)', border: '1px solid var(--warning)', color: 'var(--warning)', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span>⚠️</span>
+                                <div>
+                                  La suma de las ponderaciones de los instrumentos de <strong>{activePKey.toUpperCase()}</strong> es actualmente de <strong>{currentWeightSum} / 100</strong> puntos. Para un cálculo exacto de la nota de la planilla general, asegúrese de que el total de instrumentos sume 100 puntos.
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.2fr 1.2fr 0.6fr', gap: '1rem', marginBottom: '1.5rem' }}>
                           <div className="form-group">
                             <label>Nombre de la Actividad</label>
                             <input 
@@ -2752,6 +3006,18 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               className="form-input"
                               value={instrumentEditState.indicator}
                               onChange={(e) => setInstrumentEditState(prev => ({ ...prev, indicator: e.target.value }))}
+                              required
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Puntos (Máx 100)</label>
+                            <input 
+                              type="number" 
+                              className="form-input"
+                              min="1"
+                              max="100"
+                              value={instrumentEditState.weight || 100}
+                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, weight: Number(e.target.value) || 0 }))}
                               required
                             />
                           </div>
@@ -2893,137 +3159,145 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                       {/* DETAILED STUDENT GRADING GRID FOR THIS EVALUATION */}
                       <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                        <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
-                          Planilla de Calificación: Evaluación {activeInstrumentIdx + 1}
-                        </h3>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                          Evalúa a los estudiantes seleccionando el nivel de logro para cada criterio o digitando el puntaje directamente. Las notas se guardan y actualizan automáticamente en la planilla general.
-                        </p>
-
                         {(() => {
                           const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
-                          const config = evaluationConfigs[configKey]?.[activeInstrumentIdx] || {
-                            id: activeInstrumentIdx,
-                            activity: instrumentEditState.activity || `Evaluación ${activeInstrumentIdx + 1}`,
-                            topic: instrumentEditState.topic || '',
-                            competence: instrumentEditState.competence || '',
-                            indicator: instrumentEditState.indicator || '',
-                            type: instrumentEditState.type || 'rubrica',
-                            criteria: instrumentEditState.criteria || []
-                          };
-                          
+                          const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+                          const list = blockConfig[activePKey] || [];
+                          const config = list.find(inst => inst.id === activeInstrumentId) || list[0];
+
+                          if (!config) {
+                            return (
+                              <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                                No hay ningún instrumento configurado para este parámetro. Haz clic en "＋ Agregar" arriba a la izquierda para crear uno.
+                              </div>
+                            );
+                          }
+
                           const criteriaList = normalizeCriteria(config.criteria, config.type);
                           
-                          // Divide 100 points proportional to number of criteria
-                          const maxCritScore = criteriaList.length > 0 ? Math.floor(100 / criteriaList.length) : 100;
+                          // Divide instrument weight proportional to number of criteria
+                          const maxCritScore = criteriaList.length > 0 ? Math.floor((config.weight || 100) / criteriaList.length) : (config.weight || 100);
 
                           return (
-                            <div className="custom-table-container">
-                              <table className="custom-table">
-                                <thead>
-                                  <tr>
-                                    <th style={{ width: '40px' }}>#</th>
-                                    <th>Estudiante</th>
-                                    
-                                    {/* Criteria column headers */}
-                                    {criteriaList.map((crit, idx) => (
-                                      <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
-                                        {crit.name}
-                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-                                          (Máx: {maxCritScore} pts)
-                                        </div>
+                            <>
+                              <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
+                                Planilla de Calificación: {config.activity || 'Actividad Académica'}
+                              </h3>
+                              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                                Evalúa a los estudiantes seleccionando el nivel de logro para cada criterio o digitando el puntaje directamente. Las notas se sumarán con otros instrumentos del parámetro para dar el total sobre 100 de {activePKey.toUpperCase()} en la planilla general.
+                              </p>
+
+                              <div className="custom-table-container">
+                                <table className="custom-table">
+                                  <thead>
+                                    <tr>
+                                      <th style={{ width: '40px' }}>#</th>
+                                      <th>Estudiante</th>
+                                      
+                                      {/* Criteria column headers */}
+                                      {criteriaList.map((crit, idx) => (
+                                        <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
+                                          {crit.name}
+                                          <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                                            (Máx: {maxCritScore} pts)
+                                          </div>
+                                        </th>
+                                      ))}
+                                      
+                                      <th style={{ textAlign: 'center', width: '100px', backgroundColor: 'var(--success-bg)', color: 'var(--success)', fontWeight: 'bold' }}>
+                                        Total ({config.weight || 100})
                                       </th>
-                                    ))}
-                                    
-                                    <th style={{ textAlign: 'center', width: '100px', backgroundColor: 'var(--success-bg)', color: 'var(--success)', fontWeight: 'bold' }}>
-                                      Total (100)
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {studentsFilteredByGrade.map((s, sIdx) => {
-                                    const assessmentKey = `${s.id}_${selectedSubject}_${activeBloque}_${activeInstrumentIdx}`;
-                                    const savedAssessment = studentAssessments[assessmentKey] || {};
-                                    const subjectData = s.grades?.[selectedSubject] || {};
-                                    const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
-                                    const currentTotal = blockArray[activeInstrumentIdx] || 0;
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {studentsFilteredByGrade.map((s, sIdx) => {
+                                      const assessmentKey = `${s.id}_${selectedSubject}_${activeBloque}_${activePKey}_${config.id}`;
+                                      const savedAssessment = studentAssessments[assessmentKey] || {};
+                                      
+                                      // Calculate total points for this student in this specific instrument
+                                      const instTotal = criteriaList.reduce((acc, c) => acc + (savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0), 0);
 
-                                    return (
-                                      <tr key={s.id}>
-                                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', textAlign: 'center' }}>{sIdx + 1}</td>
-                                        <td style={{ fontWeight: 600 }}>{s.name}</td>
-                                        
-                                        {/* Criteria values input */}
-                                        {criteriaList.map((crit, critIdx) => {
-                                          const score = savedAssessment[crit.name] !== undefined ? savedAssessment[crit.name] : Math.floor(maxCritScore * 0.75);
-                                          return (
-                                            <td key={critIdx} style={{ padding: 0 }}>
-                                              
-                                              {/* Dropdown helper select in cell for Tobon level scoring */}
-                                              <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <input 
-                                                  type="number" 
-                                                  className="criteria-grade-input"
-                                                  value={score}
-                                                  min="0"
-                                                  max={maxCritScore}
-                                                  onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activeInstrumentIdx, crit.name, e.target.value)}
-                                                />
+                                      return (
+                                        <tr key={s.id}>
+                                          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', textAlign: 'center' }}>{sIdx + 1}</td>
+                                          <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                          
+                                          {/* Criteria values input */}
+                                          {criteriaList.map((crit, critIdx) => {
+                                            const score = savedAssessment[crit.name] !== undefined ? Number(savedAssessment[crit.name]) : 0;
+                                            return (
+                                              <td key={critIdx} style={{ padding: 0 }}>
                                                 
-                                                {/* Simple quick selector */}
-                                                {config.type !== 'lista' ? (
-                                                  <select 
-                                                    style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                    value={
-                                                      score >= maxCritScore ? 'estrategico' :
-                                                      score >= Math.floor(maxCritScore * 0.85) ? 'autonomo' :
-                                                      score >= Math.floor(maxCritScore * 0.75) ? 'resolutivo' : 'receptivo'
-                                                    }
-                                                    onChange={(e) => {
-                                                      const targetLevel = e.target.value;
-                                                      let val = 0;
-                                                      if (targetLevel === 'receptivo') val = Math.floor(maxCritScore * 0.65);
-                                                      else if (targetLevel === 'resolutivo') val = Math.floor(maxCritScore * 0.75);
-                                                      else if (targetLevel === 'autonomo') val = Math.floor(maxCritScore * 0.88);
-                                                      else if (targetLevel === 'estrategico') val = maxCritScore;
-                                                      
-                                                      handleUpdateStudentCriterionScore(s.id, selectedSubject, activeInstrumentIdx, crit.name, val);
-                                                    }}
-                                                  >
-                                                    <option value="receptivo">Receptivo (65%)</option>
-                                                    <option value="resolutivo">Resolutivo (75%)</option>
-                                                    <option value="autonomo">Autónomo (88%)</option>
-                                                    <option value="estrategico">Estratégico (100%)</option>
-                                                  </select>
-                                                ) : (
-                                                  <select 
-                                                    style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                    value={score >= maxCritScore ? 'si' : 'no'}
-                                                    onChange={(e) => {
-                                                      const val = e.target.value === 'si' ? maxCritScore : Math.floor(maxCritScore * 0.5);
-                                                      handleUpdateStudentCriterionScore(s.id, selectedSubject, activeInstrumentIdx, crit.name, val);
-                                                    }}
-                                                  >
-                                                    <option value="si">Sí (100%)</option>
-                                                    <option value="no">No (50%)</option>
-                                                  </select>
-                                                )}
-                                              </div>
+                                                {/* Dropdown helper select in cell for Tobon level scoring */}
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                  <input 
+                                                    type="number" 
+                                                    className="criteria-grade-input"
+                                                    value={savedAssessment[crit.name] !== undefined ? score : ''}
+                                                    min="0"
+                                                    max={maxCritScore}
+                                                    placeholder="-"
+                                                    onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, e.target.value)}
+                                                  />
+                                                  
+                                                  {/* Simple quick selector */}
+                                                  {config.type !== 'lista' ? (
+                                                    <select 
+                                                      style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
+                                                      value={
+                                                        score >= maxCritScore ? 'estrategico' :
+                                                        score >= Math.floor(maxCritScore * 0.85) ? 'autonomo' :
+                                                        score >= Math.floor(maxCritScore * 0.75) ? 'resolutivo' :
+                                                        score > 0 ? 'receptivo' : ''
+                                                      }
+                                                      onChange={(e) => {
+                                                        const targetLevel = e.target.value;
+                                                        let val = 0;
+                                                        if (targetLevel === 'receptivo') val = Math.floor(maxCritScore * 0.65);
+                                                        else if (targetLevel === 'resolutivo') val = Math.floor(maxCritScore * 0.75);
+                                                        else if (targetLevel === 'autonomo') val = Math.floor(maxCritScore * 0.88);
+                                                        else if (targetLevel === 'estrategico') val = maxCritScore;
+                                                        
+                                                        handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
+                                                      }}
+                                                    >
+                                                      <option value="">-- Nivel --</option>
+                                                      <option value="receptivo">Receptivo (65%)</option>
+                                                      <option value="resolutivo">Resolutivo (75%)</option>
+                                                      <option value="autonomo">Autónomo (88%)</option>
+                                                      <option value="estrategico">Estratégico (100%)</option>
+                                                    </select>
+                                                  ) : (
+                                                    <select 
+                                                      style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
+                                                      value={savedAssessment[crit.name] !== undefined ? (score >= maxCritScore ? 'si' : 'no') : ''}
+                                                      onChange={(e) => {
+                                                        const val = e.target.value === 'si' ? maxCritScore : Math.floor(maxCritScore * 0.5);
+                                                        handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
+                                                      }}
+                                                    >
+                                                      <option value="">-- Sí/No --</option>
+                                                      <option value="si">Sí (100%)</option>
+                                                      <option value="no">No (50%)</option>
+                                                    </select>
+                                                  )}
+                                                </div>
 
-                                            </td>
-                                          );
-                                        })}
-                                        
-                                        {/* Total sum column */}
-                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: 'var(--primary)' }}>
-                                          {currentTotal}
-                                        </td>
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
-                              </table>
-                            </div>
+                                              </td>
+                                            );
+                                          })}
+                                          
+                                          {/* Total sum column */}
+                                          <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: 'var(--primary)' }}>
+                                            {instTotal}
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </>
                           );
                         })()}
                       </div>
@@ -3060,8 +3334,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <div className="instruction-step">
                     <div className="instruction-step-num">3</div>
                     <div>
-                      <strong>Evaluación por Criterios en la Planilla</strong>
-                      <p style={{ fontSize: '0.85rem' }}>Cambia la "Vista de Calificación" en la planilla a la rúbrica deseada. Podrás rellenar directamente las notas de Claridad, Organización, etc., para cada alumno. Las celdas tienen un selector rápido de niveles para mayor comodidad.</p>
+                      <strong>Evaluación por Criterios Integrada</strong>
+                      <p style={{ fontSize: '0.85rem' }}>Califica directamente al final de la pestaña "Instrumentos de Evaluación" seleccionando el nivel de logro para cada criterio de la actividad. Las calificaciones de todos los instrumentos asociados a un parámetro (ej: P1) se sumarán automáticamente y se verán reflejadas en la Planilla de Calificaciones general.</p>
                     </div>
                   </div>
                 </div>
