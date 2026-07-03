@@ -2179,47 +2179,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                 {selectedGrade && selectedSubject ? (
                   (() => {
-                    const weekdays = getWeekdaysForMonth(selectedAttendanceMonth);
-                    const workedDaysKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}`;
-                    const currentMonthWorkedDays = monthlyWorkedDays[workedDaysKey] !== undefined 
-                      ? Number(monthlyWorkedDays[workedDaysKey]) 
-                      : weekdays.length;
+                    // Calculate activeColumns (indices 0 to 20 where the day number has been filled)
+                    const activeColumns = [];
+                    Array.from({ length: 21 }).forEach((_, idx) => {
+                      const dateKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}_day_${idx}`;
+                      const dateVal = attendanceDayDates[dateKey] || '';
+                      if (dateVal.trim() !== '') {
+                        activeColumns.push(idx);
+                      }
+                    });
+                    const currentMonthWorkedDays = activeColumns.length;
 
                     // Calculate total worked days general across all months in the year
                     const monthsList = ['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
                     const totalWorkedDaysGeneral = monthsList.reduce((sum, mName) => {
-                      const mKey = `${selectedGrade}_${selectedSubject}_${mName}`;
-                      const wDays = getWeekdaysForMonth(mName).length;
-                      return sum + (monthlyWorkedDays[mKey] !== undefined ? Number(monthlyWorkedDays[mKey]) : wDays);
+                      let count = 0;
+                      Array.from({ length: 21 }).forEach((_, idx) => {
+                        const mKey = `${selectedGrade}_${selectedSubject}_${mName}_day_${idx}`;
+                        const dateVal = attendanceDayDates[mKey] || '';
+                        if (dateVal.trim() !== '') {
+                          count++;
+                        }
+                      });
+                      return sum + count;
                     }, 0);
 
                     return (
                       <>
                         {/* Config Panel for Worked Days */}
                         <div className="glass-panel" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <label style={{ fontSize: '0.88rem', fontWeight: 'bold', color: 'var(--primary)' }}>
-                              Días Trabajados en {selectedAttendanceMonth}:
-                            </label>
-                            <input 
-                              type="number" 
-                              className="form-input" 
-                              style={{ width: '80px', padding: '0.4rem', textAlign: 'center', fontWeight: 'bold' }}
-                              value={currentMonthWorkedDays}
-                              min="1"
-                              max="31"
-                              onChange={(e) => {
-                                const val = Math.max(1, Math.min(31, Number(e.target.value) || 0));
-                                setMonthlyWorkedDays(prev => ({
-                                  ...prev,
-                                  [workedDaysKey]: val
-                                }));
-                              }}
-                            />
+                          <div>
+                            <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                              Días Trabajados en {selectedAttendanceMonth}: <strong style={{ color: 'var(--primary)', fontSize: '1.05rem' }}>{currentMonthWorkedDays}</strong>
+                            </span>
                           </div>
                           <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
                             <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-                              Total Días Trabajados General: <strong style={{ color: 'var(--primary)', fontSize: '1rem' }}>{totalWorkedDaysGeneral}</strong>
+                              Total Días Trabajados General: <strong style={{ color: 'var(--primary)', fontSize: '1.05rem' }}>{totalWorkedDaysGeneral}</strong>
                             </span>
                           </div>
                           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
@@ -2325,13 +2321,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 let pCount = 0;
 
                                 Array.from({ length: 21 }).forEach((_, idx) => {
-                                  const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
-                                  const status = studentAttendanceDetail[attendanceKey] || '';
-                                  if (status === 'A') aCount++;
-                                  else if (status === 'E') eCount++;
-                                  else if (status === 'R') rCount++;
-                                  else if (status === 'T') tCount++;
-                                  else if (status === 'P') pCount++;
+                                  const dateKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}_day_${idx}`;
+                                  const dateVal = attendanceDayDates[dateKey] || '';
+                                  if (dateVal.trim() !== '') {
+                                    const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
+                                    const status = studentAttendanceDetail[attendanceKey] || '';
+                                    if (status === 'A') aCount++;
+                                    else if (status === 'E') eCount++;
+                                    else if (status === 'R') rCount++;
+                                    else if (status === 'T') tCount++;
+                                    else if (status === 'P') pCount++;
+                                  }
                                 });
 
                                 // Active evaluated days for student
