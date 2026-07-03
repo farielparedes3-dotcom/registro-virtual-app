@@ -1334,50 +1334,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         
         <div className="login-card animate-fade-in" style={{ borderTop: '8px solid var(--primary)' }}>
           <div className="login-header">
-            {/* MINERD Official Dome Logo */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <svg viewBox="0 0 120 70" width="105" height="62" style={{ marginBottom: '6px' }}>
-                <rect x="58.5" y="2" width="3" height="15" fill="#003876" />
-                <line x1="55" y1="6" x2="65" y2="6" stroke="#003876" strokeWidth="1.5" />
-                <line x1="53" y1="12" x2="67" y2="12" stroke="#003876" strokeWidth="2" />
-                <path d="M 36 48 C 36 20, 84 20, 84 48 Z" fill="#003876" />
-                <path d="M 43 48 C 43 27, 49 27, 49 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-                <path d="M 51 48 C 51 25, 57 25, 57 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-                <line x1="60" y1="21.5" x2="60" y2="48" stroke="#ffffff" strokeWidth="2" />
-                <path d="M 77 48 C 77 27, 71 27, 71 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-                <path d="M 69 48 C 69 25, 63 25, 63 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-                <rect x="32" y="48" width="56" height="5" fill="#003876" />
-                <rect x="37" y="49" width="3" height="3" fill="#ffffff" />
-                <rect x="45" y="49" width="3" height="3" fill="#ffffff" />
-                <rect x="53" y="49" width="3" height="3" fill="#ffffff" />
-                <rect x="61" y="49" width="3" height="3" fill="#ffffff" />
-                <rect x="69" y="49" width="3" height="3" fill="#ffffff" />
-                <rect x="77" y="49" width="3" height="3" fill="#ffffff" />
-                <rect x="85" y="49" width="3" height="3" fill="#ffffff" />
-                <line x1="28" y1="56" x2="92" y2="56" stroke="#003876" strokeWidth="2.5" />
-                <line x1="32" y1="60" x2="88" y2="60" stroke="#003876" strokeWidth="1.5" />
-              </svg>
-              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: '#003876', lineHeight: 1.1, fontFamily: 'Cinzel, Georgia, serif' }}>
-                Gobierno de la
+            {/* School details matching image exactly */}
+            <div style={{ margin: '0.5rem 0 1.5rem 0', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.85rem', color: '#c8102e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
+                REGISTRO DE EVALUACIÓN DIGITAL
               </div>
-              <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 800, color: '#003876', lineHeight: 1.2, fontFamily: 'Cinzel, Georgia, serif', margin: '2px 0 4px 0' }}>
-                República Dominicana
-              </div>
-              <div style={{ width: '80px', height: '2px', backgroundColor: '#c8102e', margin: '4px auto' }}></div>
-              <div style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.22em', fontWeight: 700, color: '#c8102e', fontFamily: 'Cinzel, Georgia, serif', marginTop: '2px' }}>
-                Educación
-              </div>
-            </div>
-
-            {/* School details */}
-            <div style={{ marginTop: '0.5rem', marginBottom: '1.25rem' }}>
-              <div style={{ fontSize: '0.8rem', color: '#c8102e', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Registro de Evaluación Digital
-              </div>
-              <h1 className="school-title-highlight" style={{ fontSize: '1.65rem', margin: '0.25rem 0', color: 'var(--primary)', lineHeight: 1.2 }}>
-                Liceo Ana Rosa Castillo
+              <h1 className="school-title-highlight" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#003876', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
+                LICEO ANA ROSA CASTILLO
               </h1>
-              <span className="district-badge">Distrito Educativo 14-01 Nagua</span>
+              <div style={{ marginTop: '0.75rem' }}>
+                <span className="district-badge" style={{ backgroundColor: '#e8f0fe', color: '#003876', border: '1px solid #ebdcb9', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
+                  DISTRITO EDUCATIVO 14-01 NAGUA
+                </span>
+              </div>
             </div>
             
             {/* Value Proposition / Intention */}
@@ -1466,32 +1435,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       <div className="app-container">
         <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
           <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <svg viewBox="0 0 120 70" width="34" height="26">
-              <rect x="58.5" y="2" width="3" height="15" fill="#003876" />
-              <line x1="55" y1="6" x2="65" y2="6" stroke="#003876" strokeWidth="1.5" />
-              <line x1="53" y1="12" x2="67" y2="12" stroke="#003876" strokeWidth="2" />
-              <path d="M 36 48 C 36 20, 84 20, 84 48 Z" fill="#003876" />
-              <path d="M 43 48 C 43 27, 49 27, 49 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-              <path d="M 51 48 C 51 25, 57 25, 57 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-              <line x1="60" y1="21.5" x2="60" y2="48" stroke="#ffffff" strokeWidth="2" />
-              <path d="M 77 48 C 77 27, 71 27, 71 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-              <path d="M 69 48 C 69 25, 63 25, 63 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-              <rect x="32" y="48" width="56" height="5" fill="#003876" />
-              <rect x="37" y="49" width="3" height="3" fill="#ffffff" />
-              <rect x="45" y="49" width="3" height="3" fill="#ffffff" />
-              <rect x="53" y="49" width="3" height="3" fill="#ffffff" />
-              <rect x="61" y="49" width="3" height="3" fill="#ffffff" />
-              <rect x="69" y="49" width="3" height="3" fill="#ffffff" />
-              <rect x="77" y="49" width="3" height="3" fill="#ffffff" />
-              <rect x="85" y="49" width="3" height="3" fill="#ffffff" />
-              <line x1="28" y1="56" x2="92" y2="56" stroke="#003876" strokeWidth="2.5" />
-              <line x1="32" y1="60" x2="88" y2="60" stroke="#003876" strokeWidth="1.5" />
-            </svg>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)' }}>Liceo Ana Rosa Castillo</span>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Distrito 14-01 Nagua</span>
+              <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+              <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
+              <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
             </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold' }}>Admin</span>
+            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -1779,32 +1728,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     <div className="app-container">
       <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
         <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <svg viewBox="0 0 120 70" width="34" height="26">
-            <rect x="58.5" y="2" width="3" height="15" fill="#003876" />
-            <line x1="55" y1="6" x2="65" y2="6" stroke="#003876" strokeWidth="1.5" />
-            <line x1="53" y1="12" x2="67" y2="12" stroke="#003876" strokeWidth="2" />
-            <path d="M 36 48 C 36 20, 84 20, 84 48 Z" fill="#003876" />
-            <path d="M 43 48 C 43 27, 49 27, 49 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-            <path d="M 51 48 C 51 25, 57 25, 57 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-            <line x1="60" y1="21.5" x2="60" y2="48" stroke="#ffffff" strokeWidth="2" />
-            <path d="M 77 48 C 77 27, 71 27, 71 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-            <path d="M 69 48 C 69 25, 63 25, 63 48" stroke="#ffffff" strokeWidth="2" fill="none" />
-            <rect x="32" y="48" width="56" height="5" fill="#003876" />
-            <rect x="37" y="49" width="3" height="3" fill="#ffffff" />
-            <rect x="45" y="49" width="3" height="3" fill="#ffffff" />
-            <rect x="53" y="49" width="3" height="3" fill="#ffffff" />
-            <rect x="61" y="49" width="3" height="3" fill="#ffffff" />
-            <rect x="69" y="49" width="3" height="3" fill="#ffffff" />
-            <rect x="77" y="49" width="3" height="3" fill="#ffffff" />
-            <rect x="85" y="49" width="3" height="3" fill="#ffffff" />
-            <line x1="28" y1="56" x2="92" y2="56" stroke="#003876" strokeWidth="2.5" />
-            <line x1="32" y1="60" x2="88" y2="60" stroke="#003876" strokeWidth="1.5" />
-          </svg>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-            <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)' }}>Liceo Ana Rosa Castillo</span>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Distrito 14-01 Nagua</span>
+            <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+            <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
+            <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
           </div>
-          <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold' }}>Docente</span>
+          <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
