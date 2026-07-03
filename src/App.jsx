@@ -436,6 +436,7 @@ export default function App() {
   });
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
@@ -839,6 +840,76 @@ export default function App() {
   };
 
   // --- Docente: Instrument Configuration ---
+  const updateActiveInstrumentConfig = (updatedFields) => {
+    setInstrumentEditState(prev => {
+      const nextState = { ...prev, ...updatedFields };
+      
+      // Auto-save to evaluationConfigs
+      if (selectedGrade && selectedSubject && activeInstrumentId) {
+        const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+        const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+        const currentList = blockConfig[activePKey] || [];
+        
+        const updatedConfig = {
+          id: activeInstrumentId,
+          activity: nextState.activity,
+          topic: nextState.topic || '',
+          competence: nextState.competence,
+          indicator: nextState.indicator,
+          type: nextState.type,
+          weight: nextState.weight !== undefined ? (Number(nextState.weight) || 0) : 100,
+          criteria: nextState.criteria
+        };
+        
+        const nextList = [...currentList];
+        const matchIdx = nextList.findIndex(inst => inst.id === activeInstrumentId);
+        if (matchIdx >= 0) {
+          nextList[matchIdx] = updatedConfig;
+        } else {
+          nextList.push(updatedConfig);
+        }
+        
+        const nextBlockConfig = {
+          ...blockConfig,
+          [activePKey]: nextList
+        };
+        
+        const nextEvaluationConfigs = {
+          ...evaluationConfigs,
+          [configKey]: nextBlockConfig
+        };
+        
+        setEvaluationConfigs(nextEvaluationConfigs);
+        
+        // Also update students' final grades in real-time
+        setStudents(prevStudents => prevStudents.map(s => {
+          if (s.grade === selectedGrade) {
+            const nextGrades = { ...s.grades };
+            const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
+            const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+            
+            const finalGrades = getCalculatedBlockGrades(
+              s.id,
+              s.grade,
+              selectedSubject,
+              activeBloque,
+              nextEvaluationConfigs,
+              studentAssessments,
+              baseGrades
+            );
+            
+            subjectBlocks[activeBloque] = finalGrades;
+            nextGrades[selectedSubject] = subjectBlocks;
+            return { ...s, grades: nextGrades };
+          }
+          return s;
+        }));
+      }
+      
+      return nextState;
+    });
+  };
+
   const handleSaveInstrument = (e) => {
     if (e) e.preventDefault();
     if (!selectedGrade || !selectedSubject) return;
@@ -1035,33 +1106,33 @@ export default function App() {
         receptivo: "Descripción nivel receptivo (Regular)"
       }
     };
-    setInstrumentEditState(prev => ({
-      ...prev,
-      criteria: [...prev.criteria, newCrit]
-    }));
+    updateActiveInstrumentConfig({
+      criteria: [...instrumentEditState.criteria, newCrit]
+    });
   };
 
   const handleRemoveCriterionRow = (idxToRemove) => {
-    setInstrumentEditState(prev => ({
-      ...prev,
-      criteria: prev.criteria.filter((_, idx) => idx !== idxToRemove)
-    }));
+    updateActiveInstrumentConfig({
+      criteria: instrumentEditState.criteria.filter((_, idx) => idx !== idxToRemove)
+    });
   };
 
   const handleEditCriterionName = (idx, nameVal) => {
-    setInstrumentEditState(prev => {
-      const nextList = [...prev.criteria];
-      nextList[idx].name = nameVal;
-      return { ...prev, criteria: nextList };
-    });
+    const nextList = [...instrumentEditState.criteria];
+    nextList[idx] = { ...nextList[idx], name: nameVal };
+    updateActiveInstrumentConfig({ criteria: nextList });
   };
 
   const handleEditCriterionLevel = (critIdx, levelKey, textVal) => {
-    setInstrumentEditState(prev => {
-      const nextList = [...prev.criteria];
-      nextList[critIdx].levels[levelKey] = textVal;
-      return { ...prev, criteria: nextList };
-    });
+    const nextList = [...instrumentEditState.criteria];
+    nextList[critIdx] = {
+      ...nextList[critIdx],
+      levels: {
+        ...nextList[critIdx].levels,
+        [levelKey]: textVal
+      }
+    };
+    updateActiveInstrumentConfig({ criteria: nextList });
   };
 
   // --- Real / Offline AI chatbot prompt processing ---
@@ -1681,13 +1752,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return (
       <div className="app-container">
         <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
-          <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-              <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
-              <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: '#003876', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              ☰
+            </button>
+            <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+                <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
+                <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+              </div>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
             </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -1719,7 +1800,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         </header>
 
         <div className="main-content animate-fade-in">
-          <div className="dashboard-layout">
+          <div className={`dashboard-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
             <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
               <div className="sidebar-nav">
                 <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
@@ -1974,13 +2055,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   return (
     <div className="app-container">
       <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
-        <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-            <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-            <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
-            <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button 
+            type="button" 
+            className="sidebar-toggle-btn" 
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: '#003876', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            ☰
+          </button>
+          <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+              <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
+              <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+            </div>
+            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
           </div>
-          <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -2006,7 +2097,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       </header>
 
       <div className="main-content animate-fade-in">
-        <div className="dashboard-layout">
+        <div className={`dashboard-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
           <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
             <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Seleccionar Curso / Grado</label>
@@ -2761,81 +2852,133 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </p>
 
 {selectedGrade && selectedSubject ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)', gap: '1.5rem' }}>
-                    
-                    {/* Evaluations selector */}
-                    <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignSelf: 'start', maxHeight: '80vh', overflowY: 'auto' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>
-                        Evaluaciones por Bloque
-                      </span>
-
-                      {/* Blocks list with parameters and instruments */}
+                  <div>
+                    {/* Horizontal Block Selectors */}
+                    <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                       {[
                         { key: 'bloque1', label: 'Bloque CE1' },
                         { key: 'bloque2', label: 'Bloque CE2-CE3' },
                         { key: 'bloque3', label: 'Bloque CE4-CE7' },
                         { key: 'bloque4', label: 'Bloque CE5-CE6' }
                       ].map(block => {
-                        const blockKey = `${selectedGrade}_${selectedSubject}_${block.key}`;
-                        const blockConfig = migrateConfig(evaluationConfigs[blockKey]);
-                        
+                        const isSel = activeBloque === block.key;
                         return (
-                          <div key={block.key} style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.4rem', paddingLeft: '0.25rem' }}>
-                              {block.label}
-                            </div>
-                            
-                            {/* P1..P4 parameters */}
-                            {['p1', 'p2', 'p3', 'p4'].map((pKey, pIdx) => {
-                              const list = blockConfig[pKey] || [];
-                              const pLabel = `P${pIdx + 1}`;
-                              
-                              return (
-                                <div key={pKey} style={{ paddingLeft: '0.5rem', marginBottom: '0.35rem' }}>
-                                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0.2rem 0' }}>
-                                    <span>{pLabel}</span>
-                                    <button 
-                                      type="button" 
-                                      style={{ padding: 0, background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: 'bold' }}
-                                      onClick={() => {
-                                        setActiveBloque(block.key);
-                                        handleAddNewInstrument(pKey);
-                                      }}
-                                    >
-                                      ＋ Agregar
-                                    </button>
-                                  </div>
-                                  
-                                  {/* List instruments */}
-                                  {list.map(inst => {
-                                    const isSel = activeBloque === block.key && activePKey === pKey && activeInstrumentId === inst.id;
-                                    return (
-                                      <button
-                                        key={inst.id}
-                                        className={`nav-item ${isSel ? 'active' : ''}`}
-                                        onClick={() => {
-                                          setActiveBloque(block.key);
-                                          setActivePKey(pKey);
-                                          setActiveInstrumentId(inst.id);
-                                        }}
-                                        style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.74rem', padding: '0.25rem 0.5rem', width: '100%', marginBottom: '0.15rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: 'auto' }}
-                                      >
-                                        <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: '100%' }}>
-                                          {inst.activity || 'Actividad Sin Nombre'}
-                                        </div>
-                                        <div style={{ fontSize: '0.66rem', color: isSel ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>
-                                          Ponderación: {inst.weight || 100} pts
-                                        </div>
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            })}
-                          </div>
+                          <button
+                            key={block.key}
+                            type="button"
+                            onClick={() => {
+                              setActiveBloque(block.key);
+                              // Auto-select first parameter's first instrument if exists
+                              const configKey = `${selectedGrade}_${selectedSubject}_${block.key}`;
+                              const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+                              const firstP = ['p1', 'p2', 'p3', 'p4'].find(p => (blockConfig[p] || []).length > 0) || 'p1';
+                              const firstList = blockConfig[firstP] || [];
+                              setActivePKey(firstP);
+                              if (firstList.length > 0) {
+                                setActiveInstrumentId(firstList[0].id);
+                              } else {
+                                setActiveInstrumentId('');
+                              }
+                            }}
+                            className={`btn-primary ${isSel ? 'active' : ''}`}
+                            style={{
+                              padding: '0.65rem 1.25rem',
+                              borderRadius: '20px',
+                              fontSize: '0.9rem',
+                              fontWeight: 'bold',
+                              border: isSel ? 'none' : '1px solid rgba(0, 56, 118, 0.15)',
+                              background: isSel ? 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)' : 'rgba(255, 255, 255, 0.4)',
+                              color: isSel ? '#fff' : 'var(--primary)',
+                              boxShadow: isSel ? '0 4px 12px var(--primary-glow)' : '0 2px 6px rgba(0,0,0,0.03)',
+                              transition: 'all 0.2s ease',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {block.label}
+                          </button>
                         );
                       })}
                     </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '260px minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
+                      
+                      {/* Evaluations/Instruments Tree sidebar (only active block parameters/instruments) */}
+                      <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '80vh', overflowY: 'auto' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>
+                          Parámetros e Instrumentos
+                        </span>
+
+                        {(() => {
+                          const blockKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+                          const blockConfig = migrateConfig(evaluationConfigs[blockKey]);
+                          
+                          return ['p1', 'p2', 'p3', 'p4'].map((pKey, pIdx) => {
+                            const list = blockConfig[pKey] || [];
+                            const pLabel = `P${pIdx + 1}`;
+                            
+                            return (
+                              <div key={pKey} style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                                <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.4rem', paddingLeft: '0.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <span>{pLabel} (Parámetro)</span>
+                                  <button 
+                                    type="button" 
+                                    style={{ padding: '0.1rem 0.4rem', background: 'rgba(0, 56, 118, 0.06)', border: '1px solid var(--primary)', borderRadius: '4px', color: 'var(--primary)', fontSize: '0.68rem', cursor: 'pointer', fontWeight: 'bold' }}
+                                    onClick={() => {
+                                      handleAddNewInstrument(pKey);
+                                    }}
+                                  >
+                                    ＋ Agregar
+                                  </button>
+                                </div>
+                                
+                                {/* List instruments */}
+                                {list.map(inst => {
+                                  const isSel = activePKey === pKey && activeInstrumentId === inst.id;
+                                  return (
+                                    <button
+                                      key={inst.id}
+                                      className={`instrument-card-btn ${isSel ? 'active' : ''}`}
+                                      onClick={() => {
+                                        setActivePKey(pKey);
+                                        setActiveInstrumentId(inst.id);
+                                      }}
+                                      style={{ 
+                                        textAlign: 'left', 
+                                        fontSize: '0.75rem', 
+                                        width: '100%', 
+                                        marginBottom: '0.35rem', 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        alignItems: 'flex-start',
+                                        padding: '0.55rem 0.75rem',
+                                        borderRadius: '8px',
+                                        border: isSel ? '1px solid var(--primary)' : '1px solid rgba(0, 56, 118, 0.1)',
+                                        background: isSel ? 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)' : 'rgba(255,255,255,0.7)',
+                                        color: isSel ? '#fff' : 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        boxShadow: isSel ? '0 4px 10px var(--primary-glow)' : '0 1px 3px rgba(0,0,0,0.02)'
+                                      }}
+                                    >
+                                      <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: '100%', color: isSel ? '#fff' : 'var(--primary)' }}>
+                                        {inst.activity || 'Actividad Sin Nombre'}
+                                      </div>
+                                      <div style={{ fontSize: '0.68rem', color: isSel ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary)', marginTop: '0.15rem' }}>
+                                        Puntos: <strong>{inst.weight || 100}</strong> pts
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                                {list.length === 0 && (
+                                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', paddingLeft: '0.5rem', fontStyle: 'italic' }}>
+                                    Sin instrumentos
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                       
@@ -2929,8 +3072,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </form>
                       </div>
 
-                      {/* Fully Editable Matrix Form (exactly like Google Doc sample!) */}
-                      <div className="glass-panel" style={{ padding: '1.5rem' }}>
+                      {/* SIDE-BY-SIDE PANELS (Rúbrica Matrix on Left, Students spreadsheet on Right) */}
+                      <div className="instruments-side-by-side-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '1.5rem', alignItems: 'start', marginTop: '1rem' }}>
+                        
+                        {/* Fully Editable Matrix Form (exactly like Google Doc sample!) */}
+                        <div className="glass-panel" style={{ padding: '1.5rem', maxHeight: '80vh', overflowY: 'auto' }}>
 
                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
                           <h3 style={{ margin: 0 }}>
@@ -2974,7 +3120,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               type="text" 
                               className="form-input"
                               value={instrumentEditState.activity}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, activity: e.target.value }))}
+                              onChange={(e) => updateActiveInstrumentConfig({ activity: e.target.value })}
                               required
                             />
                           </div>
@@ -2984,7 +3130,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               type="text" 
                               className="form-input"
                               value={instrumentEditState.topic || ''}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, topic: e.target.value }))}
+                              onChange={(e) => updateActiveInstrumentConfig({ topic: e.target.value })}
                               placeholder="e.g. Ecuaciones lineales"
                               required
                             />
@@ -2995,7 +3141,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               type="text" 
                               className="form-input"
                               value={instrumentEditState.competence}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, competence: e.target.value }))}
+                              onChange={(e) => updateActiveInstrumentConfig({ competence: e.target.value })}
                               required
                             />
                           </div>
@@ -3005,7 +3151,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               type="text" 
                               className="form-input"
                               value={instrumentEditState.indicator}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, indicator: e.target.value }))}
+                              onChange={(e) => updateActiveInstrumentConfig({ indicator: e.target.value })}
                               required
                             />
                           </div>
@@ -3017,7 +3163,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               min="1"
                               max="100"
                               value={instrumentEditState.weight || 100}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, weight: Number(e.target.value) || 0 }))}
+                              onChange={(e) => updateActiveInstrumentConfig({ weight: Number(e.target.value) || 0 })}
                               required
                             />
                           </div>
@@ -3030,7 +3176,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               className="form-select"
                               style={{ width: '220px', padding: '0.4rem' }}
                               value={instrumentEditState.type}
-                              onChange={(e) => setInstrumentEditState(prev => ({ ...prev, type: e.target.value }))}
+                              onChange={(e) => updateActiveInstrumentConfig({ type: e.target.value })}
                             >
                               <option value="rubrica">Rúbrica Matricial de Desempeño</option>
                               <option value="lista">Lista de Cotejo (Sí/No)</option>
@@ -3158,7 +3304,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       </div>
 
                       {/* DETAILED STUDENT GRADING GRID FOR THIS EVALUATION */}
-                      <div className="glass-panel" style={{ padding: '1.5rem' }}>
+                      <div className="glass-panel" style={{ padding: '1.5rem', maxHeight: '80vh', overflowY: 'auto' }}>
                         {(() => {
                           const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
                           const blockConfig = migrateConfig(evaluationConfigs[configKey]);
@@ -3301,10 +3447,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           );
                         })()}
                       </div>
-
                     </div>
                   </div>
-                ) : (
+                </div>
+              </div>
+            ) : (
                   <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
                     Por favor selecciona un Grado y Asignatura en la barra lateral.
                   </div>

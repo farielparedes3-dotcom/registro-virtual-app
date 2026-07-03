@@ -88,6 +88,28 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 2rem;
+  transition: grid-template-columns 0.3s ease, gap 0.3s ease;
+}
+
+.dashboard-layout.sidebar-collapsed {
+  grid-template-columns: 0px 1fr;
+  gap: 0;
+}
+
+.dashboard-layout.sidebar-collapsed aside {
+  transform: translateX(-320px);
+  opacity: 0;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dashboard-layout aside {
+  transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+  transform: translateX(0);
+  opacity: 1;
 }
 
 @media (max-width: 968px) {
@@ -1093,4 +1115,29 @@
   background-color: var(--primary-glow);
   color: var(--primary);
   border-color: var(--primary);
+}
+
+/* Outstanding card design for instruments */
+.instrument-card-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.instrument-card-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: rgba(0, 56, 118, 0.05) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 10px rgba(0, 56, 118, 0.12) !important;
+}
+
+.instrument-card-btn.active:hover {
+  transform: translateY(-1px) scale(1.01);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%) !important;
+  box-shadow: 0 4px 12px var(--primary-glow) !important;
+}
+
+/* Responsive grid for side-by-side layout in instruments tab */
+@media (max-width: 1200px) {
+  .instruments-side-by-side-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
