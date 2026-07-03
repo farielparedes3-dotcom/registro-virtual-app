@@ -2308,8 +2308,27 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                     </td>
                                   );
                                 })}
-                                <td></td>
-                                <td></td>
+                                <td style={{ padding: '0.2rem', textAlign: 'center', borderBottom: '2px solid var(--border-color)' }}>
+                                  <div 
+                                    style={{
+                                      width: '28px',
+                                      height: '24px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '0.75rem',
+                                      fontWeight: '800',
+                                      border: '1.5px solid var(--primary)',
+                                      borderRadius: '4px',
+                                      backgroundColor: 'var(--primary-glow)',
+                                      color: 'var(--primary)',
+                                      margin: '0 auto'
+                                    }}
+                                  >
+                                    {currentMonthWorkedDays}
+                                  </div>
+                                </td>
+                                <td style={{ borderBottom: '2px solid var(--border-color)' }}></td>
                               </tr>
                             </thead>
                             <tbody>
