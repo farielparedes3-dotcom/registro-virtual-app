@@ -494,6 +494,9 @@ export default function App() {
   // Active evaluation parameter ('p1' | 'p2' | 'p3' | 'p4') and instrument ID in Instruments Tab
   const [activePKey, setActivePKey] = useState('p1');
   const [activeInstrumentId, setActiveInstrumentId] = useState('');
+  const [expandedBlocks, setExpandedBlocks] = useState({ bloque1: true, bloque2: false, bloque3: false, bloque4: false });
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [aiChatMinimized, setAiChatMinimized] = useState(false);
 
   // Form state for editing instrument in Instruments Tab
   const [instrumentEditState, setInstrumentEditState] = useState({
@@ -2837,47 +2840,51 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
               </div>
             )}
-
-            {/* TEACHER: Tab Instruments (AI Chatbot with credentials config & fully editable matrix table) */}
             {activeTab === 'instruments' && (
               <div>
                 <h2>Instrumentos de Evaluación Ponderada</h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  Define las competencias, indicadores y criterios específicos para el <strong style={{ color: 'var(--primary)' }}>{
-                    activeBloque === 'bloque1' ? 'Bloque CE1' :
-                    activeBloque === 'bloque2' ? 'Bloque CE2-CE3' :
-                    activeBloque === 'bloque3' ? 'Bloque CE4-CE7' :
-                    activeBloque === 'bloque4' ? 'Bloque CE5-CE6' : 'Bloque CE1'
-                  }</strong>. Modifica los textos directamente en la cuadrícula de la rúbrica.
+                  Define las competencias, indicadores y criterios específicos para el parámetro seleccionado. Modifica los textos directamente en la cuadrícula de la rúbrica.
                 </p>
 
 {selectedGrade && selectedSubject ? (
                   <div>
-                    {/* Horizontal Block Selectors */}
+                    {/* Horizontal Parameter Selectors (P1 - P4) */}
                     <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                      {[
-                        { key: 'bloque1', label: 'Bloque CE1' },
-                        { key: 'bloque2', label: 'Bloque CE2-CE3' },
-                        { key: 'bloque3', label: 'Bloque CE4-CE7' },
-                        { key: 'bloque4', label: 'Bloque CE5-CE6' }
-                      ].map(block => {
-                        const isSel = activeBloque === block.key;
+                      {['p1', 'p2', 'p3', 'p4'].map((pKey, pIdx) => {
+                        const isSel = activePKey === pKey;
                         return (
                           <button
-                            key={block.key}
+                            key={pKey}
                             type="button"
                             onClick={() => {
-                              setActiveBloque(block.key);
-                              // Auto-select first parameter's first instrument if exists
-                              const configKey = `${selectedGrade}_${selectedSubject}_${block.key}`;
+                              setActivePKey(pKey);
+                              
+                              // Auto-select first instrument of the activeBloque if it has instruments
+                              const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
                               const blockConfig = migrateConfig(evaluationConfigs[configKey]);
-                              const firstP = ['p1', 'p2', 'p3', 'p4'].find(p => (blockConfig[p] || []).length > 0) || 'p1';
-                              const firstList = blockConfig[firstP] || [];
-                              setActivePKey(firstP);
-                              if (firstList.length > 0) {
-                                setActiveInstrumentId(firstList[0].id);
+                              const list = blockConfig[pKey] || [];
+                              if (list.length > 0) {
+                                setActiveInstrumentId(list[0].id);
                               } else {
-                                setActiveInstrumentId('');
+                                // Try to find any instrument in other blocks for this parameter
+                                let found = false;
+                                const blocks = ['bloque1', 'bloque2', 'bloque3', 'bloque4'];
+                                for (const b of blocks) {
+                                  const bk = `${selectedGrade}_${selectedSubject}_${b}`;
+                                  const bc = migrateConfig(evaluationConfigs[bk]);
+                                  const blist = bc[pKey] || [];
+                                  if (blist.length > 0) {
+                                    setActiveBloque(b);
+                                    setExpandedBlocks(prev => ({ ...prev, [b]: true }));
+                                    setActiveInstrumentId(blist[0].id);
+                                    found = true;
+                                    break;
+                                  }
+                                }
+                                if (!found) {
+                                  setActiveInstrumentId('');
+                                }
                               }
                             }}
                             className={`btn-primary ${isSel ? 'active' : ''}`}
@@ -2894,7 +2901,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               cursor: 'pointer'
                             }}
                           >
-                            {block.label}
+                            Parámetro P{pIdx + 1}
                           </button>
                         );
                       })}
@@ -2902,175 +2909,129 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     <div style={{ display: 'grid', gridTemplateColumns: '260px minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
                       
-                      {/* Evaluations/Instruments Tree sidebar (only active block parameters/instruments) */}
+                      {/* Evaluations/Instruments Accordion sidebar (Blocks CE1-CE4 with parameters instruments) */}
                       <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '80vh', overflowY: 'auto' }}>
                         <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>
-                          Parámetros e Instrumentos
+                          Bloques de Evaluaciones
                         </span>
 
-                        {(() => {
-                          const blockKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+                        {[
+                          { key: 'bloque1', label: 'Bloque CE1' },
+                          { key: 'bloque2', label: 'Bloque CE2-CE3' },
+                          { key: 'bloque3', label: 'Bloque CE4-CE7' },
+                          { key: 'bloque4', label: 'Bloque CE5-CE6' }
+                        ].map(block => {
+                          const isExpanded = expandedBlocks[block.key];
+                          const blockKey = `${selectedGrade}_${selectedSubject}_${block.key}`;
                           const blockConfig = migrateConfig(evaluationConfigs[blockKey]);
+                          const list = blockConfig[activePKey] || [];
+                          const isBlockActive = activeBloque === block.key;
                           
-                          return ['p1', 'p2', 'p3', 'p4'].map((pKey, pIdx) => {
-                            const list = blockConfig[pKey] || [];
-                            const pLabel = `P${pIdx + 1}`;
-                            
-                            return (
-                              <div key={pKey} style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-                                <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.4rem', paddingLeft: '0.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <span>{pLabel} (Parámetro)</span>
-                                  <button 
-                                    type="button" 
-                                    style={{ padding: '0.1rem 0.4rem', background: 'rgba(0, 56, 118, 0.06)', border: '1px solid var(--primary)', borderRadius: '4px', color: 'var(--primary)', fontSize: '0.68rem', cursor: 'pointer', fontWeight: 'bold' }}
-                                    onClick={() => {
-                                      handleAddNewInstrument(pKey);
-                                    }}
-                                  >
-                                    ＋ Agregar
-                                  </button>
-                                </div>
-                                
-                                {/* List instruments */}
-                                {list.map(inst => {
-                                  const isSel = activePKey === pKey && activeInstrumentId === inst.id;
-                                  return (
-                                    <button
-                                      key={inst.id}
-                                      className={`instrument-card-btn ${isSel ? 'active' : ''}`}
+                          return (
+                            <div key={block.key} style={{ marginBottom: '0.5rem', border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden', backgroundColor: isBlockActive ? 'rgba(0, 56, 118, 0.02)' : 'transparent' }}>
+                              
+                              {/* Accordion header button */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveBloque(block.key);
+                                  setExpandedBlocks(prev => ({ ...prev, [block.key]: !prev[block.key] }));
+                                  if (list.length > 0) {
+                                    setActiveInstrumentId(list[0].id);
+                                  }
+                                }}
+                                style={{
+                                  width: '100%',
+                                  padding: '0.65rem 0.85rem',
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  backgroundColor: isBlockActive ? 'var(--primary-glow)' : 'var(--bg-secondary)',
+                                  border: 'none',
+                                  borderBottom: isExpanded ? '1px solid var(--border-color)' : 'none',
+                                  cursor: 'pointer',
+                                  textAlign: 'left',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.82rem',
+                                  color: isBlockActive ? 'var(--primary)' : 'var(--text-primary)'
+                                }}
+                              >
+                                <span>{block.label}</span>
+                                <span>{isExpanded ? '▲' : '▼'}</span>
+                              </button>
+                              
+                              {/* Accordion body (instruments list) */}
+                              {isExpanded && (
+                                <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', backgroundColor: 'var(--bg-primary)' }}>
+                                  
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0.2rem 0', padding: '0 0.25rem' }}>
+                                    <span style={{ fontSize: '0.68rem', fontWeight: 'bold', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+                                      Actividades ({activePKey.toUpperCase()})
+                                    </span>
+                                    <button 
+                                      type="button" 
+                                      style={{ padding: '0.1rem 0.4rem', background: 'rgba(0, 56, 118, 0.06)', border: '1px solid var(--primary)', borderRadius: '4px', color: 'var(--primary)', fontSize: '0.68rem', cursor: 'pointer', fontWeight: 'bold' }}
                                       onClick={() => {
-                                        setActivePKey(pKey);
-                                        setActiveInstrumentId(inst.id);
-                                      }}
-                                      style={{ 
-                                        textAlign: 'left', 
-                                        fontSize: '0.75rem', 
-                                        width: '100%', 
-                                        marginBottom: '0.35rem', 
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
-                                        alignItems: 'flex-start',
-                                        padding: '0.55rem 0.75rem',
-                                        borderRadius: '8px',
-                                        border: isSel ? '1px solid var(--primary)' : '1px solid rgba(0, 56, 118, 0.1)',
-                                        background: isSel ? 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)' : 'rgba(255,255,255,0.7)',
-                                        color: isSel ? '#fff' : 'var(--text-primary)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        boxShadow: isSel ? '0 4px 10px var(--primary-glow)' : '0 1px 3px rgba(0,0,0,0.02)'
+                                        setActiveBloque(block.key);
+                                        handleAddNewInstrument(activePKey);
                                       }}
                                     >
-                                      <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: '100%', color: isSel ? '#fff' : 'var(--primary)' }}>
-                                        {inst.activity || 'Actividad Sin Nombre'}
-                                      </div>
-                                      <div style={{ fontSize: '0.68rem', color: isSel ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary)', marginTop: '0.15rem' }}>
-                                        Puntos: <strong>{inst.weight || 100}</strong> pts
-                                      </div>
+                                      ＋ Agregar
                                     </button>
-                                  );
-                                })}
-                                {list.length === 0 && (
-                                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', paddingLeft: '0.5rem', fontStyle: 'italic' }}>
-                                    Sin instrumentos
                                   </div>
-                                )}
-                              </div>
-                            );
-                          });
-                        })()}
+
+                                  {/* List instruments */}
+                                  {list.map(inst => {
+                                    const isSel = activeBloque === block.key && activeInstrumentId === inst.id;
+                                    return (
+                                      <button
+                                        key={inst.id}
+                                        className={`instrument-card-btn ${isSel ? 'active' : ''}`}
+                                        onClick={() => {
+                                          setActiveBloque(block.key);
+                                          setActiveInstrumentId(inst.id);
+                                        }}
+                                        style={{ 
+                                          textAlign: 'left', 
+                                          fontSize: '0.74rem', 
+                                          width: '100%', 
+                                          display: 'flex', 
+                                          flexDirection: 'column', 
+                                          alignItems: 'flex-start',
+                                          padding: '0.5rem 0.65rem',
+                                          borderRadius: '6px',
+                                          border: isSel ? '1px solid var(--primary)' : '1px solid rgba(0, 56, 118, 0.08)',
+                                          background: isSel ? 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)' : 'rgba(255,255,255,0.7)',
+                                          color: isSel ? '#fff' : 'var(--text-primary)',
+                                          cursor: 'pointer',
+                                          transition: 'all 0.2s ease'
+                                        }}
+                                      >
+                                        <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: '100%', color: isSel ? '#fff' : 'var(--primary)' }}>
+                                          {inst.activity || 'Actividad Sin Nombre'}
+                                        </div>
+                                        <div style={{ fontSize: '0.66rem', color: isSel ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary)', marginTop: '0.1rem' }}>
+                                          Puntos: <strong>{inst.weight || 100}</strong> pts
+                                        </div>
+                                      </button>
+                                    );
+                                  })}
+                                  
+                                  {list.length === 0 && (
+                                    <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', padding: '0.5rem 0.25rem', fontStyle: 'italic', textAlign: 'center' }}>
+                                      Sin instrumentos
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                       
-                      {/* AI Credentials Configuration Bar */}
-                      <div className="ai-config-panel">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => setShowAiConfig(!showAiConfig)}>
-                          <strong style={{ fontSize: '0.9rem', color: 'var(--primary)' }}>
-                            🔧 Configuración de Inteligencia Artificial (Gemini / Copilot Real)
-                          </strong>
-                          <span>{showAiConfig ? '▲ Ocultar' : '▼ Mostrar'}</span>
-                        </div>
 
-                        {showAiConfig && (
-                          <form onSubmit={saveAiCredentials} style={{ marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                            <div className="ai-config-row">
-                              <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 'bold' }}>Proveedor</label>
-                                <select className="form-select" style={{ padding: '0.4rem' }} value={aiProvider} onChange={(e) => setAiProvider(e.target.value)}>
-                                  <option value="gemini">Google Gemini (Recomendado)</option>
-                                  <option value="copilot">Microsoft Copilot (Azure Endpoint)</option>
-                                </select>
-                              </div>
-                              <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 'bold' }}>Clave de API / API Key</label>
-                                <input 
-                                  type="password" 
-                                  className="form-input" 
-                                  placeholder="Ingresa tu API Key (e.g. AIzaSy...)" 
-                                  value={aiApiKey} 
-                                  onChange={(e) => setAiApiKey(e.target.value)} 
-                                />
-                              </div>
-                              <button type="submit" className="btn-primary" style={{ height: '38px', alignSelf: 'end' }}>Guardar</button>
-                            </div>
-                            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                              * Consigue tu Gemini API Key gratis en el sitio de <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Google AI Studio</a>. La clave se guarda únicamente de forma local en tu navegador.
-                            </p>
-                          </form>
-                        )}
-                      </div>
-
-                      {/* Interactive AI Chat Box */}
-                      <div className="ai-chat-container">
-                        <div className="ai-chat-header">
-                          <strong style={{ fontSize: '0.9rem', color: 'var(--primary)' }}>
-                            ✨ Chat con Asistente Inteligente
-                          </strong>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            {aiApiKey ? '🟢 API Conectada' : '🟡 Modo Simulador Local'}
-                          </span>
-                        </div>
-
-                        <div className="ai-chat-messages">
-                          {aiChatHistory.map((msg, idx) => (
-                            <div key={idx} className={`ai-chat-bubble ${msg.sender}`}>
-                              <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: 'bold', marginBottom: '0.2rem', color: msg.sender === 'ai' ? '#a855f7' : 'var(--primary)' }}>
-                                {msg.sender === 'ai' ? 'Gemini / Copilot' : 'Tú (Docente)'}
-                              </span>
-                              <div>{msg.text}</div>
-                            </div>
-                          ))}
-
-                          {aiIsTyping && (
-                            <div className="ai-chat-bubble ai">
-                              <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: 'bold', color: '#a855f7' }}>Gemini / Copilot</span>
-                              <div className="ai-typing-effect">Generando instrumento de rúbrica a medida...</div>
-                            </div>
-                          )}
-                        </div>
-
-                        {latestAiGeneratedInstrument && (
-                          <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
-                            <button className="ai-chat-apply-btn" onClick={handleApplyAiInstrument}>
-                              ⚡ Aplicar este instrumento al formulario matricial
-                            </button>
-                          </div>
-                        )}
-
-                        <form onSubmit={handleSendAiMessage} className="ai-chat-input-row">
-                          <input 
-                            type="text" 
-                            className="ai-chat-input"
-                            value={aiPrompt}
-                            onChange={(e) => setAiPrompt(e.target.value)}
-                            placeholder="Ej: 'rúbrica para debate sobre embarazo adolescente con 5 criterios'"
-                            disabled={aiIsTyping}
-                          />
-                          <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1rem' }} disabled={aiIsTyping}>
-                            Enviar
-                          </button>
-                        </form>
-                      </div>
 
                       {/* SIDE-BY-SIDE PANELS (Rúbrica Matrix on Left, Students spreadsheet on Right) */}
                       <div className="instruments-side-by-side-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '1.5rem', alignItems: 'start', marginTop: '1rem' }}>
@@ -3456,6 +3417,193 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     Por favor selecciona un Grado y Asignatura en la barra lateral.
                   </div>
                 )}
+              {/* Gemini Floating Chatbot Assistant */}
+              {!aiChatOpen && (
+                <button
+                  type="button"
+                  className="gemini-chat-fab"
+                  onClick={() => setAiChatOpen(true)}
+                  style={{
+                    position: 'fixed',
+                    bottom: '2rem',
+                    right: '2rem',
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    boxShadow: '0 4px 16px rgba(124, 58, 237, 0.4)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.75rem',
+                    zIndex: 1000
+                  }}
+                  title="Asistente de Rúbricas Gemini"
+                >
+                  ✨
+                </button>
+              )}
+
+              {aiChatOpen && (
+                <div
+                  className="gemini-floating-chat glass-panel animate-fade-in"
+                  style={{
+                    position: 'fixed',
+                    bottom: '2rem',
+                    right: '2rem',
+                    width: '380px',
+                    height: aiChatMinimized ? '48px' : '520px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    zIndex: 1000,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                    border: '1px solid rgba(124, 58, 237, 0.2)',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    backgroundColor: 'var(--bg-secondary)'
+                  }}
+                >
+                  {/* Chat Header */}
+                  <div
+                    style={{
+                      padding: '0.75rem 1rem',
+                      background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+                      color: '#fff',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      userSelect: 'none'
+                    }}
+                    onClick={() => setAiChatMinimized(!aiChatMinimized)}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.1rem' }}>✨</span>
+                      <strong style={{ fontSize: '0.88rem' }}>Asistente Gemini</strong>
+                      <span style={{ fontSize: '0.7rem', opacity: 0.9 }}>
+                        {aiApiKey ? '(En Línea)' : '(Simulador)'}
+                      </span>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={() => setAiChatMinimized(!aiChatMinimized)}
+                        style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1rem', cursor: 'pointer', padding: '0.25rem' }}
+                        title="Minimizar"
+                      >
+                        {aiChatMinimized ? '▲' : '▼'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAiChatOpen(false)}
+                        style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.1rem', cursor: 'pointer', padding: '0.25rem', fontWeight: 'bold' }}
+                        title="Cerrar"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Chat Body */}
+                  {!aiChatMinimized && (
+                    <>
+                      {/* AI Config link button */}
+                      <div style={{ padding: '0.4rem 0.85rem', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Configuración de Clave API</span>
+                        <button
+                          type="button"
+                          style={{ background: 'none', border: 'none', color: '#7c3aed', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.72rem' }}
+                          onClick={() => setShowAiConfig(!showAiConfig)}
+                        >
+                          {showAiConfig ? 'Ocultar 🔧' : 'Configurar 🔧'}
+                        </button>
+                      </div>
+
+                      {/* Collapsible API config section inside float */}
+                      {showAiConfig && (
+                        <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)' }}>
+                          <form onSubmit={saveAiCredentials} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <div style={{ flex: 1 }}>
+                                <label style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Proveedor</label>
+                                <select className="form-select" style={{ padding: '0.25rem', fontSize: '0.75rem' }} value={aiProvider} onChange={(e) => setAiProvider(e.target.value)}>
+                                  <option value="gemini">Google Gemini</option>
+                                  <option value="copilot">Microsoft Copilot</option>
+                                </select>
+                              </div>
+                              <div style={{ flex: 1.5 }}>
+                                <label style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>API Key</label>
+                                <input 
+                                  type="password" 
+                                  className="form-input" 
+                                  style={{ padding: '0.25rem', fontSize: '0.75rem' }}
+                                  placeholder="Ingresa clave..." 
+                                  value={aiApiKey} 
+                                  onChange={(e) => setAiApiKey(e.target.value)} 
+                                />
+                              </div>
+                            </div>
+                            <button type="submit" className="btn-primary" style={{ padding: '0.35rem', fontSize: '0.75rem', backgroundColor: '#7c3aed' }}>Guardar</button>
+                          </form>
+                        </div>
+                      )}
+
+                      {/* Chat Messages */}
+                      <div className="ai-chat-messages" style={{ flex: 1, padding: '0.75rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {aiChatHistory.map((msg, idx) => (
+                          <div key={idx} className={`ai-chat-bubble ${msg.sender}`} style={{ alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
+                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', marginBottom: '0.15rem', color: msg.sender === 'ai' ? '#7c3aed' : 'var(--primary)' }}>
+                              {msg.sender === 'ai' ? 'Gemini' : 'Tú'}
+                            </span>
+                            <div style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{msg.text}</div>
+                          </div>
+                        ))}
+
+                        {aiIsTyping && (
+                          <div className="ai-chat-bubble ai" style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
+                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: '#7c3aed' }}>Gemini</span>
+                            <div className="ai-typing-effect" style={{ fontSize: '0.8rem' }}>Generando instrumento...</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Applied instrument preview inside chat */}
+                      {latestAiGeneratedInstrument && (
+                        <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'rgba(124, 58, 237, 0.08)', borderTop: '1px solid rgba(124, 58, 237, 0.15)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-primary)' }}>
+                            Instrumento listo: <strong>{latestAiGeneratedInstrument.activity}</strong>
+                          </div>
+                          <button className="ai-chat-apply-btn" onClick={handleApplyAiInstrument} style={{ padding: '0.35rem', fontSize: '0.75rem', width: '100%', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            ⚡ Aplicar Instrumento
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Chat Input form */}
+                      <form onSubmit={handleSendAiMessage} className="ai-chat-input-row" style={{ display: 'flex', borderTop: '1px solid var(--border-color)', padding: '0.5rem', gap: '0.35rem', backgroundColor: 'var(--bg-primary)' }}>
+                        <input 
+                          type="text" 
+                          className="ai-chat-input"
+                          value={aiPrompt}
+                          onChange={(e) => setAiPrompt(e.target.value)}
+                          placeholder="Pídele una rúbrica a Gemini..."
+                          disabled={aiIsTyping}
+                          style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                        />
+                        <button type="submit" className="btn-primary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', backgroundColor: '#7c3aed' }} disabled={aiIsTyping}>
+                          Enviar
+                        </button>
+                      </form>
+                    </>
+                  )}
+                </div>
+              )}
+
               </div>
             )}
 
