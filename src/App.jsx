@@ -371,6 +371,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [attendanceDayDates, setAttendanceDayDates] = useState(() => {
+    const saved = localStorage.getItem('s_attendance_day_dates');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [activeBloque, setActiveBloque] = useState('bloque1');
   const [selectedAttendanceMonth, setSelectedAttendanceMonth] = useState('Agosto');
 
@@ -490,6 +495,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('s_monthly_worked_days', JSON.stringify(monthlyWorkedDays));
   }, [monthlyWorkedDays]);
+
+  useEffect(() => {
+    localStorage.setItem('s_attendance_day_dates', JSON.stringify(attendanceDayDates));
+  }, [attendanceDayDates]);
 
   useEffect(() => {
     localStorage.setItem('s_events', JSON.stringify(calendarEvents));
@@ -2153,7 +2162,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div>
                 <h2>Control de Asistencia: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías indican presencia por defecto.
+                  Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías no suman ni restan al total.
                 </p>
 
                 <div className="attendance-month-tabs">
@@ -2216,7 +2225,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                               <span style={{ width: 12, height: 12, borderRadius: '50%', border: '1.5px dashed var(--text-muted)', display: 'inline-block' }}></span>
-                              Vacío (Pres.)
+                              Vacío (Neutro)
                             </span>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                               <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(46, 125, 50, 0.15)', border: '1.5px solid var(--success)', display: 'inline-block' }}></span>
@@ -2243,25 +2252,68 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                         {/* Grid Table */}
                         <div className="custom-table-container">
-                          <table className="custom-table" style={{ tableLayout: 'auto' }}>
+                          <table className="custom-table" style={{ tableLayout: 'fixed', width: '1000px' }}>
                             <thead>
+                              {/* Row 1: Group Header matching registry cover cover image layout */}
                               <tr>
-                                <th>#</th>
-                                <th>Estudiante</th>
-                                
-                                {weekdays.map((day, idx) => (
-                                  <th key={idx} className="th-vertical-header" style={{ width: '40px' }}>
-                                    <span className="th-vertical-text">
-                                      {day.dayName} {day.dayNum}
-                                    </span>
+                                <th rowSpan={2} style={{ width: '40px', verticalAlign: 'middle', textAlign: 'center' }}>#</th>
+                                <th rowSpan={2} style={{ width: '180px', verticalAlign: 'middle' }}>Estudiante</th>
+                                <th colSpan={21} style={{ textAlign: 'center', backgroundColor: '#e2e8f0', color: '#1e293b', fontWeight: '800', letterSpacing: '0.08em', fontSize: '0.85rem', padding: '0.5rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                  DÍAS TRABAJADOS
+                                </th>
+                                <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle', width: '55px', fontWeight: 'bold' }}>T</th>
+                                <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle', width: '55px', fontWeight: 'bold' }}>%</th>
+                              </tr>
+                              {/* Row 2: Day numbers 1 to 21 */}
+                              <tr>
+                                {Array.from({ length: 21 }).map((_, idx) => (
+                                  <th key={idx} style={{ textAlign: 'center', width: '32px', padding: '0.4rem 0.2rem', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                    {idx + 1}
                                   </th>
                                 ))}
-                                
-                                <th style={{ textAlign: 'center', width: '90px' }}>Trabajados (D)</th>
-                                <th style={{ textAlign: 'center', width: '90px' }}>Asistidos (T)</th>
-                                <th style={{ textAlign: 'center', width: '90px' }}>Excusas (E)</th>
-                                <th style={{ textAlign: 'center', width: '90px' }}>Inasist. (A)</th>
-                                <th style={{ textAlign: 'center', width: '90px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)' }}>% Asist.</th>
+                              </tr>
+                              {/* Row 3: Day dates inputs where the teacher types the days */}
+                              <tr style={{ backgroundColor: 'var(--bg-primary)' }}>
+                                <td></td>
+                                <td style={{ fontWeight: 'bold', fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', verticalAlign: 'middle' }}>
+                                  DÍAS
+                                </td>
+                                {Array.from({ length: 21 }).map((_, idx) => {
+                                  const dateKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}_day_${idx}`;
+                                  const dateVal = attendanceDayDates[dateKey] || '';
+                                  return (
+                                    <td key={idx} style={{ padding: '0.2rem', textAlign: 'center', borderBottom: '2px solid var(--border-color)' }}>
+                                      <input 
+                                        type="text"
+                                        maxLength="2"
+                                        style={{
+                                          width: '26px',
+                                          height: '24px',
+                                          padding: '0.1rem',
+                                          textAlign: 'center',
+                                          fontSize: '0.72rem',
+                                          fontWeight: '800',
+                                          border: '1.5px solid var(--border-color)',
+                                          borderRadius: '4px',
+                                          backgroundColor: 'var(--bg-secondary)',
+                                          color: 'var(--text-primary)',
+                                          outline: 'none'
+                                        }}
+                                        value={dateVal}
+                                        placeholder=""
+                                        onChange={(e) => {
+                                          const val = e.target.value.replace(/\D/g, ''); // only digits
+                                          setAttendanceDayDates(prev => ({
+                                            ...prev,
+                                            [dateKey]: val
+                                          }));
+                                        }}
+                                      />
+                                    </td>
+                                  );
+                                })}
+                                <td></td>
+                                <td></td>
                               </tr>
                             </thead>
                             <tbody>
@@ -2272,8 +2324,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 let tCount = 0;
                                 let pCount = 0;
 
-                                weekdays.forEach(day => {
-                                  const attendanceKey = `${s.id}_${selectedAttendanceMonth}_${day.dateString}`;
+                                Array.from({ length: 21 }).forEach((_, idx) => {
+                                  const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
                                   const status = studentAttendanceDetail[attendanceKey] || '';
                                   if (status === 'A') aCount++;
                                   else if (status === 'E') eCount++;
@@ -2287,29 +2339,30 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 
                                 // 3 excuses = 1 absence
                                 const excuseAbsences = Math.floor(eCount / 3);
-                                const totalAbsences = aCount + excuseAbsences;
+                                const excusePresences = eCount - excuseAbsences;
                                 
-                                // Total present days
-                                const finalPresentDays = Math.max(0, activeDays - totalAbsences);
+                                // Total present days (T)
+                                const finalPresentDays = pCount + tCount + excusePresences;
+                                const cappedT = Math.min(activeDays, finalPresentDays);
                                 
                                 // Percentage calculation
                                 const attendancePercentage = activeDays > 0 
-                                  ? Math.round((finalPresentDays / activeDays) * 100) 
-                                  : 'N/A';
+                                  ? Math.round((cappedT / activeDays) * 100) 
+                                  : 0;
 
                                 const isRetiredStudent = rCount >= currentMonthWorkedDays || activeDays === 0;
 
                                 return (
                                   <tr key={s.id}>
-                                    <td style={{ width: '40px', fontFamily: 'var(--font-mono)' }}>{sIdx + 1}</td>
-                                    <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{sIdx + 1}</td>
+                                    <td style={{ fontWeight: 600, fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</td>
                                     
-                                    {weekdays.map((day, idx) => {
-                                      const attendanceKey = `${s.id}_${selectedAttendanceMonth}_${day.dateString}`;
+                                    {Array.from({ length: 21 }).map((_, idx) => {
+                                      const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
                                       const status = studentAttendanceDetail[attendanceKey] || '';
 
                                       return (
-                                        <td key={idx} style={{ textAlign: 'center', padding: '0.4rem 0.25rem' }}>
+                                        <td key={idx} style={{ textAlign: 'center', padding: '0.3rem 0.1rem' }}>
                                           <button 
                                             className={`attendance-cell-btn ${
                                               status === 'P' ? 'present' : 
@@ -2339,18 +2392,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       );
                                     })}
 
-                                    {/* Stats */}
-                                    <td style={{ textAlign: 'center', fontWeight: '500', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
-                                      {isRetiredStudent ? '-' : activeDays}
-                                    </td>
+                                    {/* Stats (only T and %) */}
                                     <td style={{ textAlign: 'center', fontWeight: 'bold', color: 'var(--success)', fontFamily: 'var(--font-mono)' }}>
-                                      {isRetiredStudent ? 'Retirado' : finalPresentDays}
-                                    </td>
-                                    <td style={{ textAlign: 'center', fontWeight: '500', color: '#2196f3', fontFamily: 'var(--font-mono)' }}>
-                                      {isRetiredStudent ? '-' : eCount}
-                                    </td>
-                                    <td style={{ textAlign: 'center', fontWeight: '500', color: 'var(--danger)', fontFamily: 'var(--font-mono)' }}>
-                                      {isRetiredStudent ? '-' : aCount}
+                                      {isRetiredStudent ? 'Retirado' : cappedT}
                                     </td>
                                     <td style={{ textAlign: 'center', fontWeight: 'bold', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
                                       {isRetiredStudent ? 'Retirado' : `${attendancePercentage}%`}

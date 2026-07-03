@@ -225,10 +225,34 @@ h1, h2, h3, h4, h5, h6 {
 /* Custom Table Design */
 .custom-table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+/* Force visible and stylized horizontal scrollbar for all platforms */
+.custom-table-container::-webkit-scrollbar {
+  height: 8px;
+  display: block;
+}
+
+.custom-table-container::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-radius: 4px;
+}
+
+.custom-table-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+  border: 1px solid var(--bg-secondary);
+}
+
+.custom-table-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .custom-table {
