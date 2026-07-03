@@ -461,6 +461,11 @@ export default function App() {
     ? (students.reduce((acc, s) => acc + ((s.math + s.science + s.language + s.history) / 4), 0) / adminStudentCount).toFixed(1)
     : 0;
 
+  const mathAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.math, 0) / adminStudentCount).toFixed(1) : 0;
+  const scienceAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.science, 0) / adminStudentCount).toFixed(1) : 0;
+  const langAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.language, 0) / adminStudentCount).toFixed(1) : 0;
+  const historyAvg = adminStudentCount > 0 ? (students.reduce((acc, s) => acc + s.history, 0) / adminStudentCount).toFixed(1) : 0;
+
   // --- VIEW: Login ---
   if (!currentUser) {
     return (
@@ -637,7 +642,7 @@ export default function App() {
                       <li>Matemáticas: <strong>{mathAvg}%</strong></li>
                       <li>Ciencias: <strong>{scienceAvg}%</strong></li>
                       <li>Lenguaje: <strong>{langAvg}%</strong></li>
-                      <li>Historia: <strong>{langAvg}%</strong></li>
+                      <li>Historia: <strong>{historyAvg}%</strong></li>
                     </ul>
                   </div>
                 </div>
