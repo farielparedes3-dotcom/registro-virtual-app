@@ -956,3 +956,121 @@
   font-weight: 800;
   padding: 0.5rem;
 }
+
+/* ==========================================================================
+   Attendance Custom Styles
+   ========================================================================== */
+.attendance-month-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-month-btn {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 550;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.attendance-month-btn:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.attendance-month-btn.active {
+  background-color: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.attendance-cell-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: all var(--transition-fast);
+}
+
+.attendance-cell-btn.present {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.attendance-cell-btn.absent {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.attendance-cell-btn.tardy {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.th-vertical-header {
+  height: 90px;
+  min-width: 32px;
+  vertical-align: bottom;
+  padding: 0.5rem 0.25rem !important;
+  text-align: center;
+}
+
+.th-vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--text-secondary);
+  display: inline-block;
+  margin-bottom: 0.25rem;
+}
+
+.block-tabs-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.block-tab-btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.88rem;
+  font-weight: bold;
+  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.block-tab-btn:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.block-tab-btn.active {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+  border-color: var(--primary);
+}

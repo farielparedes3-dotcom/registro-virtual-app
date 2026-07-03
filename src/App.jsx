@@ -273,6 +273,68 @@ const normalizeCriteria = (criteriaArray, type = 'rubrica') => {
   });
 };
 
+const getWeekdaysForMonth = (monthName) => {
+  const monthMap = {
+    'Agosto': { index: 7, year: 2025 },
+    'Septiembre': { index: 8, year: 2025 },
+    'Octubre': { index: 9, year: 2025 },
+    'Noviembre': { index: 10, year: 2025 },
+    'Diciembre': { index: 11, year: 2025 },
+    'Enero': { index: 0, year: 2026 },
+    'Febrero': { index: 1, year: 2026 },
+    'Marzo': { index: 2, year: 2026 },
+    'Abril': { index: 3, year: 2026 },
+    'Mayo': { index: 4, year: 2026 },
+    'Junio': { index: 5, year: 2026 }
+  };
+  
+  const config = monthMap[monthName];
+  if (!config) return [];
+  
+  const daysInMonth = new Date(config.year, config.index + 1, 0).getDate();
+  const weekdays = [];
+  const weekdayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(config.year, config.index, day);
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Mon to Fri
+      weekdays.push({
+        dayNum: day,
+        dayName: weekdayNames[dayOfWeek],
+        dateString: `${config.year}-${String(config.index + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      });
+    }
+  }
+  return weekdays;
+};
+
+const normalizeStudentGrades = (grades) => {
+  const normalized = {};
+  const subjectsList = ['math', 'science', 'language', 'history'];
+  
+  subjectsList.forEach(sub => {
+    const raw = grades?.[sub];
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      normalized[sub] = {
+        bloque1: Array.isArray(raw.bloque1) ? [...raw.bloque1] : [80, 80, 80, 80],
+        bloque2: Array.isArray(raw.bloque2) ? [...raw.bloque2] : [80, 80, 80, 80],
+        bloque3: Array.isArray(raw.bloque3) ? [...raw.bloque3] : [80, 80, 80, 80],
+        bloque4: Array.isArray(raw.bloque4) ? [...raw.bloque4] : [80, 80, 80, 80]
+      };
+    } else {
+      const baseArray = Array.isArray(raw) ? [...raw] : [80, 80, 80, 80];
+      normalized[sub] = {
+        bloque1: baseArray,
+        bloque2: [80, 80, 80, 80],
+        bloque3: [80, 80, 80, 80],
+        bloque4: [80, 80, 80, 80]
+      };
+    }
+  });
+  return normalized;
+};
+
 export default function App() {
   // --- Core States ---
   const [users, setUsers] = useState(() => {
@@ -287,8 +349,25 @@ export default function App() {
 
   const [students, setStudents] = useState(() => {
     const saved = localStorage.getItem('s_students');
-    return saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
+    const parsed = saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
+    return parsed.map(s => ({
+      ...s,
+      grades: normalizeStudentGrades(s.grades)
+    }));
   });
+
+  const [studentRpGrades, setStudentRpGrades] = useState(() => {
+    const saved = localStorage.getItem('s_student_rp_grades');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [studentAttendanceDetail, setStudentAttendanceDetail] = useState(() => {
+    const saved = localStorage.getItem('s_student_attendance_detail');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [activeBloque, setActiveBloque] = useState('bloque1');
+  const [selectedAttendanceMonth, setSelectedAttendanceMonth] = useState('Agosto');
 
   const [calendarEvents, setCalendarEvents] = useState(() => {
     const saved = localStorage.getItem('s_events');
@@ -396,6 +475,14 @@ export default function App() {
   }, [students]);
 
   useEffect(() => {
+    localStorage.setItem('s_student_rp_grades', JSON.stringify(studentRpGrades));
+  }, [studentRpGrades]);
+
+  useEffect(() => {
+    localStorage.setItem('s_student_attendance_detail', JSON.stringify(studentAttendanceDetail));
+  }, [studentAttendanceDetail]);
+
+  useEffect(() => {
     localStorage.setItem('s_events', JSON.stringify(calendarEvents));
   }, [calendarEvents]);
 
@@ -437,7 +524,7 @@ export default function App() {
   // Sync edit state in Instruments Tab
   useEffect(() => {
     if (currentUser && selectedGrade && selectedSubject) {
-      const configKey = `${selectedGrade}_${selectedSubject}`;
+      const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
       const configs = evaluationConfigs[configKey] || [];
       const activeConf = configs[activeInstrumentIdx];
 
@@ -459,7 +546,7 @@ export default function App() {
         });
       }
     }
-  }, [activeInstrumentIdx, selectedGrade, selectedSubject, evaluationConfigs, currentUser]);
+  }, [activeInstrumentIdx, selectedGrade, selectedSubject, activeBloque, evaluationConfigs, currentUser]);
 
   // --- Handlers ---
   const toggleTheme = () => {
@@ -524,10 +611,10 @@ export default function App() {
       email: studentForm.email,
       grade: activeAdminGrade,
       grades: {
-        math: [80, 80, 80, 80],
-        science: [80, 80, 80, 80],
-        language: [80, 80, 80, 80],
-        history: [80, 80, 80, 80]
+        math: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+        science: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+        language: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+        history: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
       },
       present: 20,
       total: 20
@@ -568,10 +655,10 @@ export default function App() {
           email: email,
           grade: activeAdminGrade,
           grades: {
-            math: [80, 80, 80, 80],
-            science: [80, 80, 80, 80],
-            language: [80, 80, 80, 80],
-            history: [80, 80, 80, 80]
+            math: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+            science: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+            language: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+            history: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
           },
           present: 20,
           total: 20
@@ -683,7 +770,7 @@ export default function App() {
     if (e) e.preventDefault();
     if (!selectedGrade || !selectedSubject) return;
 
-    const configKey = `${selectedGrade}_${selectedSubject}`;
+    const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
     const currentConfigs = evaluationConfigs[configKey] || [
       { id: 0, activity: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
       { id: 1, activity: '', competence: '', indicator: '', type: 'rubrica', criteria: [] },
@@ -963,12 +1050,33 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
-        const currentArr = [...(nextGrades[subjectKey] || [80, 80, 80, 80])];
+        const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
+        const currentArr = [...(subjectBlocks[activeBloque] || [80, 80, 80, 80])];
         currentArr[evalIdx] = numericVal;
-        nextGrades[subjectKey] = currentArr;
+        subjectBlocks[activeBloque] = currentArr;
+        nextGrades[subjectKey] = subjectBlocks;
         return { ...s, grades: nextGrades };
       }
       return s;
+    }));
+  };
+
+  const handleRpGradeChange = (studentId, subjectKey, bloqueKey, evalIdx, value) => {
+    const student = students.find(s => s.id === studentId);
+    const originalGrade = student?.grades?.[subjectKey]?.[bloqueKey]?.[evalIdx] || 0;
+    
+    if (value !== '' && Number(value) < originalGrade) {
+      alert(`La nota de recuperación RP${evalIdx+1} (${value}) no puede ser menor a la nota original P${evalIdx+1} (${originalGrade}).`);
+      return;
+    }
+
+    const rpKey = `${studentId}_${subjectKey}_${bloqueKey}`;
+    const currentRp = studentRpGrades[rpKey] ? [...studentRpGrades[rpKey]] : [null, null, null, null];
+    currentRp[evalIdx] = value === '' ? null : Math.min(100, Math.max(0, Number(value)));
+
+    setStudentRpGrades(prev => ({
+      ...prev,
+      [rpKey]: currentRp
     }));
   };
 
@@ -987,7 +1095,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   // --- Detailed Grading Spreadsheet Cells handlers ---
   const handleUpdateStudentCriterionScore = (studentId, subjectKey, evalIdx, critName, scoreValue) => {
     // Save detailed score
-    const assessmentKey = `${studentId}_${subjectKey}_${evalIdx}`;
+    const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${evalIdx}`;
     const studentAssessment = studentAssessments[assessmentKey] || {};
     const nextAssessment = { ...studentAssessment, [critName]: Number(scoreValue) || 0 };
 
@@ -997,7 +1105,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     }));
 
     // Calculate sum of all criteria and update student grades
-    const configKey = `${selectedGrade}_${subjectKey}`;
+    const configKey = `${selectedGrade}_${subjectKey}_${activeBloque}`;
     const config = evaluationConfigs[configKey]?.[evalIdx] || { criteria: [] };
     const criteriaList = normalizeCriteria(config.criteria, config.type);
     
@@ -1014,9 +1122,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
-        const currentArr = [...(nextGrades[subjectKey] || [80, 80, 80, 80])];
+        const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
+        const currentArr = [...(subjectBlocks[activeBloque] || [80, 80, 80, 80])];
         currentArr[evalIdx] = Math.min(100, Math.max(0, sum));
-        nextGrades[subjectKey] = currentArr;
+        subjectBlocks[activeBloque] = currentArr;
+        nextGrades[subjectKey] = subjectBlocks;
         return { ...s, grades: nextGrades };
       }
       return s;
@@ -1025,7 +1135,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   // --- Modal Assessment Execution ---
   const openAssessmentModal = (studentId, subjectKey, evalIdx) => {
-    const configKey = `${selectedGrade}_${subjectKey}`;
+    const configKey = `${selectedGrade}_${subjectKey}_${activeBloque}`;
     const configs = evaluationConfigs[configKey] || [];
     const config = configs[evalIdx] || {
       id: evalIdx,
@@ -1037,7 +1147,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     };
 
     const student = students.find(s => s.id === studentId);
-    const assessmentKey = `${studentId}_${subjectKey}_${evalIdx}`;
+    const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${evalIdx}`;
     const savedAssessment = studentAssessments[assessmentKey] || {};
 
     const initialTemp = {};
@@ -1089,7 +1199,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       totalSum += score;
     });
 
-    const assessmentKey = `${studentId}_${subjectKey}_${evalIdx}`;
+    const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${evalIdx}`;
     setStudentAssessments(prev => ({
       ...prev,
       [assessmentKey]: nextAssessmentValues
@@ -1098,9 +1208,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
-        const currentArr = [...(nextGrades[subjectKey] || [80, 80, 80, 80])];
+        const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
+        const currentArr = [...(subjectBlocks[activeBloque] || [80, 80, 80, 80])];
         currentArr[evalIdx] = Math.min(100, Math.max(0, totalSum));
-        nextGrades[subjectKey] = currentArr;
+        subjectBlocks[activeBloque] = currentArr;
+        nextGrades[subjectKey] = subjectBlocks;
         return { ...s, grades: nextGrades };
       }
       return s;
@@ -1129,12 +1241,40 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   // --- Calculations for stats ---
   const totalStudents = students.length;
+
+  const getEffectiveGrade = (studentId, subjectKey, bloqueKey, evalIdx, originalGrade) => {
+    const rpKey = `${studentId}_${subjectKey}_${bloqueKey}`;
+    const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
+    const rpVal = rpArray[evalIdx];
+    if (originalGrade < 70 && rpVal !== null && rpVal !== undefined && rpVal !== '') {
+      return Math.max(originalGrade, Number(rpVal));
+    }
+    return originalGrade;
+  };
+
+  const calculateBlockAvg = (studentId, subjectKey, bloqueKey, studentGradesObject) => {
+    const subjectData = studentGradesObject?.[subjectKey] || {};
+    const baseGrades = subjectData[bloqueKey] || [80, 80, 80, 80];
+    let sum = 0;
+    baseGrades.forEach((g, idx) => {
+      sum += getEffectiveGrade(studentId, subjectKey, bloqueKey, idx, g);
+    });
+    return sum / 4;
+  };
+
+  const calculateSubjectAvg = (studentId, subjectKey, studentGradesObject) => {
+    const b1 = calculateBlockAvg(studentId, subjectKey, 'bloque1', studentGradesObject);
+    const b2 = calculateBlockAvg(studentId, subjectKey, 'bloque2', studentGradesObject);
+    const b3 = calculateBlockAvg(studentId, subjectKey, 'bloque3', studentGradesObject);
+    const b4 = calculateBlockAvg(studentId, subjectKey, 'bloque4', studentGradesObject);
+    return (b1 + b2 + b3 + b4) / 4;
+  };
   
   const calculateStudentAvg = (s) => {
-    const math = (s.grades?.math?.reduce((a, b) => a + b, 0) / 4) || 0;
-    const science = (s.grades?.science?.reduce((a, b) => a + b, 0) / 4) || 0;
-    const language = (s.grades?.language?.reduce((a, b) => a + b, 0) / 4) || 0;
-    const history = (s.grades?.history?.reduce((a, b) => a + b, 0) / 4) || 0;
+    const math = calculateSubjectAvg(s.id, 'math', s.grades);
+    const science = calculateSubjectAvg(s.id, 'science', s.grades);
+    const language = calculateSubjectAvg(s.id, 'language', s.grades);
+    const history = calculateSubjectAvg(s.id, 'history', s.grades);
     return (math + science + language + history) / 4;
   };
 
@@ -1145,8 +1285,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   const getSubjectAverage = (subKey) => {
     if (totalStudents === 0) return 0;
     const totalSum = students.reduce((acc, s) => {
-      const arr = s.grades?.[subKey] || [80, 80, 80, 80];
-      return acc + (arr.reduce((a, b) => a + b, 0) / 4);
+      return acc + calculateSubjectAvg(s.id, subKey, s.grades);
     }, 0);
     return (totalSum / totalStudents).toFixed(1);
   };
@@ -1541,7 +1680,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   }
 
   // --- VIEW: Teacher Dashboard ---
-  const activeConfigs = evaluationConfigs[`${selectedGrade}_${selectedSubject}`] || [];
+  const activeConfigs = evaluationConfigs[`${selectedGrade}_${selectedSubject}_${activeBloque}`] || [];
 
   return (
     <div className="app-container">
@@ -1589,6 +1728,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className="sidebar-nav">
               <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard Docente</div>
               <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => setActiveTab('grades')}>Planilla Calificaciones</div>
+              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => setActiveTab('attendance')}>Control Asistencia</div>
               <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>Calendario Escolar</div>
               <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => setActiveTab('instruments')}>Instrumentos de Eval.</div>
               <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => setActiveTab('instructions')}>Instructivo de Uso</div>
@@ -1623,86 +1763,214 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       value={spreadsheetViewMode}
                       onChange={(e) => setSpreadsheetViewMode(e.target.value)}
                     >
-                      <option value="resumen">Resumen General (Ev 1 - 4)</option>
-                      <option value="ev_0">Rúbrica Detallada: Ev 1 ({activeConfigs[0]?.activity || 'Pendiente'})</option>
-                      <option value="ev_1">Rúbrica Detallada: Ev 2 ({activeConfigs[1]?.activity || 'Pendiente'})</option>
-                      <option value="ev_2">Rúbrica Detallada: Ev 3 ({activeConfigs[2]?.activity || 'Pendiente'})</option>
-                      <option value="ev_3">Rúbrica Detallada: Ev 4 ({activeConfigs[3]?.activity || 'Pendiente'})</option>
+                      <option value="resumen">Resumen General (P1 - P4)</option>
+                      <option value="ev_0">Rúbrica Detallada: P1 ({activeConfigs[0]?.activity || 'Pendiente'})</option>
+                      <option value="ev_1">Rúbrica Detallada: P2 ({activeConfigs[1]?.activity || 'Pendiente'})</option>
+                      <option value="ev_2">Rúbrica Detallada: P3 ({activeConfigs[2]?.activity || 'Pendiente'})</option>
+                      <option value="ev_3">Rúbrica Detallada: P4 ({activeConfigs[3]?.activity || 'Pendiente'})</option>
                     </select>
                   </div>
                 </div>
 
                 {selectedGrade && (
-                  <div className="subject-tabs-container">
-                    {teacherGradeSubjects.map(subKey => (
-                      <button key={subKey} className={`subject-tab ${selectedSubject === subKey ? 'active' : ''}`} onClick={() => setSelectedSubject(subKey)}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: SUBJECTS[subKey].color }}></span>
-                        {SUBJECTS[subKey].name}
-                      </button>
-                    ))}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+                    {/* Subject Tabs */}
+                    <div className="subject-tabs-container" style={{ marginBottom: 0, borderBottom: 'none' }}>
+                      {teacherGradeSubjects.map(subKey => (
+                        <button key={subKey} className={`subject-tab ${selectedSubject === subKey ? 'active' : ''}`} onClick={() => setSelectedSubject(subKey)}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: SUBJECTS[subKey].color }}></span>
+                          {SUBJECTS[subKey].name}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Bloques Tabs */}
+                    <div className="block-tabs-container" style={{ marginBottom: 0 }}>
+                      {['bloque1', 'bloque2', 'bloque3', 'bloque4'].map((b, idx) => (
+                        <button 
+                          key={b} 
+                          className={`block-tab-btn ${activeBloque === b ? 'active' : ''}`}
+                          onClick={() => setActiveBloque(b)}
+                        >
+                          Bloque {idx + 1}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 {/* SPREADSHEET TABLE */}
                 {selectedGrade && selectedSubject ? (
-                  <div className="custom-table-container">
-                    <table className="custom-table">
-                      
-                      {/* Render spreadsheet depending on mode */}
-                      {spreadsheetViewMode === 'resumen' ? (
-                        /* Standard summary view */
-                        <>
-                          <thead>
-                            <tr>
-                              <th>Estudiante</th>
-                              <th style={{ width: '130px', textAlign: 'center' }}>Ev 1</th>
-                              <th style={{ width: '130px', textAlign: 'center' }}>Ev 2</th>
-                              <th style={{ width: '130px', textAlign: 'center' }}>Ev 3</th>
-                              <th style={{ width: '130px', textAlign: 'center' }}>Ev 4</th>
-                              <th style={{ textAlign: 'center' }}>Promedio Final</th>
-                              <th>Estado</th>
-                              <th>Asistencia</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {studentsFilteredByGrade.map(s => {
-                              const studentGrades = s.grades?.[selectedSubject] || [80, 80, 80, 80];
-                              const avg = (studentGrades.reduce((a, b) => a + b, 0) / 4);
-                              const isPassing = avg >= 70;
-                              return (
-                                <tr key={s.id}>
-                                  <td style={{ fontWeight: 600 }}>{s.name}</td>
-                                  {[0, 1, 2, 3].map(evalIdx => (
-                                    <td key={evalIdx}>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                        <input 
-                                          type="number" 
-                                          className="form-input" 
-                                          style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                          value={studentGrades[evalIdx]}
-                                          onChange={(e) => handleCellGradeChange(s.id, selectedSubject, evalIdx, e.target.value)}
-                                        />
-                                        <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, evalIdx)}>
-                                          📝
-                                        </button>
-                                      </div>
-                                    </td>
-                                  ))}
-                                  <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{avg.toFixed(1)}</td>
-                                  <td><span className={`badge ${isPassing ? 'badge-success' : 'badge-danger'}`}>{isPassing ? 'Aprobado' : 'Reprobado'}</span></td>
-                                  <td>
-                                    <button className="btn-primary" style={{ padding: '0.25rem 0.4rem', fontSize: '0.72rem' }} onClick={() => handleUpdateAttendance(s.id, 'present')}>P</button>
-                                    <span style={{ fontSize: '0.72rem', marginLeft: '0.25rem' }}>{((s.present / s.total) * 100).toFixed(0)}%</span>
-                                  </td>
+                  (() => {
+                    const showRP1 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[0] || 0) < 70);
+                    const showRP2 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[1] || 0) < 70);
+                    const showRP3 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[2] || 0) < 70);
+                    const showRP4 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[3] || 0) < 70);
+
+                    return (
+                      <div className="custom-table-container">
+                        <table className="custom-table">
+                          
+                          {/* Render spreadsheet depending on mode */}
+                          {spreadsheetViewMode === 'resumen' ? (
+                            /* Standard summary view */
+                            <>
+                              <thead>
+                                <tr>
+                                  <th>Estudiante</th>
+                                  <th style={{ width: '130px', textAlign: 'center' }}>P1</th>
+                                  {showRP1 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP1</th>}
+                                  <th style={{ width: '130px', textAlign: 'center' }}>P2</th>
+                                  {showRP2 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP2</th>}
+                                  <th style={{ width: '130px', textAlign: 'center' }}>P3</th>
+                                  {showRP3 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP3</th>}
+                                  <th style={{ width: '130px', textAlign: 'center' }}>P4</th>
+                                  {showRP4 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP4</th>}
+                                  <th style={{ textAlign: 'center', width: '150px' }}>Promedio Bloque</th>
+                                  <th>Estado</th>
                                 </tr>
-                              );
-                            })}
-                          </tbody>
-                        </>
-                      ) : (
-                        /* Criteria Detailed spreadsheet view (exactly like Google Doc mockup!) */
-                        (() => {
-                          const activeEvalIdx = Number(spreadsheetViewMode.split('_')[1]);
+                              </thead>
+                              <tbody>
+                                {studentsFilteredByGrade.map(s => {
+                                  const subjectData = s.grades?.[selectedSubject] || {};
+                                  const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
+                                  
+                                  const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
+                                  const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
+                                  
+                                  const avg = calculateBlockAvg(s.id, selectedSubject, activeBloque, s.grades);
+                                  const isPassing = avg >= 70;
+                                  return (
+                                    <tr key={s.id}>
+                                      <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                      
+                                      {/* P1 & RP1 */}
+                                      <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={blockArray[0]}
+                                            disabled
+                                          />
+                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 0)}>
+                                            📝
+                                          </button>
+                                        </div>
+                                      </td>
+                                      {showRP1 && (
+                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={rpArray[0] === null ? '' : rpArray[0]}
+                                            disabled={blockArray[0] >= 70}
+                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
+                                            placeholder={blockArray[0] >= 70 ? 'N/A' : '-'}
+                                          />
+                                        </td>
+                                      )}
+
+                                      {/* P2 & RP2 */}
+                                      <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={blockArray[1]}
+                                            disabled
+                                          />
+                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 1)}>
+                                            📝
+                                          </button>
+                                        </div>
+                                      </td>
+                                      {showRP2 && (
+                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={rpArray[1] === null ? '' : rpArray[1]}
+                                            disabled={blockArray[1] >= 70}
+                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
+                                            placeholder={blockArray[1] >= 70 ? 'N/A' : '-'}
+                                          />
+                                        </td>
+                                      )}
+
+                                      {/* P3 & RP3 */}
+                                      <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={blockArray[2]}
+                                            disabled
+                                          />
+                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 2)}>
+                                            📝
+                                          </button>
+                                        </div>
+                                      </td>
+                                      {showRP3 && (
+                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={rpArray[2] === null ? '' : rpArray[2]}
+                                            disabled={blockArray[2] >= 70}
+                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
+                                            placeholder={blockArray[2] >= 70 ? 'N/A' : '-'}
+                                          />
+                                        </td>
+                                      )}
+
+                                      {/* P4 & RP4 */}
+                                      <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={blockArray[3]}
+                                            disabled
+                                          />
+                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 3)}>
+                                            📝
+                                          </button>
+                                        </div>
+                                      </td>
+                                      {showRP4 && (
+                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
+                                          <input 
+                                            type="number" 
+                                            className="form-input" 
+                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                            value={rpArray[3] === null ? '' : rpArray[3]}
+                                            disabled={blockArray[3] >= 70}
+                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
+                                            placeholder={blockArray[3] >= 70 ? 'N/A' : '-'}
+                                          />
+                                        </td>
+                                      )}
+
+                                      <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{avg.toFixed(1)}</td>
+                                      <td><span className={`badge ${isPassing ? 'badge-success' : 'badge-danger'}`}>{isPassing ? 'Aprobado' : 'Reprobado'}</span></td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </>
+                          ) : (
+                            /* Criteria Detailed spreadsheet view (exactly like Google Doc mockup!) */
+                            (() => {
+                              const activeEvalIdx = Number(spreadsheetViewMode.split('_')[1]);
                           const config = activeConfigs[activeEvalIdx] || { criteria: [], activity: 'Evaluación' };
                           const criteriaList = normalizeCriteria(config.criteria, config.type);
                           
@@ -1739,9 +2007,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               </thead>
                               <tbody>
                                 {studentsFilteredByGrade.map((s, sIdx) => {
-                                  const assessmentKey = `${s.id}_${selectedSubject}_${activeEvalIdx}`;
+                                  const assessmentKey = `${s.id}_${selectedSubject}_${activeBloque}_${activeEvalIdx}`;
                                   const savedAssessment = studentAssessments[assessmentKey] || {};
-                                  const currentTotal = s.grades?.[selectedSubject]?.[activeEvalIdx] || 0;
+                                  const subjectData = s.grades?.[selectedSubject] || {};
+                                  const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
+                                  const currentTotal = blockArray[activeEvalIdx] || 0;
 
                                   return (
                                     <tr key={s.id}>
@@ -1823,12 +2093,113 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           );
                         })()
                       )}
-
                     </table>
                   </div>
-                ) : (
+                );
+              })()
+            ) : (
                   <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
                     Por favor selecciona un Grado y Asignatura.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TEACHER: Tab Attendance */}
+            {activeTab === 'attendance' && (
+              <div>
+                <h2>Control de Asistencia: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                  Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente, verde), **A** (Ausente, rojo), o **T** (Tardanza, amarillo).
+                </p>
+
+                <div className="attendance-month-tabs">
+                  {['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'].map(m => (
+                    <button 
+                      key={m} 
+                      className={`attendance-month-btn ${selectedAttendanceMonth === m ? 'active' : ''}`}
+                      onClick={() => setSelectedAttendanceMonth(m)}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+
+                {selectedGrade ? (
+                  (() => {
+                    const weekdays = getWeekdaysForMonth(selectedAttendanceMonth);
+                    return (
+                      <div className="custom-table-container">
+                        <table className="custom-table">
+                          <thead>
+                            <tr>
+                              <th>Estudiante</th>
+                              
+                              {weekdays.map((day, idx) => (
+                                <th key={idx} className="th-vertical-header">
+                                  <span className="th-vertical-text">
+                                    {day.dayName} {day.dayNum}
+                                  </span>
+                                </th>
+                              ))}
+                              
+                              <th style={{ textAlign: 'center', width: '95px' }}>Asistencias</th>
+                              <th style={{ textAlign: 'center', width: '95px' }}>Inasistencias</th>
+                              <th style={{ textAlign: 'center', width: '95px' }}>% Asistencia</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {studentsFilteredByGrade.map(s => {
+                              let presentsCount = 0;
+                              let absentsCount = 0;
+                              let totalDays = weekdays.length;
+
+                              return (
+                                <tr key={s.id}>
+                                  <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                  
+                                  {weekdays.map((day, idx) => {
+                                    const attendanceKey = `${s.id}_${selectedAttendanceMonth}_${day.dateString}`;
+                                    const status = studentAttendanceDetail[attendanceKey] || 'P';
+                                    
+                                    if (status === 'P') presentsCount++;
+                                    else if (status === 'A') absentsCount++;
+                                    else if (status === 'T') presentsCount++;
+
+                                    return (
+                                      <td key={idx} style={{ textAlign: 'center', padding: '0.4rem 0.25rem' }}>
+                                        <button 
+                                          className={`attendance-cell-btn ${status === 'P' ? 'present' : status === 'A' ? 'absent' : 'tardy'}`}
+                                          onClick={() => {
+                                            const nextStatus = status === 'P' ? 'A' : status === 'A' ? 'T' : 'P';
+                                            setStudentAttendanceDetail(prev => ({
+                                              ...prev,
+                                              [attendanceKey]: nextStatus
+                                            }));
+                                          }}
+                                        >
+                                          {status}
+                                        </button>
+                                      </td>
+                                    );
+                                  })}
+
+                                  <td style={{ textAlign: 'center', fontWeight: '600', color: 'var(--success)' }}>{presentsCount}</td>
+                                  <td style={{ textAlign: 'center', fontWeight: '600', color: 'var(--danger)' }}>{absentsCount}</td>
+                                  <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                                    {totalDays > 0 ? ((presentsCount / totalDays) * 100).toFixed(0) : 100}%
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
+                    Por favor selecciona un Grado en la barra lateral.
                   </div>
                 )}
               </div>
