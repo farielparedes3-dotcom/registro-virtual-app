@@ -1012,22 +1012,39 @@
   transition: all var(--transition-fast);
 }
 
+.attendance-cell-btn:empty {
+  border-style: dashed;
+  border-color: var(--text-muted);
+}
+
 .attendance-cell-btn.present {
-  background-color: rgba(16, 185, 129, 0.15);
+  background-color: rgba(46, 125, 50, 0.15); /* MINERD Green */
   border-color: var(--success);
   color: var(--success);
 }
 
 .attendance-cell-btn.absent {
-  background-color: rgba(239, 68, 68, 0.15);
+  background-color: rgba(200, 16, 46, 0.15); /* MINERD Red */
   border-color: var(--danger);
   color: var(--danger);
 }
 
 .attendance-cell-btn.tardy {
-  background-color: rgba(245, 158, 11, 0.15);
+  background-color: rgba(245, 124, 0, 0.15); /* MINERD Orange/Yellow */
   border-color: var(--warning);
   color: var(--warning);
+}
+
+.attendance-cell-btn.excuse {
+  background-color: rgba(33, 150, 243, 0.15); /* Light Blue for Excusa */
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.attendance-cell-btn.retired {
+  background-color: rgba(93, 103, 112, 0.15); /* Dark Grey for Retirado */
+  border-color: #5d6770;
+  color: #5d6770;
 }
 
 .th-vertical-header {

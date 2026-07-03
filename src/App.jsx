@@ -366,6 +366,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [monthlyWorkedDays, setMonthlyWorkedDays] = useState(() => {
+    const saved = localStorage.getItem('s_monthly_worked_days');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [activeBloque, setActiveBloque] = useState('bloque1');
   const [selectedAttendanceMonth, setSelectedAttendanceMonth] = useState('Agosto');
 
@@ -481,6 +486,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('s_student_attendance_detail', JSON.stringify(studentAttendanceDetail));
   }, [studentAttendanceDetail]);
+
+  useEffect(() => {
+    localStorage.setItem('s_monthly_worked_days', JSON.stringify(monthlyWorkedDays));
+  }, [monthlyWorkedDays]);
 
   useEffect(() => {
     localStorage.setItem('s_events', JSON.stringify(calendarEvents));
@@ -1327,20 +1336,35 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           <div className="login-header">
             {/* MINERD Official Dome Logo */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <svg viewBox="0 0 100 80" width="70" height="55" fill="#003876" style={{ marginBottom: '4px' }}>
-                <path d="M 50 15 A 25 25 0 0 1 75 40 L 71 40 A 21 21 0 0 0 50 19 A 21 21 0 0 0 29 40 L 25 40 A 25 25 0 0 1 50 15 Z" />
-                <path d="M 50 24 A 16 16 0 0 1 66 40 L 62 40 A 12 12 0 0 0 50 28 A 12 12 0 0 0 38 40 L 34 40 A 16 16 0 0 1 50 24 Z" />
-                <rect x="48" y="10" width="4" height="8" rx="1" />
-                <rect x="49" y="4" width="2" height="6" />
-                <line x1="20" y1="42" x2="80" y2="42" stroke="#003876" strokeWidth="3" strokeLinecap="round" />
+              <svg viewBox="0 0 120 70" width="105" height="62" style={{ marginBottom: '6px' }}>
+                <rect x="58.5" y="2" width="3" height="15" fill="#003876" />
+                <line x1="55" y1="6" x2="65" y2="6" stroke="#003876" strokeWidth="1.5" />
+                <line x1="53" y1="12" x2="67" y2="12" stroke="#003876" strokeWidth="2" />
+                <path d="M 36 48 C 36 20, 84 20, 84 48 Z" fill="#003876" />
+                <path d="M 43 48 C 43 27, 49 27, 49 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+                <path d="M 51 48 C 51 25, 57 25, 57 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+                <line x1="60" y1="21.5" x2="60" y2="48" stroke="#ffffff" strokeWidth="2" />
+                <path d="M 77 48 C 77 27, 71 27, 71 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+                <path d="M 69 48 C 69 25, 63 25, 63 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+                <rect x="32" y="48" width="56" height="5" fill="#003876" />
+                <rect x="37" y="49" width="3" height="3" fill="#ffffff" />
+                <rect x="45" y="49" width="3" height="3" fill="#ffffff" />
+                <rect x="53" y="49" width="3" height="3" fill="#ffffff" />
+                <rect x="61" y="49" width="3" height="3" fill="#ffffff" />
+                <rect x="69" y="49" width="3" height="3" fill="#ffffff" />
+                <rect x="77" y="49" width="3" height="3" fill="#ffffff" />
+                <rect x="85" y="49" width="3" height="3" fill="#ffffff" />
+                <line x1="28" y1="56" x2="92" y2="56" stroke="#003876" strokeWidth="2.5" />
+                <line x1="32" y1="60" x2="88" y2="60" stroke="#003876" strokeWidth="1.5" />
               </svg>
-              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, color: '#003876', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: '#003876', lineHeight: 1.1, fontFamily: 'Cinzel, Georgia, serif' }}>
                 Gobierno de la
               </div>
-              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 800, color: '#003876', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 800, color: '#003876', lineHeight: 1.2, fontFamily: 'Cinzel, Georgia, serif', margin: '2px 0 4px 0' }}>
                 República Dominicana
               </div>
-              <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 700, color: '#c8102e', borderTop: '1px solid #ebdcb9', marginTop: '4px', paddingTop: '2px', width: '100%', textAlign: 'center' }}>
+              <div style={{ width: '80px', height: '2px', backgroundColor: '#c8102e', margin: '4px auto' }}></div>
+              <div style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.22em', fontWeight: 700, color: '#c8102e', fontFamily: 'Cinzel, Georgia, serif', marginTop: '2px' }}>
                 Educación
               </div>
             </div>
@@ -1442,12 +1466,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       <div className="app-container">
         <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
           <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <svg viewBox="0 0 100 80" width="28" height="24" fill="#003876">
-              <path d="M 50 15 A 25 25 0 0 1 75 40 L 71 40 A 21 21 0 0 0 50 19 A 21 21 0 0 0 29 40 L 25 40 A 25 25 0 0 1 50 15 Z" />
-              <path d="M 50 24 A 16 16 0 0 1 66 40 L 62 40 A 12 12 0 0 0 50 28 A 12 12 0 0 0 38 40 L 34 40 A 16 16 0 0 1 50 24 Z" />
-              <rect x="48" y="10" width="4" height="8" rx="1" />
-              <rect x="49" y="4" width="2" height="6" />
-              <line x1="20" y1="42" x2="80" y2="42" stroke="#003876" strokeWidth="3" strokeLinecap="round" />
+            <svg viewBox="0 0 120 70" width="34" height="26">
+              <rect x="58.5" y="2" width="3" height="15" fill="#003876" />
+              <line x1="55" y1="6" x2="65" y2="6" stroke="#003876" strokeWidth="1.5" />
+              <line x1="53" y1="12" x2="67" y2="12" stroke="#003876" strokeWidth="2" />
+              <path d="M 36 48 C 36 20, 84 20, 84 48 Z" fill="#003876" />
+              <path d="M 43 48 C 43 27, 49 27, 49 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+              <path d="M 51 48 C 51 25, 57 25, 57 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+              <line x1="60" y1="21.5" x2="60" y2="48" stroke="#ffffff" strokeWidth="2" />
+              <path d="M 77 48 C 77 27, 71 27, 71 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+              <path d="M 69 48 C 69 25, 63 25, 63 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+              <rect x="32" y="48" width="56" height="5" fill="#003876" />
+              <rect x="37" y="49" width="3" height="3" fill="#ffffff" />
+              <rect x="45" y="49" width="3" height="3" fill="#ffffff" />
+              <rect x="53" y="49" width="3" height="3" fill="#ffffff" />
+              <rect x="61" y="49" width="3" height="3" fill="#ffffff" />
+              <rect x="69" y="49" width="3" height="3" fill="#ffffff" />
+              <rect x="77" y="49" width="3" height="3" fill="#ffffff" />
+              <rect x="85" y="49" width="3" height="3" fill="#ffffff" />
+              <line x1="28" y1="56" x2="92" y2="56" stroke="#003876" strokeWidth="2.5" />
+              <line x1="32" y1="60" x2="88" y2="60" stroke="#003876" strokeWidth="1.5" />
             </svg>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
               <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)' }}>Liceo Ana Rosa Castillo</span>
@@ -1741,12 +1779,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     <div className="app-container">
       <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
         <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <svg viewBox="0 0 100 80" width="28" height="24" fill="#003876">
-            <path d="M 50 15 A 25 25 0 0 1 75 40 L 71 40 A 21 21 0 0 0 50 19 A 21 21 0 0 0 29 40 L 25 40 A 25 25 0 0 1 50 15 Z" />
-            <path d="M 50 24 A 16 16 0 0 1 66 40 L 62 40 A 12 12 0 0 0 50 28 A 12 12 0 0 0 38 40 L 34 40 A 16 16 0 0 1 50 24 Z" />
-            <rect x="48" y="10" width="4" height="8" rx="1" />
-            <rect x="49" y="4" width="2" height="6" />
-            <line x1="20" y1="42" x2="80" y2="42" stroke="#003876" strokeWidth="3" strokeLinecap="round" />
+          <svg viewBox="0 0 120 70" width="34" height="26">
+            <rect x="58.5" y="2" width="3" height="15" fill="#003876" />
+            <line x1="55" y1="6" x2="65" y2="6" stroke="#003876" strokeWidth="1.5" />
+            <line x1="53" y1="12" x2="67" y2="12" stroke="#003876" strokeWidth="2" />
+            <path d="M 36 48 C 36 20, 84 20, 84 48 Z" fill="#003876" />
+            <path d="M 43 48 C 43 27, 49 27, 49 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+            <path d="M 51 48 C 51 25, 57 25, 57 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+            <line x1="60" y1="21.5" x2="60" y2="48" stroke="#ffffff" strokeWidth="2" />
+            <path d="M 77 48 C 77 27, 71 27, 71 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+            <path d="M 69 48 C 69 25, 63 25, 63 48" stroke="#ffffff" strokeWidth="2" fill="none" />
+            <rect x="32" y="48" width="56" height="5" fill="#003876" />
+            <rect x="37" y="49" width="3" height="3" fill="#ffffff" />
+            <rect x="45" y="49" width="3" height="3" fill="#ffffff" />
+            <rect x="53" y="49" width="3" height="3" fill="#ffffff" />
+            <rect x="61" y="49" width="3" height="3" fill="#ffffff" />
+            <rect x="69" y="49" width="3" height="3" fill="#ffffff" />
+            <rect x="77" y="49" width="3" height="3" fill="#ffffff" />
+            <rect x="85" y="49" width="3" height="3" fill="#ffffff" />
+            <line x1="28" y1="56" x2="92" y2="56" stroke="#003876" strokeWidth="2.5" />
+            <line x1="32" y1="60" x2="88" y2="60" stroke="#003876" strokeWidth="1.5" />
           </svg>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
             <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)' }}>Liceo Ana Rosa Castillo</span>
@@ -2172,7 +2224,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div>
                 <h2>Control de Asistencia: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente, verde), **A** (Ausente, rojo), o **T** (Tardanza, amarillo).
+                  Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías indican presencia por defecto.
                 </p>
 
                 <div className="attendance-month-tabs">
@@ -2187,76 +2239,200 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   ))}
                 </div>
 
-                {selectedGrade ? (
+                {selectedGrade && selectedSubject ? (
                   (() => {
                     const weekdays = getWeekdaysForMonth(selectedAttendanceMonth);
+                    const workedDaysKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}`;
+                    const currentMonthWorkedDays = monthlyWorkedDays[workedDaysKey] !== undefined 
+                      ? Number(monthlyWorkedDays[workedDaysKey]) 
+                      : weekdays.length;
+
+                    // Calculate total worked days general across all months in the year
+                    const monthsList = ['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
+                    const totalWorkedDaysGeneral = monthsList.reduce((sum, mName) => {
+                      const mKey = `${selectedGrade}_${selectedSubject}_${mName}`;
+                      const wDays = getWeekdaysForMonth(mName).length;
+                      return sum + (monthlyWorkedDays[mKey] !== undefined ? Number(monthlyWorkedDays[mKey]) : wDays);
+                    }, 0);
+
                     return (
-                      <div className="custom-table-container">
-                        <table className="custom-table">
-                          <thead>
-                            <tr>
-                              <th>Estudiante</th>
-                              
-                              {weekdays.map((day, idx) => (
-                                <th key={idx} className="th-vertical-header">
-                                  <span className="th-vertical-text">
-                                    {day.dayName} {day.dayNum}
-                                  </span>
-                                </th>
-                              ))}
-                              
-                              <th style={{ textAlign: 'center', width: '95px' }}>Asistencias</th>
-                              <th style={{ textAlign: 'center', width: '95px' }}>Inasistencias</th>
-                              <th style={{ textAlign: 'center', width: '95px' }}>% Asistencia</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {studentsFilteredByGrade.map(s => {
-                              let presentsCount = 0;
-                              let absentsCount = 0;
-                              let totalDays = weekdays.length;
+                      <>
+                        {/* Config Panel for Worked Days */}
+                        <div className="glass-panel" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <label style={{ fontSize: '0.88rem', fontWeight: 'bold', color: 'var(--primary)' }}>
+                              Días Trabajados en {selectedAttendanceMonth}:
+                            </label>
+                            <input 
+                              type="number" 
+                              className="form-input" 
+                              style={{ width: '80px', padding: '0.4rem', textAlign: 'center', fontWeight: 'bold' }}
+                              value={currentMonthWorkedDays}
+                              min="1"
+                              max="31"
+                              onChange={(e) => {
+                                const val = Math.max(1, Math.min(31, Number(e.target.value) || 0));
+                                setMonthlyWorkedDays(prev => ({
+                                  ...prev,
+                                  [workedDaysKey]: val
+                                }));
+                              }}
+                            />
+                          </div>
+                          <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
+                            <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                              Total Días Trabajados General: <strong style={{ color: 'var(--primary)', fontSize: '1rem' }}>{totalWorkedDaysGeneral}</strong>
+                            </span>
+                          </div>
+                          <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', border: '1.5px dashed var(--text-muted)', display: 'inline-block' }}></span>
+                              Vacío (Pres.)
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(46, 125, 50, 0.15)', border: '1.5px solid var(--success)', display: 'inline-block' }}></span>
+                              P (Presente)
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(200, 16, 46, 0.15)', border: '1.5px solid var(--danger)', display: 'inline-block' }}></span>
+                              A (Ausente)
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(245, 124, 0, 0.15)', border: '1.5px solid var(--warning)', display: 'inline-block' }}></span>
+                              T (Tardanza)
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(33, 150, 243, 0.15)', border: '1.5px solid #2196f3', display: 'inline-block' }}></span>
+                              E (Excusa)
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(93, 103, 112, 0.15)', border: '1.5px solid #5d6770', display: 'inline-block' }}></span>
+                              R (Retirado)
+                            </span>
+                          </div>
+                        </div>
 
-                              return (
-                                <tr key={s.id}>
-                                  <td style={{ fontWeight: 600 }}>{s.name}</td>
-                                  
-                                  {weekdays.map((day, idx) => {
-                                    const attendanceKey = `${s.id}_${selectedAttendanceMonth}_${day.dateString}`;
-                                    const status = studentAttendanceDetail[attendanceKey] || 'P';
+                        {/* Grid Table */}
+                        <div className="custom-table-container">
+                          <table className="custom-table" style={{ tableLayout: 'auto' }}>
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Estudiante</th>
+                                
+                                {weekdays.map((day, idx) => (
+                                  <th key={idx} className="th-vertical-header" style={{ width: '40px' }}>
+                                    <span className="th-vertical-text">
+                                      {day.dayName} {day.dayNum}
+                                    </span>
+                                  </th>
+                                ))}
+                                
+                                <th style={{ textAlign: 'center', width: '90px' }}>Trabajados (D)</th>
+                                <th style={{ textAlign: 'center', width: '90px' }}>Asistidos (T)</th>
+                                <th style={{ textAlign: 'center', width: '90px' }}>Excusas (E)</th>
+                                <th style={{ textAlign: 'center', width: '90px' }}>Inasist. (A)</th>
+                                <th style={{ textAlign: 'center', width: '90px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)' }}>% Asist.</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {studentsFilteredByGrade.map((s, sIdx) => {
+                                let aCount = 0;
+                                let eCount = 0;
+                                let rCount = 0;
+                                let tCount = 0;
+                                let pCount = 0;
+
+                                weekdays.forEach(day => {
+                                  const attendanceKey = `${s.id}_${selectedAttendanceMonth}_${day.dateString}`;
+                                  const status = studentAttendanceDetail[attendanceKey] || '';
+                                  if (status === 'A') aCount++;
+                                  else if (status === 'E') eCount++;
+                                  else if (status === 'R') rCount++;
+                                  else if (status === 'T') tCount++;
+                                  else if (status === 'P') pCount++;
+                                });
+
+                                // Active evaluated days for student
+                                const activeDays = Math.max(0, currentMonthWorkedDays - rCount);
+                                
+                                // 3 excuses = 1 absence
+                                const excuseAbsences = Math.floor(eCount / 3);
+                                const totalAbsences = aCount + excuseAbsences;
+                                
+                                // Total present days
+                                const finalPresentDays = Math.max(0, activeDays - totalAbsences);
+                                
+                                // Percentage calculation
+                                const attendancePercentage = activeDays > 0 
+                                  ? Math.round((finalPresentDays / activeDays) * 100) 
+                                  : 'N/A';
+
+                                const isRetiredStudent = rCount >= currentMonthWorkedDays || activeDays === 0;
+
+                                return (
+                                  <tr key={s.id}>
+                                    <td style={{ width: '40px', fontFamily: 'var(--font-mono)' }}>{sIdx + 1}</td>
+                                    <td style={{ fontWeight: 600 }}>{s.name}</td>
                                     
-                                    if (status === 'P') presentsCount++;
-                                    else if (status === 'A') absentsCount++;
-                                    else if (status === 'T') presentsCount++;
+                                    {weekdays.map((day, idx) => {
+                                      const attendanceKey = `${s.id}_${selectedAttendanceMonth}_${day.dateString}`;
+                                      const status = studentAttendanceDetail[attendanceKey] || '';
 
-                                    return (
-                                      <td key={idx} style={{ textAlign: 'center', padding: '0.4rem 0.25rem' }}>
-                                        <button 
-                                          className={`attendance-cell-btn ${status === 'P' ? 'present' : status === 'A' ? 'absent' : 'tardy'}`}
-                                          onClick={() => {
-                                            const nextStatus = status === 'P' ? 'A' : status === 'A' ? 'T' : 'P';
-                                            setStudentAttendanceDetail(prev => ({
-                                              ...prev,
-                                              [attendanceKey]: nextStatus
-                                            }));
-                                          }}
-                                        >
-                                          {status}
-                                        </button>
-                                      </td>
-                                    );
-                                  })}
+                                      return (
+                                        <td key={idx} style={{ textAlign: 'center', padding: '0.4rem 0.25rem' }}>
+                                          <button 
+                                            className={`attendance-cell-btn ${
+                                              status === 'P' ? 'present' : 
+                                              status === 'A' ? 'absent' : 
+                                              status === 'T' ? 'tardy' : 
+                                              status === 'E' ? 'excuse' : 
+                                              status === 'R' ? 'retired' : ''
+                                            }`}
+                                            onClick={() => {
+                                              let nextStatus = '';
+                                              if (status === '') nextStatus = 'P';
+                                              else if (status === 'P') nextStatus = 'A';
+                                              else if (status === 'A') nextStatus = 'T';
+                                              else if (status === 'T') nextStatus = 'E';
+                                              else if (status === 'E') nextStatus = 'R';
+                                              else if (status === 'R') nextStatus = '';
+                                              
+                                              setStudentAttendanceDetail(prev => ({
+                                                ...prev,
+                                                [attendanceKey]: nextStatus
+                                              }));
+                                            }}
+                                          >
+                                            {status}
+                                          </button>
+                                        </td>
+                                      );
+                                    })}
 
-                                  <td style={{ textAlign: 'center', fontWeight: '600', color: 'var(--success)' }}>{presentsCount}</td>
-                                  <td style={{ textAlign: 'center', fontWeight: '600', color: 'var(--danger)' }}>{absentsCount}</td>
-                                  <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
-                                    {totalDays > 0 ? ((presentsCount / totalDays) * 100).toFixed(0) : 100}%
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
+                                    {/* Stats */}
+                                    <td style={{ textAlign: 'center', fontWeight: '500', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                                      {isRetiredStudent ? '-' : activeDays}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontWeight: 'bold', color: 'var(--success)', fontFamily: 'var(--font-mono)' }}>
+                                      {isRetiredStudent ? 'Retirado' : finalPresentDays}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontWeight: '500', color: '#2196f3', fontFamily: 'var(--font-mono)' }}>
+                                      {isRetiredStudent ? '-' : eCount}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontWeight: '500', color: 'var(--danger)', fontFamily: 'var(--font-mono)' }}>
+                                      {isRetiredStudent ? '-' : aCount}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontWeight: 'bold', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
+                                      {isRetiredStudent ? 'Retirado' : `${attendancePercentage}%`}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
                     );
                   })()
                 ) : (
