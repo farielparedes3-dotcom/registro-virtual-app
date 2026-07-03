@@ -1782,7 +1782,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => setActiveTab('grades')}>Planilla Calificaciones</div>
               <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => setActiveTab('attendance')}>Control Asistencia</div>
               <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>Calendario Escolar</div>
-              <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => setActiveTab('instruments')}>Instrumentos de Eval.</div>
+              <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
+                if (activeBloque === 'promedio_ce') {
+                  setActiveBloque('bloque1');
+                }
+                setActiveTab('instruments');
+              }}>Instrumentos de Eval.</div>
               <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => setActiveTab('instructions')}>Instructivo de Uso</div>
             </div>
           </aside>
@@ -1807,21 +1812,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   </div>
 
                   {/* Spreadsheet view mode dropdown */}
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <label style={{ fontSize: '0.82rem', fontWeight: 'bold' }}>Vista de Calificación:</label>
-                    <select 
-                      className="form-select" 
-                      style={{ padding: '0.4rem', fontSize: '0.88rem' }}
-                      value={spreadsheetViewMode}
-                      onChange={(e) => setSpreadsheetViewMode(e.target.value)}
-                    >
-                      <option value="resumen">Resumen General (P1 - P4)</option>
-                      <option value="ev_0">Rúbrica Detallada: P1 ({activeConfigs[0]?.activity || 'Pendiente'})</option>
-                      <option value="ev_1">Rúbrica Detallada: P2 ({activeConfigs[1]?.activity || 'Pendiente'})</option>
-                      <option value="ev_2">Rúbrica Detallada: P3 ({activeConfigs[2]?.activity || 'Pendiente'})</option>
-                      <option value="ev_3">Rúbrica Detallada: P4 ({activeConfigs[3]?.activity || 'Pendiente'})</option>
-                    </select>
-                  </div>
+                  {activeBloque !== 'promedio_ce' && (
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <label style={{ fontSize: '0.82rem', fontWeight: 'bold' }}>Vista de Calificación:</label>
+                      <select 
+                        className="form-select" 
+                        style={{ padding: '0.4rem', fontSize: '0.88rem' }}
+                        value={spreadsheetViewMode}
+                        onChange={(e) => setSpreadsheetViewMode(e.target.value)}
+                      >
+                        <option value="resumen">Resumen General (P1 - P4)</option>
+                        <option value="ev_0">Rúbrica Detallada: P1 ({activeConfigs[0]?.activity || 'Pendiente'})</option>
+                        <option value="ev_1">Rúbrica Detactada: P2 ({activeConfigs[1]?.activity || 'Pendiente'})</option>
+                        <option value="ev_2">Rúbrica Detactada: P3 ({activeConfigs[2]?.activity || 'Pendiente'})</option>
+                        <option value="ev_3">Rúbrica Detactada: P4 ({activeConfigs[3]?.activity || 'Pendiente'})</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 {selectedGrade && (
@@ -1838,13 +1845,16 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     {/* Bloques Tabs */}
                     <div className="block-tabs-container" style={{ marginBottom: 0 }}>
-                      {['bloque1', 'bloque2', 'bloque3', 'bloque4'].map((b, idx) => (
+                      {['bloque1', 'bloque2', 'bloque3', 'bloque4', 'promedio_ce'].map((b) => (
                         <button 
                           key={b} 
                           className={`block-tab-btn ${activeBloque === b ? 'active' : ''}`}
                           onClick={() => setActiveBloque(b)}
                         >
-                          Bloque {idx + 1}
+                          {b === 'bloque1' ? 'Bloque CE1' :
+                           b === 'bloque2' ? 'Bloque CE2-CE3' :
+                           b === 'bloque3' ? 'Bloque CE4-CE7' :
+                           b === 'bloque4' ? 'Bloque CE5-CE6' : 'Promedio de CE'}
                         </button>
                       ))}
                     </div>
@@ -1853,303 +1863,370 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                 {/* SPREADSHEET TABLE */}
                 {selectedGrade && selectedSubject ? (
-                  (() => {
-                    const showRP1 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[0] || 0) < 70);
-                    const showRP2 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[1] || 0) < 70);
-                    const showRP3 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[2] || 0) < 70);
-                    const showRP4 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[3] || 0) < 70);
+                  activeBloque === 'promedio_ce' ? (
+                    /* Render Promedio de CE View */
+                    (() => {
+                      return (
+                        <div className="custom-table-container">
+                          <table className="custom-table" style={{ tableLayout: 'auto' }}>
+                            <thead>
+                              {/* Row 1: Group Header */}
+                              <tr>
+                                <th rowSpan={2} style={{ width: '40px', verticalAlign: 'middle', textAlign: 'center' }}>#</th>
+                                <th rowSpan={2} style={{ verticalAlign: 'middle' }}>Estudiante</th>
+                                <th colSpan={4} style={{ textAlign: 'center', backgroundColor: '#e2e8f0', color: '#1e293b', fontWeight: '800', letterSpacing: '0.08em', fontSize: '0.85rem', padding: '0.5rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                  Promedio de Competencias Específicas
+                                </th>
+                                <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle', width: '150px', fontWeight: 'bold', backgroundColor: '#f1f5f9' }}>Calificación final</th>
+                              </tr>
+                              <tr>
+                                <th style={{ width: '160px', textAlign: 'center', fontSize: '0.78rem' }}>PC1: Competencia 1</th>
+                                <th style={{ width: '160px', textAlign: 'center', fontSize: '0.78rem' }}>PC2: Competencia 2</th>
+                                <th style={{ width: '160px', textAlign: 'center', fontSize: '0.78rem' }}>PC3: Competencia 3</th>
+                                <th style={{ width: '160px', textAlign: 'center', fontSize: '0.78rem' }}>PC4: Competencia 4</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {studentsFilteredByGrade.map((s, sIdx) => {
+                                // Calculate promedios for bloque1, bloque2, bloque3, bloque4
+                                const pc1 = calculateBlockAvg(s.id, selectedSubject, 'bloque1', s.grades);
+                                const pc2 = calculateBlockAvg(s.id, selectedSubject, 'bloque2', s.grades);
+                                const pc3 = calculateBlockAvg(s.id, selectedSubject, 'bloque3', s.grades);
+                                const pc4 = calculateBlockAvg(s.id, selectedSubject, 'bloque4', s.grades);
 
-                    return (
-                      <div className="custom-table-container">
-                        <table className="custom-table">
-                          
-                          {/* Render spreadsheet depending on mode */}
-                          {spreadsheetViewMode === 'resumen' ? (
-                            /* Standard summary view */
-                            <>
-                              <thead>
-                                <tr>
-                                  <th>Estudiante</th>
-                                  <th style={{ width: '130px', textAlign: 'center' }}>P1</th>
-                                  {showRP1 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP1</th>}
-                                  <th style={{ width: '130px', textAlign: 'center' }}>P2</th>
-                                  {showRP2 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP2</th>}
-                                  <th style={{ width: '130px', textAlign: 'center' }}>P3</th>
-                                  {showRP3 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP3</th>}
-                                  <th style={{ width: '130px', textAlign: 'center' }}>P4</th>
-                                  {showRP4 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP4</th>}
-                                  <th style={{ textAlign: 'center', width: '150px' }}>Promedio Bloque</th>
-                                  <th>Estado</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {studentsFilteredByGrade.map(s => {
-                                  const subjectData = s.grades?.[selectedSubject] || {};
-                                  const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
-                                  
-                                  const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
-                                  const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
-                                  
-                                  const avg = calculateBlockAvg(s.id, selectedSubject, activeBloque, s.grades);
-                                  const isPassing = avg >= 70;
-                                  return (
-                                    <tr key={s.id}>
-                                      <td style={{ fontWeight: 600 }}>{s.name}</td>
-                                      
-                                      {/* P1 & RP1 */}
-                                      <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={blockArray[0]}
-                                            disabled
-                                          />
-                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 0)}>
-                                            📝
-                                          </button>
-                                        </div>
-                                      </td>
-                                      {showRP1 && (
-                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={rpArray[0] === null ? '' : rpArray[0]}
-                                            disabled={blockArray[0] >= 70}
-                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
-                                            placeholder={blockArray[0] >= 70 ? 'N/A' : '-'}
-                                          />
+                                // Calificación final: average of pc1..pc4 rounded to nearest integer
+                                const finalGradeRaw = (pc1 + pc2 + pc3 + pc4) / 4;
+                                const finalGrade = Math.round(finalGradeRaw);
+
+                                return (
+                                  <tr key={s.id}>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sIdx + 1}</td>
+                                    <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                    
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{pc1.toFixed(1)}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{pc2.toFixed(1)}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{pc3.toFixed(1)}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{pc4.toFixed(1)}</td>
+                                    
+                                    <td style={{ textAlign: 'center', fontWeight: '800', backgroundColor: '#f1f5f9', color: 'var(--primary)', fontFamily: 'var(--font-mono)', fontSize: '1.05rem' }}>
+                                      {finalGrade}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    /* Existing Block view */
+                    (() => {
+                      const showRP1 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[0] || 0) < 70);
+                      const showRP2 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[1] || 0) < 70);
+                      const showRP3 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[2] || 0) < 70);
+                      const showRP4 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[3] || 0) < 70);
+
+                      return (
+                        <div className="custom-table-container">
+                          <table className="custom-table">
+                            
+                            {/* Render spreadsheet depending on mode */}
+                            {spreadsheetViewMode === 'resumen' ? (
+                              /* Standard summary view */
+                              <>
+                                <thead>
+                                  <tr>
+                                    <th>Estudiante</th>
+                                    <th style={{ width: '130px', textAlign: 'center' }}>P1</th>
+                                    {showRP1 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP1</th>}
+                                    <th style={{ width: '130px', textAlign: 'center' }}>P2</th>
+                                    {showRP2 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP2</th>}
+                                    <th style={{ width: '130px', textAlign: 'center' }}>P3</th>
+                                    {showRP3 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP3</th>}
+                                    <th style={{ width: '130px', textAlign: 'center' }}>P4</th>
+                                    {showRP4 && <th style={{ width: '100px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)' }}>RP4</th>}
+                                    <th style={{ textAlign: 'center', width: '150px' }}>Promedio Bloque</th>
+                                    <th>Estado</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {studentsFilteredByGrade.map(s => {
+                                    const subjectData = s.grades?.[selectedSubject] || {};
+                                    const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
+                                    
+                                    const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
+                                    const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
+                                    
+                                    const avg = calculateBlockAvg(s.id, selectedSubject, activeBloque, s.grades);
+                                    const isPassing = avg >= 70;
+                                    return (
+                                      <tr key={s.id}>
+                                        <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                        
+                                        {/* P1 & RP1 */}
+                                        <td>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={blockArray[0]}
+                                              disabled
+                                            />
+                                            <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 0)}>
+                                              📝
+                                            </button>
+                                          </div>
                                         </td>
-                                      )}
-
-                                      {/* P2 & RP2 */}
-                                      <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={blockArray[1]}
-                                            disabled
-                                          />
-                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 1)}>
-                                            📝
-                                          </button>
-                                        </div>
-                                      </td>
-                                      {showRP2 && (
-                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={rpArray[1] === null ? '' : rpArray[1]}
-                                            disabled={blockArray[1] >= 70}
-                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
-                                            placeholder={blockArray[1] >= 70 ? 'N/A' : '-'}
-                                          />
-                                        </td>
-                                      )}
-
-                                      {/* P3 & RP3 */}
-                                      <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={blockArray[2]}
-                                            disabled
-                                          />
-                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 2)}>
-                                            📝
-                                          </button>
-                                        </div>
-                                      </td>
-                                      {showRP3 && (
-                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={rpArray[2] === null ? '' : rpArray[2]}
-                                            disabled={blockArray[2] >= 70}
-                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
-                                            placeholder={blockArray[2] >= 70 ? 'N/A' : '-'}
-                                          />
-                                        </td>
-                                      )}
-
-                                      {/* P4 & RP4 */}
-                                      <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={blockArray[3]}
-                                            disabled
-                                          />
-                                          <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 3)}>
-                                            📝
-                                          </button>
-                                        </div>
-                                      </td>
-                                      {showRP4 && (
-                                        <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
-                                          <input 
-                                            type="number" 
-                                            className="form-input" 
-                                            style={{ padding: '0.35rem', width: '65px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                            value={rpArray[3] === null ? '' : rpArray[3]}
-                                            disabled={blockArray[3] >= 70}
-                                            onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
-                                            placeholder={blockArray[3] >= 70 ? 'N/A' : '-'}
-                                          />
-                                        </td>
-                                      )}
-
-                                      <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{avg.toFixed(1)}</td>
-                                      <td><span className={`badge ${isPassing ? 'badge-success' : 'badge-danger'}`}>{isPassing ? 'Aprobado' : 'Reprobado'}</span></td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </>
-                          ) : (
-                            /* Criteria Detailed spreadsheet view (exactly like Google Doc mockup!) */
-                            (() => {
-                              const activeEvalIdx = Number(spreadsheetViewMode.split('_')[1]);
-                          const config = activeConfigs[activeEvalIdx] || { criteria: [], activity: 'Evaluación' };
-                          const criteriaList = normalizeCriteria(config.criteria, config.type);
-                          
-                          // Divide 100 points proportional to number of criteria
-                          const maxCritScore = criteriaList.length > 0 ? Math.floor(100 / criteriaList.length) : 100;
-
-                          return (
-                            <>
-                              {/* Green banner theme */}
-                              <thead>
-                                <tr>
-                                  <th colSpan={criteriaList.length + 3} className="rubric-table-header-green">
-                                    RÚBRICA DE EVALUACIÓN: {config.activity.toUpperCase()}
-                                  </th>
-                                </tr>
-                                <tr>
-                                  <th style={{ width: '40px' }}>#</th>
-                                  <th>Estudiante</th>
-                                  
-                                  {/* Criterias column headers */}
-                                  {criteriaList.map((crit, idx) => (
-                                    <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
-                                      {crit.name}
-                                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-                                        (Máx: {maxCritScore} pts)
-                                      </div>
-                                    </th>
-                                  ))}
-                                  
-                                  <th style={{ textAlign: 'center', width: '100px', backgroundColor: 'var(--success-bg)', color: 'var(--success)' }}>
-                                    Total (100)
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {studentsFilteredByGrade.map((s, sIdx) => {
-                                  const assessmentKey = `${s.id}_${selectedSubject}_${activeBloque}_${activeEvalIdx}`;
-                                  const savedAssessment = studentAssessments[assessmentKey] || {};
-                                  const subjectData = s.grades?.[selectedSubject] || {};
-                                  const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
-                                  const currentTotal = blockArray[activeEvalIdx] || 0;
-
-                                  return (
-                                    <tr key={s.id}>
-                                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>{sIdx + 1}</td>
-                                      <td style={{ fontWeight: 600 }}>{s.name}</td>
-                                      
-                                      {/* Criterias values */}
-                                      {criteriaList.map((crit, critIdx) => {
-                                        const score = savedAssessment[crit.name] !== undefined ? savedAssessment[crit.name] : Math.floor(maxCritScore * 0.75);
-                                        return (
-                                          <td key={critIdx} style={{ padding: 0 }}>
-                                            
-                                            {/* Dropdown helper select in cell for Tobon level scoring */}
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                              <input 
-                                                type="number" 
-                                                className="criteria-grade-input"
-                                                value={score}
-                                                min="0"
-                                                max={maxCritScore}
-                                                onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, e.target.value)}
-                                              />
-                                              
-                                              {/* Simple quick selector */}
-                                              {config.type !== 'lista' ? (
-                                                <select 
-                                                  style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                  value={
-                                                    score >= maxCritScore ? 'estrategico' :
-                                                    score >= Math.floor(maxCritScore * 0.85) ? 'autonomo' :
-                                                    score >= Math.floor(maxCritScore * 0.75) ? 'resolutivo' :
-                                                    score >= Math.floor(maxCritScore * 0.65) ? 'receptivo' : 'preformal'
-                                                  }
-                                                  onChange={(e) => {
-                                                    const targetLevel = e.target.value;
-                                                    let val = 0;
-                                                    if (targetLevel === 'preformal') val = Math.floor(maxCritScore * 0.55);
-                                                    else if (targetLevel === 'receptivo') val = Math.floor(maxCritScore * 0.65);
-                                                    else if (targetLevel === 'resolutivo') val = Math.floor(maxCritScore * 0.75);
-                                                    else if (targetLevel === 'autonomo') val = Math.floor(maxCritScore * 0.85);
-                                                    else val = maxCritScore;
-                                                    handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, val);
-                                                  }}
-                                                >
-                                                  <option value="estrategico">E (100%)</option>
-                                                  <option value="autonomo">A (85%)</option>
-                                                  <option value="resolutivo">Res (75%)</option>
-                                                  <option value="receptivo">Rec (65%)</option>
-                                                  <option value="preformal">P (55%)</option>
-                                                </select>
-                                              ) : (
-                                                <select
-                                                  style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                  value={score >= maxCritScore ? 'si' : 'no'}
-                                                  onChange={(e) => {
-                                                    const val = e.target.value === 'si' ? maxCritScore : Math.floor(maxCritScore * 0.5);
-                                                    handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, val);
-                                                  }}
-                                                >
-                                                  <option value="si">Sí (100%)</option>
-                                                  <option value="no">No (50%)</option>
-                                                </select>
-                                              )}
-                                            </div>
-
+                                        {showRP1 && (
+                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={rpArray[0] !== null ? rpArray[0] : ''}
+                                              onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
+                                              min="0"
+                                              max="100"
+                                              placeholder="-"
+                                            />
                                           </td>
+                                        )}
+
+                                        {/* P2 & RP2 */}
+                                        <td>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={blockArray[1]}
+                                              disabled
+                                            />
+                                            <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 1)}>
+                                              📝
+                                            </button>
+                                          </div>
+                                        </td>
+                                        {showRP2 && (
+                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={rpArray[1] !== null ? rpArray[1] : ''}
+                                              onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
+                                              min="0"
+                                              max="100"
+                                              placeholder="-"
+                                            />
+                                          </td>
+                                        )}
+
+                                        {/* P3 & RP3 */}
+                                        <td>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={blockArray[2]}
+                                              disabled
+                                            />
+                                            <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 2)}>
+                                              📝
+                                            </button>
+                                          </div>
+                                        </td>
+                                        {showRP3 && (
+                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={rpArray[2] !== null ? rpArray[2] : ''}
+                                              onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
+                                              min="0"
+                                              max="100"
+                                              placeholder="-"
+                                            />
+                                          </td>
+                                        )}
+
+                                        {/* P4 & RP4 */}
+                                        <td>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={blockArray[3]}
+                                              disabled
+                                            />
+                                            <button className="btn-secondary" style={{ padding: '0.35rem' }} onClick={() => openAssessmentModal(s.id, selectedSubject, 3)}>
+                                              📝
+                                            </button>
+                                          </div>
+                                        </td>
+                                        {showRP4 && (
+                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                            <input 
+                                              type="number" 
+                                              className="form-input" 
+                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
+                                              value={rpArray[3] !== null ? rpArray[3] : ''}
+                                              onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
+                                              min="0"
+                                              max="100"
+                                              placeholder="-"
+                                            />
+                                          </td>
+                                        )}
+
+                                        {/* Average Block */}
+                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', color: isPassing ? 'var(--success)' : 'var(--danger)' }}>
+                                          {avg}
+                                        </td>
+
+                                        {/* Status */}
+                                        <td>
+                                          <span className={`badge ${isPassing ? 'badge-success' : 'badge-danger'}`}>
+                                            {isPassing ? 'Aprobado' : 'Reprobado'}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </>
+                            ) : (
+                              /* Detailed matrix criterion spreadsheet mode */
+                              (() => {
+                                const activeEvalIdx = Number(spreadsheetViewMode.replace('ev_', ''));
+                                const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
+                                const config = evaluationConfigs[configKey]?.[activeEvalIdx] || DEFAULT_EVALUATION_CONFIGS[activeEvalIdx];
+                                
+                                const criteriaList = normalizeCriteria(config.criteria, config.type);
+                                const maxCritScore = Math.floor(100 / criteriaList.length);
+
+                                return (
+                                  <>
+                                    <thead>
+                                      <tr>
+                                        <th style={{ width: '50px' }}>#</th>
+                                        <th>Estudiante</th>
+                                        
+                                        {/* Criterias column headers */}
+                                        {criteriaList.map((crit, idx) => (
+                                          <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
+                                            {crit.name}
+                                            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                                              (Máx: {maxCritScore} pts)
+                                            </div>
+                                          </th>
+                                        ))}
+                                        
+                                        <th style={{ textAlign: 'center', width: '100px', backgroundColor: 'var(--success-bg)', color: 'var(--success)' }}>
+                                          Total (100)
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {studentsFilteredByGrade.map((s, sIdx) => {
+                                        const assessmentKey = `${s.id}_${selectedSubject}_${activeBloque}_${activeEvalIdx}`;
+                                        const savedAssessment = studentAssessments[assessmentKey] || {};
+                                        const subjectData = s.grades?.[selectedSubject] || {};
+                                        const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
+                                        const currentTotal = blockArray[activeEvalIdx] || 0;
+
+                                        return (
+                                          <tr key={s.id}>
+                                            <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>{sIdx + 1}</td>
+                                            <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                            
+                                            {/* Criterias values */}
+                                            {criteriaList.map((crit, critIdx) => {
+                                              const score = savedAssessment[crit.name] !== undefined ? savedAssessment[crit.name] : Math.floor(maxCritScore * 0.75);
+                                              return (
+                                                <td key={critIdx} style={{ padding: 0 }}>
+                                                  
+                                                  {/* Dropdown helper select in cell for Tobon level scoring */}
+                                                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <input 
+                                                      type="number" 
+                                                      className="criteria-grade-input"
+                                                      value={score}
+                                                      min="0"
+                                                      max={maxCritScore}
+                                                      onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, e.target.value)}
+                                                    />
+                                                    
+                                                    {/* Simple quick selector */}
+                                                    {config.type !== 'lista' ? (
+                                                      <select 
+                                                        style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
+                                                        value={
+                                                          score >= maxCritScore ? 'estrategico' :
+                                                          score >= Math.floor(maxCritScore * 0.85) ? 'autonomo' :
+                                                          score >= Math.floor(maxCritScore * 0.75) ? 'resolutivo' :
+                                                          score >= Math.floor(maxCritScore * 0.65) ? 'receptivo' : 'preformal'
+                                                        }
+                                                        onChange={(e) => {
+                                                          const targetLevel = e.target.value;
+                                                          let val = 0;
+                                                          if (targetLevel === 'preformal') val = Math.floor(maxCritScore * 0.55);
+                                                          else if (targetLevel === 'receptivo') val = Math.floor(maxCritScore * 0.65);
+                                                          else if (targetLevel === 'resolutivo') val = Math.floor(maxCritScore * 0.75);
+                                                          else if (targetLevel === 'autonomo') val = Math.floor(maxCritScore * 0.88);
+                                                          else if (targetLevel === 'estrategico') val = maxCritScore;
+                                                          
+                                                          handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, val);
+                                                        }}
+                                                      >
+                                                        <option value="preformal">Preformal</option>
+                                                        <option value="receptivo">Receptivo</option>
+                                                        <option value="resolutivo">Resolutivo</option>
+                                                        <option value="autonomo">Autónomo</option>
+                                                        <option value="estrategico">Estratégico</option>
+                                                      </select>
+                                                    ) : (
+                                                      <select 
+                                                        style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
+                                                        value={score >= maxCritScore ? 'si' : 'no'}
+                                                        onChange={(e) => {
+                                                          const val = e.target.value === 'si' ? maxCritScore : Math.floor(maxCritScore * 0.5);
+                                                          handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, val);
+                                                        }}
+                                                      >
+                                                        <option value="si">Sí (100%)</option>
+                                                        <option value="no">No (50%)</option>
+                                                      </select>
+                                                    )}
+                                                  </div>
+
+                                                </td>
+                                              );
+                                            })}
+                                            
+                                            {/* Total sum column */}
+                                            <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)' }}>
+                                              {currentTotal}
+                                            </td>
+                                          </tr>
                                         );
                                       })}
-                                      
-                                      {/* Total sum column */}
-                                      <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)' }}>
-                                        {currentTotal}
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </>
-                          );
-                        })()
-                      )}
-                    </table>
-                  </div>
-                );
-              })()
-            ) : (
+                                    </tbody>
+                                  </>
+                                );
+                              })()
+                            )}
+                          </table>
+                        </div>
+                      );
+                    })()
+                  )
+                ) : (
                   <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
                     Por favor selecciona un Grado y Asignatura.
                   </div>
@@ -2467,7 +2544,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div>
                 <h2>Instrumentos de Evaluación Ponderada</h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  Define las competencias, indicadores y criterios específicos. Modifica los textos directamente en la cuadrícula de la rúbrica.
+                  Define las competencias, indicadores y criterios específicos para el <strong style={{ color: 'var(--primary)' }}>{
+                    activeBloque === 'bloque1' ? 'Bloque CE1' :
+                    activeBloque === 'bloque2' ? 'Bloque CE2-CE3' :
+                    activeBloque === 'bloque3' ? 'Bloque CE4-CE7' :
+                    activeBloque === 'bloque4' ? 'Bloque CE5-CE6' : 'Bloque CE1'
+                  }</strong>. Modifica los textos directamente en la cuadrícula de la rúbrica.
                 </p>
 
                 {selectedGrade && selectedSubject ? (
