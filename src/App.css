@@ -200,7 +200,7 @@
 
 .login-card {
   width: 100%;
-  max-width: 450px;
+  max-width: 480px;
   padding: 2.5rem;
   position: relative;
   z-index: 1;
@@ -338,4 +338,199 @@
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   font-weight: normal;
+}
+
+/* ==========================================================================
+   Horizontal Subject Navigation
+   ========================================================================== */
+.subject-tabs-container {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.subject-tab {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subject-tab:hover {
+  color: var(--text-primary);
+}
+
+.subject-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Premium Calendar Styles
+   ========================================================================== */
+.calendar-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .calendar-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  background-color: var(--border-color);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.calendar-day-header {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  text-transform: uppercase;
+}
+
+.calendar-day-cell {
+  background-color: var(--bg-secondary);
+  min-height: 80px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.calendar-day-cell:hover {
+  background-color: var(--bg-primary);
+}
+
+.calendar-day-number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.calendar-day-cell.today {
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+
+.calendar-day-cell.other-month {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.calendar-day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.calendar-event-dot {
+  font-size: 0.68rem;
+  padding: 1px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.calendar-event-dot.primary { background-color: var(--primary-glow); color: var(--primary); }
+.calendar-event-dot.success { background-color: var(--success-bg); color: var(--success); }
+.calendar-event-dot.warning { background-color: var(--warning-bg); color: var(--warning); }
+.calendar-event-dot.danger { background-color: var(--danger-bg); color: var(--danger); }
+
+/* ==========================================================================
+   Evaluation Instruments
+   ========================================================================== */
+.instruments-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .instruments-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.weight-input-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+}
+
+.weight-percentage {
+  font-family: var(--font-mono);
+  font-weight: bold;
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   User Guide / Instruction List
+   ========================================================================== */
+.instruction-card {
+  padding: 1.25rem;
+  border-left: 4px solid var(--primary);
+  margin-bottom: 1rem;
+}
+
+.instruction-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.instruction-step-num {
+  width: 24px;
+  height: 24px;
+  background-color: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: bold;
+  flex-shrink: 0;
 }
