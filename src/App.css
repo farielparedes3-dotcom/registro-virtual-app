@@ -604,7 +604,7 @@
 
 .modal-card {
   width: 100%;
-  max-width: 800px;
+  max-width: 850px;
   max-height: 90vh;
   overflow-y: auto;
   background-color: var(--bg-secondary);
@@ -732,7 +732,7 @@
   background-color: var(--bg-primary);
   display: flex;
   flex-direction: column;
-  height: 380px;
+  height: 400px;
   overflow: hidden;
   margin-bottom: 1.5rem;
 }
@@ -756,7 +756,7 @@
 }
 
 .ai-chat-bubble {
-  max-width: 80%;
+  max-width: 85%;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   font-size: 0.88rem;
@@ -830,16 +830,129 @@
   opacity: 0.9;
 }
 
-.eval-checklist-table {
+/* ==========================================================================
+   Editable Matrix Rubric Grid (matching user's Google Doc layout)
+   ========================================================================== */
+.rubric-matrix-container {
+  overflow-x: auto;
+  margin-top: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+}
+
+.rubric-matrix-table {
   width: 100%;
   border-collapse: collapse;
+  text-align: left;
 }
 
-.eval-checklist-table td {
+.rubric-matrix-table th {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+  font-weight: 700;
   padding: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
+  font-size: 0.88rem;
+  border-bottom: 2px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
 }
 
-.eval-checklist-table tr:hover td {
+.rubric-matrix-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  vertical-align: top;
+}
+
+.rubric-matrix-textarea {
+  width: 100%;
+  min-height: 80px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0.25rem;
+}
+
+.rubric-matrix-textarea:focus {
   background-color: var(--bg-primary);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.rubric-matrix-input-criterion {
+  font-weight: 700;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+  width: 100%;
+  padding: 0.25rem;
+}
+
+.rubric-matrix-input-criterion:focus {
+  background-color: var(--bg-primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   AI Provider Credentials Panel
+   ========================================================================== */
+.ai-config-panel {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.ai-config-row {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 650px) {
+  .ai-config-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+/* ==========================================================================
+   Spreadsheet Criteria Cell Input (clean styling for grid editing)
+   ========================================================================== */
+.criteria-grade-input {
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+  outline: none;
+  padding: 0.35rem;
+  box-sizing: border-box;
+}
+
+.criteria-grade-input:focus {
+  background-color: var(--bg-primary);
+  box-shadow: inset 0 0 0 2px var(--primary);
+  border-radius: 4px;
+}
+
+.rubric-table-header-green {
+  background-color: #22c55e !important;
+  color: #ffffff !important;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 0.5rem;
 }
