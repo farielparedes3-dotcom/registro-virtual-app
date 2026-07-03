@@ -232,6 +232,47 @@ const DEFAULT_EVALUATION_CONFIGS = {
   ]
 };
 
+const normalizeCriteria = (criteriaArray, type = 'rubrica') => {
+  if (!Array.isArray(criteriaArray)) return [];
+  return criteriaArray.map(crit => {
+    if (!crit) return { name: "Criterio", levels: {} };
+    if (typeof crit === 'string') {
+      return {
+        name: crit,
+        levels: type === 'lista' ? { cumple: "Sí cumple de forma clara", nocumple: "No cumple con el criterio" } : {
+          estrategico: `Demuestra alta excelencia en el criterio de ${crit.toLowerCase()}.`,
+          autonomo: `Desempeña de forma autónoma y lógica el criterio de ${crit.toLowerCase()}.`,
+          resolutivo: `Resuelve y aplica el criterio de ${crit.toLowerCase()} de forma correcta.`,
+          receptivo: `Muestra nociones básicas y limitadas sobre ${crit.toLowerCase()}.`,
+          preformal: `No posee conocimientos ni demuestra aplicación en ${crit.toLowerCase()}.`
+        }
+      };
+    }
+    const name = crit.name || "Criterio";
+    const levels = crit.levels || {};
+    if (type === 'lista') {
+      return {
+        name,
+        levels: {
+          cumple: levels.cumple || "Sí cumple",
+          nocumple: levels.nocumple || "No cumple"
+        }
+      };
+    } else {
+      return {
+        name,
+        levels: {
+          estrategico: levels.estrategico || "Desempeño excelente",
+          autonomo: levels.autonomo || "Desempeño muy bueno",
+          resolutivo: levels.resolutivo || "Desempeño bueno",
+          receptivo: levels.receptivo || "Desempeño regular",
+          preformal: levels.preformal || "Desempeño insuficiente"
+        }
+      };
+    }
+  });
+};
+
 export default function App() {
   // --- Core States ---
   const [users, setUsers] = useState(() => {
@@ -406,7 +447,7 @@ export default function App() {
           competence: activeConf.competence || '',
           indicator: activeConf.indicator || '',
           type: activeConf.type || 'rubrica',
-          criteria: activeConf.criteria ? JSON.parse(JSON.stringify(activeConf.criteria)) : []
+          criteria: activeConf.criteria ? normalizeCriteria(activeConf.criteria, activeConf.type) : []
         });
       } else {
         setInstrumentEditState({
@@ -917,6 +958,32 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     alert('Instrumento cargado en la grilla. ¡Presiona "Guardar Configuración de Instrumento" para registrarlo en el sistema!');
   };
 
+  const handleCellGradeChange = (studentId, subjectKey, evalIdx, newValue) => {
+    const numericVal = Math.min(100, Math.max(0, Number(newValue) || 0));
+    setStudents(prev => prev.map(s => {
+      if (s.id === studentId) {
+        const nextGrades = { ...s.grades };
+        const currentArr = [...(nextGrades[subjectKey] || [80, 80, 80, 80])];
+        currentArr[evalIdx] = numericVal;
+        nextGrades[subjectKey] = currentArr;
+        return { ...s, grades: nextGrades };
+      }
+      return s;
+    }));
+  };
+
+  const handleUpdateAttendance = (studentId, type) => {
+    setStudents(prev => prev.map(s => {
+      if (s.id === studentId) {
+        return {
+          ...s,
+          present: type === 'present' ? Math.min(s.total, s.present + 1) : Math.max(0, s.present - 1)
+        };
+      }
+      return s;
+    }));
+  };
+
   // --- Detailed Grading Spreadsheet Cells handlers ---
   const handleUpdateStudentCriterionScore = (studentId, subjectKey, evalIdx, critName, scoreValue) => {
     // Save detailed score
@@ -932,9 +999,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     // Calculate sum of all criteria and update student grades
     const configKey = `${selectedGrade}_${subjectKey}`;
     const config = evaluationConfigs[configKey]?.[evalIdx] || { criteria: [] };
+    const criteriaList = normalizeCriteria(config.criteria, config.type);
     
     let sum = 0;
-    config.criteria.forEach(c => {
+    criteriaList.forEach(c => {
       // Check if it's currently being updated, otherwise fetch from state
       if (c.name === critName) {
         sum += Number(scoreValue) || 0;
@@ -973,7 +1041,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const savedAssessment = studentAssessments[assessmentKey] || {};
 
     const initialTemp = {};
-    config.criteria.forEach(c => {
+    const normalizedCriteria = normalizeCriteria(config.criteria, config.type);
+    normalizedCriteria.forEach(c => {
       if (config.type === 'lista') {
         initialTemp[c.name] = savedAssessment[c.name] === true;
       } else {
@@ -987,7 +1056,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       }
     });
 
-    setActiveAssessment({ studentId, subjectKey, evalIdx, config, studentName: student?.name });
+    setActiveAssessment({ studentId, subjectKey, evalIdx, config: { ...config, criteria: normalizedCriteria }, studentName: student?.name });
     setTempCriteriaRatings(initialTemp);
     setIsAssessmentModalOpen(true);
   };
@@ -996,13 +1065,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     if (!activeAssessment) return;
     const { studentId, subjectKey, evalIdx, config } = activeAssessment;
 
-    const criteriaCount = config.criteria.length;
-    const maxCritScore = Math.floor(100 / criteriaCount);
+    const normalizedCriteria = normalizeCriteria(config.criteria, config.type);
+    const criteriaCount = normalizedCriteria.length;
+    const maxCritScore = criteriaCount > 0 ? Math.floor(100 / criteriaCount) : 100;
 
     const nextAssessmentValues = {};
     let totalSum = 0;
 
-    config.criteria.forEach(c => {
+    normalizedCriteria.forEach(c => {
       const val = tempCriteriaRatings[c.name];
       let score = 0;
       if (config.type === 'rubrica' || config.type === 'escala') {
@@ -1634,7 +1704,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         (() => {
                           const activeEvalIdx = Number(spreadsheetViewMode.split('_')[1]);
                           const config = activeConfigs[activeEvalIdx] || { criteria: [], activity: 'Evaluación' };
-                          const criteriaList = config.criteria || [];
+                          const criteriaList = normalizeCriteria(config.criteria, config.type);
                           
                           // Divide 100 points proportional to number of criteria
                           const maxCritScore = criteriaList.length > 0 ? Math.floor(100 / criteriaList.length) : 100;
