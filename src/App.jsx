@@ -2522,7 +2522,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </p>
 
                 {selectedGrade && selectedSubject ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '1.5rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '220px minmax(0, 1fr)', gap: '1.5rem' }}>
                     
                     {/* Evaluations selector */}
                     <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignSelf: 'start', maxHeight: '80vh', overflowY: 'auto' }}>
