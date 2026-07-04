@@ -2,11 +2,23 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 // Global configuration
-const SUBJECTS = {
+const DEFAULT_SUBJECTS = {
   math: { name: 'Matemáticas', color: 'var(--primary)', bg: 'var(--primary-glow)' },
   science: { name: 'Ciencias', color: 'var(--success)', bg: 'var(--success-bg)' },
   language: { name: 'Lenguaje', color: 'var(--warning)', bg: 'var(--warning-bg)' },
   history: { name: 'Historia', color: 'hsl(170, 75%, 40%)', bg: 'rgba(20, 184, 166, 0.1)' }
+};
+
+const DEFAULT_GRADES = ['1ro A', '1ro B', '10° A', '10° B'];
+
+const getSubjectsList = () => {
+  try {
+    const saved = localStorage.getItem('s_subjects');
+    const subs = saved ? JSON.parse(saved) : DEFAULT_SUBJECTS;
+    return Object.keys(subs);
+  } catch (e) {
+    return Object.keys(DEFAULT_SUBJECTS);
+  }
 };
 
 const DEFAULT_USERS = [
@@ -340,7 +352,7 @@ const getWeekdaysForMonth = (monthName) => {
 
 const normalizeStudentGrades = (grades) => {
   const normalized = {};
-  const subjectsList = ['math', 'science', 'language', 'history'];
+  const subjectsList = getSubjectsList();
   
   subjectsList.forEach(sub => {
     const raw = grades?.[sub];
@@ -452,6 +464,25 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [subjects, setSubjects] = useState(() => {
+    const saved = localStorage.getItem('s_subjects');
+    return saved ? JSON.parse(saved) : DEFAULT_SUBJECTS;
+  });
+
+  const [grades, setGrades] = useState(() => {
+    const saved = localStorage.getItem('s_grades');
+    return saved ? JSON.parse(saved) : DEFAULT_GRADES;
+  });
+
+  const [expandedSections, setExpandedSections] = useState({
+    teachers: true,
+    subjects: false,
+    grades: false
+  });
+
+  const [subjectForm, setSubjectForm] = useState({ name: '', color: '#003876' });
+  const [gradeForm, setGradeForm] = useState({ name: '' });
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState(() => {
@@ -461,7 +492,11 @@ export default function App() {
   // --- Filtering States ---
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('math');
-  const [activeAdminGrade, setActiveAdminGrade] = useState('1ro A');
+  const [activeAdminGrade, setActiveAdminGrade] = useState(() => {
+    const saved = localStorage.getItem('s_grades');
+    const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
+    return list[0] || '1ro A';
+  });
   const [calendarYear, setCalendarYear] = useState(() => new Date().getFullYear());
   const [calendarMonth, setCalendarMonth] = useState(() => new Date().getMonth());
 
@@ -583,6 +618,14 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('s_subjects', JSON.stringify(subjects));
+  }, [subjects]);
+
+  useEffect(() => {
+    localStorage.setItem('s_grades', JSON.stringify(grades));
+  }, [grades]);
 
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
@@ -823,18 +866,26 @@ export default function App() {
     alert('Docente registrado.');
   };
 
-  const handleAddAssignment = (userId) => {
+  const handleAddAssignment = (userId, targetGrade, targetSubject) => {
     if (currentUser.role !== 'admin') return;
+    const gradeVal = targetGrade || newAssignment.grade || (grades[0] || '');
+    const subjectVal = targetSubject || newAssignment.subject || (Object.keys(subjects)[0] || '');
+
+    if (!gradeVal || !subjectVal) {
+      alert('Por favor selecciona un grado y asignatura válidos.');
+      return;
+    }
+
     setUsers(prev => prev.map(u => {
       if (u.id === userId) {
         const exists = u.assignments.some(
-          a => a.grade === newAssignment.grade && a.subject === newAssignment.subject
+          a => a.grade === gradeVal && a.subject === subjectVal
         );
         if (exists) {
           alert('Asignación duplicada.');
           return u;
         }
-        return { ...u, assignments: [...u.assignments, { ...newAssignment }] };
+        return { ...u, assignments: [...u.assignments, { grade: gradeVal, subject: subjectVal }] };
       }
       return u;
     }));
@@ -858,6 +909,120 @@ export default function App() {
     if (id === currentUser.id) return;
     if (window.confirm('¿Eliminar esta cuenta?')) {
       setUsers(prev => prev.filter(u => u.id !== id));
+    }
+  };
+
+  const handleCreateSubject = (e) => {
+    if (e) e.preventDefault();
+    const name = subjectForm.name.trim();
+    const color = subjectForm.color;
+    if (!name) return;
+
+    const key = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+    if (!key) {
+      alert('Nombre de asignatura inválido.');
+      return;
+    }
+
+    if (subjects[key]) {
+      alert('Esta asignatura ya existe.');
+      return;
+    }
+
+    const newSub = { name, color, bg: `${color}15` };
+    const updatedSubjects = { ...subjects, [key]: newSub };
+    setSubjects(updatedSubjects);
+
+    setStudents(prev => {
+      return prev.map(s => {
+        const studentGrades = s.grades ? { ...s.grades } : {};
+        if (!studentGrades[key]) {
+          studentGrades[key] = {
+            bloque1: [80, 80, 80, 80],
+            bloque2: [80, 80, 80, 80],
+            bloque3: [80, 80, 80, 80],
+            bloque4: [80, 80, 80, 80]
+          };
+        }
+        return { ...s, grades: studentGrades };
+      });
+    });
+
+    setSubjectForm({ name: '', color: '#003876' });
+    alert('Asignatura creada con éxito.');
+  };
+
+  const handleDeleteSubject = (key) => {
+    if (Object.keys(subjects).length <= 1) {
+      alert('Debe haber al menos una asignatura en el sistema.');
+      return;
+    }
+    if (window.confirm(`¿Estás seguro de eliminar la asignatura "${subjects[key].name}"? Esto removerá todas las calificaciones y asignaciones docentes vinculadas.`)) {
+      const updatedSubjects = { ...subjects };
+      delete updatedSubjects[key];
+      setSubjects(updatedSubjects);
+
+      setUsers(prev => prev.map(u => {
+        if (u.role === 'teacher') {
+          return {
+            ...u,
+            assignments: u.assignments.filter(a => a.subject !== key)
+          };
+        }
+        return u;
+      }));
+
+      setStudents(prev => prev.map(s => {
+        const studentGrades = s.grades ? { ...s.grades } : {};
+        delete studentGrades[key];
+        return { ...s, grades: studentGrades };
+      }));
+
+      alert('Asignatura eliminada.');
+    }
+  };
+
+  const handleCreateGrade = (e) => {
+    if (e) e.preventDefault();
+    const name = gradeForm.name.trim();
+    if (!name) return;
+
+    if (grades.includes(name)) {
+      alert('Este grado ya existe.');
+      return;
+    }
+
+    setGrades(prev => [...prev, name]);
+    setGradeForm({ name: '' });
+    alert('Grado creado con éxito.');
+  };
+
+  const handleDeleteGrade = (gradeName) => {
+    if (grades.length <= 1) {
+      alert('Debe haber al menos un grado en el sistema.');
+      return;
+    }
+    if (window.confirm(`¿Estás seguro de eliminar el grado "${gradeName}"? Esto eliminará todos los estudiantes matriculados en este grado y todas las asignaciones docentes vinculadas.`)) {
+      const updatedGrades = grades.filter(g => g !== gradeName);
+      setGrades(updatedGrades);
+
+      setUsers(prev => prev.map(u => {
+        if (u.role === 'teacher') {
+          return {
+            ...u,
+            assignments: u.assignments.filter(a => a.grade !== gradeName)
+          };
+        }
+        return u;
+      }));
+
+      setStudents(prev => prev.filter(s => s.grade !== gradeName));
+
+      if (activeAdminGrade === gradeName) {
+        setActiveAdminGrade(updatedGrades[0] || '');
+      }
+
+      alert('Grado eliminado.');
     }
   };
 
@@ -2137,84 +2302,403 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               )}
 
               {activeTab === 'teachers' && (
-                <div>
-                  <h2>Docentes y Asignación de Materias/Grados</h2>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
-                    <div className="custom-table-container">
-                      <table className="custom-table">
-                        <thead>
-                          <tr>
-                            <th>Docente</th>
-                            <th>Estado</th>
-                            <th>Grados y Asignaturas Asignadas</th>
-                            <th>Acción</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {users.filter(u => u.role === 'teacher').map(u => (
-                            <tr key={u.id}>
-                              <td>
-                                <div style={{ fontWeight: 600 }}>{u.name}</div>
-                                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{u.email}</div>
-                                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Clave: {u.password}</div>
-                              </td>
-                              <td>
-                                <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }} onClick={() => toggleUserActive(u.id)}>
-                                  {u.active ? 'Activo' : 'Inactivo'}
-                                </button>
-                              </td>
-                              <td>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                                  {u.assignments.map((a, idx) => (
-                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.25rem 0.5rem', backgroundColor: 'var(--bg-primary)', borderRadius: '4px', border: '1px solid var(--border-color)', fontSize: '0.8rem' }}>
-                                      <span><strong>{a.grade}</strong> - {SUBJECTS[a.subject].name}</span>
-                                      <button style={{ border: 'none', background: 'none', color: 'var(--danger)', cursor: 'pointer' }} onClick={() => handleRemoveAssignment(u.id, idx)}>✕</button>
-                                    </div>
-                                  ))}
-                                  <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem' }}>
-                                    <select className="form-select" style={{ padding: '0.25rem', fontSize: '0.78rem' }} value={newAssignment.grade} onChange={(e) => setNewAssignment(prev => ({ ...prev, grade: e.target.value }))}>
-                                      <option value="1ro A">1ro A</option>
-                                      <option value="1ro B">1ro B</option>
-                                      <option value="10° A">10° A</option>
-                                      <option value="10° B">10° B</option>
-                                    </select>
-                                    <select className="form-select" style={{ padding: '0.25rem', fontSize: '0.78rem' }} value={newAssignment.subject} onChange={(e) => setNewAssignment(prev => ({ ...prev, subject: e.target.value }))}>
-                                      <option value="math">Matemáticas</option>
-                                      <option value="science">Ciencias</option>
-                                      <option value="language">Lenguaje</option>
-                                      <option value="history">Historia</option>
-                                    </select>
-                                    <button className="btn-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleAddAssignment(u.id)}>Asignar</button>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <button className="btn-danger" onClick={() => handleDeleteUser(u.id)}>Eliminar</button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <h2>Configuración de la Estructura Escolar</h2>
+                  <p style={{ color: 'var(--text-secondary)', marginTop: '-1rem', marginBottom: '0.5rem' }}>
+                    Administra y personaliza los grados, asignaturas e instructores del plantel. Expande cada bloque para realizar modificaciones y adiciones en caliente.
+                  </p>
 
-                    <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
-                      <h3>Registrar Docente</h3>
-                      <form onSubmit={handleCreateTeacher}>
-                        <div className="form-group">
-                          <label>Nombre del Docente</label>
-                          <input type="text" className="form-input" value={teacherForm.name} onChange={(e) => setTeacherForm(prev => ({ ...prev, name: e.target.value }))} required />
+                  {/* BLOCK 1: DOCENTES Y ASIGNACIONES */}
+                  <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+                    <button 
+                      type="button" 
+                      className={`accordion-header ${expandedSections.teachers ? 'active' : ''}`}
+                      onClick={() => setExpandedSections(prev => ({ ...prev, teachers: !prev.teachers }))}
+                      style={{
+                        width: '100%',
+                        padding: '1.25rem 1.5rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'var(--bg-secondary)',
+                        border: 'none',
+                        borderBottom: expandedSections.teachers ? '1px solid var(--border-color)' : 'none',
+                        color: 'var(--text-primary)',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.05rem',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span>👨‍🏫</span>
+                        <strong>Gestión de Docentes y Asignaciones</strong>
+                        <span style={{ fontSize: '0.8rem', padding: '0.15rem 0.5rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', borderRadius: '20px', fontWeight: 'bold' }}>
+                          {users.filter(u => u.role === 'teacher').length} registrados
+                        </span>
+                      </span>
+                      <span>{expandedSections.teachers ? '▲ Ocultar' : '▼ Mostrar'}</span>
+                    </button>
+
+                    {expandedSections.teachers && (
+                      <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
+                        {/* Left Side: Table of Teachers */}
+                        <div className="custom-table-container" style={{ margin: 0 }}>
+                          <table className="custom-table">
+                            <thead>
+                              <tr>
+                                <th>Docente</th>
+                                <th style={{ width: '100px' }}>Estado</th>
+                                <th>Grados y Asignaturas Asignadas</th>
+                                <th style={{ width: '90px', textAlign: 'center' }}>Acción</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {users.filter(u => u.role === 'teacher').map(u => (
+                                <tr key={u.id}>
+                                  <td>
+                                    <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>{u.name}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{u.email}</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>Clave: {u.password}</div>
+                                  </td>
+                                  <td>
+                                    <button 
+                                      className={`btn-secondary ${u.active ? 'active-status' : 'inactive-status'}`}
+                                      style={{ 
+                                        padding: '0.35rem 0.65rem', 
+                                        fontSize: '0.78rem',
+                                        fontWeight: 'bold',
+                                        borderRadius: '6px',
+                                        backgroundColor: u.active ? 'var(--success-bg)' : 'var(--border-color)',
+                                        color: u.active ? 'var(--success)' : 'var(--text-secondary)',
+                                        border: '1px solid currentColor',
+                                        cursor: 'pointer'
+                                      }} 
+                                      onClick={() => toggleUserActive(u.id)}
+                                    >
+                                      {u.active ? '✓ Activo' : '✕ Inactivo'}
+                                    </button>
+                                  </td>
+                                  <td>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                                      {/* Assigned courses list */}
+                                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                                        {u.assignments.map((a, idx) => {
+                                          const subInfo = subjects[a.subject] || { name: a.subject, color: 'var(--text-muted)' };
+                                          return (
+                                            <div 
+                                              key={idx} 
+                                              style={{ 
+                                                display: 'inline-flex', 
+                                                alignItems: 'center', 
+                                                gap: '0.35rem', 
+                                                padding: '0.25rem 0.55rem', 
+                                                backgroundColor: 'var(--bg-primary)', 
+                                                borderRadius: '20px', 
+                                                border: `1px solid ${subInfo.color}35`, 
+                                                fontSize: '0.78rem',
+                                                fontWeight: '600'
+                                              }}
+                                            >
+                                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: subInfo.color }}></span>
+                                              <span><strong>{a.grade}</strong>: {subInfo.name}</span>
+                                              <button 
+                                                style={{ border: 'none', background: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '0 0.15rem', fontSize: '0.85rem', fontWeight: 'bold' }} 
+                                                onClick={() => handleRemoveAssignment(u.id, idx)}
+                                                title="Quitar Asignación"
+                                              >
+                                                ✕
+                                              </button>
+                                            </div>
+                                          );
+                                        })}
+                                        {u.assignments.length === 0 && (
+                                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin clases asignadas.</span>
+                                        )}
+                                      </div>
+
+                                      {/* Assignment creator inside the row */}
+                                      <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                                        <select 
+                                          className="form-select-compact" 
+                                          style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '85px' }}
+                                          value={newAssignment.grade}
+                                          onChange={(e) => setNewAssignment(prev => ({ ...prev, grade: e.target.value }))}
+                                        >
+                                          {grades.map(g => (
+                                            <option key={g} value={g}>{g}</option>
+                                          ))}
+                                        </select>
+                                        <select 
+                                          className="form-select-compact" 
+                                          style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '95px' }}
+                                          value={newAssignment.subject}
+                                          onChange={(e) => setNewAssignment(prev => ({ ...prev, subject: e.target.value }))}
+                                        >
+                                          {Object.keys(subjects).map(subKey => (
+                                            <option key={subKey} value={subKey}>{subjects[subKey].name}</option>
+                                          ))}
+                                        </select>
+                                        <button 
+                                          className="btn-primary" 
+                                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px' }} 
+                                          onClick={() => handleAddAssignment(u.id)}
+                                        >
+                                          ＋ Asignar
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td style={{ textAlign: 'center' }}>
+                                    <button 
+                                      className="btn-delete-event" 
+                                      onClick={() => handleDeleteUser(u.id)}
+                                      style={{ color: 'var(--danger)', fontWeight: 'bold' }}
+                                      title="Eliminar Cuenta Docente"
+                                    >
+                                      ✕ Borrar
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                              {users.filter(u => u.role === 'teacher').length === 0 && (
+                                <tr>
+                                  <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                                    No hay docentes registrados en el sistema.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
                         </div>
-                        <div className="form-group">
-                          <label>Correo Electrónico</label>
-                          <input type="email" className="form-input" value={teacherForm.email} onChange={(e) => setTeacherForm(prev => ({ ...prev, email: e.target.value }))} required />
+
+                        {/* Right Side: Add Teacher Form */}
+                        <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                          <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Registrar Nuevo Docente</h4>
+                          <form onSubmit={handleCreateTeacher} className="add-event-form">
+                            <div className="form-group-compact">
+                              <label>Nombre del Docente</label>
+                              <input type="text" className="form-input-compact" value={teacherForm.name} onChange={(e) => setTeacherForm(prev => ({ ...prev, name: e.target.value }))} placeholder="Ej: Prof. Roberto Díaz" required />
+                            </div>
+                            <div className="form-group-compact">
+                              <label>Correo Electrónico</label>
+                              <input type="email" className="form-input-compact" value={teacherForm.email} onChange={(e) => setTeacherForm(prev => ({ ...prev, email: e.target.value }))} placeholder="ejemplo@correo.com" required />
+                            </div>
+                            <div className="form-group-compact">
+                              <label>Contraseña</label>
+                              <input type="text" className="form-input-compact" value={teacherForm.password} onChange={(e) => setTeacherForm(prev => ({ ...prev, password: e.target.value }))} placeholder="Clave temporal" required />
+                            </div>
+                            <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Cuenta</button>
+                          </form>
                         </div>
-                        <div className="form-group">
-                          <label>Contraseña</label>
-                          <input type="text" className="form-input" value={teacherForm.password} onChange={(e) => setTeacherForm(prev => ({ ...prev, password: e.target.value }))} required />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* BLOCK 2: ASIGNATURAS */}
+                  <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+                    <button 
+                      type="button" 
+                      className={`accordion-header ${expandedSections.subjects ? 'active' : ''}`}
+                      onClick={() => setExpandedSections(prev => ({ ...prev, subjects: !prev.subjects }))}
+                      style={{
+                        width: '100%',
+                        padding: '1.25rem 1.5rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'var(--bg-secondary)',
+                        border: 'none',
+                        borderBottom: expandedSections.subjects ? '1px solid var(--border-color)' : 'none',
+                        color: 'var(--text-primary)',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.05rem',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span>📚</span>
+                        <strong>Gestión de Asignaturas</strong>
+                        <span style={{ fontSize: '0.8rem', padding: '0.15rem 0.5rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', borderRadius: '20px', fontWeight: 'bold' }}>
+                          {Object.keys(subjects).length} activas
+                        </span>
+                      </span>
+                      <span>{expandedSections.subjects ? '▲ Ocultar' : '▼ Mostrar'}</span>
+                    </button>
+
+                    {expandedSections.subjects && (
+                      <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
+                        {/* Left Side: Table of Subjects */}
+                        <div className="custom-table-container" style={{ margin: 0 }}>
+                          <table className="custom-table">
+                            <thead>
+                              <tr>
+                                <th>Identificador (Slug)</th>
+                                <th>Nombre Completo</th>
+                                <th>Etiqueta Color</th>
+                                <th style={{ width: '80px', textAlign: 'center' }}>Acción</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {Object.keys(subjects).map(subKey => {
+                                const sub = subjects[subKey];
+                                return (
+                                  <tr key={subKey}>
+                                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 'bold' }}>{subKey}</td>
+                                    <td style={{ fontWeight: 700 }}>{sub.name}</td>
+                                    <td>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: sub.color, border: '1px solid rgba(0,0,0,0.1)' }}></span>
+                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{sub.color}</span>
+                                      </div>
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                      <button 
+                                        className="btn-delete-event" 
+                                        onClick={() => handleDeleteSubject(subKey)}
+                                        style={{ color: 'var(--danger)', fontWeight: 'bold' }}
+                                        title="Eliminar Asignatura"
+                                      >
+                                        ✕ Eliminar
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
                         </div>
-                        <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Crear Cuenta</button>
-                      </form>
-                    </div>
+
+                        {/* Right Side: Add Subject Form */}
+                        <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                          <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Crear Nueva Asignatura</h4>
+                          <form onSubmit={handleCreateSubject} className="add-event-form">
+                            <div className="form-group-compact">
+                              <label>Nombre de la Materia</label>
+                              <input 
+                                type="text" 
+                                className="form-input-compact" 
+                                value={subjectForm.name} 
+                                onChange={(e) => setSubjectForm(prev => ({ ...prev, name: e.target.value }))} 
+                                placeholder="Ej: Educación Artística" 
+                                required 
+                              />
+                            </div>
+                            <div className="form-group-compact">
+                              <label>Color de la Marca (Etiqueta)</label>
+                              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <input 
+                                  type="color" 
+                                  className="form-input-compact" 
+                                  style={{ width: '45px', height: '35px', padding: '2px', cursor: 'pointer' }}
+                                  value={subjectForm.color} 
+                                  onChange={(e) => setSubjectForm(prev => ({ ...prev, color: e.target.value }))} 
+                                  required 
+                                />
+                                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{subjectForm.color}</span>
+                              </div>
+                            </div>
+                            <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Asignatura</button>
+                          </form>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* BLOCK 3: GRADOS */}
+                  <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+                    <button 
+                      type="button" 
+                      className={`accordion-header ${expandedSections.grades ? 'active' : ''}`}
+                      onClick={() => setExpandedSections(prev => ({ ...prev, grades: !prev.grades }))}
+                      style={{
+                        width: '100%',
+                        padding: '1.25rem 1.5rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'var(--bg-secondary)',
+                        border: 'none',
+                        borderBottom: expandedSections.grades ? '1px solid var(--border-color)' : 'none',
+                        color: 'var(--text-primary)',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.05rem',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span>🏫</span>
+                        <strong>Gestión de Grados y Cursos</strong>
+                        <span style={{ fontSize: '0.8rem', padding: '0.15rem 0.5rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', borderRadius: '20px', fontWeight: 'bold' }}>
+                          {grades.length} habilitados
+                        </span>
+                      </span>
+                      <span>{expandedSections.grades ? '▲ Ocultar' : '▼ Mostrar'}</span>
+                    </button>
+
+                    {expandedSections.grades && (
+                      <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
+                        {/* Left Side: Table of Grades */}
+                        <div className="custom-table-container" style={{ margin: 0 }}>
+                          <table className="custom-table">
+                            <thead>
+                              <tr>
+                                <th>Nombre del Curso/Grado</th>
+                                <th>Estudiantes Matriculados</th>
+                                <th style={{ width: '80px', textAlign: 'center' }}>Acción</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {grades.map(g => {
+                                const studentsCount = students.filter(s => s.grade === g).length;
+                                return (
+                                  <tr key={g}>
+                                    <td style={{ fontWeight: 700 }}>{g}</td>
+                                    <td>
+                                      <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-primary)' }}>{studentsCount} alumnos</span>
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                      <button 
+                                        className="btn-delete-event" 
+                                        onClick={() => handleDeleteGrade(g)}
+                                        style={{ color: 'var(--danger)', fontWeight: 'bold' }}
+                                        title="Eliminar Grado"
+                                      >
+                                        ✕ Eliminar
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Right Side: Add Grade Form */}
+                        <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                          <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Crear Nuevo Grado</h4>
+                          <form onSubmit={handleCreateGrade} className="add-event-form">
+                            <div className="form-group-compact">
+                              <label>Nombre del Grado</label>
+                              <input 
+                                type="text" 
+                                className="form-input-compact" 
+                                value={gradeForm.name} 
+                                onChange={(e) => setGradeForm(prev => ({ ...prev, name: e.target.value }))} 
+                                placeholder="Ej: 2do B" 
+                                required 
+                              />
+                            </div>
+                            <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Grado</button>
+                          </form>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -2222,8 +2706,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               {activeTab === 'students' && (
                 <div>
                   <h2>Estudiantes por Grado</h2>
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                    {['1ro A', '1ro B', '10° A', '10° B'].map(g => (
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                    {grades.map(g => (
                       <button key={g} className={`btn-secondary ${activeAdminGrade === g ? 'btn-primary' : ''}`} onClick={() => setActiveAdminGrade(g)}>{g}</button>
                     ))}
                   </div>
@@ -2428,8 +2912,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     <div className="subject-tabs-container" style={{ marginBottom: 0, borderBottom: 'none' }}>
                       {teacherGradeSubjects.map(subKey => (
                         <button key={subKey} className={`subject-tab ${selectedSubject === subKey ? 'active' : ''}`} onClick={() => setSelectedSubject(subKey)}>
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: SUBJECTS[subKey].color }}></span>
-                          {SUBJECTS[subKey].name}
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: subjects[subKey]?.color || 'var(--text-muted)' }}></span>
+                          {subjects[subKey]?.name || subKey}
                         </button>
                       ))}
                     </div>
@@ -3924,7 +4408,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div>
                 <h3 style={{ fontSize: '1.2rem' }}>Evaluación Detallada: {activeAssessment.studentName}</h3>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  Asignatura: <strong>{SUBJECTS[activeAssessment.subjectKey].name}</strong> | Grado: <strong>{selectedGrade}</strong> | Evaluación {activeAssessment.evalIdx + 1}
+                  Asignatura: <strong>{subjects[activeAssessment.subjectKey]?.name || activeAssessment.subjectKey}</strong> | Grado: <strong>{selectedGrade}</strong> | Evaluación {activeAssessment.evalIdx + 1}
                 </span>
               </div>
               <button style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setIsAssessmentModalOpen(false)}>✕</button>
