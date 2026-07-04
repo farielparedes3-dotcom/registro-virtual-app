@@ -594,6 +594,10 @@ export default function App() {
 
   // --- Sync Effects ---
   useEffect(() => {
+    if (window.innerWidth < 968) {
+      setSidebarCollapsed(true);
+    }
+
     const unsubUsers = dbService.subscribeUsers((data) => {
       if (data && data.length > 0) {
         setUsers(data);
@@ -2399,7 +2403,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
         <div className="main-content animate-fade-in">
           <div className={`dashboard-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-            <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
+            {!sidebarCollapsed && (
+              <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
+            )}
+            <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start', position: 'relative' }}>
+              <button 
+                type="button" 
+                className="sidebar-close-btn" 
+                onClick={() => setSidebarCollapsed(true)}
+              >
+                ✕
+              </button>
               <div className="sidebar-nav">
                 <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
                   Dashboard Global
@@ -3314,7 +3328,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
       <div className="main-content animate-fade-in">
         <div className={`dashboard-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-          <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
+          {!sidebarCollapsed && (
+            <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
+          )}
+          <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start', position: 'relative' }}>
+            <button 
+              type="button" 
+              className="sidebar-close-btn" 
+              onClick={() => setSidebarCollapsed(true)}
+            >
+              ✕
+            </button>
             <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Seleccionar Curso / Grado</label>
               <select className="form-select" value={selectedGrade} onChange={(e) => { setSelectedGrade(e.target.value); setActiveTab('grades'); }}>
