@@ -445,6 +445,8 @@ export default function App() {
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('math');
   const [activeAdminGrade, setActiveAdminGrade] = useState('1ro A');
+  const [calendarYear, setCalendarYear] = useState(() => new Date().getFullYear());
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date().getMonth());
 
   // Spreadsheet view mode: 'resumen' (summary of 4 evals) OR 'ev_0', 'ev_1', 'ev_2', 'ev_3' (criterios of Ev X)
   const [spreadsheetViewMode, setSpreadsheetViewMode] = useState('resumen');
@@ -1509,19 +1511,28 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const handleAddEvent = (e) => {
     e.preventDefault();
-    if (currentUser.role !== 'admin') return;
+    if (!currentUser) return;
 
     const created = {
       id: 'ev_' + Date.now().toString(),
       date: newEvent.date,
       title: newEvent.title,
-      desc: newEvent.desc,
-      type: newEvent.type
+      desc: newEvent.desc || '',
+      type: newEvent.type || 'primary'
     };
 
-    setCalendarEvents(prev => [...prev, created]);
-    setNewEvent({ date: '2026-07-01', title: '', desc: '', type: 'primary' });
-    alert('Evento escolar agendado.');
+    const updated = [...calendarEvents, created];
+    setCalendarEvents(updated);
+    localStorage.setItem('s_events', JSON.stringify(updated));
+    setNewEvent(prev => ({ ...prev, title: '', desc: '' }));
+    alert('Actividad académica agendada exitosamente.');
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    if (!window.confirm('¿Seguro que deseas eliminar esta actividad?')) return;
+    const updated = calendarEvents.filter(ev => ev.id !== eventId);
+    setCalendarEvents(updated);
+    localStorage.setItem('s_events', JSON.stringify(updated));
   };
 
   // --- Calculations for stats ---
@@ -1644,6 +1655,246 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       }
       return u;
     }));
+  };
+
+  const renderCalendarComponent = () => {
+    const MONTH_NAMES = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    const YEARS_LIST = Array.from({ length: 11 }, (_, i) => 2024 + i); // 2024 to 2034
+
+    // First day of current month/year
+    const firstDay = new Date(calendarYear, calendarMonth, 1);
+    const startDayIndex = firstDay.getDay(); // 0 is Sunday, 6 is Saturday
+    const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const prevMonthTotalDays = new Date(calendarYear, calendarMonth, 0).getDate();
+
+    // Previous month cells
+    const prevDaysCells = [];
+    for (let i = startDayIndex - 1; i >= 0; i--) {
+      prevDaysCells.push(prevMonthTotalDays - i);
+    }
+
+    // Current month cells
+    const currentDaysCells = Array.from({ length: totalDays }, (_, i) => i + 1);
+
+    // Next month cells
+    const totalCells = startDayIndex + totalDays;
+    const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    const nextDaysCells = Array.from({ length: remainingCells }, (_, i) => i + 1);
+
+    // Helpers to navigate month
+    const handlePrevMonth = () => {
+      if (calendarMonth === 0) {
+        setCalendarMonth(11);
+        setCalendarYear(prev => prev - 1);
+      } else {
+        setCalendarMonth(prev => prev - 1);
+      }
+    };
+
+    const handleNextMonth = () => {
+      if (calendarMonth === 11) {
+        setCalendarMonth(0);
+        setCalendarYear(prev => prev + 1);
+      } else {
+        setCalendarMonth(prev => prev + 1);
+      }
+    };
+
+    // Filter events for this month
+    const monthEvents = calendarEvents.filter(ev => {
+      const parts = ev.date.split('-');
+      if (parts.length !== 3) return false;
+      const y = Number(parts[0]);
+      const m = Number(parts[1]);
+      return y === calendarYear && m === (calendarMonth + 1);
+    }).sort((a, b) => a.date.localeCompare(b.date));
+
+    // Form states (controlled inputs)
+    const handleLocalSubmit = (e) => {
+      e.preventDefault();
+      handleAddEvent(e);
+    };
+
+    const today = new Date();
+    const isToday = (dayNum) => {
+      return today.getDate() === dayNum &&
+             today.getMonth() === calendarMonth &&
+             today.getFullYear() === calendarYear;
+    };
+
+    return (
+      <div className="calendar-dynamic-container">
+        {/* Top Controls: Dropdowns and navigation arrows */}
+        <div className="calendar-controls-bar">
+          <div className="month-year-selectors">
+            <select 
+              value={calendarMonth} 
+              onChange={(e) => setCalendarMonth(Number(e.target.value))}
+              className="calendar-select"
+            >
+              {MONTH_NAMES.map((name, idx) => (
+                <option key={idx} value={idx}>{name}</option>
+              ))}
+            </select>
+            <select 
+              value={calendarYear} 
+              onChange={(e) => setCalendarYear(Number(e.target.value))}
+              className="calendar-select"
+            >
+              {YEARS_LIST.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="calendar-nav-buttons">
+            <button type="button" className="btn-nav" onClick={handlePrevMonth}>◀</button>
+            <button type="button" className="btn-nav-today" onClick={() => { setCalendarMonth(today.getMonth()); setCalendarYear(today.getFullYear()); }}>Hoy</button>
+            <button type="button" className="btn-nav" onClick={handleNextMonth}>▶</button>
+          </div>
+        </div>
+
+        {/* Layout Grid: Calendar left side, Info list + scheduler right side */}
+        <div className="calendar-layout-grid">
+          {/* Calendar Grid Container */}
+          <div className="calendar-grid-card glass-panel">
+            <div className="calendar-grid-header">
+              {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => (
+                <div key={d} className="day-header">{d}</div>
+              ))}
+            </div>
+            <div className="calendar-grid-body">
+              {/* Previous month grey days */}
+              {prevDaysCells.map((dayNum, idx) => (
+                <div key={`prev-${idx}`} className="day-cell other-month">
+                  <span className="day-num">{dayNum}</span>
+                </div>
+              ))}
+
+              {/* Current month days */}
+              {currentDaysCells.map(dayNum => {
+                const monthStr = (calendarMonth + 1).toString().padStart(2, '0');
+                const dayStr = dayNum.toString().padStart(2, '0');
+                const dateString = `${calendarYear}-${monthStr}-${dayStr}`;
+                const dayEvents = calendarEvents.filter(ev => ev.date === dateString);
+
+                return (
+                  <div key={`curr-${dayNum}`} className={`day-cell ${isToday(dayNum) ? 'today' : ''}`} onClick={() => setNewEvent(prev => ({ ...prev, date: dateString }))}>
+                    <span className="day-num">{dayNum}</span>
+                    <div className="cell-events-container">
+                      {dayEvents.map(ev => (
+                        <div key={ev.id} className={`event-tag-pill ${ev.type}`} title={`${ev.title}: ${ev.desc || 'Sin descripción'}`}>
+                          <span className="dot"></span>
+                          <span className="text">{ev.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Next month grey days */}
+              {nextDaysCells.map((dayNum, idx) => (
+                <div key={`next-${idx}`} className="day-cell other-month">
+                  <span className="day-num">{dayNum}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Panel: Pending Activities List & Add Activity Form */}
+          <div className="calendar-sidebar-container">
+            {/* List of pending activities for the selected month */}
+            <div className="glass-panel sidebar-box">
+              <h3 className="section-title font-small-mobile">Actividades de {MONTH_NAMES[calendarMonth]} {calendarYear}</h3>
+              {monthEvents.length === 0 ? (
+                <p className="no-events-text">No hay actividades agendadas para este mes.</p>
+              ) : (
+                <div className="events-vertical-list">
+                  {monthEvents.map(ev => {
+                    const [, , day] = ev.date.split('-');
+                    return (
+                      <div key={ev.id} className={`event-list-item ${ev.type}`}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <span className="item-date">Día {Number(day)}</span>
+                            <h4 className="item-title">{ev.title}</h4>
+                            {ev.desc && <p className="item-desc">{ev.desc}</p>}
+                          </div>
+                          <button 
+                            type="button" 
+                            className="btn-delete-event" 
+                            onClick={() => handleDeleteEvent(ev.id)}
+                            title="Eliminar actividad"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Form to add calendar event */}
+            <div className="glass-panel sidebar-box">
+              <h3 className="section-title">Agendar Actividad</h3>
+              <form onSubmit={handleLocalSubmit} className="add-event-form">
+                <div className="form-group-compact">
+                  <label>Fecha</label>
+                  <input 
+                    type="date" 
+                    className="form-input-compact" 
+                    value={newEvent.date} 
+                    onChange={(e) => setNewEvent(prev => ({ ...prev, date: e.target.value }))} 
+                    required 
+                  />
+                </div>
+                <div className="form-group-compact">
+                  <label>Título</label>
+                  <input 
+                    type="text" 
+                    className="form-input-compact" 
+                    placeholder="Ej: Entrega de Rúbrica"
+                    value={newEvent.title} 
+                    onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))} 
+                    required 
+                  />
+                </div>
+                <div className="form-group-compact">
+                  <label>Detalles / Descripción</label>
+                  <textarea 
+                    className="form-input-compact" 
+                    rows="2"
+                    placeholder="Detalles de la actividad..."
+                    value={newEvent.desc || ''} 
+                    onChange={(e) => setNewEvent(prev => ({ ...prev, desc: e.target.value }))} 
+                  />
+                </div>
+                <div className="form-group-compact">
+                  <label>Tipo de Actividad</label>
+                  <select 
+                    className="form-select-compact" 
+                    value={newEvent.type || 'primary'} 
+                    onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value }))}
+                  >
+                    <option value="primary">Evaluación (Azul)</option>
+                    <option value="success">Entrega/Feria (Verde)</option>
+                    <option value="warning">Reunión Docente (Naranja)</option>
+                    <option value="danger">Examen Parcial (Rojo)</option>
+                  </select>
+                </div>
+                <button type="submit" className="btn-add-event-submit">Agendar Actividad</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // --- VIEW: Login ---
@@ -2027,35 +2278,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               {activeTab === 'calendar' && (
                 <div>
                   <h2>Calendario Escolar</h2>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
-                    <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                      <div className="calendar-grid">
-                        {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => (
-                          <div key={d} className="calendar-day-header">{d}</div>
-                        ))}
-                        {Array.from({ length: 3 }).map((_, idx) => <div key={idx} className="calendar-day-cell other-month"></div>)}
-                        {Array.from({ length: 31 }).map((_, idx) => {
-                          const dayNum = idx + 1;
-                          const dateString = `2026-07-${dayNum < 10 ? '0' + dayNum : dayNum}`;
-                          const dayEvents = calendarEvents.filter(ev => ev.date === dateString);
-                          return (
-                            <div key={dayNum} className="calendar-day-cell">
-                              <span>{dayNum}</span>
-                              <div>{dayEvents.map(e => <div key={e.id} className={`calendar-event-dot ${e.type}`}>{e.title}</div>)}</div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                    <div className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start' }}>
-                      <h3>Agendar Evento</h3>
-                      <form onSubmit={handleAddEvent}>
-                        <div className="form-group"><label>Fecha</label><input type="date" className="form-input" value={newEvent.date} onChange={(e) => setNewEvent(prev => ({ ...prev, date: e.target.value }))} required /></div>
-                        <div className="form-group"><label>Título</label><input type="text" className="form-input" value={newEvent.title} onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))} required /></div>
-                        <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>Agendar</button>
-                      </form>
-                    </div>
-                  </div>
+                  {renderCalendarComponent()}
                 </div>
               )}
             </section>
@@ -2854,27 +3077,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'calendar' && (
               <div>
                 <h2>Calendario Escolar</h2>
-                <div className="calendar-wrapper">
-                  <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                    <div className="calendar-grid">
-                      {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => (
-                        <div key={d} className="calendar-day-header">{d}</div>
-                      ))}
-                      {Array.from({ length: 3 }).map((_, idx) => <div key={idx} className="calendar-day-cell other-month"></div>)}
-                      {Array.from({ length: 31 }).map((_, idx) => {
-                        const dayNum = idx + 1;
-                        const dateString = `2026-07-${dayNum < 10 ? '0' + dayNum : dayNum}`;
-                        const dayEvents = calendarEvents.filter(ev => ev.date === dateString);
-                        return (
-                          <div key={dayNum} className="calendar-day-cell">
-                            <span>{dayNum}</span>
-                            <div>{dayEvents.map(e => <div key={e.id} className={`calendar-event-dot ${e.type}`}>{e.title}</div>)}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
+                {renderCalendarComponent()}
               </div>
             )}
             {activeTab === 'instruments' && (
@@ -3444,6 +3647,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             </>
                           );
                         })()}
+                      </div>
+
+                      {/* DYNAMIC CALENDAR UNDERNEATH INSTRUMENTS */}
+                      <div className="glass-panel" style={{ padding: '2rem', width: '100%', marginTop: '2rem' }}>
+                        <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary)' }}>
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                          <span>Calendario de Actividades del Curso</span>
+                        </h2>
+                        {renderCalendarComponent()}
                       </div>
                     </div>
                   </div>
