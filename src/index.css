@@ -43,29 +43,29 @@
 }
 
 [data-theme='dark'] {
-  /* HSL Color System - Dark Mode */
-  --bg-primary: hsl(222, 47%, 9%);
-  --bg-secondary: hsl(224, 40%, 13%);
-  --bg-glass: rgba(30, 41, 59, 0.6);
-  --bg-glass-hover: rgba(30, 41, 59, 0.75);
+  /* HSL Color System - Dark Mode Flag Navy Blue Theme */
+  --bg-primary: #001530; /* Deep flag navy blue */
+  --bg-secondary: #001f47; /* Slightly lighter navy blue */
+  --bg-glass: rgba(0, 31, 71, 0.6);
+  --bg-glass-hover: rgba(0, 31, 71, 0.8);
 
-  --border-color: hsl(217, 30%, 18%);
-  --border-glass: rgba(255, 255, 255, 0.06);
+  --border-color: #002e66;
+  --border-glass: rgba(0, 80, 166, 0.2);
 
-  --text-primary: hsl(210, 40%, 98%);
-  --text-secondary: hsl(215, 20%, 75%);
-  --text-muted: hsl(215, 15%, 50%);
+  --text-primary: #ffffff;
+  --text-secondary: #c2d8ff; /* Soft highly readable light blue-gray text */
+  --text-muted: #8cb5ff;
 
-  --primary: hsl(230, 85%, 63%);
-  --primary-hover: hsl(230, 85%, 58%);
-  --primary-glow: rgba(99, 102, 241, 0.25);
+  --primary: #3391ff; /* Bright legible blue accent */
+  --primary-hover: #5cb0ff;
+  --primary-glow: rgba(51, 145, 255, 0.25);
 
-  --success: hsl(142, 76%, 50%);
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --warning: hsl(45, 93%, 47%);
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --danger: hsl(346, 84%, 61%);
-  --danger-bg: rgba(239, 68, 68, 0.1);
+  --success: #00e676;
+  --success-bg: rgba(0, 230, 118, 0.1);
+  --warning: #ffb300;
+  --warning-bg: rgba(255, 179, 0, 0.1);
+  --danger: #ff5252;
+  --danger-bg: rgba(255, 82, 82, 0.1);
 
   --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 16px -6px rgba(0, 0, 0, 0.3);

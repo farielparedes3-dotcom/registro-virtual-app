@@ -1244,18 +1244,18 @@
 
 .gemini-chat-fab:hover {
   transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6) !important;
+  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.5) !important;
 }
 
 @keyframes floatPulse {
   0% {
-    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 4px 16px rgba(66, 133, 244, 0.3);
   }
   50% {
-    box-shadow: 0 4px 24px rgba(124, 58, 237, 0.7);
+    box-shadow: 0 4px 24px rgba(66, 133, 244, 0.5);
   }
   100% {
-    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 4px 16px rgba(66, 133, 244, 0.3);
   }
 }
 
@@ -1270,7 +1270,7 @@
 
 .ai-chat-bubble.ai {
   background-color: var(--bg-primary);
-  border: 1px solid rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(66, 133, 244, 0.15);
   border-bottom-left-radius: 2px;
 }
 
@@ -1294,26 +1294,26 @@
   100% { opacity: .4; }
 }
 
-/* Clean Login Styles matching original curved mockup */
+/* Clean Login Styles - Light theme login form */
 .login-card-clean {
   width: 100%;
   max-width: 420px;
   position: relative;
   z-index: 2;
-  color: #ffffff;
+  color: #1e293b;
 }
 
 .login-clean-title {
   font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 0.25rem;
-  color: #ffffff;
+  color: #003876; /* Official flag navy blue */
   letter-spacing: -0.01em;
 }
 
 .login-clean-subtitle {
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #64748b;
   margin-bottom: 2rem;
 }
 
@@ -1321,16 +1321,16 @@
   display: block;
   font-size: 0.8rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: #475569;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .login-clean-input {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #1e293b !important;
   border-radius: 50px !important;
   padding: 0.75rem 1.25rem !important;
   font-size: 0.9rem !important;
@@ -1338,47 +1338,47 @@
 }
 
 .login-clean-input::placeholder {
-  color: rgba(255, 255, 255, 0.4) !important;
+  color: #94a3b8 !important;
 }
 
 .login-clean-input:focus {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  border-color: #ffffff !important;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2) !important;
+  background-color: #ffffff !important;
+  border-color: #003876 !important;
+  box-shadow: 0 0 10px rgba(0, 56, 118, 0.15) !important;
   outline: none;
 }
 
 .login-clean-btn {
-  background: linear-gradient(135deg, var(--accent-red) 0%, #b00f20 100%) !important;
+  background: linear-gradient(135deg, #003876 0%, #00224a 100%) !important; /* Navy Flag Blue gradient */
   color: #ffffff !important;
   border: none !important;
   border-radius: 50px !important;
-  padding: 0.8rem 1.5rem !important;
+  padding: 0.85rem 1.5rem !important;
   font-weight: 700 !important;
   font-size: 0.95rem !important;
   cursor: pointer !important;
   transition: all 0.25s ease !important;
   margin-top: 1rem;
-  box-shadow: 0 4px 15px rgba(206, 17, 38, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(0, 56, 118, 0.2) !important;
   width: 100%;
 }
 
 .login-clean-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(206, 17, 38, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(0, 56, 118, 0.35) !important;
 }
 
 .demo-box-clean {
   margin-top: 2.25rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid #e2e8f0;
 }
 
 .demo-title-clean {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.5);
+  color: #64748b;
   font-weight: 700;
   margin-bottom: 1rem;
   text-align: center;
@@ -1391,8 +1391,8 @@
 }
 
 .btn-demo-clean {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
   border-radius: 12px !important;
   padding: 0.65rem !important;
   font-size: 0.76rem !important;
@@ -1401,40 +1401,41 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: #475569 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
 }
 
 .btn-demo-clean:hover {
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
-  color: #ffffff !important;
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
   transform: translateY(-1px);
 }
 
 .btn-demo-clean .role {
   font-weight: bold;
-  color: #ffffff;
+  color: #003876;
   margin-bottom: 0.1rem;
 }
 
 .btn-demo-clean .email {
   font-size: 0.68rem;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Big Sweeping circular arc separator in desktop */
 @media (min-width: 968px) {
   .login-left-illustration {
-    background: #ffffff !important;
-    color: var(--text-primary) !important;
+    background: linear-gradient(135deg, #00224a 0%, #00122b 100%) !important;
+    color: #ffffff !important;
     height: 100vh;
   }
   
   .login-left-illustration::before {
-    display: none; /* Hide standard backdrop */
+    display: block; /* Show decorative glow */
   }
 
-  /* Big white sweeping circular overlay pushing into navy right side */
+  /* Big dark sweeping circular overlay pushing into white right side */
   .login-left-illustration::after {
     content: '';
     position: absolute;
@@ -1442,10 +1443,76 @@
     right: -180px;
     width: 360px;
     height: 120%;
-    background-color: #ffffff;
+    background-color: #00122b; /* Matches left-side gradient end color */
     border-radius: 50%;
     z-index: 1;
     pointer-events: none;
-    box-shadow: 20px 0 40px rgba(0, 56, 118, 0.04);
+    box-shadow: 20px 0 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .login-right-form {
+    background-color: #f8fafc !important; /* Nice off-white clean side */
   }
 }
+
+/* Dark theme overrides for Login Screen */
+[data-theme='dark'] .login-right-form {
+  background-color: #001530 !important;
+}
+
+[data-theme='dark'] .login-card-clean {
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .login-clean-title {
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .login-clean-subtitle {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme='dark'] .login-clean-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme='dark'] .login-clean-input {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .login-clean-input:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+}
+
+[data-theme='dark'] .login-clean-btn {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #b00f20 100%) !important;
+  box-shadow: 0 4px 15px rgba(206, 17, 38, 0.3) !important;
+}
+
+[data-theme='dark'] .demo-box-clean {
+  border-top-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme='dark'] .demo-title-clean {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme='dark'] .btn-demo-clean {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme='dark'] .btn-demo-clean:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .btn-demo-clean .role {
+  color: #ffffff !important;
+}
+

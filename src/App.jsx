@@ -1653,15 +1653,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         {/* Left Side: Modern illustration and curves */}
         <div className="login-left-illustration">
           <div className="login-left-content">
-            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.75rem', color: '#c8102e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.78rem', color: '#ffb300', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
                 REGISTRO DE EVALUACIÓN DIGITAL
               </div>
-              <h1 className="school-title-highlight" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#003876', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
+              <h1 className="school-title-highlight" style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
                 LICEO ANA ROSA CASTILLO
               </h1>
-              <div style={{ marginTop: '0.5rem' }}>
-                <span className="district-badge" style={{ backgroundColor: 'rgba(0, 56, 118, 0.06)', color: '#003876', border: '1px solid rgba(0, 56, 118, 0.15)', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
+              <div style={{ marginTop: '0.75rem' }}>
+                <span className="district-badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.25)', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
                   DISTRITO EDUCATIVO 14-01 NAGUA
                 </span>
               </div>
@@ -1673,12 +1673,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               className="login-illustration-img" 
             />
 
-            <div style={{ backgroundColor: 'rgba(0, 56, 118, 0.03)', border: '1px solid rgba(0, 56, 118, 0.08)', padding: '1rem 1.25rem', borderRadius: '14px', textAlign: 'left', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start', maxWidth: '440px' }}>
-              <span style={{ fontSize: '1.1rem', color: '#003876' }}>🛡️</span>
-              <div>
-                <strong>Base de datos autónoma de Registro Escolar</strong>: Diseñada para mitigar errores de cálculo, asegurar la evidencia del registro de calificaciones por competencias mediante instrumentos y automatizar la evaluación académica en el centro educativo.
-              </div>
-            </div>
+            <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.92rem', lineHeight: '1.6', margin: '1.5rem 0 0 0', textAlign: 'center', maxWidth: '440px' }}>
+              Plataforma digital para la gestión del registro por competencias y rúbricas. Alineado con las normativas del Ministerio de Educación de la República Dominicana.
+            </p>
           </div>
         </div>
 
@@ -1753,17 +1750,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               type="button" 
               className="sidebar-toggle-btn" 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: '#003876', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               ☰
             </button>
             <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-                <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-                <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
-                <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+                <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+                <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
               </div>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
             </div>
           </div>
           
@@ -2073,23 +2070,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   return (
     <div className="app-container">
-      <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
+      <header className="header" style={{ borderBottom: '2px solid var(--border-color)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button 
             type="button" 
             className="sidebar-toggle-btn" 
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: '#003876', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             ☰
           </button>
           <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: '0.6rem', color: '#c8102e', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-              <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#003876' }}>LICEO ANA ROSA CASTILLO</span>
-              <span style={{ fontSize: '0.68rem', color: '#003876', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+              <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+              <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+              <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
             </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'rgba(0, 56, 118, 0.08)', color: '#003876', border: '1px solid #ebdcb9', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
+            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
           </div>
         </div>
         
@@ -3470,20 +3467,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     width: '60px',
                     height: '60px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+                    background: 'linear-gradient(135deg, #9b72cb 0%, #4285f4 30%, #d96570 70%, #ffca28 100%)',
                     color: '#fff',
                     border: 'none',
-                    boxShadow: '0 4px 16px rgba(124, 58, 237, 0.4)',
+                    boxShadow: '0 4px 16px rgba(66, 133, 244, 0.4)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.75rem',
                     zIndex: 1000
                   }}
                   title="Asistente de Rúbricas Gemini"
                 >
-                  ✨
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22c0-5.523 4.477-10 10-10-5.477 0-10-4.477-10-10C12 7.523 7.523 12 2 12c5.523 0 10 4.477 10 10Z" fill="#ffffff"/>
+                    <path d="M6 6c0-2.209 1.791-4 4-4-2.209 0-4 1.791-4 4C6 3.791 4.209 2 2 2c2.209 0 4 1.791 4 4Z" fill="#ffffff"/>
+                  </svg>
                 </button>
               )}
 
@@ -3500,7 +3499,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     flexDirection: 'column',
                     zIndex: 1000,
                     boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                    border: '1px solid rgba(124, 58, 237, 0.2)',
+                    border: '1px solid rgba(66, 133, 244, 0.2)',
                     borderRadius: '12px',
                     overflow: 'hidden',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -3511,7 +3510,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <div
                     style={{
                       padding: '0.75rem 1rem',
-                      background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+                      background: 'linear-gradient(135deg, #9b72cb 0%, #4285f4 30%, #d96570 70%, #ffca28 100%)',
                       color: '#fff',
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -3522,7 +3521,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     onClick={() => setAiChatMinimized(!aiChatMinimized)}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '1.1rem' }}>✨</span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22c0-5.523 4.477-10 10-10-5.477 0-10-4.477-10-10C12 7.523 7.523 12 2 12c5.523 0 10 4.477 10 10Z" fill="#ffffff"/>
+                        <path d="M6 6c0-2.209 1.791-4 4-4-2.209 0-4 1.791-4 4C6 3.791 4.209 2 2 2c2.209 0 4 1.791 4 4Z" fill="#ffffff"/>
+                      </svg>
                       <strong style={{ fontSize: '0.88rem' }}>Asistente Gemini</strong>
                       <span style={{ fontSize: '0.7rem', opacity: 0.9 }}>
                         {aiApiKey ? '(En Línea)' : '(Simulador)'}
@@ -3557,7 +3559,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         <span style={{ color: 'var(--text-secondary)' }}>Configuración de Clave API</span>
                         <button
                           type="button"
-                          style={{ background: 'none', border: 'none', color: '#7c3aed', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.72rem' }}
+                          style={{ background: 'none', border: 'none', color: '#4285f4', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.72rem' }}
                           onClick={() => setShowAiConfig(!showAiConfig)}
                         >
                           {showAiConfig ? 'Ocultar 🔧' : 'Configurar 🔧'}
@@ -3588,7 +3590,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 />
                               </div>
                             </div>
-                            <button type="submit" className="btn-primary" style={{ padding: '0.35rem', fontSize: '0.75rem', backgroundColor: '#7c3aed' }}>Guardar</button>
+                            <button type="submit" className="btn-primary" style={{ padding: '0.35rem', fontSize: '0.75rem', backgroundColor: '#4285f4' }}>Guardar</button>
                           </form>
                         </div>
                       )}
@@ -3597,7 +3599,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       <div className="ai-chat-messages" style={{ flex: 1, padding: '0.75rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {aiChatHistory.map((msg, idx) => (
                           <div key={idx} className={`ai-chat-bubble ${msg.sender}`} style={{ alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
-                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', marginBottom: '0.15rem', color: msg.sender === 'ai' ? '#7c3aed' : 'var(--primary)' }}>
+                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', marginBottom: '0.15rem', color: msg.sender === 'ai' ? '#4285f4' : 'var(--primary)' }}>
                               {msg.sender === 'ai' ? 'Gemini' : 'Tú'}
                             </span>
                             <div style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{msg.text}</div>
@@ -3606,7 +3608,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                         {aiIsTyping && (
                           <div className="ai-chat-bubble ai" style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
-                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: '#7c3aed' }}>Gemini</span>
+                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: '#4285f4' }}>Gemini</span>
                             <div className="ai-typing-effect" style={{ fontSize: '0.8rem' }}>Generando instrumento...</div>
                           </div>
                         )}
@@ -3614,11 +3616,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                       {/* Applied instrument preview inside chat */}
                       {latestAiGeneratedInstrument && (
-                        <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'rgba(124, 58, 237, 0.08)', borderTop: '1px solid rgba(124, 58, 237, 0.15)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                        <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'rgba(66, 133, 244, 0.08)', borderTop: '1px solid rgba(66, 133, 244, 0.15)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-primary)' }}>
                             Instrumento listo: <strong>{latestAiGeneratedInstrument.activity}</strong>
                           </div>
-                          <button className="ai-chat-apply-btn" onClick={handleApplyAiInstrument} style={{ padding: '0.35rem', fontSize: '0.75rem', width: '100%', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                          <button className="ai-chat-apply-btn" onClick={handleApplyAiInstrument} style={{ padding: '0.35rem', fontSize: '0.75rem', width: '100%', background: 'linear-gradient(135deg, #9b72cb 0%, #4285f4 50%, #d96570 100%)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                             ⚡ Aplicar Instrumento
                           </button>
                         </div>
