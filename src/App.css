@@ -2058,3 +2058,30 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Report Grades Horizontal Bar */
+.report-grades-bar {
+  margin-top: 0.5rem;
+}
+
+.report-grades-bar .btn-secondary {
+  border-radius: 20px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.88rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast) ease;
+}
+
+.report-grades-bar .btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.report-grades-bar .active-report-grade {
+  background-color: var(--primary) !important;
+  color: #ffffff !important;
+  border-color: var(--primary) !important;
+  box-shadow: var(--shadow-sm);
+}

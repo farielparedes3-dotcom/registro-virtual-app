@@ -483,6 +483,31 @@ export default function App() {
   const [subjectForm, setSubjectForm] = useState({ name: '', color: '#003876' });
   const [gradeForm, setGradeForm] = useState({ name: '' });
 
+  // --- Admin Report & Alarms States ---
+  const [selectedAdminReportGrade, setSelectedAdminReportGrade] = useState(() => {
+    const saved = localStorage.getItem('s_grades');
+    const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
+    return list[0] || '1ro A';
+  });
+  const [expandedReportSubjects, setExpandedReportSubjects] = useState({});
+  const [gradeStaffContacts, setGradeStaffContacts] = useState(() => {
+    const saved = localStorage.getItem('s_grade_staff');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [alertFormModal, setAlertFormModal] = useState({
+    isOpen: false,
+    student: null,
+    subjectKey: '',
+    score: 0,
+    period: '',
+    sending: false,
+    progress: 0
+  });
+  const [alertLogs, setAlertLogs] = useState(() => {
+    const saved = localStorage.getItem('s_alert_logs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState(() => {
@@ -626,6 +651,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('s_grades', JSON.stringify(grades));
   }, [grades]);
+
+  useEffect(() => {
+    localStorage.setItem('s_grade_staff', JSON.stringify(gradeStaffContacts));
+  }, [gradeStaffContacts]);
+
+  useEffect(() => {
+    localStorage.setItem('s_alert_logs', JSON.stringify(alertLogs));
+  }, [alertLogs]);
 
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
@@ -1024,6 +1057,68 @@ export default function App() {
 
       alert('Grado eliminado.');
     }
+  };
+
+  // --- Admin: Grade & Subject Report Warnings ---
+  const handleSaveStaffContacts = (gradeName, coordinatorEmail, counselorEmail) => {
+    setGradeStaffContacts(prev => ({
+      ...prev,
+      [gradeName]: {
+        coordinator: coordinatorEmail,
+        counselor: counselorEmail
+      }
+    }));
+    alert('Contactos de coordinación y orientación actualizados para ' + gradeName);
+  };
+
+  const handleOpenAlertModal = (student, subjectKey, score, period) => {
+    const contacts = gradeStaffContacts[student.grade] || { coordinator: '', counselor: '' };
+    setAlertFormModal({
+      isOpen: true,
+      student,
+      subjectKey,
+      score,
+      period,
+      sending: false,
+      progress: 0,
+      coordinatorEmail: contacts.coordinator || '',
+      counselorEmail: contacts.counselor || ''
+    });
+  };
+
+  const handleSimulateSendAlert = () => {
+    if (!alertFormModal.coordinatorEmail || !alertFormModal.counselorEmail) {
+      alert('Por favor, ingresa los correos del Coordinador y Orientador antes de enviar la alerta.');
+      return;
+    }
+
+    setAlertFormModal(prev => ({ ...prev, sending: true, progress: 10 }));
+
+    let interval = setInterval(() => {
+      setAlertFormModal(prev => {
+        if (prev.progress >= 100) {
+          clearInterval(interval);
+          
+          const newLog = {
+            id: Date.now().toString(),
+            studentName: prev.student.name,
+            grade: prev.student.grade,
+            subjectName: subjects[prev.subjectKey]?.name || prev.subjectKey,
+            periodName: prev.period === 'final' ? 'Promedio Final' : `Periodo ${prev.period.replace('bloque', '')}`,
+            score: prev.score.toFixed(0),
+            coordinator: prev.coordinatorEmail,
+            counselor: prev.counselorEmail,
+            timestamp: new Date().toLocaleString()
+          };
+
+          setAlertLogs(logs => [newLog, ...logs]);
+          alert('¡Alerta Académica emitida con éxito! Notificación enviada a:\n- Coordinador: ' + prev.coordinatorEmail + '\n- Orientador: ' + prev.counselorEmail);
+          
+          return { ...prev, isOpen: false, sending: false, progress: 0 };
+        }
+        return { ...prev, progress: prev.progress + 30 };
+      });
+    }, 300);
   };
 
   // --- Docente: Instrument Configuration ---
@@ -1794,11 +1889,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
   
   const calculateStudentAvg = (s) => {
-    const math = calculateSubjectAvg(s.id, 'math', s.grades);
-    const science = calculateSubjectAvg(s.id, 'science', s.grades);
-    const language = calculateSubjectAvg(s.id, 'language', s.grades);
-    const history = calculateSubjectAvg(s.id, 'history', s.grades);
-    return (math + science + language + history) / 4;
+    const subKeys = Object.keys(subjects);
+    if (subKeys.length === 0) return 0;
+    const sum = subKeys.reduce((acc, subKey) => acc + calculateSubjectAvg(s.id, subKey, s.grades), 0);
+    return sum / subKeys.length;
   };
 
   const globalAverage = totalStudents > 0 
@@ -1813,10 +1907,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return (totalSum / totalStudents).toFixed(1);
   };
 
-  const mathAvg = getSubjectAverage('math');
-  const scienceAvg = getSubjectAverage('science');
-  const langAvg = getSubjectAverage('language');
-  const historyAvg = getSubjectAverage('history');
+
 
   const teacherUniqueGrades = currentUser && currentUser.role === 'teacher'
     ? [...new Set(currentUser.assignments.map(a => a.grade))]
@@ -2238,6 +2329,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => setActiveTab('students')}>
                   Estudiantes por Grado
                 </div>
+                <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => setActiveTab('admin_grades')}>
+                  Control Calificaciones
+                </div>
                 <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>
                   Calendario Escolar
                 </div>
@@ -2292,10 +2386,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <div className="glass-card" style={{ marginTop: '1.5rem' }}>
                     <h3 style={{ marginBottom: '1rem' }}>Resumen de Promedios por Asignatura</h3>
                     <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', listStyle: 'none' }}>
-                      <li>Matemáticas: <strong>{mathAvg}%</strong></li>
-                      <li>Ciencias: <strong>{scienceAvg}%</strong></li>
-                      <li>Lenguaje: <strong>{langAvg}%</strong></li>
-                      <li>Historia: <strong>{historyAvg}%</strong></li>
+                      {Object.keys(subjects).map(subKey => (
+                        <li key={subKey}>
+                          {subjects[subKey].name}: <strong>{getSubjectAverage(subKey)}%</strong>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -2771,6 +2866,287 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </div>
                         <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Inscribir</button>
                       </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'admin_grades' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <h2>Control de Calificaciones y Alertas Académicas</h2>
+                  <p style={{ color: 'var(--text-secondary)', marginTop: '-1rem', marginBottom: '0.5rem' }}>
+                    Supervisa el rendimiento escolar por periodos. Configura los contactos de coordinación y orientación del grado para emitir alertas si la nota cae por debajo de 70.
+                  </p>
+
+                  {/* Horizontal Grades Bar */}
+                  <div className="report-grades-bar" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+                    {grades.map(g => (
+                      <button 
+                        key={g} 
+                        className={`btn-secondary ${selectedAdminReportGrade === g ? 'btn-primary active-report-grade' : ''}`} 
+                        onClick={() => setSelectedAdminReportGrade(g)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 'bold' }}
+                      >
+                        🏫 {g}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Contacts Configuration for selected Grade */}
+                  <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <h4 style={{ margin: 0, color: 'var(--primary)' }}>Configuración de Contactos del Grado: {selectedAdminReportGrade}</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 150px', gap: '1rem', alignItems: 'end' }}>
+                      <div className="form-group-compact" style={{ marginBottom: 0 }}>
+                        <label>Correo del Coordinador Encargado</label>
+                        <input 
+                          type="email" 
+                          className="form-input-compact" 
+                          placeholder="coordinador@liceo.edu" 
+                          value={gradeStaffContacts[selectedAdminReportGrade]?.coordinator || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setGradeStaffContacts(prev => ({
+                              ...prev,
+                              [selectedAdminReportGrade]: {
+                                ...(prev[selectedAdminReportGrade] || { counselor: '' }),
+                                coordinator: val
+                              }
+                            }));
+                          }}
+                        />
+                      </div>
+                      <div className="form-group-compact" style={{ marginBottom: 0 }}>
+                        <label>Correo del Orientador Encargado</label>
+                        <input 
+                          type="email" 
+                          className="form-input-compact" 
+                          placeholder="orientador@liceo.edu" 
+                          value={gradeStaffContacts[selectedAdminReportGrade]?.counselor || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setGradeStaffContacts(prev => ({
+                              ...prev,
+                              [selectedAdminReportGrade]: {
+                                ...(prev[selectedAdminReportGrade] || { coordinator: '' }),
+                                counselor: val
+                              }
+                            }));
+                          }}
+                        />
+                      </div>
+                      <button 
+                        className="btn-primary" 
+                        style={{ height: '38px', borderRadius: '6px' }}
+                        onClick={() => {
+                          const contact = gradeStaffContacts[selectedAdminReportGrade] || { coordinator: '', counselor: '' };
+                          handleSaveStaffContacts(selectedAdminReportGrade, contact.coordinator, contact.counselor);
+                        }}
+                      >
+                        💾 Guardar
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Accordion List of Subjects for this Grade */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {Object.keys(subjects).map(subKey => {
+                      const sub = subjects[subKey];
+                      const teacher = users.find(u => 
+                        u.role === 'teacher' && 
+                        u.assignments.some(a => a.grade === selectedAdminReportGrade && a.subject === subKey)
+                      );
+                      const isExpanded = expandedReportSubjects[subKey];
+                      const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade);
+
+                      return (
+                        <div 
+                          key={subKey} 
+                          className="glass-panel" 
+                          style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}
+                        >
+                          <button
+                            type="button"
+                            className="accordion-header"
+                            onClick={() => setExpandedReportSubjects(prev => ({ ...prev, [subKey]: !prev[subKey] }))}
+                            style={{
+                              width: '100%',
+                              padding: '1rem 1.25rem',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              background: isExpanded ? 'var(--primary-glow)' : 'var(--bg-secondary)',
+                              border: 'none',
+                              borderBottom: isExpanded ? '1px solid var(--border-color)' : 'none',
+                              color: isExpanded ? 'var(--primary)' : 'var(--text-primary)',
+                              cursor: 'pointer',
+                              fontWeight: 'bold',
+                              transition: 'all 0.2s ease',
+                              textAlign: 'left'
+                            }}
+                          >
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                              <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: sub.color }}></span>
+                              <strong>{sub.name}</strong>
+                              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                                Docente: <strong>{teacher ? teacher.name : 'Sin docente asignado'}</strong>
+                              </span>
+                            </span>
+                            <span>{isExpanded ? '▲ Ocultar Calificaciones' : '▼ Mostrar Calificaciones'}</span>
+                          </button>
+
+                          {isExpanded && (
+                            <div className="accordion-content animate-fade-in" style={{ padding: '1.25rem' }}>
+                              <div className="custom-table-container" style={{ margin: 0 }}>
+                                <table className="custom-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Estudiante</th>
+                                      <th style={{ textAlign: 'center', width: '90px' }}>P1</th>
+                                      <th style={{ textAlign: 'center', width: '90px' }}>P2</th>
+                                      <th style={{ textAlign: 'center', width: '90px' }}>P3</th>
+                                      <th style={{ textAlign: 'center', width: '90px' }}>P4</th>
+                                      <th style={{ textAlign: 'center', width: '110px' }}>Promedio Final</th>
+                                      <th style={{ textAlign: 'center', width: '180px' }}>Acciones</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {gradeStudents.map(s => {
+                                      const p1 = calculateBlockAvg(s.id, subKey, 'bloque1', s.grades);
+                                      const p2 = calculateBlockAvg(s.id, subKey, 'bloque2', s.grades);
+                                      const p3 = calculateBlockAvg(s.id, subKey, 'bloque3', s.grades);
+                                      const p4 = calculateBlockAvg(s.id, subKey, 'bloque4', s.grades);
+                                      const finalAvg = calculateSubjectAvg(s.id, subKey, s.grades);
+
+                                      const hasFailing = p1 < 70 || p2 < 70 || p3 < 70 || p4 < 70 || finalAvg < 70;
+
+                                      return (
+                                        <tr key={s.id}>
+                                          <td style={{ fontWeight: 700 }}>{s.name}</td>
+                                          <td style={{ textAlign: 'center' }}>
+                                            <span style={{ color: p1 < 70 ? 'var(--danger)' : 'inherit', fontWeight: p1 < 70 ? 'bold' : 'normal' }}>
+                                              {p1.toFixed(0)}
+                                            </span>
+                                          </td>
+                                          <td style={{ textAlign: 'center' }}>
+                                            <span style={{ color: p2 < 70 ? 'var(--danger)' : 'inherit', fontWeight: p2 < 70 ? 'bold' : 'normal' }}>
+                                              {p2.toFixed(0)}
+                                            </span>
+                                          </td>
+                                          <td style={{ textAlign: 'center' }}>
+                                            <span style={{ color: p3 < 70 ? 'var(--danger)' : 'inherit', fontWeight: p3 < 70 ? 'bold' : 'normal' }}>
+                                              {p3.toFixed(0)}
+                                            </span>
+                                          </td>
+                                          <td style={{ textAlign: 'center' }}>
+                                            <span style={{ color: p4 < 70 ? 'var(--danger)' : 'inherit', fontWeight: p4 < 70 ? 'bold' : 'normal' }}>
+                                              {p4.toFixed(0)}
+                                            </span>
+                                          </td>
+                                          <td style={{ textAlign: 'center' }}>
+                                            <span 
+                                              style={{ 
+                                                color: finalAvg < 70 ? 'var(--danger)' : 'var(--success)', 
+                                                fontWeight: 'bold', 
+                                                fontSize: '0.95rem',
+                                                padding: '0.15rem 0.4rem',
+                                                borderRadius: '4px',
+                                                backgroundColor: finalAvg < 70 ? 'var(--danger-bg)' : 'var(--success-bg)'
+                                              }}
+                                            >
+                                              {finalAvg.toFixed(0)}
+                                            </span>
+                                          </td>
+                                          <td style={{ textAlign: 'center' }}>
+                                            {hasFailing ? (
+                                              <button 
+                                                className="btn-danger active-status" 
+                                                style={{ 
+                                                  padding: '0.35rem 0.65rem', 
+                                                  fontSize: '0.78rem', 
+                                                  fontWeight: 'bold',
+                                                  borderRadius: '6px',
+                                                  display: 'inline-flex',
+                                                  alignItems: 'center',
+                                                  gap: '0.3rem',
+                                                  cursor: 'pointer'
+                                                }}
+                                                onClick={() => {
+                                                  let worstPeriod = 'final';
+                                                  let worstScore = finalAvg;
+                                                  if (p1 < 70) { worstPeriod = 'bloque1'; worstScore = p1; }
+                                                  else if (p2 < 70) { worstPeriod = 'bloque2'; worstScore = p2; }
+                                                  else if (p3 < 70) { worstPeriod = 'bloque3'; worstScore = p3; }
+                                                  else if (p4 < 70) { worstPeriod = 'bloque4'; worstScore = p4; }
+
+                                                  handleOpenAlertModal(s, subKey, worstScore, worstPeriod);
+                                                }}
+                                              >
+                                                📧 Emitir Alerta
+                                              </button>
+                                            ) : (
+                                              <span style={{ fontSize: '0.8rem', color: 'var(--success)', fontWeight: 'bold' }}>✓ Aprobado</span>
+                                            )}
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                    {gradeStudents.length === 0 && (
+                                      <tr>
+                                        <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1.5rem' }}>
+                                          No hay alumnos matriculados en este grado.
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Alert Bitacora History */}
+                  <div className="glass-panel" style={{ padding: '1.25rem' }}>
+                    <h3 style={{ marginBottom: '0.75rem', color: 'var(--primary)' }}>Historial de Alertas Académicas Emitidas</h3>
+                    <div className="custom-table-container" style={{ margin: 0, maxHeight: '250px', overflowY: 'auto' }}>
+                      <table className="custom-table">
+                        <thead>
+                          <tr>
+                            <th>Estudiante</th>
+                            <th>Grado</th>
+                            <th>Asignatura</th>
+                            <th>Periodo / Nota</th>
+                            <th>Destinatarios</th>
+                            <th>Fecha</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {alertLogs.map(log => (
+                            <tr key={log.id}>
+                              <td style={{ fontWeight: 700 }}>{log.studentName}</td>
+                              <td><span className="badge badge-success">{log.grade}</span></td>
+                              <td>{log.subjectName}</td>
+                              <td>
+                                <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>{log.periodName} ({log.score})</span>
+                              </td>
+                              <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                <div>Coord: {log.coordinator}</div>
+                                <div>Orient: {log.counselor}</div>
+                              </td>
+                              <td style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{log.timestamp}</td>
+                            </tr>
+                          ))}
+                          {alertLogs.length === 0 && (
+                            <tr>
+                              <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1.5rem' }}>
+                                No se han registrado envíos de alerta todavía.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -4485,6 +4861,132 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className="modal-footer">
               <button className="btn-secondary" onClick={() => setIsAssessmentModalOpen(false)}>Cancelar</button>
               <button className="btn-primary" onClick={handleApplyAssessment}>Aplicar Calificación al Alumno</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ACADEMIC WARNING ALARM MODAL */}
+      {alertFormModal.isOpen && alertFormModal.student && (
+        <div className="modal-backdrop">
+          <div className="modal-card animate-fade-in" style={{ maxWidth: '600px' }}>
+            <div className="modal-header">
+              <div>
+                <h3 style={{ fontSize: '1.2rem', color: 'var(--danger)' }}>🚨 Borrador de Alerta Académica</h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Notificación de bajo rendimiento (Calificación por debajo de 70)
+                </span>
+              </div>
+              <button 
+                style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }} 
+                onClick={() => setAlertFormModal(prev => ({ ...prev, isOpen: false }))}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="alert alert-danger" style={{ fontSize: '0.85rem', margin: 0, padding: '0.75rem 1rem' }}>
+                <strong>Nota Crítica Detectada:</strong> El estudiante <strong>{alertFormModal.student.name}</strong> tiene una calificación de <strong>{alertFormModal.score.toFixed(0)}%</strong> en la asignatura <strong>{subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey}</strong> ({alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`}).
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div className="form-group-compact">
+                  <label>De (Dirección Liceo)</label>
+                  <input type="text" className="form-input-compact" value="liceo.anarosacastillo@minerd.edu.do" readOnly />
+                </div>
+                <div className="form-group-compact">
+                  <label>Para (Coordinador Encargado)</label>
+                  <input 
+                    type="email" 
+                    className="form-input-compact" 
+                    placeholder="coordinador@liceo.edu" 
+                    value={alertFormModal.coordinatorEmail}
+                    onChange={(e) => setAlertFormModal(prev => ({ ...prev, coordinatorEmail: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group-compact">
+                  <label>Para (Orientador Encargado)</label>
+                  <input 
+                    type="email" 
+                    className="form-input-compact" 
+                    placeholder="orientador@liceo.edu" 
+                    value={alertFormModal.counselorEmail}
+                    onChange={(e) => setAlertFormModal(prev => ({ ...prev, counselorEmail: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group-compact">
+                  <label>Asunto del Correo</label>
+                  <input 
+                    type="text" 
+                    className="form-input-compact" 
+                    value={`[ALERTA ACADÉMICA] Convocatoria a reunión de padres - Alumno: ${alertFormModal.student.name} - Grado: ${alertFormModal.student.grade}`} 
+                    readOnly 
+                  />
+                </div>
+                <div className="form-group-compact">
+                  <label>Borrador de Mensaje</label>
+                  <textarea 
+                    className="form-input-compact" 
+                    style={{ minHeight: '160px', padding: '0.5rem', fontSize: '0.85rem', lineHeight: '1.4', fontFamily: 'inherit' }}
+                    readOnly
+                    value={`Estimados Coordinador y Orientador Encargados,\n\nPor este medio se emite una ALERTA ACADÉMICA formal en relación al estudiante ${alertFormModal.student.name} del grado ${alertFormModal.student.grade}.\n\nEl alumno presenta un rendimiento crítico acumulado de ${alertFormModal.score.toFixed(0)}/100 en la asignatura de ${subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} durante el periodo ${alertFormModal.period === 'final' ? 'Final' : alertFormModal.period.replace('bloque', '')}.\n\nSolicitamos formalmente que se gestione de manera coordinada una convocatoria de reunión de padres, madres o tutores del menor a la mayor brevedad posible para trazar un plan de seguimiento y rescate académico.\n\nAtentamente,\nDirección Liceo Ana Rosa Castillo`}
+                  />
+                </div>
+              </div>
+
+              {alertFormModal.sending && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.25rem' }}>
+                    <span>Emitiendo alerta y enrutando correo...</span>
+                    <span>{alertFormModal.progress}%</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{ width: `${alertFormModal.progress}%`, height: '100%', backgroundColor: 'var(--danger)', transition: 'width 0.2s ease' }}></div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button 
+                className="btn-secondary" 
+                onClick={() => setAlertFormModal(prev => ({ ...prev, isOpen: false }))}
+                disabled={alertFormModal.sending}
+              >
+                Cerrar
+              </button>
+              
+              <a 
+                href={`mailto:${alertFormModal.coordinatorEmail},${alertFormModal.counselorEmail}?subject=${encodeURIComponent(`[ALERTA ACADÉMICA] Convocatoria a reunión de padres - Alumno: ${alertFormModal.student.name} - Grado: ${alertFormModal.student.grade}`)}&body=${encodeURIComponent(`Estimados Coordinador y Orientador Encargados,\n\nPor este medio se emite una ALERTA ACADÉMICA formal en relación al estudiante ${alertFormModal.student.name} del grado ${alertFormModal.student.grade}.\n\nEl alumno presenta un rendimiento crítico acumulado de ${alertFormModal.score.toFixed(0)}/100 en la asignatura de ${subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} durante el periodo ${alertFormModal.period === 'final' ? 'Final' : alertFormModal.period.replace('bloque', '')}.\n\nSolicitamos formalmente que se gestione de manera coordinada una convocatoria de reunión de padres, madres o tutores del menor a la mayor brevedad posible para trazar un plan de seguimiento y rescate académico.\n\nAtentamente,\nDirección Liceo Ana Rosa Castillo`)}`}
+                className="btn-secondary"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontWeight: 'bold' }}
+                onClick={() => {
+                  const newLog = {
+                    id: Date.now().toString(),
+                    studentName: alertFormModal.student.name,
+                    grade: alertFormModal.student.grade,
+                    subjectName: subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey,
+                    periodName: alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`,
+                    score: alertFormModal.score.toFixed(0),
+                    coordinator: alertFormModal.coordinatorEmail,
+                    counselor: alertFormModal.counselorEmail,
+                    timestamp: new Date().toLocaleString()
+                  };
+                  setAlertLogs(logs => [newLog, ...logs]);
+                  setAlertFormModal(prev => ({ ...prev, isOpen: false }));
+                }}
+              >
+                ✉️ Enviar con Outlook/Gmail
+              </a>
+
+              <button 
+                className="btn-danger" 
+                onClick={handleSimulateSendAlert}
+                disabled={alertFormModal.sending}
+              >
+                {alertFormModal.sending ? 'Enviando...' : '⚡ Simular Envío'}
+              </button>
             </div>
           </div>
         </div>
