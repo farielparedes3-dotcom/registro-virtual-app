@@ -661,6 +661,11 @@ export default function App() {
     };
   }, []);
 
+  // Scroll to top on tab change to prevent content being "pushed down" or hidden above viewport on mobile
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
+
   useEffect(() => {
     dbService.saveUsers(users);
   }, [users]);
@@ -2415,22 +2420,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 ✕
               </button>
               <div className="sidebar-nav">
-                <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+                <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarCollapsed(true); }}>
                   Dashboard Global
                 </div>
-                <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => setActiveTab('teachers')}>
+                <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => { setActiveTab('teachers'); setSidebarCollapsed(true); }}>
                   Asignación Docentes
                 </div>
-                <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => setActiveTab('students')}>
+                <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => { setActiveTab('students'); setSidebarCollapsed(true); }}>
                   Estudiantes por Grado
                 </div>
-                <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => setActiveTab('admin_grades')}>
+                <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
                   Control Calificaciones
                 </div>
-                <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>
+                <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
                   Calendario Escolar
                 </div>
-                <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => setActiveTab('instructions')}>
+                <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
                   Manual / Instructivo
                 </div>
               </div>
@@ -3341,23 +3346,24 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </button>
             <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Seleccionar Curso / Grado</label>
-              <select className="form-select" value={selectedGrade} onChange={(e) => { setSelectedGrade(e.target.value); setActiveTab('grades'); }}>
+              <select className="form-select" value={selectedGrade} onChange={(e) => { setSelectedGrade(e.target.value); setActiveTab('grades'); setSidebarCollapsed(true); }}>
                 {teacherUniqueGrades.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
 
             <div className="sidebar-nav">
-              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard Docente</div>
-              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => setActiveTab('grades')}>Planilla Calificaciones</div>
-              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => setActiveTab('attendance')}>Control Asistencia</div>
-              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>Calendario Escolar</div>
+              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarCollapsed(true); }}>Dashboard Docente</div>
+              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>Planilla Calificaciones</div>
+              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control Asistencia</div>
+              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>Calendario Escolar</div>
               <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
                 if (activeBloque === 'promedio_ce') {
                   setActiveBloque('bloque1');
                 }
                 setActiveTab('instruments');
+                setSidebarCollapsed(true);
               }}>Instrumentos de Eval.</div>
-              <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => setActiveTab('instructions')}>Instructivo de Uso</div>
+              <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>Instructivo de Uso</div>
             </div>
           </aside>
 
