@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 
+import { dbService } from './db';
+
 // Global configuration
 const DEFAULT_SUBJECTS = {
   math: { name: 'Matemáticas', color: 'var(--primary)', bg: 'var(--primary-glow)' },
@@ -592,7 +594,71 @@ export default function App() {
 
   // --- Sync Effects ---
   useEffect(() => {
-    localStorage.setItem('s_users', JSON.stringify(users));
+    const unsubUsers = dbService.subscribeUsers((data) => {
+      if (data && data.length > 0) {
+        setUsers(data);
+      } else {
+        setUsers(DEFAULT_USERS);
+      }
+    });
+
+    const unsubStudents = dbService.subscribeStudents((data) => {
+      if (data && data.length > 0) {
+        setStudents(data);
+      } else {
+        setStudents(DEFAULT_STUDENTS);
+      }
+    });
+
+    const unsubEvents = dbService.subscribeEvents((data) => {
+      setCalendarEvents(data && data.length > 0 ? data : DEFAULT_EVENTS);
+    });
+
+    const unsubAlertLogs = dbService.subscribeAlertLogs((data) => {
+      setAlertLogs(data || []);
+    });
+
+    const unsubEvalConfigs = dbService.subscribeEvalConfigs((data) => {
+      setEvaluationConfigs(data && Object.keys(data).length > 0 ? data : DEFAULT_EVALUATION_CONFIGS);
+    });
+
+    const unsubStudentAssessments = dbService.subscribeStudentAssessments((data) => {
+      setStudentAssessments(data || {});
+    });
+
+    const unsubStudentRpGrades = dbService.subscribeStudentRpGrades((data) => {
+      setStudentRpGrades(data || {});
+    });
+
+    const unsubStudentAttendance = dbService.subscribeStudentAttendance((data) => {
+      setStudentAttendanceDetail(data || {});
+    });
+
+    const unsubConfig = dbService.subscribeConfig((data) => {
+      if (data) {
+        if (data.subjects) setSubjects(data.subjects);
+        if (data.grades) setGrades(data.grades);
+        if (data.staff) setGradeStaffContacts(data.staff);
+        if (data.monthlyDays) setMonthlyWorkedDays(data.monthlyDays);
+        if (data.attendanceDates) setAttendanceDayDates(data.attendanceDates);
+      }
+    });
+
+    return () => {
+      unsubUsers();
+      unsubStudents();
+      unsubEvents();
+      unsubAlertLogs();
+      unsubEvalConfigs();
+      unsubStudentAssessments();
+      unsubStudentRpGrades();
+      unsubStudentAttendance();
+      unsubConfig();
+    };
+  }, []);
+
+  useEffect(() => {
+    dbService.saveUsers(users);
   }, [users]);
 
   useEffect(() => {
@@ -608,35 +674,31 @@ export default function App() {
   }, [currentUser, users]);
 
   useEffect(() => {
-    localStorage.setItem('s_students', JSON.stringify(students));
+    dbService.saveStudents(students);
   }, [students]);
 
   useEffect(() => {
-    localStorage.setItem('s_student_rp_grades', JSON.stringify(studentRpGrades));
+    dbService.saveStudentRpGrades(studentRpGrades);
   }, [studentRpGrades]);
 
   useEffect(() => {
-    localStorage.setItem('s_student_attendance_detail', JSON.stringify(studentAttendanceDetail));
+    dbService.saveStudentAttendance(studentAttendanceDetail);
   }, [studentAttendanceDetail]);
 
   useEffect(() => {
-    localStorage.setItem('s_monthly_worked_days', JSON.stringify(monthlyWorkedDays));
-  }, [monthlyWorkedDays]);
+    dbService.saveAttendanceConfigs(monthlyWorkedDays, attendanceDayDates);
+  }, [monthlyWorkedDays, attendanceDayDates]);
 
   useEffect(() => {
-    localStorage.setItem('s_attendance_day_dates', JSON.stringify(attendanceDayDates));
-  }, [attendanceDayDates]);
-
-  useEffect(() => {
-    localStorage.setItem('s_events', JSON.stringify(calendarEvents));
+    dbService.saveEvents(calendarEvents);
   }, [calendarEvents]);
 
   useEffect(() => {
-    localStorage.setItem('s_eval_configs', JSON.stringify(evaluationConfigs));
+    dbService.saveEvalConfigs(evaluationConfigs);
   }, [evaluationConfigs]);
 
   useEffect(() => {
-    localStorage.setItem('s_student_assessments', JSON.stringify(studentAssessments));
+    dbService.saveStudentAssessments(studentAssessments);
   }, [studentAssessments]);
 
   useEffect(() => {
@@ -645,19 +707,19 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem('s_subjects', JSON.stringify(subjects));
+    dbService.saveSubjects(subjects);
   }, [subjects]);
 
   useEffect(() => {
-    localStorage.setItem('s_grades', JSON.stringify(grades));
+    dbService.saveGrades(grades);
   }, [grades]);
 
   useEffect(() => {
-    localStorage.setItem('s_grade_staff', JSON.stringify(gradeStaffContacts));
+    dbService.saveGradeStaff(gradeStaffContacts);
   }, [gradeStaffContacts]);
 
   useEffect(() => {
-    localStorage.setItem('s_alert_logs', JSON.stringify(alertLogs));
+    dbService.saveAlertLogs(alertLogs);
   }, [alertLogs]);
 
   // Set default selected grade/subject for teacher when logged in
@@ -2285,6 +2347,25 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
               </div>
               <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
+              <span 
+                style={{ 
+                  fontSize: '0.72rem', 
+                  padding: '0.2rem 0.5rem', 
+                  backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                  color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                  border: '1px solid currentColor', 
+                  borderRadius: '4px', 
+                  marginLeft: '0.4rem', 
+                  fontWeight: 'bold', 
+                  alignSelf: 'center',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem'
+                }}
+                title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+              >
+                <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+              </span>
             </div>
           </div>
           
@@ -3187,6 +3268,25 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
             </div>
             <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
+            <span 
+              style={{ 
+                fontSize: '0.72rem', 
+                padding: '0.2rem 0.5rem', 
+                backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                border: '1px solid currentColor', 
+                borderRadius: '4px', 
+                marginLeft: '0.4rem', 
+                fontWeight: 'bold', 
+                alignSelf: 'center',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}
+              title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+            >
+              <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+            </span>
           </div>
         </div>
         
