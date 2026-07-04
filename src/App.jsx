@@ -1650,101 +1650,101 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   if (!currentUser) {
     return (
       <div className="login-container">
-        <div className="login-bg-decor"></div>
-        <div className="login-bg-decor-2"></div>
-        
-        <div className="login-card animate-fade-in" style={{ borderTop: '8px solid var(--primary)' }}>
-          <div className="login-header">
-            {/* School details matching image exactly */}
-            <div style={{ margin: '0.5rem 0 1.5rem 0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.85rem', color: '#c8102e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
-                REGISTRO DE EVALUACIÓN DIGITAL
-              </div>
-              <h1 className="school-title-highlight" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#003876', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
-                LICEO ANA ROSA CASTILLO
-              </h1>
-              <div style={{ marginTop: '0.75rem' }}>
-                <span className="district-badge" style={{ backgroundColor: '#e8f0fe', color: '#003876', border: '1px solid #ebdcb9', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
-                  DISTRITO EDUCATIVO 14-01 NAGUA
-                </span>
-              </div>
-            </div>
-            
-            {/* Value Proposition / Intention */}
-            <div style={{ backgroundColor: '#faf6eb', border: '1px solid #ebdcb9', padding: '1rem 1.25rem', borderRadius: '10px', textAlign: 'left', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-              <span style={{ fontSize: '1.1rem', color: '#003876' }}>🛡️</span>
-              <div>
-                <strong>Base de datos autónoma de Registro Escolar</strong>: Diseñada para mitigar errores de cálculo, asegurar la evidencia del registro de calificaciones por competencias mediante instrumentos y automatizar la evaluación académica en el centro educativo.
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="form-group">
-              <label style={{ color: 'var(--primary)' }}>Correo Electrónico</label>
-              <input 
-                type="email" 
-                placeholder="ejemplo@school.edu" 
-                className="form-input"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label style={{ color: 'var(--primary)' }}>Contraseña</label>
-              <input 
-                type="password" 
-                placeholder="••••••••" 
-                className="form-input"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            {loginError && (
-              <div style={{ color: 'var(--danger)', fontSize: '0.85rem', fontWeight: 600 }}>
-                ⚠️ {loginError}
-              </div>
-            )}
-
-            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem', backgroundColor: '#003876' }}>
-              Acceder al Registro
-            </button>
-          </form>
-
-          <div className="demo-box" style={{ borderTopColor: '#ebdcb9' }}>
-            <div className="demo-title" style={{ color: 'var(--text-secondary)' }}>Ingreso Rápido de Demostración</div>
-            <div className="demo-buttons">
-              <button className="btn-demo" style={{ borderColor: '#ebdcb9' }} onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
-                <span className="role" style={{ color: '#003876' }}>Administrador</span>
-                <span className="email">admin@school.edu</span>
-              </button>
-              <button className="btn-demo" style={{ borderColor: '#ebdcb9' }} onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
-                <span className="role" style={{ color: '#003876' }}>Prof. Matemáticas</span>
-                <span className="email">profesor.mate@school.edu</span>
-              </button>
+        {/* Left Side: Modern illustration and curves */}
+        <div className="login-left-illustration">
+          <div className="login-left-content">
+            <img 
+              src="/dr_education_banner.png" 
+              alt="Liceo Ana Rosa Castillo" 
+              className="login-illustration-img" 
+            />
+            <div className="login-left-text">
+              <h2>Liceo Ana Rosa Castillo</h2>
+              <p>
+                Plataforma digital para la gestión del registro por competencias y rúbricas. Alineado con las normativas del Ministerio de Educación de la República Dominicana.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Circular Pencil Emblem */}
-        <div className="minerd-pencil-badge">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#003876" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-            <path d="m15 5 4 4"/>
-          </svg>
-        </div>
+        {/* Right Side: Clean login form */}
+        <div className="login-right-form">
+          <div className="login-card animate-fade-in" style={{ borderTop: '8px solid var(--primary)' }}>
+            <div className="login-header">
+              {/* School details matching image exactly */}
+              <div style={{ margin: '0.5rem 0 1.5rem 0', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.85rem', color: '#c8102e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
+                  REGISTRO DE EVALUACIÓN DIGITAL
+                </div>
+                <h1 className="school-title-highlight" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#003876', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
+                  LICEO ANA ROSA CASTILLO
+                </h1>
+                <div style={{ marginTop: '0.75rem' }}>
+                  <span className="district-badge" style={{ backgroundColor: '#e8f0fe', color: '#003876', border: '1px solid #cfd8dc', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
+                    DISTRITO EDUCATIVO 14-01 NAGUA
+                  </span>
+                </div>
+              </div>
+              
+              {/* Value Proposition / Intention */}
+              <div style={{ backgroundColor: '#f0f4f8', border: '1px solid #cfd8dc', padding: '1rem 1.25rem', borderRadius: '10px', textAlign: 'left', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '1.1rem', color: '#003876' }}>🛡️</span>
+                <div>
+                  <strong>Base de datos autónoma de Registro Escolar</strong>: Diseñada para mitigar errores de cálculo, asegurar la evidencia del registro de calificaciones por competencias mediante instrumentos y automatizar la evaluación académica en el centro educativo.
+                </div>
+              </div>
+            </div>
 
-        {/* Multicolor cover page footer stripes */}
-        <div className="minerd-multicolor-strip">
-          <div className="minerd-strip-blue"></div>
-          <div className="minerd-strip-green"></div>
-          <div className="minerd-strip-yellow"></div>
-          <div className="minerd-strip-orange"></div>
-          <div className="minerd-strip-red"></div>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="form-group">
+                <label style={{ color: 'var(--primary)' }}>Correo Electrónico</label>
+                <input 
+                  type="email" 
+                  placeholder="ejemplo@school.edu" 
+                  className="form-input"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label style={{ color: 'var(--primary)' }}>Contraseña</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="form-input"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              {loginError && (
+                <div style={{ color: 'var(--danger)', fontSize: '0.85rem', fontWeight: 600 }}>
+                  ⚠️ {loginError}
+                </div>
+              )}
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem', backgroundColor: '#003876' }}>
+                Acceder al Registro
+              </button>
+            </form>
+
+            <div className="demo-box" style={{ borderTopColor: '#cfd8dc' }}>
+              <div className="demo-title" style={{ color: 'var(--text-secondary)' }}>Ingreso Rápido de Demostración</div>
+              <div className="demo-buttons">
+                <button className="btn-demo" style={{ borderColor: '#cfd8dc' }} onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
+                  <span className="role" style={{ color: '#003876' }}>Administrador</span>
+                  <span className="email">admin@school.edu</span>
+                </button>
+                <button className="btn-demo" style={{ borderColor: '#cfd8dc' }} onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
+                  <span className="role" style={{ color: '#003876' }}>Prof. Matemáticas</span>
+                  <span className="email">profesor.mate@school.edu</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -1827,6 +1827,29 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <section className="content-area">
               {activeTab === 'dashboard' && (
                 <div>
+                  {/* Greeting Card with flat illustration banner */}
+                  <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'relative', zIndex: 2 }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+                      <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>Panel de Control: {currentUser.name}</h2>
+                      <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
+                        Gestiona y supervisa las asignaciones de docentes, matrícula escolar de estudiantes de cada grado, eventos del calendario escolar y supervise el rendimiento general en tiempo real para mitigar discrepancias académicas.
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+                      <img 
+                        src="/dr_education_banner.png" 
+                        alt="Administración" 
+                        style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
+                      />
+                    </div>
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+                      <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                      <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                      <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                    </div>
+                  </div>
+
                   <h2>Vista General del Administrador</h2>
                   <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Métricas globales escolares.</p>
                   <div className="stats-grid">
@@ -2127,7 +2150,31 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           <section className="content-area">
             {activeTab === 'dashboard' && (
               <div>
-                <h2>Dashboard Docente</h2>
+                {/* Greeting Card with flat illustration banner */}
+                <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', zIndex: 2 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+                    <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
+                    <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
+                      Bienvenido al Registro de Evaluación Digital del Liceo Ana Rosa Castillo. Accede a las herramientas de Rúbricas por competencias, asigne puntajes en caliente, verifique el promedio final de cada estudiante, y controle la asistencia desde este panel central.
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+                    <img 
+                      src="/dr_education_banner.png" 
+                      alt="Bienvenido" 
+                      style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
+                    />
+                  </div>
+                  {/* Decorative flag stripes or waves */}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+                    <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                    <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                    <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                  </div>
+                </div>
+
+                <h2>Resumen de Clases</h2>
                 <div className="stats-grid">
                   <div className="glass-panel" style={{ padding: '1.25rem' }}><h3>{teacherUniqueGrades.length}</h3><p>Grados a cargo</p></div>
                   <div className="glass-panel" style={{ padding: '1.25rem' }}><h3>{currentUser.assignments.length}</h3><p>Clases totales</p></div>
@@ -3034,10 +3081,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
 
                       {/* SIDE-BY-SIDE PANELS (Rúbrica Matrix on Left, Students spreadsheet on Right) */}
-                      <div className="instruments-side-by-side-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '1.5rem', alignItems: 'start', marginTop: '1rem' }}>
+                      <div className="instruments-stacked-panels" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '1rem', width: '100%' }}>
                         
                         {/* Fully Editable Matrix Form (exactly like Google Doc sample!) */}
-                        <div className="glass-panel" style={{ padding: '1.5rem', maxHeight: '80vh', overflowY: 'auto' }}>
+                        <div className="glass-panel" style={{ padding: '2rem', width: '100%' }}>
 
                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
                           <h3 style={{ margin: 0 }}>
@@ -3265,7 +3312,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       </div>
 
                       {/* DETAILED STUDENT GRADING GRID FOR THIS EVALUATION */}
-                      <div className="glass-panel" style={{ padding: '1.5rem', maxHeight: '80vh', overflowY: 'auto' }}>
+                      <div className="glass-panel" style={{ padding: '2rem', width: '100%' }}>
                         {(() => {
                           const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
                           const blockConfig = migrateConfig(evaluationConfigs[configKey]);

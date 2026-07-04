@@ -4,13 +4,13 @@
   --font-mono: 'JetBrains Mono', monospace;
 
   /* HSL Color System - Light Mode */
-  --bg-primary: #faf6eb; /* Cream/Beige official registry cover background */
+  --bg-primary: #f0f4f8; /* Soft blue-gray Dominican flag style background */
   --bg-secondary: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.85);
   --bg-glass-hover: rgba(255, 255, 255, 0.95);
   
-  --border-color: #ebdcb9; /* Warm tint border */
-  --border-glass: rgba(235, 220, 185, 0.5);
+  --border-color: #cfd8dc; /* Clean modern slate border */
+  --border-glass: rgba(207, 216, 220, 0.4);
   
   --text-primary: #1c2b3d;
   --text-secondary: #5d6770;
@@ -19,6 +19,10 @@
   --primary: #003876; /* DR Official Navy Blue */
   --primary-hover: #00224a;
   --primary-glow: rgba(0, 56, 118, 0.12);
+
+  --accent-red: #ce1126; /* DR Official Coat Red */
+  --accent-red-hover: #b00f20;
+  --accent-red-glow: rgba(206, 17, 38, 0.15);
   
   --success: #2e7d32; /* Registry Grade 1 green */
   --success-bg: #e8f5e9;
