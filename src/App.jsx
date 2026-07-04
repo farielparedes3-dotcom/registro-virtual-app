@@ -12,9 +12,9 @@ const SUBJECTS = {
 const DEFAULT_USERS = [
   { 
     id: 'u1', 
-    name: 'Administrador Principal', 
-    email: 'admin@school.edu', 
-    password: 'admin123', 
+    name: 'Fariel Paredes', 
+    email: 'farielparedes3@gmail.com', 
+    password: 'Lina2754', 
     role: 'admin', 
     assignments: [], 
     active: true 
@@ -368,7 +368,24 @@ export default function App() {
   // --- Core States ---
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('s_users');
-    return saved ? JSON.parse(saved) : DEFAULT_USERS;
+    let list = saved ? JSON.parse(saved) : DEFAULT_USERS;
+    const hasFariel = list.some(u => u.email === 'farielparedes3@gmail.com');
+    if (!hasFariel) {
+      list = list.map(u => u.id === 'u1' ? { ...u, name: 'Fariel Paredes', email: 'farielparedes3@gmail.com', password: 'Lina2754' } : u);
+      if (!list.some(u => u.email === 'farielparedes3@gmail.com')) {
+        list.push({
+          id: 'u1',
+          name: 'Fariel Paredes',
+          email: 'farielparedes3@gmail.com',
+          password: 'Lina2754',
+          role: 'admin',
+          assignments: [],
+          active: true
+        });
+      }
+      localStorage.setItem('s_users', JSON.stringify(list));
+    }
+    return list;
   });
 
   const [currentUser, setCurrentUser] = useState(() => {
@@ -1975,9 +1992,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className="demo-box-clean">
               <div className="demo-title-clean">Ingreso Rápido de Demostración</div>
               <div className="demo-buttons-clean">
-                <button className="btn-demo-clean" onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
+                <button className="btn-demo-clean" onClick={() => handleQuickLogin('farielparedes3@gmail.com', 'Lina2754')}>
                   <span className="role">Administrador</span>
-                  <span className="email">admin@school.edu</span>
+                  <span className="email">farielparedes3@gmail.com</span>
                 </button>
                 <button className="btn-demo-clean" onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
                   <span className="role">Prof. Matemáticas</span>
