@@ -2032,7 +2032,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                 AD
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Administrador Principal</span>
               </div>
@@ -2326,7 +2326,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
               {currentUser.name.slice(0,2).toUpperCase()}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Docente</span>
             </div>

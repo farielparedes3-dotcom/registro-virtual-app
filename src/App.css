@@ -1957,6 +1957,70 @@
   .stats-grid {
     grid-template-columns: 1fr !important;
   }
+
+  /* Header mobile fixes to prevent horizontal scroll */
+  .header {
+    height: auto !important;
+    min-height: 60px !important;
+    padding: 0.5rem 0.75rem !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .header-logo {
+    max-width: 65% !important;
+    gap: 0.3rem !important;
+  }
+
+  /* Hide the top tiny tagline and the bottom district tagline on mobile */
+  .header-logo div > span:first-child,
+  .header-logo div > span:last-child {
+    display: none !important;
+  }
+
+  /* Scale down and ellipsis the main school title to fit small screens */
+  .header-logo div > span:nth-child(2) {
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 150px !important;
+    display: inline-block !important;
+  }
+
+  /* Hide username and role labels next to user circle avatar */
+  .header-profile-text {
+    display: none !important;
+  }
+
+  /* Make sure right-side control section takes remaining width and stays tidy */
+  .header > div:last-child {
+    gap: 0.4rem !important;
+  }
+
+  /* Reduce space inside parent containers to prevent clipping */
+  .main-content {
+    padding: 1rem 0.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .content-area {
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Ensure viewport behaves and doesn't zoom out */
+  html, body {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
 }
 
 
