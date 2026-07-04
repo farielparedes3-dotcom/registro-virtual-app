@@ -1653,55 +1653,48 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         {/* Left Side: Modern illustration and curves */}
         <div className="login-left-illustration">
           <div className="login-left-content">
+            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#c8102e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
+                REGISTRO DE EVALUACIÓN DIGITAL
+              </div>
+              <h1 className="school-title-highlight" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#003876', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
+                LICEO ANA ROSA CASTILLO
+              </h1>
+              <div style={{ marginTop: '0.5rem' }}>
+                <span className="district-badge" style={{ backgroundColor: 'rgba(0, 56, 118, 0.06)', color: '#003876', border: '1px solid rgba(0, 56, 118, 0.15)', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
+                  DISTRITO EDUCATIVO 14-01 NAGUA
+                </span>
+              </div>
+            </div>
+
             <img 
               src="/dr_education_banner.png" 
               alt="Liceo Ana Rosa Castillo" 
               className="login-illustration-img" 
             />
-            <div className="login-left-text">
-              <h2>Liceo Ana Rosa Castillo</h2>
-              <p>
-                Plataforma digital para la gestión del registro por competencias y rúbricas. Alineado con las normativas del Ministerio de Educación de la República Dominicana.
-              </p>
+
+            <div style={{ backgroundColor: 'rgba(0, 56, 118, 0.03)', border: '1px solid rgba(0, 56, 118, 0.08)', padding: '1rem 1.25rem', borderRadius: '14px', textAlign: 'left', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start', maxWidth: '440px' }}>
+              <span style={{ fontSize: '1.1rem', color: '#003876' }}>🛡️</span>
+              <div>
+                <strong>Base de datos autónoma de Registro Escolar</strong>: Diseñada para mitigar errores de cálculo, asegurar la evidencia del registro de calificaciones por competencias mediante instrumentos y automatizar la evaluación académica en el centro educativo.
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right Side: Clean login form */}
         <div className="login-right-form">
-          <div className="login-card animate-fade-in" style={{ borderTop: '8px solid var(--primary)' }}>
-            <div className="login-header">
-              {/* School details matching image exactly */}
-              <div style={{ margin: '0.5rem 0 1.5rem 0', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.85rem', color: '#c8102e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
-                  REGISTRO DE EVALUACIÓN DIGITAL
-                </div>
-                <h1 className="school-title-highlight" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#003876', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
-                  LICEO ANA ROSA CASTILLO
-                </h1>
-                <div style={{ marginTop: '0.75rem' }}>
-                  <span className="district-badge" style={{ backgroundColor: '#e8f0fe', color: '#003876', border: '1px solid #cfd8dc', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
-                    DISTRITO EDUCATIVO 14-01 NAGUA
-                  </span>
-                </div>
-              </div>
-              
-              {/* Value Proposition / Intention */}
-              <div style={{ backgroundColor: '#f0f4f8', border: '1px solid #cfd8dc', padding: '1rem 1.25rem', borderRadius: '10px', textAlign: 'left', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '1.1rem', color: '#003876' }}>🛡️</span>
-                <div>
-                  <strong>Base de datos autónoma de Registro Escolar</strong>: Diseñada para mitigar errores de cálculo, asegurar la evidencia del registro de calificaciones por competencias mediante instrumentos y automatizar la evaluación académica en el centro educativo.
-                </div>
-              </div>
-            </div>
+          <div className="login-card-clean animate-fade-in">
+            <h2 className="login-clean-title">Acceso al Portal</h2>
+            <p className="login-clean-subtitle">Ingresa tus credenciales para continuar</p>
 
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div className="form-group">
-                <label style={{ color: 'var(--primary)' }}>Correo Electrónico</label>
+                <label className="login-clean-label">Correo Electrónico</label>
                 <input 
                   type="email" 
                   placeholder="ejemplo@school.edu" 
-                  className="form-input"
+                  className="form-input login-clean-input"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   required
@@ -1709,11 +1702,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
 
               <div className="form-group">
-                <label style={{ color: 'var(--primary)' }}>Contraseña</label>
+                <label className="login-clean-label">Contraseña</label>
                 <input 
                   type="password" 
                   placeholder="••••••••" 
-                  className="form-input"
+                  className="form-input login-clean-input"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   required
@@ -1721,25 +1714,25 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
 
               {loginError && (
-                <div style={{ color: 'var(--danger)', fontSize: '0.85rem', fontWeight: 600 }}>
+                <div style={{ color: '#ff8a80', fontSize: '0.85rem', fontWeight: 600, paddingLeft: '0.25rem' }}>
                   ⚠️ {loginError}
                 </div>
               )}
 
-              <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem', backgroundColor: '#003876' }}>
-                Acceder al Registro
+              <button type="submit" className="login-clean-btn">
+                Ingresar al Sistema
               </button>
             </form>
 
-            <div className="demo-box" style={{ borderTopColor: '#cfd8dc' }}>
-              <div className="demo-title" style={{ color: 'var(--text-secondary)' }}>Ingreso Rápido de Demostración</div>
-              <div className="demo-buttons">
-                <button className="btn-demo" style={{ borderColor: '#cfd8dc' }} onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
-                  <span className="role" style={{ color: '#003876' }}>Administrador</span>
+            <div className="demo-box-clean">
+              <div className="demo-title-clean">Ingreso Rápido de Demostración</div>
+              <div className="demo-buttons-clean">
+                <button className="btn-demo-clean" onClick={() => handleQuickLogin('admin@school.edu', 'admin123')}>
+                  <span className="role">Administrador</span>
                   <span className="email">admin@school.edu</span>
                 </button>
-                <button className="btn-demo" style={{ borderColor: '#cfd8dc' }} onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
-                  <span className="role" style={{ color: '#003876' }}>Prof. Matemáticas</span>
+                <button className="btn-demo-clean" onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
+                  <span className="role">Prof. Matemáticas</span>
                   <span className="email">profesor.mate@school.edu</span>
                 </button>
               </div>

@@ -1293,3 +1293,159 @@
   50% { opacity: 1; }
   100% { opacity: .4; }
 }
+
+/* Clean Login Styles matching original curved mockup */
+.login-card-clean {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+}
+
+.login-clean-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.login-clean-subtitle {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2rem;
+}
+
+.login-clean-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.login-clean-input {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 50px !important;
+  padding: 0.75rem 1.25rem !important;
+  font-size: 0.9rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.login-clean-input::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.login-clean-input:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2) !important;
+  outline: none;
+}
+
+.login-clean-btn {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #b00f20 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 0.8rem 1.5rem !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  margin-top: 1rem;
+  box-shadow: 0 4px 15px rgba(206, 17, 38, 0.3) !important;
+  width: 100%;
+}
+
+.login-clean-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(206, 17, 38, 0.5) !important;
+}
+
+.demo-box-clean {
+  margin-top: 2.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.demo-title-clean {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.demo-buttons-clean {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.btn-demo-clean {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+  padding: 0.65rem !important;
+  font-size: 0.76rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.btn-demo-clean:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+.btn-demo-clean .role {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 0.1rem;
+}
+
+.btn-demo-clean .email {
+  font-size: 0.68rem;
+  opacity: 0.7;
+}
+
+/* Big Sweeping circular arc separator in desktop */
+@media (min-width: 968px) {
+  .login-left-illustration {
+    background: #ffffff !important;
+    color: var(--text-primary) !important;
+    height: 100vh;
+  }
+  
+  .login-left-illustration::before {
+    display: none; /* Hide standard backdrop */
+  }
+
+  /* Big white sweeping circular overlay pushing into navy right side */
+  .login-left-illustration::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    right: -180px;
+    width: 360px;
+    height: 120%;
+    background-color: #ffffff;
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+    box-shadow: 20px 0 40px rgba(0, 56, 118, 0.04);
+  }
+}
