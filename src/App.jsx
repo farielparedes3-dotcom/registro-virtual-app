@@ -1893,7 +1893,7 @@ export default function App() {
           [configKey]: nextBlockConfig
         };
         
-        setEvaluationConfigs(nextEvaluationConfigs);
+        setEvaluationConfigsAndSave(nextEvaluationConfigs);
         
         // Also update students' final grades in real-time
         setStudentsAndSave(prevStudents => prevStudents.map(s => {
@@ -1978,7 +1978,7 @@ export default function App() {
       [configKey]: nextBlockConfig
     };
 
-    setEvaluationConfigs(nextEvaluationConfigs);
+    setEvaluationConfigsAndSave(nextEvaluationConfigs);
 
     // Recalculate grades for all students in this grade
     setStudentsAndSave(prev => prev.map(s => {
@@ -2030,7 +2030,7 @@ export default function App() {
       [configKey]: nextBlockConfig
     };
 
-    setEvaluationConfigs(nextEvaluationConfigs);
+    setEvaluationConfigsAndSave(nextEvaluationConfigs);
 
     // Recalculate grades for all students in this grade
     setStudentsAndSave(prev => prev.map(s => {
@@ -2103,16 +2103,17 @@ export default function App() {
       [configKey]: nextBlockConfig
     };
 
-    setEvaluationConfigs(nextEvaluationConfigs);
+    setEvaluationConfigsAndSave(nextEvaluationConfigs);
     
     setActivePKey(pKey);
     setActiveInstrumentId(newInstId);
   };
 
   const handleAddCriterionRow = () => {
+    const criteriaArray = instrumentEditState.criteria || [];
     const isList = instrumentEditState.type === 'lista';
     const newCrit = {
-      name: `Criterio ${instrumentEditState.criteria.length + 1}`,
+      name: `Criterio ${criteriaArray.length + 1}`,
       levels: isList ? { cumple: "Sí cumple", nocumple: "No cumple" } : {
         estrategico: "Descripción nivel estratégico (Excelente)",
         autonomo: "Descripción nivel autónomo (Muy bueno)",
@@ -2121,24 +2122,27 @@ export default function App() {
       }
     };
     updateActiveInstrumentConfig({
-      criteria: [...instrumentEditState.criteria, newCrit]
+      criteria: [...criteriaArray, newCrit]
     });
   };
 
   const handleRemoveCriterionRow = (idxToRemove) => {
+    const criteriaArray = instrumentEditState.criteria || [];
     updateActiveInstrumentConfig({
-      criteria: instrumentEditState.criteria.filter((_, idx) => idx !== idxToRemove)
+      criteria: criteriaArray.filter((_, idx) => idx !== idxToRemove)
     });
   };
 
   const handleEditCriterionName = (idx, nameVal) => {
-    const nextList = [...instrumentEditState.criteria];
+    const criteriaArray = instrumentEditState.criteria || [];
+    const nextList = [...criteriaArray];
     nextList[idx] = { ...nextList[idx], name: nameVal };
     updateActiveInstrumentConfig({ criteria: nextList });
   };
 
   const handleEditCriterionLevel = (critIdx, levelKey, textVal) => {
-    const nextList = [...instrumentEditState.criteria];
+    const criteriaArray = instrumentEditState.criteria || [];
+    const nextList = [...criteriaArray];
     nextList[critIdx] = {
       ...nextList[critIdx],
       levels: {
@@ -4320,8 +4324,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className="sidebar-nav">
               <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarCollapsed(true); }}>Dashboard Docente</div>
               <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>Planilla Calificaciones</div>
-              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control Asistencia</div>
-              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>Calendario Escolar</div>
               <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
                 if (activeBloque === 'promedio_ce') {
                   setActiveBloque('bloque1');
@@ -4329,7 +4331,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 setActiveTab('instruments');
                 setSidebarCollapsed(true);
               }}>Instrumentos de Eval.</div>
+              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control Asistencia</div>
               <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>Instructivo de Uso</div>
+              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>Calendario Escolar</div>
             </div>
           </aside>
 
@@ -5869,19 +5873,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         })()}
                       </div>
 
-                      {/* DYNAMIC CALENDAR UNDERNEATH INSTRUMENTS */}
-                      <div className="glass-panel" style={{ padding: '2rem', width: '100%', marginTop: '2rem' }}>
-                        <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary)' }}>
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                          </svg>
-                          <span>Calendario de Actividades del Curso</span>
-                        </h2>
-                        {renderCalendarComponent()}
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
