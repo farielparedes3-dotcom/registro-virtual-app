@@ -770,6 +770,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [promotionGrades, setPromotionGrades] = useState(() => {
+    const saved = localStorage.getItem('s_promotion_grades');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [studentAttendanceDetail, setStudentAttendanceDetail] = useState(() => {
     const saved = localStorage.getItem('s_student_attendance_detail');
     return saved ? JSON.parse(saved) : {};
@@ -993,6 +998,10 @@ export default function App() {
       setStudentAttendanceDetail(data || {});
     });
 
+    const unsubPromotionGrades = dbService.subscribePromotionGrades((data) => {
+      setPromotionGrades(data || {});
+    });
+
     const unsubConfig = dbService.subscribeConfig((data) => {
       if (data) {
         if (data.subjects) {
@@ -1029,6 +1038,7 @@ export default function App() {
       unsubStudentAssessments();
       unsubStudentRpGrades();
       unsubStudentAttendance();
+      unsubPromotionGrades();
       unsubConfig();
     };
   }, []);
@@ -1041,6 +1051,10 @@ export default function App() {
   useEffect(() => {
     dbService.saveUsers(users);
   }, [users]);
+
+  useEffect(() => {
+    dbService.savePromotionGrades(promotionGrades);
+  }, [promotionGrades]);
 
   useEffect(() => {
     if (currentUser) {
@@ -2309,6 +2323,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     setStudentRpGrades(prev => ({
       ...prev,
       [rpKey]: currentRp
+    }));
+  };
+
+  const handlePromotionGradeChange = (studentId, key, value) => {
+    const promoKey = `${studentId}_${selectedSubject}`;
+    const currentPromo = promotionGrades[promoKey] ? { ...promotionGrades[promoKey] } : { cec: null, ceex: null, ce: null };
+    
+    if (value === '') {
+      currentPromo[key] = null;
+    } else {
+      currentPromo[key] = Math.min(100, Math.max(0, Number(value)));
+    }
+
+    setPromotionGrades(prev => ({
+      ...prev,
+      [promoKey]: currentPromo
     }));
   };
 
@@ -4253,7 +4283,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     {/* Bloques Tabs */}
                     <div className="block-tabs-container" style={{ marginBottom: 0 }}>
-                      {['bloque1', 'bloque2', 'bloque3', 'bloque4', 'promedio_ce'].map((b) => (
+                      {['bloque1', 'bloque2', 'bloque3', 'bloque4', 'promedio_ce', 'promocion_grado'].map((b) => (
                         <button 
                           key={b} 
                           className={`block-tab-btn ${activeBloque === b ? 'active' : ''}`}
@@ -4262,7 +4292,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           {b === 'bloque1' ? 'Bloque CE1' :
                            b === 'bloque2' ? 'Bloque CE2-CE3' :
                            b === 'bloque3' ? 'Bloque CE4-CE7' :
-                           b === 'bloque4' ? 'Bloque CE5-CE6' : 'Promedio de CE'}
+                           b === 'bloque4' ? 'Bloque CE5-CE6' :
+                           b === 'promedio_ce' ? 'Promedio de CE' : 'Promoción del Grado'}
                         </button>
                       ))}
                     </div>
@@ -4271,7 +4302,233 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                 {/* SPREADSHEET TABLE */}
                 {selectedGrade && selectedSubject ? (
-                  activeBloque === 'promedio_ce' ? (
+                  activeBloque === 'promocion_grado' ? (
+                    /* Render Promoción del Grado View */
+                    (() => {
+                      return (
+                        <div className="custom-table-container" style={{ overflowX: 'auto' }}>
+                          <table className="custom-table" style={{ tableLayout: 'auto', minWidth: '1000px' }}>
+                            <thead>
+                              {/* Row 1: Main Section Headers */}
+                              <tr>
+                                <th rowSpan={2} style={{ width: '40px', verticalAlign: 'middle', textAlign: 'center' }}>#</th>
+                                <th rowSpan={2} style={{ verticalAlign: 'middle', minWidth: '160px' }}>Estudiante</th>
+                                <th rowSpan={2} style={{ verticalAlign: 'middle', textAlign: 'center', backgroundColor: '#e2e8f0', color: '#1e293b', fontWeight: '800', width: '60px' }}>C.F.</th>
+                                
+                                <th colSpan={4} style={{ textAlign: 'center', backgroundColor: '#f8fafc', color: '#0f172a', fontWeight: '800', fontSize: '0.82rem', padding: '0.4rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                  CALIFICACIÓN COMPLETIVA
+                                </th>
+                                
+                                <th colSpan={4} style={{ textAlign: 'center', backgroundColor: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.82rem', padding: '0.4rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                  CALIFICACIÓN EXTRAORDINARIA
+                                </th>
+                                
+                                <th colSpan={2} style={{ textAlign: 'center', backgroundColor: '#f8fafc', color: '#0f172a', fontWeight: '800', fontSize: '0.82rem', padding: '0.4rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                  CALIFICACIONES ESPECIALES
+                                </th>
+                                
+                                <th colSpan={2} style={{ textAlign: 'center', backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '800', fontSize: '0.82rem', padding: '0.4rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                  SITUACIÓN FINAL EN LA ASIGNATURA
+                                </th>
+                              </tr>
+                              {/* Row 2: Sub-column Headers */}
+                              <tr>
+                                {/* Completiva columns */}
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f8fafc', width: '70px' }}>50% C.F.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f8fafc', width: '80px' }}>C.E.C.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f8fafc', width: '70px' }}>50% C.E.C.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f8fafc', width: '75px', fontWeight: 'bold' }}>C.C.F.</th>
+                                
+                                {/* Extraordinaria columns */}
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f1f5f9', width: '70px' }}>30% C.F.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f1f5f9', width: '80px' }}>C. E.EX.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f1f5f9', width: '70px' }}>70% C.E.EX.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f1f5f9', width: '75px', fontWeight: 'bold' }}>C.EX.F.</th>
+                                
+                                {/* Especiales columns */}
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f8fafc', width: '70px' }}>C.F.</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#f8fafc', width: '80px' }}>C.E.</th>
+                                
+                                {/* Situación final columns */}
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#e0f2fe', width: '70px', fontWeight: 'bold' }}>A</th>
+                                <th style={{ textAlign: 'center', fontSize: '0.72rem', backgroundColor: '#e0f2fe', width: '70px', fontWeight: 'bold' }}>R</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {studentsFilteredByGrade.map((s, sIdx) => {
+                                // Calculate C.F.
+                                const pc1 = calculateBlockAvg(s.id, selectedSubject, 'bloque1', s.grades);
+                                const pc2 = calculateBlockAvg(s.id, selectedSubject, 'bloque2', s.grades);
+                                const pc3 = calculateBlockAvg(s.id, selectedSubject, 'bloque3', s.grades);
+                                const pc4 = calculateBlockAvg(s.id, selectedSubject, 'bloque4', s.grades);
+                                const cf = Math.round((pc1 + pc2 + pc3 + pc4) / 4);
+
+                                // Retrieve promotion grades from state
+                                const promoKey = `${s.id}_${selectedSubject}`;
+                                const pData = promotionGrades[promoKey] || { cec: null, ceex: null, ce: null };
+                                
+                                const cecVal = pData.cec;
+                                const ceexVal = pData.ceex;
+                                const ceVal = pData.ce;
+
+                                // Check retired status in any month
+                                const months = ['09', '10', '11', '12', '01', '02', '03', '04', '05', '06'];
+                                let isRetired = false;
+                                months.forEach(m => {
+                                  Array.from({ length: 21 }).forEach((_, idx) => {
+                                    const attendanceKey = `${s.id}_${selectedSubject}_${m}_col_${idx}`;
+                                    if (studentAttendanceDetail[attendanceKey] === 'R') {
+                                      isRetired = true;
+                                    }
+                                  });
+                                });
+
+                                // --- Calculation logic following official MINERD registry ---
+                                let finalA = '';
+                                let finalR = '';
+
+                                // 1. Calificación Completiva
+                                let halfCf = '';
+                                let halfCec = '';
+                                let ccf = '';
+                                
+                                if (cf < 70 && !isRetired) {
+                                  halfCf = (cf * 0.5).toFixed(1);
+                                  if (cecVal !== null && cecVal !== undefined) {
+                                    halfCec = (cecVal * 0.5).toFixed(1);
+                                    ccf = Math.round(Number(halfCf) + Number(halfCec));
+                                  }
+                                }
+
+                                // 2. Calificación Extraordinaria
+                                let thirtyCf = '';
+                                let seventyCeex = '';
+                                let cexf = '';
+
+                                if (cf < 70 && ccf !== '' && ccf < 70 && !isRetired) {
+                                  thirtyCf = (cf * 0.3).toFixed(1);
+                                  if (ceexVal !== null && ceexVal !== undefined) {
+                                    seventyCeex = (ceexVal * 0.7).toFixed(1);
+                                    cexf = Math.round(Number(thirtyCf) + Number(seventyCeex));
+                                  }
+                                }
+
+                                // 3. Calificaciones Especiales
+                                let specialFinal = '';
+                                if (cf < 70 && cexf !== '' && cexf < 70 && !isRetired) {
+                                  if (ceVal !== null && ceVal !== undefined) {
+                                    specialFinal = Math.round(cf + ceVal);
+                                  }
+                                }
+
+                                // --- final situation logic ---
+                                if (isRetired) {
+                                  finalR = 'Retirado';
+                                } else if (cf >= 70) {
+                                  finalA = cf;
+                                } else {
+                                  // Did they pass in completiva?
+                                  if (ccf !== '') {
+                                    if (ccf >= 70) {
+                                      finalA = ccf;
+                                    } else {
+                                      // Did they pass in extraordinaria?
+                                      if (cexf !== '') {
+                                        if (cexf >= 70) {
+                                          finalA = cexf;
+                                        } else {
+                                          // Did they take special?
+                                          if (specialFinal !== '') {
+                                            if (specialFinal >= 70) {
+                                              finalA = specialFinal;
+                                            } else {
+                                              finalR = specialFinal;
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+
+                                return (
+                                  <tr key={s.id} style={{ opacity: isRetired ? 0.6 : 1 }}>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sIdx + 1}</td>
+                                    <td style={{ fontWeight: 600 }}>{s.name}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>{cf}</td>
+                                    
+                                    {/* Completiva cells */}
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{halfCf || '-'}</td>
+                                    <td style={{ textAlign: 'center', padding: '0.2rem' }}>
+                                      {cf < 70 && !isRetired ? (
+                                        <input 
+                                          type="number" 
+                                          className="form-input-compact" 
+                                          style={{ width: '60px', padding: '0.25rem', textAlign: 'center', margin: '0 auto', fontSize: '0.82rem', height: '28px' }}
+                                          value={cecVal !== null && cecVal !== undefined ? cecVal : ''}
+                                          onChange={(e) => handlePromotionGradeChange(s.id, 'cec', e.target.value)}
+                                          min={0}
+                                          max={100}
+                                        />
+                                      ) : '-'}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{halfCec || '-'}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: ccf !== '' && ccf >= 70 ? 'var(--success-bg)' : '' }}>
+                                      {ccf || '-'}
+                                    </td>
+                                    
+                                    {/* Extraordinaria cells */}
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{thirtyCf || '-'}</td>
+                                    <td style={{ textAlign: 'center', padding: '0.2rem' }}>
+                                      {cf < 70 && ccf !== '' && ccf < 70 && !isRetired ? (
+                                        <input 
+                                          type="number" 
+                                          className="form-input-compact" 
+                                          style={{ width: '60px', padding: '0.25rem', textAlign: 'center', margin: '0 auto', fontSize: '0.82rem', height: '28px' }}
+                                          value={ceexVal !== null && ceexVal !== undefined ? ceexVal : ''}
+                                          onChange={(e) => handlePromotionGradeChange(s.id, 'ceex', e.target.value)}
+                                          min={0}
+                                          max={100}
+                                        />
+                                      ) : '-'}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{seventyCeex || '-'}</td>
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: cexf !== '' && cexf >= 70 ? 'var(--success-bg)' : '' }}>
+                                      {cexf || '-'}
+                                    </td>
+                                    
+                                    {/* Especiales cells */}
+                                    <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{cf < 70 && cexf !== '' && cexf < 70 && !isRetired ? cf : '-'}</td>
+                                    <td style={{ textAlign: 'center', padding: '0.2rem' }}>
+                                      {cf < 70 && cexf !== '' && cexf < 70 && !isRetired ? (
+                                        <input 
+                                          type="number" 
+                                          className="form-input-compact" 
+                                          style={{ width: '60px', padding: '0.25rem', textAlign: 'center', margin: '0 auto', fontSize: '0.82rem', height: '28px' }}
+                                          value={ceVal !== null && ceVal !== undefined ? ceVal : ''}
+                                          onChange={(e) => handlePromotionGradeChange(s.id, 'ce', e.target.value)}
+                                          min={0}
+                                          max={100}
+                                        />
+                                      ) : '-'}
+                                    </td>
+                                    
+                                    {/* Situación Final cells */}
+                                    <td style={{ textAlign: 'center', fontWeight: '800', backgroundColor: finalA ? '#f0fdf4' : '', color: 'var(--success)', fontFamily: 'var(--font-mono)', fontSize: '1rem' }}>
+                                      {finalA}
+                                    </td>
+                                    <td style={{ textAlign: 'center', fontWeight: '800', backgroundColor: finalR ? '#fef2f2' : '', color: 'var(--danger)', fontFamily: 'var(--font-mono)', fontSize: isRetired ? '0.75rem' : '1rem' }}>
+                                      {finalR}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })()
+                  ) : activeBloque === 'promedio_ce' ? (
                     /* Render Promedio de CE View */
                     (() => {
                       return (

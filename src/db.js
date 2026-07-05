@@ -481,5 +481,48 @@ export const dbService = {
     });
 
     await batch.commit();
+  },
+
+  // --- 10. PROMOTION GRADES ---
+  subscribePromotionGrades(callback) {
+    if (!isFirebaseEnabled) {
+      if (!fallbackSubscribers['promotion_grades']) fallbackSubscribers['promotion_grades'] = [];
+      fallbackSubscribers['promotion_grades'].push(callback);
+      const saved = localStorage.getItem('s_promotion_grades');
+      if (saved) callback(JSON.parse(saved));
+      return () => {};
+    }
+    return onSnapshot(collection(firestore, 'promotion_grades'), (snapshot) => {
+      const promGrades = {};
+      snapshot.forEach(doc => {
+        promGrades[doc.id] = doc.data().grades;
+      });
+      remoteCache['promotion_grades'] = JSON.stringify(promGrades);
+      callback(promGrades);
+    });
+  },
+  async savePromotionGrades(promotionGradesObject) {
+    if (!hasChanged('promotion_grades', promotionGradesObject)) return;
+    if (!isFirebaseEnabled) {
+      localStorage.setItem('s_promotion_grades', JSON.stringify(promotionGradesObject));
+      triggerFallbackUpdate('promotion_grades', promotionGradesObject);
+      return;
+    }
+    const batch = writeBatch(firestore);
+    const querySnapshot = await getDocs(collection(firestore, 'promotion_grades'));
+    const existingIds = new Set();
+    querySnapshot.forEach(doc => existingIds.add(doc.id));
+
+    Object.keys(promotionGradesObject).forEach(key => {
+      const ref = doc(firestore, 'promotion_grades', key);
+      batch.set(ref, { grades: promotionGradesObject[key] });
+      existingIds.delete(key);
+    });
+
+    existingIds.forEach(id => {
+      batch.delete(doc(firestore, 'promotion_grades', id));
+    });
+
+    await batch.commit();
   }
 };
