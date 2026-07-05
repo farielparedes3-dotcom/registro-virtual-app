@@ -11,7 +11,7 @@ const DEFAULT_SUBJECTS = {
   history: { name: 'Historia', color: 'hsl(170, 75%, 40%)', bg: 'rgba(20, 184, 166, 0.1)' }
 };
 
-const DEFAULT_GRADES = ['1ro A', '1ro B', '10° A', '10° B'];
+const DEFAULT_GRADES = ['1ro A', '2do A', '3ro A', '4to A', '5to A', '6to A'];
 
 const getSubjectsList = () => {
   try {
@@ -376,6 +376,299 @@ const normalizeStudentGrades = (grades) => {
     }
   });
   return normalized;
+};
+
+const getGradeThemeInfo = (gradeName) => {
+  const name = gradeName || '';
+  if (name.startsWith('1')) {
+    return {
+      number: '1er.',
+      label: 'Grado',
+      ciclo: 'PRIMER CICLO',
+      nivel: 'NIVEL SECUNDARIO',
+      modalidad: '',
+      color: '#0e7033', // Dark Green
+      colorSecondary: '#4caf50',
+      bg: '#e8f5e9',
+      borderStripes: ['#4caf50', '#8bc34a', '#ffeb3b', '#ff9800', '#f44336']
+    };
+  }
+  if (name.startsWith('2')) {
+    return {
+      number: '2do.',
+      label: 'Grado',
+      ciclo: 'PRIMER CICLO',
+      nivel: 'NIVEL SECUNDARIO',
+      modalidad: '',
+      color: '#0084c8', // Sky Blue
+      colorSecondary: '#29b6f6',
+      bg: '#e1f5fe',
+      borderStripes: ['#0084c8', '#00b0ff', '#ffeb3b', '#ff9800', '#f44336']
+    };
+  }
+  if (name.startsWith('3')) {
+    return {
+      number: '3er.',
+      label: 'Grado',
+      ciclo: 'PRIMER CICLO',
+      nivel: 'NIVEL SECUNDARIO',
+      modalidad: '',
+      color: '#b8541c', // Orange
+      colorSecondary: '#ffa726',
+      bg: '#fff3e0',
+      borderStripes: ['#b8541c', '#ffb74d', '#ffeb3b', '#ff9800', '#f44336']
+    };
+  }
+  if (name.startsWith('4')) {
+    return {
+      number: '4to.',
+      label: 'Grado',
+      ciclo: 'SEGUNDO CICLO',
+      nivel: 'NIVEL SECUNDARIO',
+      modalidad: 'MODALIDAD ACADÉMICA',
+      color: '#008b8b', // Aqua/Turquoise
+      colorSecondary: '#26a69a',
+      bg: '#e0f2f1',
+      borderStripes: ['#008b8b', '#26a69a', '#ffeb3b', '#ff9800', '#f44336']
+    };
+  }
+  if (name.startsWith('5')) {
+    return {
+      number: '5to.',
+      label: 'Grado',
+      ciclo: 'SEGUNDO CICLO',
+      nivel: 'NIVEL SECUNDARIO',
+      modalidad: 'MODALIDAD ACADÉMICA',
+      color: '#d11b5d', // Crimson/Pink
+      colorSecondary: '#ec407a',
+      bg: '#fce4ec',
+      borderStripes: ['#d11b5d', '#ec407a', '#ffeb3b', '#ff9800', '#f44336']
+    };
+  }
+  if (name.startsWith('6')) {
+    return {
+      number: '6to.',
+      label: 'Grado',
+      ciclo: 'SEGUNDO CICLO',
+      nivel: 'NIVEL SECUNDARIO',
+      modalidad: 'MODALIDAD ACADÉMICA',
+      color: '#1a3b8b', // Dark Blue
+      colorSecondary: '#5c6bc0',
+      bg: '#e8eaf6',
+      borderStripes: ['#1a3b8b', '#3f51b5', '#ffeb3b', '#ff9800', '#f44336']
+    };
+  }
+  return {
+    number: name.split(' ')[0] || '',
+    label: 'Grado',
+    ciclo: 'NIVEL SECUNDARIO',
+    nivel: 'REGISTRO DE GRADO',
+    modalidad: '',
+    color: 'var(--primary)',
+    colorSecondary: 'var(--primary-glow)',
+    bg: 'var(--bg-secondary)',
+    borderStripes: ['var(--primary)', 'var(--primary-glow)', 'var(--border-color)']
+  };
+};
+
+const renderGradeHeaderBanner = (gradeName, extraText = '') => {
+  const theme = getGradeThemeInfo(gradeName);
+  const section = gradeName.replace(/^\d+([a-zA-Záéíóúñ\s°º]*)/, '').trim();
+
+  return (
+    <div 
+      className="grade-cover-banner"
+      style={{
+        background: '#fcfaf6',
+        borderRadius: '12px',
+        border: '1px solid #ebdcb9',
+        padding: '1.5rem 2rem',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+        marginBottom: '1.5rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        minHeight: '140px',
+        color: '#333333',
+        fontFamily: "'Outfit', 'Inter', sans-serif"
+      }}
+    >
+      {/* Decorative rotated squares from official cover design */}
+      <div 
+        style={{
+          position: 'absolute',
+          right: '-40px',
+          top: '-20px',
+          width: '120px',
+          height: '120px',
+          background: `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary} 100%)`,
+          transform: 'rotate(45deg)',
+          opacity: 0.12,
+          borderRadius: '16px'
+        }}
+      />
+      <div 
+        style={{
+          position: 'absolute',
+          right: '50px',
+          top: '65px',
+          width: '60px',
+          height: '60px',
+          background: `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary} 100%)`,
+          transform: 'rotate(45deg)',
+          opacity: 0.15,
+          borderRadius: '8px'
+        }}
+      />
+      <div 
+        style={{
+          position: 'absolute',
+          right: '120px',
+          bottom: '-10px',
+          width: '40px',
+          height: '40px',
+          background: theme.colorSecondary,
+          transform: 'rotate(45deg)',
+          opacity: 0.08,
+          borderRadius: '4px'
+        }}
+      />
+
+      {/* Main Cover Content */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', zIndex: 2, textAlign: 'left' }}>
+        <span 
+          style={{ 
+            fontSize: '0.72rem', 
+            fontWeight: '800', 
+            textTransform: 'uppercase', 
+            letterSpacing: '0.08em', 
+            color: '#c29d38' 
+          }}
+        >
+          REGISTRO ESCOLAR
+        </span>
+        
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem', margin: '0.1rem 0' }}>
+          <span 
+            style={{ 
+              fontSize: '2.4rem', 
+              fontWeight: '300', 
+              color: theme.color, 
+              lineHeight: 1 
+            }}
+          >
+            {theme.number}
+          </span>
+          <span 
+            style={{ 
+              fontSize: '2.4rem', 
+              fontWeight: '800', 
+              color: theme.color, 
+              lineHeight: 1 
+            }}
+          >
+            {theme.label}
+          </span>
+          {section && (
+            <span 
+              style={{ 
+                fontSize: '1.4rem', 
+                fontWeight: '700', 
+                color: 'var(--text-secondary)', 
+                marginLeft: '0.5rem' 
+              }}
+            >
+              Sección {section}
+            </span>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.05rem', marginTop: '0.1rem' }}>
+          <span 
+            style={{ 
+              fontSize: '0.78rem', 
+              fontWeight: '800', 
+              color: theme.color, 
+              letterSpacing: '0.03em' 
+            }}
+          >
+            {theme.ciclo}
+          </span>
+          <span 
+            style={{ 
+              fontSize: '0.72rem', 
+              fontWeight: '500', 
+              color: 'var(--text-secondary)', 
+              letterSpacing: '0.02em' 
+            }}
+          >
+            {theme.nivel}
+          </span>
+          {theme.modalidad && (
+            <span 
+              style={{ 
+                fontSize: '0.62rem', 
+                fontWeight: '700', 
+                color: theme.color, 
+                letterSpacing: '0.02em', 
+                opacity: 0.9 
+              }}
+            >
+              {theme.modalidad}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Right Side: Extra text / Subject name badge */}
+      {extraText && (
+        <div 
+          style={{ 
+            zIndex: 2, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'flex-end', 
+            gap: '0.2rem' 
+          }}
+        >
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 'bold' }}>Parámetro / Materia</span>
+          <span 
+            style={{ 
+              fontSize: '1rem', 
+              fontWeight: '800', 
+              color: theme.color, 
+              backgroundColor: `${theme.color}12`, 
+              padding: '0.35rem 0.85rem', 
+              borderRadius: '20px', 
+              border: `1px solid ${theme.color}25` 
+            }}
+          >
+            {extraText}
+          </span>
+        </div>
+      )}
+
+      {/* Bottom colored stripe border */}
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          height: '6px',
+          display: 'flex'
+        }}
+      >
+        <div style={{ flex: 1, backgroundColor: '#0084c8' }} />
+        <div style={{ flex: 1, backgroundColor: '#ffeb3b' }} />
+        <div style={{ flex: 1, backgroundColor: '#f44336' }} />
+        <div style={{ flex: 1, backgroundColor: '#4caf50' }} />
+        <div style={{ flex: 1, backgroundColor: '#ff9800' }} />
+      </div>
+    </div>
+  );
 };
 
 export default function App() {
@@ -3047,6 +3340,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     </div>
                   </div>
 
+                  {/* Official Grade Cover Banner */}
+                  {selectedAdminReportGrade && renderGradeHeaderBanner(selectedAdminReportGrade)}
+
                   {/* Accordion List of Subjects for this Grade */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {Object.keys(subjects).map(subKey => {
@@ -3405,12 +3701,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* TEACHER: Tab Grades (Criteria Columns or Summary Mode) */}
             {activeTab === 'grades' && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-                  <div>
-                    <h2>Planilla de Notas: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
+                {selectedGrade ? (
+                  renderGradeHeaderBanner(selectedGrade, subjects[selectedSubject]?.name)
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <h2>Planilla de Notas: <span style={{ color: 'var(--primary)' }}>Sin Selección</span></h2>
+                    </div>
                   </div>
-
-                </div>
+                )}
 
                 {selectedGrade && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
@@ -3806,7 +4105,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* TEACHER: Tab Attendance */}
             {activeTab === 'attendance' && (
               <div>
-                <h2>Control de Asistencia: <span style={{ color: 'var(--primary)' }}>{selectedGrade || 'Sin Selección'}</span></h2>
+                {selectedGrade ? (
+                  renderGradeHeaderBanner(selectedGrade, 'Control de Asistencia')
+                ) : (
+                  <h2>Control de Asistencia: <span style={{ color: 'var(--primary)' }}>Sin Selección</span></h2>
+                )}
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                   Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías no suman ni restan al total.
                 </p>
@@ -4089,7 +4392,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             )}
             {activeTab === 'instruments' && (
               <div>
-                <h2>Instrumentos de Evaluación Ponderada</h2>
+                {selectedGrade ? (
+                  renderGradeHeaderBanner(selectedGrade, 'Instrumentos de Evaluación - ' + (subjects[selectedSubject]?.name || selectedSubject))
+                ) : (
+                  <h2>Instrumentos de Evaluación Ponderada</h2>
+                )}
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                   Define las competencias, indicadores y criterios específicos para el parámetro seleccionado. Modifica los textos directamente en la cuadrícula de la rúbrica.
                 </p>
