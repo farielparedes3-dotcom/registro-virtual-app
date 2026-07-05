@@ -2342,6 +2342,66 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     }));
   };
 
+  const handleParameterGradeChange = (studentId, subjectKey, bloqueKey, pIdx, valueString) => {
+    let value = valueString === '' ? 0 : Number(valueString);
+    if (value > 100) {
+      alert(`⚠️ ¡Alerta! La calificación ingresada (${value}) supera los 100 puntos.`);
+    }
+    
+    // 1. Update the student's base grades (originalGrades) in s.grades
+    setStudents(prev => prev.map(s => {
+      if (s.id === studentId) {
+        const nextGrades = { ...s.grades };
+        const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
+        const baseGrades = [...(subjectBlocks[bloqueKey] || [80, 80, 80, 80])];
+        
+        baseGrades[pIdx] = value;
+        subjectBlocks[bloqueKey] = baseGrades;
+        nextGrades[subjectKey] = subjectBlocks;
+        
+        return { ...s, grades: nextGrades };
+      }
+      return s;
+    }));
+
+    // 2. Distribute to instruments if they exist for this parameter
+    const pKeys = ['p1', 'p2', 'p3', 'p4'];
+    const pKey = pKeys[pIdx];
+    const configKey = `${selectedGrade}_${subjectKey}_${bloqueKey}`;
+    const blockConfig = evaluationConfigs[configKey];
+    
+    if (blockConfig && blockConfig[pKey] && blockConfig[pKey].length > 0) {
+      setStudentAssessments(prev => {
+        const list = blockConfig[pKey];
+        const nextAssessments = { ...prev };
+        let remainingScore = value;
+
+        list.forEach(inst => {
+          const criteriaList = inst.criteria || [];
+          const maxCritScore = criteriaList.length > 0 ? Math.floor(inst.weight / criteriaList.length) : inst.weight;
+          const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
+          const savedAssessment = nextAssessments[assessmentKey] ? { ...nextAssessments[assessmentKey] } : {};
+
+          criteriaList.forEach((c, idx) => {
+            const isLast = (idx === criteriaList.length - 1) && (inst.id === list[list.length - 1].id);
+            let critScore = 0;
+            if (isLast) {
+              critScore = remainingScore;
+            } else {
+              critScore = Math.min(remainingScore, maxCritScore);
+            }
+            savedAssessment[c.name] = critScore;
+            remainingScore -= critScore;
+          });
+
+          nextAssessments[assessmentKey] = savedAssessment;
+        });
+
+        return nextAssessments;
+      });
+    }
+  };
+
   const handleUpdateAttendance = (studentId, type) => {
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
@@ -4637,7 +4697,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
                                               value={blockArray[0]}
-                                              disabled
+                                              onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
+                                              min="0"
+                                              max="100"
                                             />
                                           </div>
                                         </td>
@@ -4664,7 +4726,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
                                               value={blockArray[1]}
-                                              disabled
+                                              onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
+                                              min="0"
+                                              max="100"
                                             />
                                           </div>
                                         </td>
@@ -4691,7 +4755,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
                                               value={blockArray[2]}
-                                              disabled
+                                              onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
+                                              min="0"
+                                              max="100"
                                             />
                                           </div>
                                         </td>
@@ -4718,7 +4784,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
                                               value={blockArray[3]}
-                                              disabled
+                                              onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
+                                              min="0"
+                                              max="100"
                                             />
                                           </div>
                                         </td>
