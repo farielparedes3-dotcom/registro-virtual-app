@@ -501,6 +501,18 @@ const getGradeThemeInfo = (gradeName) => {
   };
 };
 
+const getSubjectsForGrade = (subjectsList, gradeName) => {
+  const result = {};
+  if (!subjectsList || !gradeName) return result;
+  Object.keys(subjectsList).forEach(key => {
+    const sub = subjectsList[key];
+    if (!sub.grades || sub.grades.includes(gradeName)) {
+      result[key] = sub;
+    }
+  });
+  return result;
+};
+
 const renderGradeHeaderBanner = (gradeName, extraText = '') => {
   const theme = getGradeThemeInfo(gradeName);
   const section = gradeName.replace(/^\d+([a-zA-Záéíóúñ\s°º]*)/, '').trim();
@@ -807,6 +819,9 @@ export default function App() {
 
   const [subjectForm, setSubjectForm] = useState({ name: '', color: '#003876' });
   const [gradeForm, setGradeForm] = useState({ name: '' });
+  const [selectedConfigSubjectGrade, setSelectedConfigSubjectGrade] = useState('1ro A');
+  const [editingSubjectKey, setEditingSubjectKey] = useState(null);
+  const [editingSubjectForm, setEditingSubjectForm] = useState({ name: '', color: '#003876' });
 
   // --- Admin Report & Alarms States ---
   const [selectedAdminReportGrade, setSelectedAdminReportGrade] = useState(() => {
@@ -889,7 +904,7 @@ export default function App() {
   // Form states
   const [studentForm, setStudentForm] = useState({ name: '', email: '' });
   const [teacherForm, setTeacherForm] = useState({ name: '', email: '', password: '', role: 'teacher' });
-  const [newAssignment, setNewAssignment] = useState({ grade: '1ro A', subject: 'math' });
+  const [newAssignment, setNewAssignment] = useState({ grade: '1ro A', subject: 'matematica' });
   const [newEvent, setNewEvent] = useState({ date: '2026-07-01', title: '', desc: '', type: 'primary' });
 
   // Excel text import state
@@ -1312,7 +1327,8 @@ export default function App() {
   const handleAddAssignment = (userId, targetGrade, targetSubject) => {
     if (currentUser.role !== 'admin') return;
     const gradeVal = targetGrade || newAssignment.grade || (grades[0] || '');
-    const subjectVal = targetSubject || newAssignment.subject || (Object.keys(subjects)[0] || '');
+    const gradeSubs = getSubjectsForGrade(subjects, gradeVal);
+    const subjectVal = targetSubject || newAssignment.subject || (Object.keys(gradeSubs)[0] || '');
 
     if (!gradeVal || !subjectVal) {
       alert('Por favor selecciona un grado y asignatura válidos.');
@@ -1368,31 +1384,141 @@ export default function App() {
     }
 
     if (subjects[key]) {
-      alert('Esta asignatura ya existe.');
+      handleAssignSubjectToGrade(key, selectedConfigSubjectGrade);
+      setSubjectForm({ name: '', color: '#003876' });
       return;
     }
 
-    const newSub = { name, color, bg: `${color}15` };
+    const newSub = { 
+      name, 
+      color, 
+      bg: `${color}15`, 
+      grades: [selectedConfigSubjectGrade] 
+    };
     const updatedSubjects = { ...subjects, [key]: newSub };
     setSubjects(updatedSubjects);
 
     setStudents(prev => {
       return prev.map(s => {
-        const studentGrades = s.grades ? { ...s.grades } : {};
-        if (!studentGrades[key]) {
-          studentGrades[key] = {
-            bloque1: [80, 80, 80, 80],
-            bloque2: [80, 80, 80, 80],
-            bloque3: [80, 80, 80, 80],
-            bloque4: [80, 80, 80, 80]
-          };
+        if (s.grade === selectedConfigSubjectGrade) {
+          const studentGrades = s.grades ? { ...s.grades } : {};
+          if (!studentGrades[key]) {
+            studentGrades[key] = {
+              bloque1: [80, 80, 80, 80],
+              bloque2: [80, 80, 80, 80],
+              bloque3: [80, 80, 80, 80],
+              bloque4: [80, 80, 80, 80]
+            };
+          }
+          return { ...s, grades: studentGrades };
         }
-        return { ...s, grades: studentGrades };
+        return s;
       });
     });
 
     setSubjectForm({ name: '', color: '#003876' });
-    alert('Asignatura creada con éxito.');
+    alert(`Asignatura "${name}" creada y asignada a ${selectedConfigSubjectGrade} con éxito.`);
+  };
+
+  const handleAssignSubjectToGrade = (subjectKey, gradeName) => {
+    if (!subjectKey || !gradeName) return;
+    const sub = subjects[subjectKey];
+    if (!sub) return;
+
+    const currentGrades = sub.grades ? [...sub.grades] : [];
+    if (currentGrades.includes(gradeName)) {
+      alert('Esta asignatura ya está asignada a este grado.');
+      return;
+    }
+
+    const updatedGrades = [...currentGrades, gradeName];
+    const updatedSubjects = {
+      ...subjects,
+      [subjectKey]: { ...sub, grades: updatedGrades }
+    };
+    setSubjects(updatedSubjects);
+
+    setStudents(prev => {
+      return prev.map(s => {
+        if (s.grade === gradeName) {
+          const studentGrades = s.grades ? { ...s.grades } : {};
+          if (!studentGrades[subjectKey]) {
+            studentGrades[subjectKey] = {
+              bloque1: [80, 80, 80, 80],
+              bloque2: [80, 80, 80, 80],
+              bloque3: [80, 80, 80, 80],
+              bloque4: [80, 80, 80, 80]
+            };
+          }
+          return { ...s, grades: studentGrades };
+        }
+        return s;
+      });
+    });
+
+    alert(`Asignatura "${sub.name}" asignada a ${gradeName} con éxito.`);
+  };
+
+  const handleRemoveSubjectFromGrade = (subjectKey, gradeName) => {
+    if (!subjectKey || !gradeName) return;
+    const sub = subjects[subjectKey];
+    if (!sub) return;
+
+    if (window.confirm(`¿Estás seguro de quitar la asignatura "${sub.name}" del grado ${gradeName}? Se mantendrá en el catálogo pero se ocultará de este grado y removerá sus calificaciones en esta sección.`)) {
+      const currentGrades = sub.grades ? [...sub.grades] : [];
+      const updatedGrades = currentGrades.filter(g => g !== gradeName);
+      
+      const updatedSubjects = {
+        ...subjects,
+        [subjectKey]: { ...sub, grades: updatedGrades }
+      };
+      setSubjects(updatedSubjects);
+
+      setUsers(prev => prev.map(u => {
+        if (u.role === 'teacher') {
+          return {
+            ...u,
+            assignments: u.assignments.filter(a => !(a.grade === gradeName && a.subject === subjectKey))
+          };
+        }
+        return u;
+      }));
+
+      setStudents(prev => prev.map(s => {
+        if (s.grade === gradeName) {
+          const studentGrades = s.grades ? { ...s.grades } : {};
+          delete studentGrades[subjectKey];
+          return { ...s, grades: studentGrades };
+        }
+        return s;
+      }));
+
+      alert(`Asignatura "${sub.name}" removida del grado ${gradeName}.`);
+    }
+  };
+
+  const handleUpdateSubject = (e) => {
+    if (e) e.preventDefault();
+    if (!editingSubjectKey) return;
+    const name = editingSubjectForm.name.trim();
+    const color = editingSubjectForm.color;
+    if (!name) return;
+
+    const sub = subjects[editingSubjectKey];
+    if (!sub) return;
+
+    const updatedSubjects = {
+      ...subjects,
+      [editingSubjectKey]: {
+        ...sub,
+        name,
+        color,
+        bg: `${color}15`
+      }
+    };
+    setSubjects(updatedSubjects);
+    setEditingSubjectKey(null);
+    alert('Asignatura modificada con éxito.');
   };
 
   const handleDeleteSubject = (key) => {
@@ -1400,7 +1526,7 @@ export default function App() {
       alert('Debe haber al menos una asignatura en el sistema.');
       return;
     }
-    if (window.confirm(`¿Estás seguro de eliminar la asignatura "${subjects[key].name}"? Esto removerá todas las calificaciones y asignaciones docentes vinculadas.`)) {
+    if (window.confirm(`¿Estás seguro de eliminar COMPLETAMENTE la asignatura "${subjects[key].name}" del catálogo? Esto removerá todas las calificaciones, asignaciones docentes y registros en TODOS los grados.`)) {
       const updatedSubjects = { ...subjects };
       delete updatedSubjects[key];
       setSubjects(updatedSubjects);
@@ -1421,7 +1547,7 @@ export default function App() {
         return { ...s, grades: studentGrades };
       }));
 
-      alert('Asignatura eliminada.');
+      alert('Asignatura eliminada por completo del catálogo global.');
     }
   };
 
@@ -1436,8 +1562,20 @@ export default function App() {
     }
 
     setGrades(prev => [...prev, name]);
+    
+    const updatedSubjects = { ...subjects };
+    Object.keys(updatedSubjects).forEach(subKey => {
+      const sub = updatedSubjects[subKey];
+      const subGrades = sub.grades ? [...sub.grades] : [];
+      if (!subGrades.includes(name)) {
+        subGrades.push(name);
+      }
+      updatedSubjects[subKey] = { ...sub, grades: subGrades };
+    });
+    setSubjects(updatedSubjects);
+
     setGradeForm({ name: '' });
-    alert('Grado creado con éxito.');
+    alert(`Grado "${name}" creado con éxito e inicializado con las asignaturas del catálogo.`);
   };
 
   const handleDeleteGrade = (gradeName) => {
@@ -2299,7 +2437,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
   
   const calculateStudentAvg = (s) => {
-    const subKeys = Object.keys(subjects);
+    const subKeys = Object.keys(getSubjectsForGrade(subjects, s.grade));
     if (subKeys.length === 0) return 0;
     const sum = subKeys.reduce((acc, subKey) => acc + calculateSubjectAvg(s.id, subKey, s.grades), 0);
     return sum / subKeys.length;
@@ -2311,10 +2449,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const getSubjectAverage = (subKey) => {
     if (totalStudents === 0) return 0;
-    const totalSum = students.reduce((acc, s) => {
+    const sub = subjects[subKey];
+    const relevantStudents = students.filter(s => sub && sub.grades && sub.grades.includes(s.grade));
+    if (relevantStudents.length === 0) return 0;
+    const totalSum = relevantStudents.reduce((acc, s) => {
       return acc + calculateSubjectAvg(s.id, subKey, s.grades);
     }, 0);
-    return (totalSum / totalStudents).toFixed(1);
+    return (totalSum / relevantStudents.length).toFixed(1);
   };
 
 
@@ -2970,7 +3111,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           value={newAssignment.subject}
                                           onChange={(e) => setNewAssignment(prev => ({ ...prev, subject: e.target.value }))}
                                         >
-                                          {Object.keys(subjects).map(subKey => (
+                                          {Object.keys(getSubjectsForGrade(subjects, newAssignment.grade || grades[0])).map(subKey => (
                                             <option key={subKey} value={subKey}>{subjects[subKey].name}</option>
                                           ))}
                                         </select>
@@ -3065,78 +3206,215 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     {expandedSections.subjects && (
                       <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
-                        {/* Left Side: Table of Subjects */}
+                        {/* Selector de Grado Activo para Gestión */}
+                        <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--primary)' }}>Filtrar por Grado:</span>
+                          <select 
+                            className="form-select-compact" 
+                            style={{ minWidth: '180px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}
+                            value={selectedConfigSubjectGrade} 
+                            onChange={(e) => {
+                              setSelectedConfigSubjectGrade(e.target.value);
+                              setEditingSubjectKey(null);
+                            }}
+                          >
+                            {grades.map(g => <option key={g} value={g}>{g}</option>)}
+                          </select>
+                          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                            (Gestiona qué materias cursa este grado en particular)
+                          </span>
+                        </div>
+
+                        {/* Left Side: Table of Subjects for the active Grade */}
                         <div className="custom-table-container" style={{ margin: 0 }}>
+                          <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--text-primary)' }}>
+                            Asignaturas en el Grado <span style={{ color: 'var(--primary)', fontWeight: '800' }}>{selectedConfigSubjectGrade}</span>
+                          </h4>
                           <table className="custom-table">
                             <thead>
                               <tr>
                                 <th>Identificador (Slug)</th>
                                 <th>Nombre Completo</th>
                                 <th>Etiqueta Color</th>
-                                <th style={{ width: '80px', textAlign: 'center' }}>Acción</th>
+                                <th style={{ width: '200px', textAlign: 'center' }}>Acciones</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {Object.keys(subjects).map(subKey => {
-                                const sub = subjects[subKey];
-                                return (
-                                  <tr key={subKey}>
-                                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 'bold' }}>{subKey}</td>
-                                    <td style={{ fontWeight: 700 }}>{sub.name}</td>
-                                    <td>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <span style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: sub.color, border: '1px solid rgba(0,0,0,0.1)' }}></span>
-                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{sub.color}</span>
-                                      </div>
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                      <button 
-                                        className="btn-delete-event" 
-                                        onClick={() => handleDeleteSubject(subKey)}
-                                        style={{ color: 'var(--danger)', fontWeight: 'bold' }}
-                                        title="Eliminar Asignatura"
-                                      >
-                                        ✕ Eliminar
-                                      </button>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
+                              {(() => {
+                                const gradeSubs = getSubjectsForGrade(subjects, selectedConfigSubjectGrade);
+                                const keys = Object.keys(gradeSubs);
+                                if (keys.length === 0) {
+                                  return (
+                                    <tr>
+                                      <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                                        No hay asignaturas asignadas a este grado. Asigna una existente o crea una nueva a la derecha.
+                                      </td>
+                                    </tr>
+                                  );
+                                }
+                                return keys.map(subKey => {
+                                  const sub = gradeSubs[subKey];
+                                  return (
+                                    <tr key={subKey}>
+                                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 'bold' }}>{subKey}</td>
+                                      <td style={{ fontWeight: 700 }}>{sub.name}</td>
+                                      <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                          <span style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: sub.color, border: '1px solid rgba(0,0,0,0.1)' }}></span>
+                                          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{sub.color}</span>
+                                        </div>
+                                      </td>
+                                      <td style={{ textAlign: 'center' }}>
+                                        <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>
+                                          <button 
+                                            type="button"
+                                            className="btn-secondary" 
+                                            style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px' }}
+                                            onClick={() => {
+                                              setEditingSubjectKey(subKey);
+                                              setEditingSubjectForm({ name: sub.name, color: sub.color });
+                                            }}
+                                          >
+                                            ✏️ Editar
+                                          </button>
+                                          <button 
+                                            type="button"
+                                            className="btn-delete-event" 
+                                            onClick={() => handleRemoveSubjectFromGrade(subKey, selectedConfigSubjectGrade)}
+                                            style={{ color: 'var(--danger)', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                                            title="Quitar del Grado"
+                                          >
+                                            ✕ Quitar
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                });
+                              })()}
                             </tbody>
                           </table>
                         </div>
 
-                        {/* Right Side: Add Subject Form */}
-                        <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                          <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Crear Nueva Asignatura</h4>
-                          <form onSubmit={handleCreateSubject} className="add-event-form">
-                            <div className="form-group-compact">
-                              <label>Nombre de la Materia</label>
-                              <input 
-                                type="text" 
-                                className="form-input-compact" 
-                                value={subjectForm.name} 
-                                onChange={(e) => setSubjectForm(prev => ({ ...prev, name: e.target.value }))} 
-                                placeholder="Ej: Educación Artística" 
-                                required 
-                              />
+                        {/* Right Side: Configuration Panels */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                          {editingSubjectKey ? (
+                            /* PANEL: EDIT SUBJECT NAME & COLOR */
+                            <div className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--primary)', borderRadius: '8px' }}>
+                              <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span>✏️ Editar Asignatura</span>
+                                <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', opacity: 0.7 }}>{editingSubjectKey}</span>
+                              </h4>
+                              <form onSubmit={handleUpdateSubject} className="add-event-form">
+                                <div className="form-group-compact">
+                                  <label>Nombre de la Materia</label>
+                                  <input 
+                                    type="text" 
+                                    className="form-input-compact" 
+                                    value={editingSubjectForm.name} 
+                                    onChange={(e) => setEditingSubjectForm(prev => ({ ...prev, name: e.target.value }))} 
+                                    required 
+                                  />
+                                </div>
+                                <div className="form-group-compact">
+                                  <label>Color de la Marca</label>
+                                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <input 
+                                      type="color" 
+                                      className="form-input-compact" 
+                                      style={{ width: '45px', height: '35px', padding: '2px', cursor: 'pointer' }}
+                                      value={editingSubjectForm.color} 
+                                      onChange={(e) => setEditingSubjectForm(prev => ({ ...prev, color: e.target.value }))} 
+                                      required 
+                                    />
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{editingSubjectForm.color}</span>
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.75rem' }}>
+                                  <button type="submit" className="btn-primary" style={{ flex: 1, padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.8rem' }}>Actualizar</button>
+                                  <button type="button" className="btn-secondary" style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.8rem' }} onClick={() => setEditingSubjectKey(null)}>Cancelar</button>
+                                </div>
+                              </form>
                             </div>
-                            <div className="form-group-compact">
-                              <label>Color de la Marca (Etiqueta)</label>
-                              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                <input 
-                                  type="color" 
-                                  className="form-input-compact" 
-                                  style={{ width: '45px', height: '35px', padding: '2px', cursor: 'pointer' }}
-                                  value={subjectForm.color} 
-                                  onChange={(e) => setSubjectForm(prev => ({ ...prev, color: e.target.value }))} 
-                                  required 
-                                />
-                                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{subjectForm.color}</span>
+                          ) : (
+                            <>
+                              {/* PANEL 1: ASSIGN EXISTING SUBJECT */}
+                              <div className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Asignar Materia Existente</h4>
+                                {(() => {
+                                  const unassigned = Object.keys(subjects).filter(key => {
+                                    const sub = subjects[key];
+                                    return !sub.grades || !sub.grades.includes(selectedConfigSubjectGrade);
+                                  });
+                                  if (unassigned.length === 0) {
+                                    return (
+                                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontStyle: 'italic', margin: 0 }}>
+                                        Todas las asignaturas del catálogo ya están asignadas a este grado.
+                                      </p>
+                                    );
+                                  }
+                                  return (
+                                    <div>
+                                      <div className="form-group-compact">
+                                        <label>Seleccionar Asignatura</label>
+                                        <select id="assign-sub-select" className="form-select-compact" style={{ width: '100%' }}>
+                                          {unassigned.map(key => (
+                                            <option key={key} value={key}>{subjects[key].name}</option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                      <button 
+                                        type="button" 
+                                        className="btn-primary" 
+                                        style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', fontSize: '0.8rem', marginTop: '0.25rem' }}
+                                        onClick={() => {
+                                          const val = document.getElementById('assign-sub-select')?.value;
+                                          if (val) {
+                                            handleAssignSubjectToGrade(val, selectedConfigSubjectGrade);
+                                          }
+                                        }}
+                                      >
+                                        ＋ Asignar a este Grado
+                                      </button>
+                                    </div>
+                                  );
+                                })()}
                               </div>
-                            </div>
-                            <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Asignatura</button>
-                          </form>
+
+                              {/* PANEL 2: CREATE & ASSIGN NEW SUBJECT */}
+                              <div className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Crear Nueva Asignatura</h4>
+                                <form onSubmit={handleCreateSubject} className="add-event-form">
+                                  <div className="form-group-compact">
+                                    <label>Nombre de la Materia</label>
+                                    <input 
+                                      type="text" 
+                                      className="form-input-compact" 
+                                      value={subjectForm.name} 
+                                      onChange={(e) => setSubjectForm(prev => ({ ...prev, name: e.target.value }))} 
+                                      placeholder="Ej: Educación Artística" 
+                                      required 
+                                    />
+                                  </div>
+                                  <div className="form-group-compact">
+                                    <label>Color de la Marca (Etiqueta)</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                      <input 
+                                        type="color" 
+                                        className="form-input-compact" 
+                                        style={{ width: '45px', height: '35px', padding: '2px', cursor: 'pointer' }}
+                                        value={subjectForm.color} 
+                                        onChange={(e) => setSubjectForm(prev => ({ ...prev, color: e.target.value }))} 
+                                        required 
+                                      />
+                                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{subjectForm.color}</span>
+                                    </div>
+                                  </div>
+                                  <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear y Asignar</button>
+                                </form>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     )}
@@ -3391,7 +3669,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                   {/* Accordion List of Subjects for this Grade */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {Object.keys(subjects).map(subKey => {
+                    {Object.keys(getSubjectsForGrade(subjects, selectedAdminReportGrade)).map(subKey => {
                       const sub = subjects[subKey];
                       const teacher = users.find(u => 
                         u.role === 'teacher' && 
