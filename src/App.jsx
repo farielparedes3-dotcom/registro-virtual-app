@@ -1087,17 +1087,7 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  useEffect(() => {
-    dbService.saveSubjects(subjects);
-  }, [subjects]);
 
-  useEffect(() => {
-    dbService.saveGrades(grades);
-  }, [grades]);
-
-  useEffect(() => {
-    dbService.saveGradeStaff(gradeStaffContacts);
-  }, [gradeStaffContacts]);
 
   useEffect(() => {
     dbService.saveAlertLogs(alertLogs);
@@ -1566,6 +1556,36 @@ export default function App() {
       }));
 
       alert('Asignatura eliminada por completo del catálogo global.');
+    }
+  };
+
+  const [savingGrades, setSavingGrades] = useState(false);
+  const [savingSubjects, setSavingSubjects] = useState(false);
+
+  const handleSaveGradesToCloud = async () => {
+    setSavingGrades(true);
+    try {
+      await dbService.saveGrades(grades);
+      await dbService.saveGradeStaff(gradeStaffContacts);
+      alert('✅ ¡Cambios en los grados y contactos guardados en la nube con éxito!');
+    } catch (error) {
+      console.error('Error saving grades:', error);
+      alert(`❌ Error al guardar en la nube: ${error.message || error}\n\nPor favor, verifica que tus reglas de Firestore permitan acceso de lectura y escritura para la colección 'config'.`);
+    } finally {
+      setSavingGrades(false);
+    }
+  };
+
+  const handleSaveSubjectsToCloud = async () => {
+    setSavingSubjects(true);
+    try {
+      await dbService.saveSubjects(subjects);
+      alert('✅ ¡Cambios en las asignaturas guardados en la nube con éxito!');
+    } catch (error) {
+      console.error('Error saving subjects:', error);
+      alert(`❌ Error al guardar en la nube: ${error.message || error}\n\nPor favor, verifica que tus reglas de Firestore permitan acceso de lectura y escritura para la colección 'config'.`);
+    } finally {
+      setSavingSubjects(false);
     }
   };
 
@@ -3513,6 +3533,30 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               </div>
                             </>
                           )}
+                          <div style={{ marginTop: '1rem' }}>
+                            <button 
+                              type="button" 
+                              className="btn-primary" 
+                              style={{ 
+                                width: '100%', 
+                                padding: '0.65rem', 
+                                backgroundColor: 'var(--success)', 
+                                borderColor: 'var(--success)',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(25, 135, 84, 0.15)'
+                              }}
+                              onClick={handleSaveSubjectsToCloud}
+                              disabled={savingSubjects}
+                            >
+                              {savingSubjects ? '💾 Guardando...' : '💾 Guardar Cambios en la Nube'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -3644,6 +3688,30 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               </form>
                             </div>
                           )}
+                          <div style={{ marginTop: '1rem' }}>
+                            <button 
+                              type="button" 
+                              className="btn-primary" 
+                              style={{ 
+                                width: '100%', 
+                                padding: '0.65rem', 
+                                backgroundColor: 'var(--success)', 
+                                borderColor: 'var(--success)',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(25, 135, 84, 0.15)'
+                              }}
+                              onClick={handleSaveGradesToCloud}
+                              disabled={savingGrades}
+                            >
+                              {savingGrades ? '💾 Guardando...' : '💾 Guardar Cambios en la Nube'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
