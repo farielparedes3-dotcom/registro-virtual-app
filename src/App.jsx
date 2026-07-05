@@ -4890,11 +4890,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                     })}
 
                                     {/* Stats (only T and %) */}
-                                    <td style={{ textAlign: 'center', fontWeight: 'bold', color: 'var(--success)', fontFamily: 'var(--font-mono)' }}>
+                                    <td style={{ textAlign: 'center', fontWeight: 'bold', color: isRetiredStudent ? 'var(--danger)' : 'var(--success)', fontFamily: 'var(--font-mono)', fontSize: isRetiredStudent ? '0.78rem' : 'inherit' }}>
                                       {isRetiredStudent ? 'Retirado' : cappedT}
                                     </td>
                                     <td style={{ textAlign: 'center', fontWeight: 'bold', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                                      {isRetiredStudent ? 'Retirado' : `${attendancePercentage}%`}
+                                      {isRetiredStudent ? '-' : `${attendancePercentage}%`}
                                     </td>
                                   </tr>
                                 );
