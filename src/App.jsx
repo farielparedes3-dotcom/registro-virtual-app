@@ -4817,14 +4817,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 let pCount = 0;
 
                                 Array.from({ length: 21 }).forEach((_, idx) => {
+                                  const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
+                                  const status = studentAttendanceDetail[attendanceKey] || '';
+                                  if (status === 'R') rCount++;
+
                                   const dateKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}_day_${idx}`;
                                   const dateVal = attendanceDayDates[dateKey] || '';
                                   if (dateVal.trim() !== '') {
-                                    const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
-                                    const status = studentAttendanceDetail[attendanceKey] || '';
                                     if (status === 'A') aCount++;
                                     else if (status === 'E') eCount++;
-                                    else if (status === 'R') rCount++;
                                     else if (status === 'T') tCount++;
                                     else if (status === 'P') pCount++;
                                   }
@@ -4846,7 +4847,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                   ? Math.round((cappedT / activeDays) * 100) 
                                   : 0;
 
-                                const isRetiredStudent = rCount >= currentMonthWorkedDays || activeDays === 0;
+                                const isRetiredStudent = rCount > 0;
 
                                 return (
                                   <tr key={s.id}>
