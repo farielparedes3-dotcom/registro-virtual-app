@@ -513,6 +513,20 @@ const getSubjectsForGrade = (subjectsList, gradeName) => {
   return result;
 };
 
+const sortGrades = (gradesList) => {
+  if (!gradesList || !Array.isArray(gradesList)) return [];
+  return [...gradesList].sort((a, b) => {
+    const numA = parseInt(a) || 0;
+    const numB = parseInt(b) || 0;
+    if (numA !== numB) {
+      return numA - numB;
+    }
+    const cleanA = a.replace(/^\d+([a-zA-Záéíóúñ\s°º]*)/, '').trim().toLowerCase();
+    const cleanB = b.replace(/^\d+([a-zA-Záéíóúñ\s°º]*)/, '').trim().toLowerCase();
+    return cleanA.localeCompare(cleanB);
+  });
+};
+
 const renderGradeHeaderBanner = (gradeName, extraText = '') => {
   const theme = getGradeThemeInfo(gradeName);
   const section = gradeName.replace(/^\d+([a-zA-Záéíóúñ\s°º]*)/, '').trim();
@@ -808,7 +822,8 @@ export default function App() {
 
   const [grades, setGrades] = useState(() => {
     const saved = localStorage.getItem('s_grades');
-    return saved ? JSON.parse(saved) : DEFAULT_GRADES;
+    const raw = saved ? JSON.parse(saved) : DEFAULT_GRADES;
+    return sortGrades(raw);
   });
 
   const [expandedSections, setExpandedSections] = useState({
@@ -822,6 +837,8 @@ export default function App() {
   const [selectedConfigSubjectGrade, setSelectedConfigSubjectGrade] = useState('1ro A');
   const [editingSubjectKey, setEditingSubjectKey] = useState(null);
   const [editingSubjectForm, setEditingSubjectForm] = useState({ name: '', color: '#003876' });
+  const [editingGradeName, setEditingGradeName] = useState(null);
+  const [editingGradeForm, setEditingGradeForm] = useState({ name: '' });
 
   // --- Admin Report & Alarms States ---
   const [selectedAdminReportGrade, setSelectedAdminReportGrade] = useState(() => {
@@ -988,12 +1005,13 @@ export default function App() {
           }
         }
         if (data.grades) {
-          const needsMigration = data.grades.includes('10° A') || !data.grades.includes('2do A');
+          const needsMigration = data.grades.includes('10° A') || data.grades.length === 0;
           if (needsMigration) {
-            setGrades(DEFAULT_GRADES);
-            dbService.saveGrades(DEFAULT_GRADES);
+            const sortedDefaults = sortGrades(DEFAULT_GRADES);
+            setGrades(sortedDefaults);
+            dbService.saveGrades(sortedDefaults);
           } else {
-            setGrades(data.grades);
+            setGrades(sortGrades(data.grades));
           }
         }
         if (data.staff) setGradeStaffContacts(data.staff);
@@ -1561,7 +1579,7 @@ export default function App() {
       return;
     }
 
-    setGrades(prev => [...prev, name]);
+    setGrades(prev => sortGrades([...prev, name]));
     
     const updatedSubjects = { ...subjects };
     Object.keys(updatedSubjects).forEach(subKey => {
@@ -1578,13 +1596,93 @@ export default function App() {
     alert(`Grado "${name}" creado con éxito e inicializado con las asignaturas del catálogo.`);
   };
 
+  const handleUpdateGrade = (e) => {
+    if (e) e.preventDefault();
+    if (!editingGradeName) return;
+    const newName = editingGradeForm.name.trim();
+    if (!newName) return;
+
+    if (grades.includes(newName) && newName !== editingGradeName) {
+      alert('Este nombre de grado ya existe.');
+      return;
+    }
+
+    if (window.confirm(`¿Estás seguro de renombrar el grado "${editingGradeName}" a "${newName}"? Esto actualizará todos los alumnos, asignaturas y asignaciones docentes correspondientes.`)) {
+      setGrades(prev => sortGrades(prev.map(g => g === editingGradeName ? newName : g)));
+
+      setStudents(prev => prev.map(s => s.grade === editingGradeName ? { ...s, grade: newName } : s));
+
+      setUsers(prev => prev.map(u => {
+        if (u.role === 'teacher') {
+          return {
+            ...u,
+            assignments: u.assignments.map(a => a.grade === editingGradeName ? { ...a, grade: newName } : a)
+          };
+        }
+         return u;
+      }));
+
+      setSubjects(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(subKey => {
+          const sub = updated[subKey];
+          if (sub.grades) {
+            const subGrades = sub.grades.map(g => g === editingGradeName ? newName : g);
+            updated[subKey] = { ...sub, grades: subGrades };
+          }
+        });
+        return updated;
+      });
+
+      setGradeStaffContacts(prev => {
+        const updated = { ...prev };
+        if (updated[editingGradeName]) {
+          updated[newName] = updated[editingGradeName];
+          delete updated[editingGradeName];
+        }
+        return updated;
+      });
+
+      setMonthlyWorkedDays(prev => {
+        const updated = { ...prev };
+        if (updated[editingGradeName]) {
+          updated[newName] = updated[editingGradeName];
+          delete updated[editingGradeName];
+        }
+        return updated;
+      });
+
+      setAttendanceDayDates(prev => {
+        const updated = { ...prev };
+        if (updated[editingGradeName]) {
+          updated[newName] = updated[editingGradeName];
+          delete updated[editingGradeName];
+        }
+        return updated;
+      });
+
+      if (selectedGrade === editingGradeName) {
+        setSelectedGrade(newName);
+      }
+      if (selectedAdminReportGrade === editingGradeName) {
+        setSelectedAdminReportGrade(newName);
+      }
+      if (selectedConfigSubjectGrade === editingGradeName) {
+        setSelectedConfigSubjectGrade(newName);
+      }
+
+      setEditingGradeName(null);
+      alert(`El grado "${editingGradeName}" ha sido renombrado a "${newName}" con éxito.`);
+    }
+  };
+
   const handleDeleteGrade = (gradeName) => {
     if (grades.length <= 1) {
       alert('Debe haber al menos un grado en el sistema.');
       return;
     }
     if (window.confirm(`¿Estás seguro de eliminar el grado "${gradeName}"? Esto eliminará todos los estudiantes matriculados en este grado y todas las asignaciones docentes vinculadas.`)) {
-      const updatedGrades = grades.filter(g => g !== gradeName);
+      const updatedGrades = sortGrades(grades.filter(g => g !== gradeName));
       setGrades(updatedGrades);
 
       setUsers(prev => prev.map(u => {
@@ -3462,7 +3560,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               <tr>
                                 <th>Nombre del Curso/Grado</th>
                                 <th>Estudiantes Matriculados</th>
-                                <th style={{ width: '80px', textAlign: 'center' }}>Acción</th>
+                                <th style={{ width: '200px', textAlign: 'center' }}>Acciones</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -3475,14 +3573,28 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-primary)' }}>{studentsCount} alumnos</span>
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
-                                      <button 
-                                        className="btn-delete-event" 
-                                        onClick={() => handleDeleteGrade(g)}
-                                        style={{ color: 'var(--danger)', fontWeight: 'bold' }}
-                                        title="Eliminar Grado"
-                                      >
-                                        ✕ Eliminar
-                                      </button>
+                                      <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>
+                                        <button 
+                                          type="button"
+                                          className="btn-secondary" 
+                                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px' }}
+                                          onClick={() => {
+                                            setEditingGradeName(g);
+                                            setEditingGradeForm({ name: g });
+                                          }}
+                                        >
+                                          ✏️ Editar
+                                        </button>
+                                        <button 
+                                          type="button"
+                                          className="btn-delete-event" 
+                                          onClick={() => handleDeleteGrade(g)}
+                                          style={{ color: 'var(--danger)', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                                          title="Eliminar Grado"
+                                        >
+                                          ✕ Eliminar
+                                        </button>
+                                      </div>
                                     </td>
                                   </tr>
                                 );
@@ -3491,23 +3603,47 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           </table>
                         </div>
 
-                        {/* Right Side: Add Grade Form */}
-                        <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                          <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Crear Nuevo Grado</h4>
-                          <form onSubmit={handleCreateGrade} className="add-event-form">
-                            <div className="form-group-compact">
-                              <label>Nombre del Grado</label>
-                              <input 
-                                type="text" 
-                                className="form-input-compact" 
-                                value={gradeForm.name} 
-                                onChange={(e) => setGradeForm(prev => ({ ...prev, name: e.target.value }))} 
-                                placeholder="Ej: 2do B" 
-                                required 
-                              />
+                        {/* Right Side: Add/Edit Grade Form */}
+                        <div>
+                          {editingGradeName ? (
+                            <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--primary)', borderRadius: '8px' }}>
+                              <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>✏️ Editar Grado</h4>
+                              <form onSubmit={handleUpdateGrade} className="add-event-form">
+                                <div className="form-group-compact">
+                                  <label>Nombre del Grado</label>
+                                  <input 
+                                    type="text" 
+                                    className="form-input-compact" 
+                                    value={editingGradeForm.name} 
+                                    onChange={(e) => setEditingGradeForm(prev => ({ ...prev, name: e.target.value }))} 
+                                    required 
+                                  />
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.75rem' }}>
+                                  <button type="submit" className="btn-primary" style={{ flex: 1, padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.8rem' }}>Actualizar</button>
+                                  <button type="button" className="btn-secondary" style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.8rem' }} onClick={() => setEditingGradeName(null)}>Cancelar</button>
+                                </div>
+                              </form>
                             </div>
-                            <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Grado</button>
-                          </form>
+                          ) : (
+                            <div className="glass-panel" style={{ padding: '1.25rem', alignSelf: 'start', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                              <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>Crear Nuevo Grado</h4>
+                              <form onSubmit={handleCreateGrade} className="add-event-form">
+                                <div className="form-group-compact">
+                                  <label>Nombre del Grado</label>
+                                  <input 
+                                    type="text" 
+                                    className="form-input-compact" 
+                                    value={gradeForm.name} 
+                                    onChange={(e) => setGradeForm(prev => ({ ...prev, name: e.target.value }))} 
+                                    placeholder="Ej: 2do B" 
+                                    required 
+                                  />
+                                </div>
+                                <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Grado</button>
+                              </form>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
