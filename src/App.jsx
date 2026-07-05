@@ -952,6 +952,100 @@ export default function App() {
 
   const fileInputRef = useRef(null);
 
+  // --- Refs and Event-Driven Save Wrappers to break infinite loops ---
+  const monthlyWorkedDaysRef = useRef(monthlyWorkedDays);
+  const attendanceDayDatesRef = useRef(attendanceDayDates);
+  useEffect(() => { monthlyWorkedDaysRef.current = monthlyWorkedDays; }, [monthlyWorkedDays]);
+  useEffect(() => { attendanceDayDatesRef.current = attendanceDayDates; }, [attendanceDayDates]);
+
+  const setUsersAndSave = (updater) => {
+    setUsersAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveUsers(next), 0);
+      return next;
+    });
+  };
+
+  const setStudentsAndSave = (updater) => {
+    setStudentsAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveStudents(next), 0);
+      return next;
+    });
+  };
+
+  const setStudentRpGradesAndSave = (updater) => {
+    setStudentRpGradesAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveStudentRpGrades(next), 0);
+      return next;
+    });
+  };
+
+  const setStudentAttendanceDetailAndSave = (updater) => {
+    setStudentAttendanceDetailAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveStudentAttendance(next), 0);
+      return next;
+    });
+  };
+
+  const setMonthlyWorkedDaysAndSave = (updater) => {
+    setMonthlyWorkedDaysAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveAttendanceConfigs(next, attendanceDayDatesRef.current), 0);
+      return next;
+    });
+  };
+
+  const setAttendanceDayDatesAndSave = (updater) => {
+    setAttendanceDayDatesAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveAttendanceConfigs(monthlyWorkedDaysRef.current, next), 0);
+      return next;
+    });
+  };
+
+  const setCalendarEventsAndSave = (updater) => {
+    setCalendarEventsAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveEvents(next), 0);
+      return next;
+    });
+  };
+
+  const setEvaluationConfigsAndSave = (updater) => {
+    setEvaluationConfigsAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveEvalConfigs(next), 0);
+      return next;
+    });
+  };
+
+  const setStudentAssessmentsAndSave = (updater) => {
+    setStudentAssessmentsAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveStudentAssessments(next), 0);
+      return next;
+    });
+  };
+
+  const setAlertLogsAndSave = (updater) => {
+    setAlertLogsAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.saveAlertLogs(next), 0);
+      return next;
+    });
+  };
+
+  const setPromotionGradesAndSave = (updater) => {
+    setPromotionGradesAndSave(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      setTimeout(() => dbService.savePromotionGrades(next), 0);
+      return next;
+    });
+  };
+
   // --- Sync Effects ---
   useEffect(() => {
     if (window.innerWidth < 968) {
@@ -1049,14 +1143,6 @@ export default function App() {
   }, [activeTab]);
 
   useEffect(() => {
-    dbService.saveUsers(users);
-  }, [users]);
-
-  useEffect(() => {
-    dbService.savePromotionGrades(promotionGrades);
-  }, [promotionGrades]);
-
-  useEffect(() => {
     if (currentUser) {
       localStorage.setItem('s_current_user', JSON.stringify(currentUser));
       const latest = users.find(u => u.id === currentUser.id);
@@ -1069,43 +1155,9 @@ export default function App() {
   }, [currentUser, users]);
 
   useEffect(() => {
-    dbService.saveStudents(students);
-  }, [students]);
-
-  useEffect(() => {
-    dbService.saveStudentRpGrades(studentRpGrades);
-  }, [studentRpGrades]);
-
-  useEffect(() => {
-    dbService.saveStudentAttendance(studentAttendanceDetail);
-  }, [studentAttendanceDetail]);
-
-  useEffect(() => {
-    dbService.saveAttendanceConfigs(monthlyWorkedDays, attendanceDayDates);
-  }, [monthlyWorkedDays, attendanceDayDates]);
-
-  useEffect(() => {
-    dbService.saveEvents(calendarEvents);
-  }, [calendarEvents]);
-
-  useEffect(() => {
-    dbService.saveEvalConfigs(evaluationConfigs);
-  }, [evaluationConfigs]);
-
-  useEffect(() => {
-    dbService.saveStudentAssessments(studentAssessments);
-  }, [studentAssessments]);
-
-  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
-
-
-
-  useEffect(() => {
-    dbService.saveAlertLogs(alertLogs);
-  }, [alertLogs]);
 
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
@@ -1239,14 +1291,14 @@ export default function App() {
       total: 20
     };
 
-    setStudents(prev => [...prev, created]);
+    setStudentsAndSave(prev => [...prev, created]);
     setStudentForm({ name: '', email: '' });
   };
 
   const handleDeleteStudent = (id) => {
     if (currentUser.role !== 'admin') return;
     if (window.confirm('¿Está seguro de eliminar este alumno?')) {
-      setStudents(prev => prev.filter(s => s.id !== id));
+      setStudentsAndSave(prev => prev.filter(s => s.id !== id));
     }
   };
 
@@ -1286,7 +1338,7 @@ export default function App() {
     });
 
     if (addedStudents.length > 0) {
-      setStudents(prev => [...prev, ...addedStudents]);
+      setStudentsAndSave(prev => [...prev, ...addedStudents]);
       alert(`Se importaron con éxito ${addedStudents.length} alumnos al grado ${activeAdminGrade}.`);
     } else {
       alert('No se pudo encontrar ningún dato de alumno válido. Formato: Nombre, Correo');
@@ -1341,7 +1393,7 @@ export default function App() {
       active: true
     };
 
-    setUsers(prev => [...prev, created]);
+    setUsersAndSave(prev => [...prev, created]);
     setTeacherForm({ name: '', email: '', password: '', role: 'teacher' });
     alert('Docente registrado.');
   };
@@ -1357,7 +1409,7 @@ export default function App() {
       return;
     }
 
-    setUsers(prev => prev.map(u => {
+    setUsersAndSave(prev => prev.map(u => {
       if (u.id === userId) {
         const exists = u.assignments.some(
           a => a.grade === gradeVal && a.subject === subjectVal
@@ -1374,7 +1426,7 @@ export default function App() {
 
   const handleRemoveAssignment = (userId, indexToRemove) => {
     if (currentUser.role !== 'admin') return;
-    setUsers(prev => prev.map(u => {
+    setUsersAndSave(prev => prev.map(u => {
       if (u.id === userId) {
         return {
           ...u,
@@ -1389,7 +1441,7 @@ export default function App() {
     if (currentUser.role !== 'admin') return;
     if (id === currentUser.id) return;
     if (window.confirm('¿Eliminar esta cuenta?')) {
-      setUsers(prev => prev.filter(u => u.id !== id));
+      setUsersAndSave(prev => prev.filter(u => u.id !== id));
     }
   };
 
@@ -1420,7 +1472,7 @@ export default function App() {
     const updatedSubjects = { ...subjects, [key]: newSub };
     setSubjects(updatedSubjects);
 
-    setStudents(prev => {
+    setStudentsAndSave(prev => {
       return prev.map(s => {
         if (s.grade === selectedConfigSubjectGrade) {
           const studentGrades = s.grades ? { ...s.grades } : {};
@@ -1460,7 +1512,7 @@ export default function App() {
     };
     setSubjects(updatedSubjects);
 
-    setStudents(prev => {
+    setStudentsAndSave(prev => {
       return prev.map(s => {
         if (s.grade === gradeName) {
           const studentGrades = s.grades ? { ...s.grades } : {};
@@ -1496,7 +1548,7 @@ export default function App() {
       };
       setSubjects(updatedSubjects);
 
-      setUsers(prev => prev.map(u => {
+      setUsersAndSave(prev => prev.map(u => {
         if (u.role === 'teacher') {
           return {
             ...u,
@@ -1506,7 +1558,7 @@ export default function App() {
         return u;
       }));
 
-      setStudents(prev => prev.map(s => {
+      setStudentsAndSave(prev => prev.map(s => {
         if (s.grade === gradeName) {
           const studentGrades = s.grades ? { ...s.grades } : {};
           delete studentGrades[subjectKey];
@@ -1553,7 +1605,7 @@ export default function App() {
       delete updatedSubjects[key];
       setSubjects(updatedSubjects);
 
-      setUsers(prev => prev.map(u => {
+      setUsersAndSave(prev => prev.map(u => {
         if (u.role === 'teacher') {
           return {
             ...u,
@@ -1563,7 +1615,7 @@ export default function App() {
         return u;
       }));
 
-      setStudents(prev => prev.map(s => {
+      setStudentsAndSave(prev => prev.map(s => {
         const studentGrades = s.grades ? { ...s.grades } : {};
         delete studentGrades[key];
         return { ...s, grades: studentGrades };
@@ -1644,9 +1696,9 @@ export default function App() {
     if (window.confirm(`¿Estás seguro de renombrar el grado "${editingGradeName}" a "${newName}"? Esto actualizará todos los alumnos, asignaturas y asignaciones docentes correspondientes.`)) {
       setGrades(prev => sortGrades(prev.map(g => g === editingGradeName ? newName : g)));
 
-      setStudents(prev => prev.map(s => s.grade === editingGradeName ? { ...s, grade: newName } : s));
+      setStudentsAndSave(prev => prev.map(s => s.grade === editingGradeName ? { ...s, grade: newName } : s));
 
-      setUsers(prev => prev.map(u => {
+      setUsersAndSave(prev => prev.map(u => {
         if (u.role === 'teacher') {
           return {
             ...u,
@@ -1677,7 +1729,7 @@ export default function App() {
         return updated;
       });
 
-      setMonthlyWorkedDays(prev => {
+      setMonthlyWorkedDaysAndSave(prev => {
         const updated = { ...prev };
         if (updated[editingGradeName]) {
           updated[newName] = updated[editingGradeName];
@@ -1686,7 +1738,7 @@ export default function App() {
         return updated;
       });
 
-      setAttendanceDayDates(prev => {
+      setAttendanceDayDatesAndSave(prev => {
         const updated = { ...prev };
         if (updated[editingGradeName]) {
           updated[newName] = updated[editingGradeName];
@@ -1719,7 +1771,7 @@ export default function App() {
       const updatedGrades = sortGrades(grades.filter(g => g !== gradeName));
       setGrades(updatedGrades);
 
-      setUsers(prev => prev.map(u => {
+      setUsersAndSave(prev => prev.map(u => {
         if (u.role === 'teacher') {
           return {
             ...u,
@@ -1729,7 +1781,7 @@ export default function App() {
         return u;
       }));
 
-      setStudents(prev => prev.filter(s => s.grade !== gradeName));
+      setStudentsAndSave(prev => prev.filter(s => s.grade !== gradeName));
 
       if (activeAdminGrade === gradeName) {
         setActiveAdminGrade(updatedGrades[0] || '');
@@ -1844,7 +1896,7 @@ export default function App() {
         setEvaluationConfigs(nextEvaluationConfigs);
         
         // Also update students' final grades in real-time
-        setStudents(prevStudents => prevStudents.map(s => {
+        setStudentsAndSave(prevStudents => prevStudents.map(s => {
           if (s.grade === selectedGrade) {
             const nextGrades = { ...s.grades };
             const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
@@ -1929,7 +1981,7 @@ export default function App() {
     setEvaluationConfigs(nextEvaluationConfigs);
 
     // Recalculate grades for all students in this grade
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.grade === selectedGrade) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
@@ -1981,7 +2033,7 @@ export default function App() {
     setEvaluationConfigs(nextEvaluationConfigs);
 
     // Recalculate grades for all students in this grade
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.grade === selectedGrade) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
@@ -2293,7 +2345,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const handleCellGradeChange = (studentId, subjectKey, evalIdx, newValue) => {
     const numericVal = Math.min(100, Math.max(0, Number(newValue) || 0));
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
@@ -2320,7 +2372,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const currentRp = studentRpGrades[rpKey] ? [...studentRpGrades[rpKey]] : [null, null, null, null];
     currentRp[evalIdx] = value === '' ? null : Math.min(100, Math.max(0, Number(value)));
 
-    setStudentRpGrades(prev => ({
+    setStudentRpGradesAndSave(prev => ({
       ...prev,
       [rpKey]: currentRp
     }));
@@ -2336,7 +2388,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       currentPromo[key] = Math.min(100, Math.max(0, Number(value)));
     }
 
-    setPromotionGrades(prev => ({
+    setPromotionGradesAndSave(prev => ({
       ...prev,
       [promoKey]: currentPromo
     }));
@@ -2349,7 +2401,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     }
     
     // 1. Update the student's base grades (originalGrades) in s.grades
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
@@ -2371,7 +2423,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const blockConfig = evaluationConfigs[configKey];
     
     if (blockConfig && blockConfig[pKey] && blockConfig[pKey].length > 0) {
-      setStudentAssessments(prev => {
+      setStudentAssessmentsAndSave(prev => {
         const list = blockConfig[pKey];
         const nextAssessments = { ...prev };
         let remainingScore = value;
@@ -2403,7 +2455,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   const handleUpdateAttendance = (studentId, type) => {
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         return {
           ...s,
@@ -2429,7 +2481,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     setStudentAssessments(nextAssessmentsObject);
 
     // Recalculate grades using helper
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
@@ -2520,12 +2572,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     });
 
     const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${evalIdx}`;
-    setStudentAssessments(prev => ({
+    setStudentAssessmentsAndSave(prev => ({
       ...prev,
       [assessmentKey]: nextAssessmentValues
     }));
 
-    setStudents(prev => prev.map(s => {
+    setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
@@ -2681,7 +2733,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     : students;
 
   const toggleUserActive = (id) => {
-    setUsers(prev => prev.map(u => {
+    setUsersAndSave(prev => prev.map(u => {
       if (u.id === id) {
         return { ...u, active: !u.active };
       }
@@ -5101,7 +5153,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                         placeholder=""
                                         onChange={(e) => {
                                           const val = e.target.value.replace(/\D/g, ''); // only digits
-                                          setAttendanceDayDates(prev => ({
+                                          setAttendanceDayDatesAndSave(prev => ({
                                             ...prev,
                                             [dateKey]: val
                                           }));
@@ -5202,7 +5254,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               else if (status === 'E') nextStatus = 'R';
                                               else if (status === 'R') nextStatus = '';
                                               
-                                              setStudentAttendanceDetail(prev => ({
+                                              setStudentAttendanceDetailAndSave(prev => ({
                                                 ...prev,
                                                 [attendanceKey]: nextStatus
                                               }));
