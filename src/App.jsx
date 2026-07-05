@@ -5,10 +5,15 @@ import { dbService } from './db';
 
 // Global configuration
 const DEFAULT_SUBJECTS = {
-  math: { name: 'Matemáticas', color: 'var(--primary)', bg: 'var(--primary-glow)' },
-  science: { name: 'Ciencias', color: 'var(--success)', bg: 'var(--success-bg)' },
-  language: { name: 'Lenguaje', color: 'var(--warning)', bg: 'var(--warning-bg)' },
-  history: { name: 'Historia', color: 'hsl(170, 75%, 40%)', bg: 'rgba(20, 184, 166, 0.1)' }
+  lengua_espanola: { name: 'Lengua Española', color: 'hsl(215, 80%, 45%)', bg: 'rgba(13, 110, 253, 0.08)' },
+  ingles: { name: 'Lenguas Extranjeras - Inglés', color: 'hsl(280, 65%, 45%)', bg: 'rgba(111, 66, 193, 0.08)' },
+  frances: { name: 'Lenguas Extranjeras - Francés', color: 'hsl(325, 70%, 45%)', bg: 'rgba(214, 51, 132, 0.08)' },
+  matematica: { name: 'Matemática', color: 'hsl(20, 85%, 45%)', bg: 'rgba(253, 126, 20, 0.08)' },
+  ciencias_sociales: { name: 'Ciencias Sociales', color: 'hsl(140, 60%, 35%)', bg: 'rgba(25, 135, 84, 0.08)' },
+  ciencias_naturaleza: { name: 'Ciencias de la Naturaleza - Ciencias de la Tierra y del Universo', color: 'hsl(175, 75%, 35%)', bg: 'rgba(20, 184, 166, 0.08)' },
+  artistica: { name: 'Educación Artística', color: 'hsl(45, 85%, 40%)', bg: 'rgba(255, 193, 7, 0.08)' },
+  educacion_fisica: { name: 'Educación Física', color: 'hsl(10, 75%, 45%)', bg: 'rgba(220, 53, 69, 0.08)' },
+  formacion_religiosa: { name: 'Formación Integral Humana y Religiosa', color: 'hsl(200, 70%, 40%)', bg: 'rgba(13, 202, 240, 0.08)' }
 };
 
 const DEFAULT_GRADES = ['1ro A', '2do A', '3ro A', '4to A', '5to A', '6to A'];
@@ -40,9 +45,9 @@ const DEFAULT_USERS = [
     password: 'profe123', 
     role: 'teacher', 
     assignments: [
-      { grade: '1ro A', subject: 'math' },
-      { grade: '10° A', subject: 'math' },
-      { grade: '1ro A', subject: 'history' }
+      { grade: '1ro A', subject: 'matematica' },
+      { grade: '2do A', subject: 'matematica' },
+      { grade: '1ro A', subject: 'ciencias_sociales' }
     ],
     active: true 
   },
@@ -53,8 +58,8 @@ const DEFAULT_USERS = [
     password: 'profe123', 
     role: 'teacher', 
     assignments: [
-      { grade: '1ro A', subject: 'science' },
-      { grade: '10° B', subject: 'science' }
+      { grade: '1ro A', subject: 'ciencias_naturaleza' },
+      { grade: '2do A', subject: 'ciencias_naturaleza' }
     ], 
     active: true 
   },
@@ -65,8 +70,8 @@ const DEFAULT_USERS = [
     password: 'profe123', 
     role: 'teacher', 
     assignments: [
-      { grade: '1ro B', subject: 'language' },
-      { grade: '10° A', subject: 'language' }
+      { grade: '1ro A', subject: 'lengua_espanola' },
+      { grade: '2do A', subject: 'lengua_espanola' }
     ], 
     active: true 
   }
@@ -79,10 +84,15 @@ const DEFAULT_STUDENTS = [
     email: 'sofia.rod@school.edu', 
     grade: '1ro A', 
     grades: {
-      math: [95, 90, 88, 92],
-      science: [88, 85, 90, 80],
-      language: [92, 95, 88, 90],
-      history: [90, 88, 95, 92]
+      lengua_espanola: { bloque1: [95, 90, 88, 92], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ingles: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      frances: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      matematica: { bloque1: [95, 90, 88, 92], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_sociales: { bloque1: [90, 88, 95, 92], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_naturaleza: { bloque1: [88, 85, 90, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      artistica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      educacion_fisica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      formacion_religiosa: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
     },
     present: 18, 
     total: 20 
@@ -93,10 +103,15 @@ const DEFAULT_STUDENTS = [
     email: 'santi.per@school.edu', 
     grade: '1ro A', 
     grades: {
-      math: [85, 88, 82, 90],
-      science: [92, 90, 95, 88],
-      language: [88, 85, 90, 86],
-      history: [85, 80, 88, 92]
+      lengua_espanola: { bloque1: [88, 85, 90, 86], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ingles: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      frances: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      matematica: { bloque1: [85, 88, 82, 90], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_sociales: { bloque1: [85, 80, 88, 92], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_naturaleza: { bloque1: [92, 90, 95, 88], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      artistica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      educacion_fisica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      formacion_religiosa: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
     },
     present: 20, 
     total: 20 
@@ -107,10 +122,15 @@ const DEFAULT_STUDENTS = [
     email: 'carlos.men@school.edu', 
     grade: '1ro A', 
     grades: {
-      math: [70, 75, 80, 72],
-      science: [80, 78, 82, 80],
-      language: [78, 80, 74, 82],
-      history: [74, 70, 78, 75]
+      lengua_espanola: { bloque1: [78, 80, 74, 82], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ingles: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      frances: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      matematica: { bloque1: [70, 75, 80, 72], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_sociales: { bloque1: [74, 70, 78, 75], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_naturaleza: { bloque1: [80, 78, 82, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      artistica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      educacion_fisica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      formacion_religiosa: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
     },
     present: 16, 
     total: 20 
@@ -119,12 +139,17 @@ const DEFAULT_STUDENTS = [
     id: 's4', 
     name: 'Ana Ruiz', 
     email: 'ana.ruiz@school.edu', 
-    grade: '1ro B', 
+    grade: '2do A', 
     grades: {
-      math: [85, 88, 82, 90],
-      science: [84, 86, 80, 90],
-      language: [95, 92, 90, 98],
-      history: [89, 85, 92, 90]
+      lengua_espanola: { bloque1: [95, 92, 90, 98], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ingles: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      frances: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      matematica: { bloque1: [85, 88, 82, 90], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_sociales: { bloque1: [89, 85, 92, 90], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_naturaleza: { bloque1: [84, 86, 80, 90], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      artistica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      educacion_fisica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      formacion_religiosa: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
     },
     present: 19, 
     total: 20 
@@ -133,12 +158,17 @@ const DEFAULT_STUDENTS = [
     id: 's5', 
     name: 'Mateo Gómez', 
     email: 'mateo.gom@school.edu', 
-    grade: '10° A', 
+    grade: '3ro A', 
     grades: {
-      math: [80, 82, 85, 80],
-      science: [90, 88, 92, 90],
-      language: [85, 80, 88, 84],
-      history: [80, 78, 82, 85]
+      lengua_espanola: { bloque1: [85, 80, 88, 84], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ingles: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      frances: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      matematica: { bloque1: [80, 82, 85, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_sociales: { bloque1: [80, 78, 82, 85], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      ciencias_naturaleza: { bloque1: [90, 88, 92, 90], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      artistica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      educacion_fisica: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
+      formacion_religiosa: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
     },
     present: 19, 
     total: 20 
@@ -933,8 +963,24 @@ export default function App() {
 
     const unsubConfig = dbService.subscribeConfig((data) => {
       if (data) {
-        if (data.subjects) setSubjects(data.subjects);
-        if (data.grades) setGrades(data.grades);
+        if (data.subjects) {
+          const needsMigration = !Object.keys(data.subjects).includes('lengua_espanola');
+          if (needsMigration) {
+            setSubjects(DEFAULT_SUBJECTS);
+            dbService.saveSubjects(DEFAULT_SUBJECTS);
+          } else {
+            setSubjects(data.subjects);
+          }
+        }
+        if (data.grades) {
+          const needsMigration = data.grades.includes('10° A') || !data.grades.includes('2do A');
+          if (needsMigration) {
+            setGrades(DEFAULT_GRADES);
+            dbService.saveGrades(DEFAULT_GRADES);
+          } else {
+            setGrades(data.grades);
+          }
+        }
         if (data.staff) setGradeStaffContacts(data.staff);
         if (data.monthlyDays) setMonthlyWorkedDays(data.monthlyDays);
         if (data.attendanceDates) setAttendanceDayDates(data.attendanceDates);
