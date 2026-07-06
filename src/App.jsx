@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 import { dbService } from './db';
@@ -2715,7 +2715,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   const getCompetencyCodesForSubject = (subjectKey) => {
-    if (subjectKey.includes('espanola')) {
+    const key = subjectKey || '';
+    if (key.includes('espanola')) {
       return {
         c1: 'CE-LE1 & CE-LE2',
         c2: 'CE-LE3 & CE-LE4',
@@ -2723,7 +2724,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         c4: 'CE-LE6 & CE-LE7'
       };
     }
-    if (subjectKey.includes('matematica')) {
+    if (key.includes('matematica')) {
       return {
         c1: 'CE-M1',
         c2: 'CE-M2',
@@ -2731,7 +2732,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         c4: 'CE-M4'
       };
     }
-    if (subjectKey.includes('sociales')) {
+    if (key.includes('sociales')) {
       return {
         c1: 'CE-CS1',
         c2: 'CE-CS2',
@@ -2739,7 +2740,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         c4: 'CE-CS4'
       };
     }
-    if (subjectKey.includes('naturaleza')) {
+    if (key.includes('naturaleza')) {
       return {
         c1: 'CE-CN1',
         c2: 'CE-CN2',
@@ -2748,7 +2749,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       };
     }
     // Generic prefix
-    const prefix = subjectKey.slice(0, 3).toUpperCase();
+    const prefix = key ? key.slice(0, 3).toUpperCase() : 'CE';
     return {
       c1: `CE-${prefix}1`,
       c2: `CE-${prefix}2`,
