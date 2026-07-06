@@ -959,89 +959,155 @@ export default function App() {
   useEffect(() => { attendanceDayDatesRef.current = attendanceDayDates; }, [attendanceDayDates]);
 
   const setUsersAndSave = (updater) => {
-    setUsersAndSave(prev => {
+    setUsers(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveUsers(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveUsers(next);
+        } catch (e) {
+          console.error("Error saving users to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setStudentsAndSave = (updater) => {
-    setStudentsAndSave(prev => {
+    setStudents(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveStudents(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveStudents(next);
+        } catch (e) {
+          console.error("Error saving students to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setStudentRpGradesAndSave = (updater) => {
-    setStudentRpGradesAndSave(prev => {
+    setStudentRpGrades(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveStudentRpGrades(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveStudentRpGrades(next);
+        } catch (e) {
+          console.error("Error saving student RP grades to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setStudentAttendanceDetailAndSave = (updater) => {
-    setStudentAttendanceDetailAndSave(prev => {
+    setStudentAttendanceDetail(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveStudentAttendance(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveStudentAttendance(next);
+        } catch (e) {
+          console.error("Error saving student attendance to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setMonthlyWorkedDaysAndSave = (updater) => {
-    setMonthlyWorkedDaysAndSave(prev => {
+    setMonthlyWorkedDays(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveAttendanceConfigs(next, attendanceDayDatesRef.current), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveAttendanceConfigs(next, attendanceDayDatesRef.current);
+        } catch (e) {
+          console.error("Error saving monthly worked days to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setAttendanceDayDatesAndSave = (updater) => {
-    setAttendanceDayDatesAndSave(prev => {
+    setAttendanceDayDates(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveAttendanceConfigs(monthlyWorkedDaysRef.current, next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveAttendanceConfigs(monthlyWorkedDaysRef.current, next);
+        } catch (e) {
+          console.error("Error saving attendance day dates to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setCalendarEventsAndSave = (updater) => {
-    setCalendarEventsAndSave(prev => {
+    setCalendarEvents(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveEvents(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveEvents(next);
+        } catch (e) {
+          console.error("Error saving calendar events to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setEvaluationConfigsAndSave = (updater) => {
-    setEvaluationConfigsAndSave(prev => {
+    setEvaluationConfigs(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveEvalConfigs(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveEvalConfigs(next);
+        } catch (e) {
+          console.error("Error saving evaluation configs to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setStudentAssessmentsAndSave = (updater) => {
-    setStudentAssessmentsAndSave(prev => {
+    setStudentAssessments(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveStudentAssessments(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveStudentAssessments(next);
+        } catch (e) {
+          console.error("Error saving student assessments to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setAlertLogsAndSave = (updater) => {
-    setAlertLogsAndSave(prev => {
+    setAlertLogs(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.saveAlertLogs(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.saveAlertLogs(next);
+        } catch (e) {
+          console.error("Error saving alert logs to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
 
   const setPromotionGradesAndSave = (updater) => {
-    setPromotionGradesAndSave(prev => {
+    setPromotionGrades(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      setTimeout(() => dbService.savePromotionGrades(next), 0);
+      setTimeout(async () => {
+        try {
+          await dbService.savePromotionGrades(next);
+        } catch (e) {
+          console.error("Error saving promotion grades to Firestore:", e);
+        }
+      }, 0);
       return next;
     });
   };
