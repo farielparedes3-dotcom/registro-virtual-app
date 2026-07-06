@@ -851,6 +851,7 @@ export default function App() {
     const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
     return list[0] || '1ro A';
   });
+  const [selectedAdminReportSubject, setSelectedAdminReportSubject] = useState('lengua_espanola');
   const [expandedReportSubjects, setExpandedReportSubjects] = useState({});
   const [gradeStaffContacts, setGradeStaffContacts] = useState(() => {
     const saved = localStorage.getItem('s_grade_staff');
@@ -2713,6 +2714,49 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return sum;
   };
 
+  const getCompetencyCodesForSubject = (subjectKey) => {
+    if (subjectKey.includes('espanola')) {
+      return {
+        c1: 'CE-LE1 & CE-LE2',
+        c2: 'CE-LE3 & CE-LE4',
+        c3: 'CE-LE5',
+        c4: 'CE-LE6 & CE-LE7'
+      };
+    }
+    if (subjectKey.includes('matematica')) {
+      return {
+        c1: 'CE-M1',
+        c2: 'CE-M2',
+        c3: 'CE-M3',
+        c4: 'CE-M4'
+      };
+    }
+    if (subjectKey.includes('sociales')) {
+      return {
+        c1: 'CE-CS1',
+        c2: 'CE-CS2',
+        c3: 'CE-CS3',
+        c4: 'CE-CS4'
+      };
+    }
+    if (subjectKey.includes('naturaleza')) {
+      return {
+        c1: 'CE-CN1',
+        c2: 'CE-CN2',
+        c3: 'CE-CN3',
+        c4: 'CE-CN4'
+      };
+    }
+    // Generic prefix
+    const prefix = subjectKey.slice(0, 3).toUpperCase();
+    return {
+      c1: `CE-${prefix}1`,
+      c2: `CE-${prefix}2`,
+      c3: `CE-${prefix}3`,
+      c4: `CE-${prefix}4`
+    };
+  };
+
   const getSubjectTeacherName = (gradeName, subjectKey) => {
     const teacher = users.find(u => 
       u.role === 'teacher' && 
@@ -3342,6 +3386,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
                 <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
                   Control Calificaciones
+                </div>
+                <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
+                  Registro de Calificación General
                 </div>
                 <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
                   Calendario Escolar
@@ -4174,6 +4221,295 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       </form>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {activeTab === 'general_grades_registry' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <h2>Registro de Calificación General</h2>
+                  <p style={{ color: 'var(--text-secondary)', marginTop: '-1rem', marginBottom: '0.5rem' }}>
+                    Supervisión completa del registro oficial por competencias para cada asignatura del grado.
+                  </p>
+
+                  {/* Horizontal Grades Bar */}
+                  <div className="report-grades-bar" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+                    {grades.map(g => {
+                      const theme = getGradeThemeInfo(g);
+                      const isSelected = selectedAdminReportGrade === g;
+                      return (
+                        <button 
+                          key={g} 
+                          className="btn-secondary"
+                          onClick={() => {
+                            setSelectedAdminReportGrade(g);
+                            const gradeSubjects = Object.keys(getSubjectsForGrade(subjects, g));
+                            if (gradeSubjects.length > 0 && !gradeSubjects.includes(selectedAdminReportSubject)) {
+                              setSelectedAdminReportSubject(gradeSubjects[0]);
+                            }
+                          }}
+                          style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '0.4rem', 
+                            fontWeight: 'bold',
+                            borderBottom: isSelected ? `3px solid ${theme.color}` : 'none',
+                            color: isSelected ? theme.color : 'inherit',
+                            backgroundColor: isSelected ? theme.bg : ''
+                          }}
+                        >
+                          🏫 {g}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Horizontal Subjects Tabs for selected grade */}
+                  {selectedAdminReportGrade && (
+                    <div className="subject-tabs-container" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '0.5rem' }}>
+                      {Object.keys(getSubjectsForGrade(subjects, selectedAdminReportGrade)).map(subKey => {
+                        const sub = subjects[subKey];
+                        const isSelected = selectedAdminReportSubject === subKey;
+                        const theme = getGradeThemeInfo(selectedAdminReportGrade);
+                        return (
+                          <button 
+                            key={subKey} 
+                            className={`subject-tab ${isSelected ? 'active' : ''}`} 
+                            onClick={() => setSelectedAdminReportSubject(subKey)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.4rem',
+                              borderBottom: isSelected ? `2.5px solid ${theme.color}` : '2.5px solid transparent',
+                              color: isSelected ? theme.color : 'var(--text-secondary)',
+                              fontWeight: isSelected ? '700' : '500'
+                            }}
+                          >
+                            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: sub.color || 'var(--text-muted)' }}></span>
+                            {sub.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Render Detailed MINERD Table for the selected subject and grade */}
+                  {selectedAdminReportGrade && selectedAdminReportSubject ? (
+                    (() => {
+                      const theme = getGradeThemeInfo(selectedAdminReportGrade);
+                      const subName = subjects[selectedAdminReportSubject]?.name || selectedAdminReportSubject;
+                      const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade);
+                      const compCodes = getCompetencyCodesForSubject(selectedAdminReportSubject);
+
+                      return (
+                        <div className="glass-panel animate-fade-in" style={{ padding: '1.5rem', overflow: 'hidden' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+                            <div>
+                              <h3 style={{ margin: 0, color: theme.color, fontSize: '1.25rem', fontWeight: '800' }}>
+                                {subName.toUpperCase()}
+                              </h3>
+                              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                                Registro Oficial Escolar &bull; Grado: {selectedAdminReportGrade}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.82rem', padding: '0.3rem 0.6rem', border: `1px solid ${theme.color}`, borderRadius: '4px', backgroundColor: theme.bg, color: theme.color, fontWeight: 'bold' }}>
+                              {theme.ciclo} &bull; {theme.nivel}
+                            </div>
+                          </div>
+
+                          <div className="custom-table-container" style={{ overflowX: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                            <table className="custom-table" style={{ tableLayout: 'auto', minWidth: '1800px', margin: 0 }}>
+                              <thead>
+                                {/* Row 1: Competencies column groups */}
+                                <tr>
+                                  <th rowSpan={2} style={{ width: '40px', verticalAlign: 'middle', textAlign: 'center', borderRight: '1px solid var(--border-color)' }}>#</th>
+                                  <th rowSpan={2} style={{ minWidth: '180px', verticalAlign: 'middle', borderRight: '1px solid var(--border-color)' }}>Estudiante</th>
+                                  
+                                  {/* CE1 */}
+                                  <th colSpan={8} style={{ textAlign: 'center', backgroundColor: 'rgba(14, 112, 51, 0.05)', color: 'var(--text-primary)', borderRight: '1.5px solid var(--border-color)', fontSize: '0.82rem', padding: '0.4rem' }}>
+                                    <strong>{compCodes.c1}</strong>
+                                  </th>
+                                  
+                                  {/* CE2 */}
+                                  <th colSpan={8} style={{ textAlign: 'center', backgroundColor: 'rgba(0, 132, 200, 0.05)', color: 'var(--text-primary)', borderRight: '1.5px solid var(--border-color)', fontSize: '0.82rem', padding: '0.4rem' }}>
+                                    <strong>{compCodes.c2}</strong>
+                                  </th>
+
+                                  {/* CE3 */}
+                                  <th colSpan={8} style={{ textAlign: 'center', backgroundColor: 'rgba(184, 84, 28, 0.05)', color: 'var(--text-primary)', borderRight: '1.5px solid var(--border-color)', fontSize: '0.82rem', padding: '0.4rem' }}>
+                                    <strong>{compCodes.c3}</strong>
+                                  </th>
+
+                                  {/* CE4 */}
+                                  <th colSpan={8} style={{ textAlign: 'center', backgroundColor: 'rgba(209, 27, 93, 0.05)', color: 'var(--text-primary)', borderRight: '1.5px solid var(--border-color)', fontSize: '0.82rem', padding: '0.4rem' }}>
+                                    <strong>{compCodes.c4}</strong>
+                                  </th>
+
+                                  {/* Promedio Competencias */}
+                                  <th colSpan={4} style={{ textAlign: 'center', backgroundColor: 'var(--bg-secondary)', color: 'var(--primary)', borderRight: '1.5px solid var(--border-color)', fontSize: '0.82rem', padding: '0.4rem' }}>
+                                    <strong>Promedio Competencias</strong>
+                                  </th>
+
+                                  {/* Calificación Final */}
+                                  <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle', backgroundColor: '#f1f5f9', fontWeight: '800', fontSize: '0.85rem', width: '80px' }}>Calif. Final</th>
+                                </tr>
+
+                                {/* Row 2: P1..P4 RP1..RP4 details */}
+                                <tr>
+                                  {/* CE1 subheaders */}
+                                  {['P1', 'RP1', 'P2', 'RP2', 'P3', 'RP3', 'P4', 'RP4'].map((h, i) => (
+                                    <th key={`ce1_${h}`} style={{ textAlign: 'center', fontSize: '0.72rem', width: '45px', borderRight: i === 7 ? '1.5px solid var(--border-color)' : '' }}>{h}</th>
+                                  ))}
+                                  {/* CE2 subheaders */}
+                                  {['P1', 'RP1', 'P2', 'RP2', 'P3', 'RP3', 'P4', 'RP4'].map((h, i) => (
+                                    <th key={`ce2_${h}`} style={{ textAlign: 'center', fontSize: '0.72rem', width: '45px', borderRight: i === 7 ? '1.5px solid var(--border-color)' : '' }}>{h}</th>
+                                  ))}
+                                  {/* CE3 subheaders */}
+                                  {['P1', 'RP1', 'P2', 'RP2', 'P3', 'RP3', 'P4', 'RP4'].map((h, i) => (
+                                    <th key={`ce3_${h}`} style={{ textAlign: 'center', fontSize: '0.72rem', width: '45px', borderRight: i === 7 ? '1.5px solid var(--border-color)' : '' }}>{h}</th>
+                                  ))}
+                                  {/* CE4 subheaders */}
+                                  {['P1', 'RP1', 'P2', 'RP2', 'P3', 'RP3', 'P4', 'RP4'].map((h, i) => (
+                                    <th key={`ce4_${h}`} style={{ textAlign: 'center', fontSize: '0.72rem', width: '45px', borderRight: i === 7 ? '1.5px solid var(--border-color)' : '' }}>{h}</th>
+                                  ))}
+                                  {/* Promedio columns subheaders */}
+                                  <th style={{ textAlign: 'center', fontSize: '0.72rem', width: '55px', backgroundColor: 'var(--bg-secondary)' }}>P.C1</th>
+                                  <th style={{ textAlign: 'center', fontSize: '0.72rem', width: '55px', backgroundColor: 'var(--bg-secondary)' }}>P.C2</th>
+                                  <th style={{ textAlign: 'center', fontSize: '0.72rem', width: '55px', backgroundColor: 'var(--bg-secondary)' }}>P.C3</th>
+                                  <th style={{ textAlign: 'center', fontSize: '0.72rem', width: '55px', backgroundColor: 'var(--bg-secondary)', borderRight: '1.5px solid var(--border-color)' }}>P.C4</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {gradeStudents.length === 0 ? (
+                                  <tr>
+                                    <td colSpan={39} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                                      No hay estudiantes matriculados en este grado.
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  gradeStudents.map((s, sIdx) => {
+                                    const blocks = ['bloque1', 'bloque2', 'bloque3', 'bloque4'];
+                                    
+                                    const baseGradesObj = {};
+                                    const rpGradesObj = {};
+                                    const effectiveGradesObj = {};
+
+                                    blocks.forEach((bKey, bIdx) => {
+                                      const baseArr = getCalculatedBlockGrades(
+                                        s.id,
+                                        selectedAdminReportGrade,
+                                        selectedAdminReportSubject,
+                                        bKey,
+                                        evaluationConfigs,
+                                        studentAssessments,
+                                        (s.grades?.[selectedAdminReportSubject]?.[bKey] || [80, 80, 80, 80])
+                                      );
+                                      
+                                      const rpKey = `${s.id}_${selectedAdminReportSubject}_${bKey}`;
+                                      const rpArr = studentRpGrades[rpKey] || [null, null, null, null];
+
+                                      baseGradesObj[bKey] = baseArr;
+                                      rpGradesObj[bKey] = rpArr;
+                                      
+                                      effectiveGradesObj[bKey] = baseArr.map((g, pIdx) => 
+                                        getEffectiveGrade(s.id, selectedAdminReportSubject, bKey, pIdx, g)
+                                      );
+                                    });
+
+                                    const pcAverages = [
+                                      (effectiveGradesObj.bloque1[0] + effectiveGradesObj.bloque1[1] + effectiveGradesObj.bloque1[2] + effectiveGradesObj.bloque1[3]) / 4,
+                                      (effectiveGradesObj.bloque2[0] + effectiveGradesObj.bloque2[1] + effectiveGradesObj.bloque2[2] + effectiveGradesObj.bloque2[3]) / 4,
+                                      (effectiveGradesObj.bloque3[0] + effectiveGradesObj.bloque3[1] + effectiveGradesObj.bloque3[2] + effectiveGradesObj.bloque3[3]) / 4,
+                                      (effectiveGradesObj.bloque4[0] + effectiveGradesObj.bloque4[1] + effectiveGradesObj.bloque4[2] + effectiveGradesObj.bloque4[3]) / 4
+                                    ];
+
+                                    const cf = Math.round((pcAverages[0] + pcAverages[1] + pcAverages[2] + pcAverages[3]) / 4);
+
+                                    return (
+                                      <tr key={s.id}>
+                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: '1px solid var(--border-color)' }}>{sIdx + 1}</td>
+                                        <td style={{ fontWeight: 700, borderRight: '1px solid var(--border-color)' }}>{s.name}</td>
+
+                                        {/* Render CE1 */}
+                                        {effectiveGradesObj.bloque1.map((eff, pIdx) => {
+                                          const base = baseGradesObj.bloque1[pIdx];
+                                          const rp = rpGradesObj.bloque1[pIdx];
+                                          return (
+                                            <React.Fragment key={`ce1_${pIdx}`}>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
+                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              </td>
+                                            </React.Fragment>
+                                          );
+                                        })}
+
+                                        {/* Render CE2 */}
+                                        {effectiveGradesObj.bloque2.map((eff, pIdx) => {
+                                          const base = baseGradesObj.bloque2[pIdx];
+                                          const rp = rpGradesObj.bloque2[pIdx];
+                                          return (
+                                            <React.Fragment key={`ce2_${pIdx}`}>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
+                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              </td>
+                                            </React.Fragment>
+                                          );
+                                        })}
+
+                                        {/* Render CE3 */}
+                                        {effectiveGradesObj.bloque3.map((eff, pIdx) => {
+                                          const base = baseGradesObj.bloque3[pIdx];
+                                          const rp = rpGradesObj.bloque3[pIdx];
+                                          return (
+                                            <React.Fragment key={`ce3_${pIdx}`}>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
+                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              </td>
+                                            </React.Fragment>
+                                          );
+                                        })}
+
+                                        {/* Render CE4 */}
+                                        {effectiveGradesObj.bloque4.map((eff, pIdx) => {
+                                          const base = baseGradesObj.bloque4[pIdx];
+                                          const rp = rpGradesObj.bloque4[pIdx];
+                                          return (
+                                            <React.Fragment key={`ce4_${pIdx}`}>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
+                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              </td>
+                                            </React.Fragment>
+                                          );
+                                        })}
+
+                                        {/* Averages columns */}
+                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: pcAverages[0] < 70 ? 'var(--danger)' : 'inherit' }}>{pcAverages[0].toFixed(1)}</td>
+                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: pcAverages[1] < 70 ? 'var(--danger)' : 'inherit' }}>{pcAverages[1].toFixed(1)}</td>
+                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: pcAverages[2] < 70 ? 'var(--danger)' : 'inherit' }}>{pcAverages[2].toFixed(1)}</td>
+                                        <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', borderRight: '1.5px solid var(--border-color)', color: pcAverages[3] < 70 ? 'var(--danger)' : 'inherit' }}>{pcAverages[3].toFixed(1)}</td>
+
+                                        {/* C.F. final cell */}
+                                        <td style={{ textAlign: 'center', fontWeight: '800', backgroundColor: '#f1f5f9', color: cf < 70 ? 'var(--danger)' : 'var(--primary)', fontFamily: 'var(--font-mono)', fontSize: '1.02rem' }}>
+                                          {cf}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
+                      Selecciona un grado y asignatura para ver la planilla general.
+                    </div>
+                  )}
                 </div>
               )}
 
