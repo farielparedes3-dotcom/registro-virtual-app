@@ -2466,11 +2466,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const handleParameterGradeChange = (studentId, subjectKey, bloqueKey, pIdx, valueString) => {
     let value = valueString === '' ? 0 : Number(valueString);
-    if (value > 100) {
-      alert(`⚠️ ¡Alerta! La calificación ingresada (${value}) supera los 100 puntos.`);
+    
+    // Check if total (value + instrument sum) exceeds 100
+    const pKeys = ['p1', 'p2', 'p3', 'p4'];
+    const pKey = pKeys[pIdx];
+    const instSum = getInstrumentSumForParameter(studentId, subjectKey, bloqueKey, pKey, studentAssessments);
+    const totalScore = value + instSum;
+    if (totalScore > 100) {
+      alert(`⚠️ ¡Alerta! La calificación total ingresada (${totalScore}) supera los 100 puntos (Base manual: ${value}, Instrumentos: ${instSum}).`);
     }
     
-    // 1. Update the student's base grades (originalGrades) in s.grades
+    // Update the student's base grades (originalGrades) in s.grades
     setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
@@ -2485,43 +2491,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       }
       return s;
     }));
-
-    // 2. Distribute to instruments if they exist for this parameter
-    const pKeys = ['p1', 'p2', 'p3', 'p4'];
-    const pKey = pKeys[pIdx];
-    const configKey = `${selectedGrade}_${subjectKey}_${bloqueKey}`;
-    const blockConfig = migrateConfig(evaluationConfigs[configKey]);
-    
-    if (blockConfig && blockConfig[pKey] && blockConfig[pKey].length > 0) {
-      setStudentAssessmentsAndSave(prev => {
-        const list = blockConfig[pKey];
-        const nextAssessments = { ...prev };
-        let remainingScore = value;
-
-        list.forEach(inst => {
-          const criteriaList = normalizeCriteria(inst.criteria, inst.type);
-          const maxCritScore = criteriaList.length > 0 ? Math.floor(inst.weight / criteriaList.length) : inst.weight;
-          const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
-          const savedAssessment = nextAssessments[assessmentKey] ? { ...nextAssessments[assessmentKey] } : {};
-
-          criteriaList.forEach((c, idx) => {
-            const isLast = (idx === criteriaList.length - 1) && (inst.id === list[list.length - 1].id);
-            let critScore = 0;
-            if (isLast) {
-              critScore = remainingScore;
-            } else {
-              critScore = Math.min(remainingScore, maxCritScore);
-            }
-            savedAssessment[c.name] = critScore;
-            remainingScore -= critScore;
-          });
-
-          nextAssessments[assessmentKey] = savedAssessment;
-        });
-
-        return nextAssessments;
-      });
-    }
   };
 
   const handleUpdateAttendance = (studentId, type) => {
@@ -2548,7 +2517,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       [assessmentKey]: nextAssessment
     };
 
-    setStudentAssessments(nextAssessmentsObject);
+    // Calculate total score to trigger alert if it exceeds 100
+    const student = students.find(s => s.id === studentId);
+    const pIdx = ['p1', 'p2', 'p3', 'p4'].indexOf(pKey);
+    const baseGrade = getManualBaseGrade(student, subjectKey, activeBloque, pIdx, true);
+    const newSum = getInstrumentSumForParameter(studentId, subjectKey, activeBloque, pKey, nextAssessmentsObject);
+    const totalScore = baseGrade + newSum;
+    if (totalScore > 100) {
+      alert(`⚠️ ¡Alerta! La calificación total en este parámetro (${totalScore}) supera los 100 puntos (Base manual: ${baseGrade}, Instrumentos: ${newSum}).`);
+    }
+
+    setStudentAssessmentsAndSave(nextAssessmentsObject);
 
     // Recalculate grades using helper
     setStudentsAndSave(prev => prev.map(s => {
@@ -2703,20 +2682,53 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return originalGrade;
   };
 
+  const getManualBaseGrade = (student, subjectKey, bloqueKey, pIdx, hasInstruments) => {
+    const subjectData = student?.grades?.[subjectKey] || {};
+    const blockGrades = subjectData[bloqueKey];
+    if (blockGrades && blockGrades[pIdx] !== undefined) {
+      return Number(blockGrades[pIdx]) || 0;
+    }
+    return hasInstruments ? 0 : 80;
+  };
+
+  const getInstrumentSumForParameter = (studentId, subjectKey, bloqueKey, pKey, assessments) => {
+    const student = students.find(s => s.id === studentId);
+    const gradeName = student?.grade || selectedGrade;
+    const configKey = `${gradeName}_${subjectKey}_${bloqueKey}`;
+    const blockConfig = migrateConfig(evaluationConfigs[configKey]);
+    const list = blockConfig[pKey] || [];
+    
+    let sum = 0;
+    list.forEach(inst => {
+      const criteriaList = normalizeCriteria(inst.criteria, inst.type);
+      const aKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
+      const savedAssessment = assessments[aKey] || {};
+      
+      criteriaList.forEach(c => {
+        const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
+        sum += score;
+      });
+    });
+    return sum;
+  };
+
   const getCalculatedBlockGrades = (studentId, gradeName, subjectKey, bloqueKey, currentConfigs, currentAssessments, originalGrades) => {
     const configKey = `${gradeName}_${subjectKey}_${bloqueKey}`;
     const blockConfig = migrateConfig(currentConfigs[configKey]);
+    const student = students.find(s => s.id === studentId);
     
     const finalGrades = [...originalGrades];
     const pKeys = ['p1', 'p2', 'p3', 'p4'];
     
     pKeys.forEach((pKey, pIdx) => {
       const list = blockConfig[pKey] || [];
-      if (list.length > 0) {
-        let sum = 0;
+      const hasInstruments = list.length > 0;
+      const baseGrade = getManualBaseGrade(student, subjectKey, bloqueKey, pIdx, hasInstruments);
+      
+      let sum = 0;
+      if (hasInstruments) {
         list.forEach(inst => {
           const criteriaList = normalizeCriteria(inst.criteria, inst.type);
-          const maxCritScore = criteriaList.length > 0 ? Math.floor(inst.weight / criteriaList.length) : inst.weight;
           const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
           const savedAssessment = currentAssessments[assessmentKey] || {};
           
@@ -2727,8 +2739,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           });
           sum += instSum;
         });
-        finalGrades[pIdx] = Math.min(100, Math.max(0, sum));
       }
+      
+      finalGrades[pIdx] = Math.min(100, Math.max(0, baseGrade + sum));
     });
     
     return finalGrades;
