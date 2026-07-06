@@ -2722,6 +2722,84 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return teacher ? teacher.name : 'Sin docente asignado';
   };
 
+  const renderClassroomBreadcrumbs = () => {
+    if (!selectedGrade || !selectedSubject) return null;
+    const subjectName = subjects[selectedSubject]?.name || selectedSubject;
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '1rem', flexWrap: 'wrap' }}>
+        <span 
+          style={{ cursor: 'pointer', color: 'var(--primary)', fontWeight: 'bold' }} 
+          onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+        >
+          Inicio
+        </span>
+        <span>&gt;</span>
+        <span style={{ fontWeight: '500' }}>{selectedGrade}</span>
+        <span>&gt;</span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{subjectName}</span>
+      </div>
+    );
+  };
+
+  const renderClassroomTabs = () => {
+    if (!selectedGrade || !selectedSubject) return null;
+    
+    // Get register theme color for the active tab indicator
+    const themeInfo = getGradeThemeInfo(selectedGrade);
+    const accentColor = themeInfo.color || 'var(--primary)';
+    
+    return (
+      <div 
+        className="classroom-tabs-bar"
+        style={{
+          display: 'flex',
+          gap: '1.5rem',
+          borderBottom: '1px solid var(--border-color)',
+          marginBottom: '1.5rem',
+          paddingBottom: '0px'
+        }}
+      >
+        {[
+          { label: 'Asistencia', tab: 'attendance' },
+          { label: 'Calificaciones', tab: 'grades' },
+          { label: 'Instrumentos', tab: 'instruments' }
+        ].map(t => {
+          const isActive = activeTab === t.tab;
+          return (
+            <button
+              key={t.tab}
+              type="button"
+              onClick={() => {
+                if (t.tab === 'instruments' && activeBloque === 'promedio_ce') {
+                  setActiveBloque('bloque1');
+                }
+                setActiveTab(t.tab);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '0.75rem 0.5rem',
+                fontSize: '0.92rem',
+                fontWeight: isActive ? '700' : '500',
+                color: isActive ? accentColor : 'var(--text-secondary)',
+                borderBottom: isActive ? `3px solid ${accentColor}` : '3px solid transparent',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                marginBottom: '-2px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}
+            >
+              {t.tab === 'attendance' ? '📅' : t.tab === 'grades' ? '📊' : '🛠️'}
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
   const getCalculatedBlockGrades = (studentId, gradeName, subjectKey, bloqueKey, currentConfigs, currentAssessments, originalGrades) => {
     const configKey = `${gradeName}_${subjectKey}_${bloqueKey}`;
     const blockConfig = migrateConfig(currentConfigs[configKey]);
@@ -3320,14 +3398,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Grados y Aulas</h2>
                       <div className="classroom-grid">
                         {grades.map((g, idx) => {
-                          const colors = [
-                            'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                            'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                            'linear-gradient(135deg, #7F00FF 0%, #E100FF 100%)',
-                            'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)',
-                            'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)'
-                          ];
-                          const bannerBg = colors[idx % colors.length];
+                          const theme = getGradeThemeInfo(g);
+                          const bannerBg = `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary || theme.color} 100%)`;
                           const gradeStudents = students.filter(s => s.grade === g);
 
                           return (
@@ -3365,13 +3437,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                       <div className="classroom-grid">
                         {Object.keys(getSubjectsForGrade(subjects, classroomGrade)).map((subKey, idx) => {
-                          const colors = [
-                            'linear-gradient(135deg, #00b4db 0%, #0083b0 100%)',
-                            'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)',
-                            'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
-                            'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)'
-                          ];
-                          const bannerBg = colors[idx % colors.length];
+                          const theme = getGradeThemeInfo(classroomGrade);
+                          const bannerBg = `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary || theme.color} 100%)`;
                           const subName = subjects[subKey]?.name || subKey;
                           const teacherName = getSubjectTeacherName(classroomGrade, subKey);
 
@@ -4538,14 +4605,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
                 <div className="classroom-grid">
                   {currentUser.assignments.map((a, idx) => {
-                    const colors = [
-                      'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                      'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                      'linear-gradient(135deg, #7F00FF 0%, #E100FF 100%)',
-                      'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)',
-                      'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)'
-                    ];
-                    const bannerBg = colors[idx % colors.length];
+                    const theme = getGradeThemeInfo(a.grade);
+                    const bannerBg = `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary || theme.color} 100%)`;
                     const subjectName = subjects[a.subject]?.name || a.subject;
 
                     return (
@@ -4585,9 +4646,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* TEACHER: Tab Grades (Criteria Columns or Summary Mode) */}
             {activeTab === 'grades' && (
               <div>
-                <button className="back-to-inicio-btn" onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}>
-                  ← Volver a Inicio
-                </button>
+                {renderClassroomBreadcrumbs()}
+                {renderClassroomTabs()}
 
                 {selectedGrade ? (
                   renderGradeHeaderBanner(selectedGrade, 'Control de Calificaciones - ' + (subjects[selectedSubject]?.name || selectedSubject))
@@ -5237,9 +5297,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* TEACHER: Tab Attendance */}
             {activeTab === 'attendance' && (
               <div>
-                <button className="back-to-inicio-btn" onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}>
-                  ← Volver a Inicio
-                </button>
+                {renderClassroomBreadcrumbs()}
+                {renderClassroomTabs()}
 
                 {selectedGrade ? (
                   renderGradeHeaderBanner(selectedGrade, 'Control de Asistencia')
@@ -5538,9 +5597,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             )}
             {activeTab === 'instruments' && (
               <div>
-                <button className="back-to-inicio-btn" onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}>
-                  ← Volver a Inicio
-                </button>
+                {renderClassroomBreadcrumbs()}
+                {renderClassroomTabs()}
 
                 {selectedGrade ? (
                   renderGradeHeaderBanner(selectedGrade, 'Instrumentos de Evaluación - ' + (subjects[selectedSubject]?.name || selectedSubject))
