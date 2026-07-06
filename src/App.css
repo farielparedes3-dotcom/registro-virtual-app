@@ -157,6 +157,8 @@
 
 .content-area {
   min-height: 500px;
+  min-width: 0;
+  overflow-x: auto;
 }
 
 .dashboard-summary-grid {

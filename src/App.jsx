@@ -3400,7 +3400,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
             </aside>
 
-            <section className="content-area">
+            <section className="content-area" style={{ minWidth: 0 }}>
               {activeTab === 'dashboard' && (
                 <div>
                   {classroomGrade === null ? (
@@ -4913,7 +4913,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
           </aside>
 
-          <section className="content-area">
+          <section className="content-area" style={{ minWidth: 0 }}>
             {activeTab === 'dashboard' && (
               <div>
                 {/* Greeting Card with flat illustration banner */}
