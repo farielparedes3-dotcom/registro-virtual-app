@@ -423,3 +423,167 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   margin-top: 0.5rem;
 }
+
+/* Google Classroom Style Grid and Cards */
+.classroom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.classroom-card {
+  background-color: var(--bg-panel);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.classroom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+.classroom-card-header {
+  height: 125px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: #ffffff;
+}
+
+.classroom-card-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.15;
+  background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.2) 1px, transparent 1px),
+                    radial-gradient(circle at 75% 60%, rgba(255,255,255,0.25) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.classroom-card-grade {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+  z-index: 2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.classroom-card-sub {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+  z-index: 2;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.classroom-card-body {
+  padding: 1.25rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 90px;
+  background-color: var(--bg-panel);
+}
+
+.classroom-card-info {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.classroom-card-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.classroom-card-action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.classroom-card:hover .classroom-card-action-icon {
+  background-color: rgba(0, 56, 118, 0.05);
+  color: var(--primary);
+}
+
+/* MINERD Official Banner Warning Styles */
+.minerd-warning-banner {
+  background-color: rgba(255, 193, 7, 0.08);
+  border-left: 5px solid #ffc107;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.minerd-warning-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #ff9800;
+  margin-top: 0.1rem;
+}
+
+.minerd-warning-text {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.minerd-warning-text strong {
+  color: #e65100;
+  font-weight: 700;
+}
+
+.back-to-inicio-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: bold;
+  color: var(--primary);
+  background-color: rgba(0, 56, 118, 0.06);
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.back-to-inicio-btn:hover {
+  background-color: rgba(0, 56, 118, 0.12);
+  transform: translateX(-3px);
+}

@@ -879,6 +879,7 @@ export default function App() {
   // --- Filtering States ---
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('math');
+  const [classroomGrade, setClassroomGrade] = useState(null);
   const [activeAdminGrade, setActiveAdminGrade] = useState(() => {
     const saved = localStorage.getItem('s_grades');
     const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
@@ -4401,8 +4402,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
 
             <div className="sidebar-nav">
-              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarCollapsed(true); }}>Dashboard Docente</div>
-              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>Planilla Calificaciones</div>
+              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>Inicio</div>
+              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>Control de Calificaciones</div>
               <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
                 if (activeBloque === 'promedio_ce') {
                   setActiveBloque('bloque1');
@@ -4410,7 +4411,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 setActiveTab('instruments');
                 setSidebarCollapsed(true);
               }}>Instrumentos de Eval.</div>
-              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control Asistencia</div>
+              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control de Asistencia</div>
               <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>Instructivo de Uso</div>
               <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>Calendario Escolar</div>
             </div>
@@ -4419,48 +4420,150 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           <section className="content-area">
             {activeTab === 'dashboard' && (
               <div>
-                {/* Greeting Card with flat illustration banner */}
-                <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'relative', zIndex: 2 }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
-                    <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
-                      Bienvenido al Registro de Evaluación Digital del Liceo Ana Rosa Castillo. Accede a las herramientas de Rúbricas por competencias, asigne puntajes en caliente, verifique el promedio final de cada estudiante, y controle la asistencia desde este panel central.
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-                    <img 
-                      src="/dr_education_banner.png" 
-                      alt="Bienvenido" 
-                      style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
-                    />
-                  </div>
-                  {/* Decorative flag stripes or waves */}
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
-                    <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
-                    <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
-                    <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
-                  </div>
-                </div>
+                {classroomGrade === null ? (
+                  <>
+                    {/* Greeting Card with flat illustration banner */}
+                    <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ position: 'relative', zIndex: 2 }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+                        <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
+                        <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
+                          Bienvenido al Registro de Evaluación Digital del Liceo Ana Rosa Castillo. Navega por tus cursos como en Google Classroom, asigne calificaciones y controle la asistencia de manera oficial.
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+                        <img 
+                          src="/dr_education_banner.png" 
+                          alt="Bienvenido" 
+                          style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
+                        />
+                      </div>
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+                        <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                        <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                        <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                      </div>
+                    </div>
 
-                <h2>Resumen de Clases</h2>
-                <div className="stats-grid">
-                  <div className="glass-panel" style={{ padding: '1.25rem' }}><h3>{teacherUniqueGrades.length}</h3><p>Grados a cargo</p></div>
-                  <div className="glass-panel" style={{ padding: '1.25rem' }}><h3>{currentUser.assignments.length}</h3><p>Clases totales</p></div>
-                </div>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Grados</h2>
+                    <div className="classroom-grid">
+                      {teacherUniqueGrades.map((g, idx) => {
+                        const colors = [
+                          'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                          'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                          'linear-gradient(135deg, #7F00FF 0%, #E100FF 100%)',
+                          'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)',
+                          'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)'
+                        ];
+                        const bannerBg = colors[idx % colors.length];
+                        const assignments = currentUser.assignments.filter(a => a.grade === g);
+
+                        return (
+                          <div key={g} className="classroom-card animate-fade-in" onClick={() => setClassroomGrade(g)}>
+                            <div className="classroom-card-header" style={{ background: bannerBg }}>
+                              <div className="classroom-card-pattern"></div>
+                              <h3 className="classroom-card-grade">{g}</h3>
+                              <span className="classroom-card-sub">Nivel Secundario</span>
+                            </div>
+                            <div className="classroom-card-body">
+                              <p className="classroom-card-info">
+                                <strong>{assignments.length}</strong> {assignments.length === 1 ? 'Asignatura asignada' : 'Asignaturas asignadas'} en este grado.
+                              </p>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
+                                <div className="classroom-card-action-icon">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <button className="back-to-inicio-btn" onClick={() => setClassroomGrade(null)}>
+                      ← Volver a Inicio
+                    </button>
+                    
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.5rem', color: 'var(--primary)' }}>
+                      Asignaturas en {classroomGrade}
+                    </h2>
+                    
+                    <div className="classroom-grid">
+                      {currentUser.assignments
+                        .filter(a => a.grade === classroomGrade)
+                        .map((a, idx) => {
+                          const colors = [
+                            'linear-gradient(135deg, #00b4db 0%, #0083b0 100%)',
+                            'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)',
+                            'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
+                            'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)'
+                          ];
+                          const bannerBg = colors[idx % colors.length];
+                          const subjectName = subjects[a.subject]?.name || a.subject;
+
+                          return (
+                            <div 
+                              key={a.subject} 
+                              className="classroom-card animate-fade-in" 
+                              onClick={() => {
+                                setSelectedGrade(classroomGrade);
+                                setSelectedSubject(a.subject);
+                                setClassroomGrade(null); // Clear classroom sub-view for next time
+                                setActiveTab('grades');
+                                setSidebarCollapsed(true);
+                              }}
+                            >
+                              <div className="classroom-card-header" style={{ background: bannerBg }}>
+                                <div className="classroom-card-pattern"></div>
+                                <h3 className="classroom-card-grade" style={{ fontSize: '1.2rem' }}>{subjectName}</h3>
+                                <span className="classroom-card-sub">{classroomGrade}</span>
+                              </div>
+                              <div className="classroom-card-body">
+                                <p className="classroom-card-info">
+                                  Haz clic para acceder al control de calificaciones y asistencia de esta asignatura.
+                                </p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Docente: {currentUser.name}</span>
+                                  <div className="classroom-card-action-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
             {/* TEACHER: Tab Grades (Criteria Columns or Summary Mode) */}
             {activeTab === 'grades' && (
               <div>
+                <button className="back-to-inicio-btn" onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}>
+                  ← Volver a Inicio
+                </button>
+
                 {selectedGrade ? (
-                  renderGradeHeaderBanner(selectedGrade, subjects[selectedSubject]?.name)
+                  renderGradeHeaderBanner(selectedGrade, 'Control de Calificaciones - ' + (subjects[selectedSubject]?.name || selectedSubject))
                 ) : (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
-                      <h2>Planilla de Notas: <span style={{ color: 'var(--primary)' }}>Sin Selección</span></h2>
+                      <h2>Control de Calificaciones: <span style={{ color: 'var(--primary)' }}>Sin Selección</span></h2>
                     </div>
+                  </div>
+                )}
+
+                {selectedGrade && (
+                  <div className="minerd-warning-banner">
+                    <span className="minerd-warning-icon">⚠️</span>
+                    <p className="minerd-warning-text">
+                      <strong>Nota Oficial MINERD:</strong> En el registro de grado no se deben hacer tachaduras ni trabajar con un lapicero distinto al designado. Además, en las calificaciones sólo se colocan datos numéricos (nada de letras).
+                    </p>
                   </div>
                 )}
 
@@ -5093,10 +5196,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* TEACHER: Tab Attendance */}
             {activeTab === 'attendance' && (
               <div>
+                <button className="back-to-inicio-btn" onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}>
+                  ← Volver a Inicio
+                </button>
+
                 {selectedGrade ? (
                   renderGradeHeaderBanner(selectedGrade, 'Control de Asistencia')
                 ) : (
                   <h2>Control de Asistencia: <span style={{ color: 'var(--primary)' }}>Sin Selección</span></h2>
+                )}
+
+                {selectedGrade && (
+                  <div className="minerd-warning-banner">
+                    <span className="minerd-warning-icon">⚠️</span>
+                    <p className="minerd-warning-text">
+                      <strong>Nota Oficial MINERD:</strong> Las únicas literales que se deben usar son: <strong>P</strong> (Presente), <strong>A</strong> (Ausente), <strong>E</strong> (Excusa), <strong>T</strong> (Tardanza), <strong>R</strong> (Retirado). No se deben dejar espacios en blanco y se deben escribir las razones en caso de no docencia.
+                    </p>
+                  </div>
                 )}
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                   Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías no suman ni restan al total.
@@ -5381,6 +5497,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             )}
             {activeTab === 'instruments' && (
               <div>
+                <button className="back-to-inicio-btn" onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}>
+                  ← Volver a Inicio
+                </button>
+
                 {selectedGrade ? (
                   renderGradeHeaderBanner(selectedGrade, 'Instrumentos de Evaluación - ' + (subjects[selectedSubject]?.name || selectedSubject))
                 ) : (
