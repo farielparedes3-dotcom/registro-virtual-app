@@ -2713,6 +2713,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     return sum;
   };
 
+  const getSubjectTeacherName = (gradeName, subjectKey) => {
+    const teacher = users.find(u => 
+      u.role === 'teacher' && 
+      u.assignments && 
+      u.assignments.some(a => a.grade === gradeName && a.subject === subjectKey)
+    );
+    return teacher ? teacher.name : 'Sin docente asignado';
+  };
+
   const getCalculatedBlockGrades = (studentId, gradeName, subjectKey, bloqueKey, currentConfigs, currentAssessments, originalGrades) => {
     const configKey = `${gradeName}_${subjectKey}_${bloqueKey}`;
     const blockConfig = migrateConfig(currentConfigs[configKey]);
@@ -3244,8 +3253,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 ✕
               </button>
               <div className="sidebar-nav">
-                <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarCollapsed(true); }}>
-                  Dashboard Global
+                <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
+                  Inicio
                 </div>
                 <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => { setActiveTab('teachers'); setSidebarCollapsed(true); }}>
                   Asignación Docentes
@@ -3268,55 +3277,138 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <section className="content-area">
               {activeTab === 'dashboard' && (
                 <div>
-                  {/* Greeting Card with flat illustration banner */}
-                  <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'relative', zIndex: 2 }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-                      <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>Panel de Control: {currentUser.name}</h2>
-                      <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
-                        Gestiona y supervisa las asignaciones de docentes, matrícula escolar de estudiantes de cada grado, eventos del calendario escolar y supervise el rendimiento general en tiempo real para mitigar discrepancias académicas.
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-                      <img 
-                        src="/dr_education_banner.png" 
-                        alt="Administración" 
-                        style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
-                      />
-                    </div>
-                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
-                      <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
-                      <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
-                      <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
-                    </div>
-                  </div>
+                  {classroomGrade === null ? (
+                    <>
+                      {/* Greeting Card with flat illustration banner */}
+                      <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'relative', zIndex: 2 }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+                          <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>Panel de Control: {currentUser.name}</h2>
+                          <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
+                            Gestiona y supervisa las asignaciones de docentes, matrícula escolar de estudiantes de cada grado, y supervise el rendimiento general en tiempo real.
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+                          <img 
+                            src="/dr_education_banner.png" 
+                            alt="Administración" 
+                            style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
+                          />
+                        </div>
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+                          <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                          <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                          <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                        </div>
+                      </div>
 
-                  <h2>Vista General del Administrador</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Métricas globales escolares.</p>
-                  <div className="stats-grid">
-                    <div className="glass-card" style={{ padding: '1.25rem' }}>
-                      <h3>{totalStudents}</h3>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Alumnos</p>
-                    </div>
-                    <div className="glass-card" style={{ padding: '1.25rem' }}>
-                      <h3>{users.filter(u => u.role === 'teacher').length}</h3>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Profesores Registrados</p>
-                    </div>
-                    <div className="glass-card" style={{ padding: '1.25rem' }}>
-                      <h3>{globalAverage}/100</h3>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Rendimiento Escolar</p>
-                    </div>
-                  </div>
-                  <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-                    <h3 style={{ marginBottom: '1rem' }}>Resumen de Promedios por Asignatura</h3>
-                    <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', listStyle: 'none' }}>
-                      {Object.keys(subjects).map(subKey => (
-                        <li key={subKey}>
-                          {subjects[subKey].name}: <strong>{getSubjectAverage(subKey)}%</strong>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                      <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+                        <div className="glass-card" style={{ padding: '1.25rem' }}>
+                          <h3>{totalStudents}</h3>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Alumnos</p>
+                        </div>
+                        <div className="glass-card" style={{ padding: '1.25rem' }}>
+                          <h3>{users.filter(u => u.role === 'teacher').length}</h3>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Profesores Registrados</p>
+                        </div>
+                        <div className="glass-card" style={{ padding: '1.25rem' }}>
+                          <h3>{globalAverage}/100</h3>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Rendimiento Escolar</p>
+                        </div>
+                      </div>
+
+                      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Grados y Aulas</h2>
+                      <div className="classroom-grid">
+                        {grades.map((g, idx) => {
+                          const colors = [
+                            'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                            'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                            'linear-gradient(135deg, #7F00FF 0%, #E100FF 100%)',
+                            'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)',
+                            'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)'
+                          ];
+                          const bannerBg = colors[idx % colors.length];
+                          const gradeStudents = students.filter(s => s.grade === g);
+
+                          return (
+                            <div key={g} className="classroom-card animate-fade-in" onClick={() => setClassroomGrade(g)}>
+                              <div className="classroom-card-header" style={{ background: bannerBg }}>
+                                <div className="classroom-card-pattern"></div>
+                                <h3 className="classroom-card-grade">{g}</h3>
+                                <span className="classroom-card-sub">Nivel Secundario</span>
+                              </div>
+                              <div className="classroom-card-body">
+                                <p className="classroom-card-info">
+                                  <strong>{gradeStudents.length}</strong> estudiantes matriculados en este grado.
+                                </p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
+                                  <div className="classroom-card-action-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <button className="back-to-inicio-btn" onClick={() => setClassroomGrade(null)}>
+                        ← Volver a Inicio
+                      </button>
+
+                      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.5rem', color: 'var(--primary)' }}>
+                        Asignaturas en {classroomGrade}
+                      </h2>
+
+                      <div className="classroom-grid">
+                        {Object.keys(getSubjectsForGrade(subjects, classroomGrade)).map((subKey, idx) => {
+                          const colors = [
+                            'linear-gradient(135deg, #00b4db 0%, #0083b0 100%)',
+                            'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)',
+                            'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
+                            'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)'
+                          ];
+                          const bannerBg = colors[idx % colors.length];
+                          const subName = subjects[subKey]?.name || subKey;
+                          const teacherName = getSubjectTeacherName(classroomGrade, subKey);
+
+                          return (
+                            <div 
+                              key={subKey} 
+                              className="classroom-card animate-fade-in" 
+                              onClick={() => {
+                                setSelectedAdminReportGrade(classroomGrade);
+                                setExpandedReportSubjects({ [subKey]: true });
+                                setClassroomGrade(null); // Clear sub-view
+                                setActiveTab('admin_grades');
+                                setSidebarCollapsed(true);
+                              }}
+                            >
+                              <div className="classroom-card-header" style={{ background: bannerBg }}>
+                                <div className="classroom-card-pattern"></div>
+                                <h3 className="classroom-card-grade" style={{ fontSize: '1.15rem' }}>{subName} ({teacherName})</h3>
+                                <span className="classroom-card-sub">{classroomGrade}</span>
+                              </div>
+                              <div className="classroom-card-body">
+                                <p className="classroom-card-info">
+                                  Haz clic para supervisar las calificaciones de esta asignatura.
+                                </p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Docente: {teacherName}</span>
+                                  <div className="classroom-card-action-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -4420,124 +4512,73 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           <section className="content-area">
             {activeTab === 'dashboard' && (
               <div>
-                {classroomGrade === null ? (
-                  <>
-                    {/* Greeting Card with flat illustration banner */}
-                    <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
-                      <div style={{ position: 'relative', zIndex: 2 }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-                        <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
-                        <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
-                          Bienvenido al Registro de Evaluación Digital del Liceo Ana Rosa Castillo. Navega por tus cursos como en Google Classroom, asigne calificaciones y controle la asistencia de manera oficial.
-                        </p>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-                        <img 
-                          src="/dr_education_banner.png" 
-                          alt="Bienvenido" 
-                          style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
-                        />
-                      </div>
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
-                        <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
-                        <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
-                        <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
-                      </div>
-                    </div>
+                {/* Greeting Card with flat illustration banner */}
+                <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', zIndex: 2 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+                    <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
+                    <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
+                      Bienvenido al Registro de Evaluación Digital del Liceo Ana Rosa Castillo. Navega por tus asignaturas como en Google Classroom, asigne calificaciones y controle la asistencia de manera oficial.
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+                    <img 
+                      src="/dr_education_banner.png" 
+                      alt="Bienvenido" 
+                      style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
+                    />
+                  </div>
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+                    <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                    <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                    <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                  </div>
+                </div>
 
-                    <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Grados</h2>
-                    <div className="classroom-grid">
-                      {teacherUniqueGrades.map((g, idx) => {
-                        const colors = [
-                          'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                          'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                          'linear-gradient(135deg, #7F00FF 0%, #E100FF 100%)',
-                          'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)',
-                          'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)'
-                        ];
-                        const bannerBg = colors[idx % colors.length];
-                        const assignments = currentUser.assignments.filter(a => a.grade === g);
+                <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
+                <div className="classroom-grid">
+                  {currentUser.assignments.map((a, idx) => {
+                    const colors = [
+                      'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                      'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                      'linear-gradient(135deg, #7F00FF 0%, #E100FF 100%)',
+                      'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)',
+                      'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)'
+                    ];
+                    const bannerBg = colors[idx % colors.length];
+                    const subjectName = subjects[a.subject]?.name || a.subject;
 
-                        return (
-                          <div key={g} className="classroom-card animate-fade-in" onClick={() => setClassroomGrade(g)}>
-                            <div className="classroom-card-header" style={{ background: bannerBg }}>
-                              <div className="classroom-card-pattern"></div>
-                              <h3 className="classroom-card-grade">{g}</h3>
-                              <span className="classroom-card-sub">Nivel Secundario</span>
-                            </div>
-                            <div className="classroom-card-body">
-                              <p className="classroom-card-info">
-                                <strong>{assignments.length}</strong> {assignments.length === 1 ? 'Asignatura asignada' : 'Asignaturas asignadas'} en este grado.
-                              </p>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
-                                <div className="classroom-card-action-icon">
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                </div>
-                              </div>
+                    return (
+                      <div 
+                        key={`${a.grade}_${a.subject}`} 
+                        className="classroom-card animate-fade-in" 
+                        onClick={() => {
+                          setSelectedGrade(a.grade);
+                          setSelectedSubject(a.subject);
+                          setActiveTab('grades');
+                          setSidebarCollapsed(true);
+                        }}
+                      >
+                        <div className="classroom-card-header" style={{ background: bannerBg }}>
+                          <div className="classroom-card-pattern"></div>
+                          <h3 className="classroom-card-grade" style={{ fontSize: '1.25rem' }}>{a.grade} {subjectName}</h3>
+                          <span className="classroom-card-sub">Nivel Secundario</span>
+                        </div>
+                        <div className="classroom-card-body">
+                          <p className="classroom-card-info">
+                            Control de calificaciones, asistencia e instrumentos de evaluación para esta clase.
+                          </p>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
+                            <div className="classroom-card-action-icon">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <button className="back-to-inicio-btn" onClick={() => setClassroomGrade(null)}>
-                      ← Volver a Inicio
-                    </button>
-                    
-                    <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.5rem', color: 'var(--primary)' }}>
-                      Asignaturas en {classroomGrade}
-                    </h2>
-                    
-                    <div className="classroom-grid">
-                      {currentUser.assignments
-                        .filter(a => a.grade === classroomGrade)
-                        .map((a, idx) => {
-                          const colors = [
-                            'linear-gradient(135deg, #00b4db 0%, #0083b0 100%)',
-                            'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)',
-                            'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
-                            'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)'
-                          ];
-                          const bannerBg = colors[idx % colors.length];
-                          const subjectName = subjects[a.subject]?.name || a.subject;
-
-                          return (
-                            <div 
-                              key={a.subject} 
-                              className="classroom-card animate-fade-in" 
-                              onClick={() => {
-                                setSelectedGrade(classroomGrade);
-                                setSelectedSubject(a.subject);
-                                setClassroomGrade(null); // Clear classroom sub-view for next time
-                                setActiveTab('grades');
-                                setSidebarCollapsed(true);
-                              }}
-                            >
-                              <div className="classroom-card-header" style={{ background: bannerBg }}>
-                                <div className="classroom-card-pattern"></div>
-                                <h3 className="classroom-card-grade" style={{ fontSize: '1.2rem' }}>{subjectName}</h3>
-                                <span className="classroom-card-sub">{classroomGrade}</span>
-                              </div>
-                              <div className="classroom-card-body">
-                                <p className="classroom-card-info">
-                                  Haz clic para acceder al control de calificaciones y asistencia de esta asignatura.
-                                </p>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Docente: {currentUser.name}</span>
-                                  <div className="classroom-card-action-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </>
-                )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
