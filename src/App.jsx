@@ -4317,8 +4317,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             </div>
                           </div>
 
-                          <div className="custom-table-container" style={{ overflowX: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                            <table className="custom-table" style={{ tableLayout: 'auto', minWidth: '1800px', margin: 0 }}>
+                          <div className="custom-table-container" style={{ overflowX: 'auto', maxWidth: '100%', display: 'block', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                            <table className="custom-table" style={{ tableLayout: 'auto', minWidth: '1800px', width: '100%', margin: 0 }}>
                               <thead>
                                 {/* Row 1: Competencies column groups */}
                                 <tr>

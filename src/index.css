@@ -229,6 +229,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Custom Table Design */
 .custom-table-container {
   overflow-x: auto;
+  max-width: 100%;
+  display: block;
   -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
