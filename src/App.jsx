@@ -2424,7 +2424,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const pKeys = ['p1', 'p2', 'p3', 'p4'];
     const pKey = pKeys[pIdx];
     const configKey = `${selectedGrade}_${subjectKey}_${bloqueKey}`;
-    const blockConfig = evaluationConfigs[configKey];
+    const blockConfig = migrateConfig(evaluationConfigs[configKey]);
     
     if (blockConfig && blockConfig[pKey] && blockConfig[pKey].length > 0) {
       setStudentAssessmentsAndSave(prev => {
@@ -2433,7 +2433,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         let remainingScore = value;
 
         list.forEach(inst => {
-          const criteriaList = inst.criteria || [];
+          const criteriaList = normalizeCriteria(inst.criteria, inst.type);
           const maxCritScore = criteriaList.length > 0 ? Math.floor(inst.weight / criteriaList.length) : inst.weight;
           const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
           const savedAssessment = nextAssessments[assessmentKey] ? { ...nextAssessments[assessmentKey] } : {};
