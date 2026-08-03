@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import * as XLSX from 'xlsx';
 import './App.css';
 
 import { dbService } from './db';
@@ -513,6 +514,62 @@ const getSubjectsForGrade = (subjectsList, gradeName) => {
   return result;
 };
 
+const getAssignedTeacher = (usersList, subjectsList, gradeName, subjectKey) => {
+  if (!usersList || !Array.isArray(usersList) || !gradeName || !subjectKey) return null;
+  const subObj = subjectsList?.[subjectKey];
+  const subName = subObj?.name || subjectKey;
+
+  return usersList.find(u => {
+    if (!u || (u.role !== 'teacher' && u.role !== 'docente' && u.role !== 'Teacher')) return false;
+    if (!u.assignments || !Array.isArray(u.assignments)) return false;
+    return u.assignments.some(a => {
+      if (!a || !a.grade || !a.subject) return false;
+      const gMatch = a.grade.trim().toLowerCase() === gradeName.trim().toLowerCase();
+      const sMatch = 
+        a.subject === subjectKey || 
+        a.subject.toLowerCase() === subjectKey.toLowerCase() ||
+        a.subject.toLowerCase() === subName.toLowerCase();
+    });
+  });
+};
+
+const getRpInputStyle = (rpVal, originalP) => {
+  if (rpVal === null || rpVal === undefined || rpVal === '') {
+    return { padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' };
+  }
+  const numRp = Number(rpVal);
+  const numP = Number(originalP);
+
+  if (!isNaN(numRp) && !isNaN(numP) && numRp < numP) {
+    // INTENSE RED
+    return {
+      padding: '0.35rem',
+      width: '55px',
+      textAlign: 'center',
+      fontFamily: 'var(--font-mono)',
+      backgroundColor: '#dc3545',
+      color: '#ffffff',
+      fontWeight: 'bold',
+      border: '2px solid #a71d2a',
+      borderRadius: '4px',
+      boxShadow: '0 0 6px rgba(220, 53, 69, 0.6)'
+    };
+  } else {
+    // GREEN (Aprobado en RP)
+    return {
+      padding: '0.35rem',
+      width: '55px',
+      textAlign: 'center',
+      fontFamily: 'var(--font-mono)',
+      backgroundColor: 'rgba(16, 185, 129, 0.18)',
+      color: '#065f46',
+      fontWeight: 'bold',
+      border: '1.5px solid var(--success)',
+      borderRadius: '4px'
+    };
+  }
+};
+
 const sortGrades = (gradesList) => {
   if (!gradesList || !Array.isArray(gradesList)) return [];
   return [...gradesList].sort((a, b) => {
@@ -853,6 +910,14 @@ export default function App() {
   });
   const [selectedAdminReportSubject, setSelectedAdminReportSubject] = useState('lengua_espanola');
   const [expandedReportSubjects, setExpandedReportSubjects] = useState({});
+
+  const [selectedAdminAttendanceGrade, setSelectedAdminAttendanceGrade] = useState(() => {
+    const saved = localStorage.getItem('s_grades');
+    const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
+    return list[0] || '1ro A';
+  });
+  const [expandedAdminAttendanceSubjects, setExpandedAdminAttendanceSubjects] = useState({});
+
   const [gradeStaffContacts, setGradeStaffContacts] = useState(() => {
     const saved = localStorage.getItem('s_grade_staff');
     return saved ? JSON.parse(saved) : {};
@@ -918,6 +983,7 @@ export default function App() {
   const [latestAiGeneratedInstrument, setLatestAiGeneratedInstrument] = useState(null);
 
   // Login inputs
+  const [rowAssignmentForms, setRowAssignmentForms] = useState({});
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -1468,9 +1534,9 @@ export default function App() {
 
   const handleAddAssignment = (userId, targetGrade, targetSubject) => {
     if (currentUser.role !== 'admin') return;
-    const gradeVal = targetGrade || newAssignment.grade || (grades[0] || '');
+    const gradeVal = targetGrade || (grades[0] || '');
     const gradeSubs = getSubjectsForGrade(subjects, gradeVal);
-    const subjectVal = targetSubject || newAssignment.subject || (Object.keys(gradeSubs)[0] || '');
+    const subjectVal = targetSubject || (Object.keys(gradeSubs)[0] || '');
 
     if (!gradeVal || !subjectVal) {
       alert('Por favor selecciona un grado y asignatura válidos.');
@@ -1479,14 +1545,15 @@ export default function App() {
 
     setUsersAndSave(prev => prev.map(u => {
       if (u.id === userId) {
-        const exists = u.assignments.some(
+        const assignmentsList = u.assignments || [];
+        const exists = assignmentsList.some(
           a => a.grade === gradeVal && a.subject === subjectVal
         );
         if (exists) {
           alert('Asignación duplicada.');
           return u;
         }
-        return { ...u, assignments: [...u.assignments, { grade: gradeVal, subject: subjectVal }] };
+        return { ...u, assignments: [...assignmentsList, { grade: gradeVal, subject: subjectVal }] };
       }
       return u;
     }));
@@ -2432,17 +2499,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   const handleRpGradeChange = (studentId, subjectKey, bloqueKey, evalIdx, value) => {
-    const student = students.find(s => s.id === studentId);
-    const originalGrade = student?.grades?.[subjectKey]?.[bloqueKey]?.[evalIdx] || 0;
-    
-    if (value !== '' && Number(value) < originalGrade) {
-      alert(`La nota de recuperación RP${evalIdx+1} (${value}) no puede ser menor a la nota original P${evalIdx+1} (${originalGrade}).`);
-      return;
-    }
-
     const rpKey = `${studentId}_${subjectKey}_${bloqueKey}`;
     const currentRp = studentRpGrades[rpKey] ? [...studentRpGrades[rpKey]] : [null, null, null, null];
-    currentRp[evalIdx] = value === '' ? null : Math.min(100, Math.max(0, Number(value)));
+    
+    if (value === '' || value === null || value === undefined) {
+      currentRp[evalIdx] = null;
+    } else {
+      const numVal = Math.min(100, Math.max(0, Number(value)));
+      currentRp[evalIdx] = isNaN(numVal) ? null : numVal;
+    }
 
     setStudentRpGradesAndSave(prev => ({
       ...prev,
@@ -2759,11 +2824,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   const getSubjectTeacherName = (gradeName, subjectKey) => {
-    const teacher = users.find(u => 
-      u.role === 'teacher' && 
-      u.assignments && 
-      u.assignments.some(a => a.grade === gradeName && a.subject === subjectKey)
-    );
+    const teacher = getAssignedTeacher(users, subjects, gradeName, subjectKey);
     return teacher ? teacher.name : 'Sin docente asignado';
   };
 
@@ -2910,6 +2971,353 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const b3 = calculateBlockAvg(studentId, subjectKey, 'bloque3', studentGradesObject);
     const b4 = calculateBlockAvg(studentId, subjectKey, 'bloque4', studentGradesObject);
     return (b1 + b2 + b3 + b4) / 4;
+  };
+
+  const exportAttendanceToExcel = (targetGrade = selectedGrade, targetSubject = selectedSubject) => {
+    if (!targetGrade || !targetSubject) {
+      alert('Por favor selecciona un curso y una materia.');
+      return;
+    }
+
+    const subjectName = subjects[targetSubject]?.name || targetSubject;
+    const monthsList = ['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
+    const studentsList = students.filter(s => s.grade === targetGrade);
+
+    const teacherObj = getAssignedTeacher(users, subjects, targetGrade, targetSubject);
+    const teacherName = teacherObj ? teacherObj.name : '';
+
+    // Check if subject is core (Page 1 format) or special (Page 2 format)
+    const isCore = (subKey) => {
+      const k = (subKey || '').toLowerCase();
+      const name = (subjects[subKey]?.name || subKey).toLowerCase();
+      return k === 'lengua_espanola' || k === 'matematica' || k === 'ciencias_naturaleza' || k === 'ciencias_sociales' ||
+             name.includes('matem') || name.includes('lengua') || name.includes('sociales') || name.includes('naturaleza');
+    };
+
+    const isCoreSubject = isCore(targetSubject);
+
+    let htmlTable = '';
+
+    if (isCoreSubject) {
+      // --- PAGE 1 FORMAT: Core subjects (21 days per month, 2 months per section) ---
+      const pairs = [];
+      for (let i = 0; i < monthsList.length; i += 2) {
+        pairs.push([monthsList[i], monthsList[i + 1] || '']);
+      }
+
+      htmlTable += `<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 11px;">`;
+
+      pairs.forEach(([mA, mB]) => {
+        const titleText = subjectName.toUpperCase();
+        // Title Banner (Row 1)
+        htmlTable += `
+          <tr>
+            <th colspan="47" style="background-color: #a6a6a6; color: #000000; font-size: 15px; font-weight: bold; height: 35px; text-align: center; border: 1px solid #000000;">${titleText}</th>
+          </tr>
+          <tr>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 11px; width: 60px;">DOCENTE</td>
+            <td colspan="46" style="background-color: #ffffff; text-align: left; font-weight: bold; font-size: 12px; padding-left: 8px; border: 1px solid #000000;">${teacherName}</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #000000;"></td>
+            <td colspan="23" style="background-color: #ffffff; font-weight: bold; font-size: 13px; text-align: left; padding-left: 6px; border: 1px solid #000000;">Mes: ${mA}</td>
+            <td colspan="23" style="background-color: #ffffff; font-weight: bold; font-size: 13px; text-align: left; padding-left: 6px; border: 1px solid #000000;">Mes: ${mB || '-'}</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #000000;"></td>
+            <td colspan="21" style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px;">DÍAS TRABAJADOS</td>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px; width: 30px;">T</td>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px; width: 35px;">%</td>
+            <td colspan="21" style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px;">DÍAS TRABAJADOS</td>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px; width: 30px;">T</td>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px; width: 35px;">%</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #000000;"></td>
+        `;
+
+        // Day numbers for mA
+        for (let d = 1; d <= 21; d++) {
+          htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000; width: 22px;">${d}</td>`;
+        }
+        htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">T</td>`;
+        htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">%</td>`;
+
+        // Day numbers for mB
+        for (let d = 1; d <= 21; d++) {
+          htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000; width: 22px;">${d}</td>`;
+        }
+        htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">T</td>`;
+        htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">%</td>`;
+        htmlTable += `</tr>`;
+
+        // Row DÍAS dates
+        htmlTable += `
+          <tr>
+            <td style="background-color: #f2f2f2; font-weight: bold; font-size: 9px; text-align: center; border: 1px solid #000000;">DÍAS</td>
+        `;
+
+        // Month A day dates
+        let mAWorkedDays = 0;
+        for (let idx = 0; idx < 21; idx++) {
+          const dateVal = attendanceDayDates[`${targetGrade}_${targetSubject}_${mA}_day_${idx}`] || '';
+          if (dateVal.trim() !== '') mAWorkedDays++;
+          htmlTable += `<td style="background-color: #f9f9f9; font-size: 9px; font-weight: bold; text-align: center; border: 1px solid #000000;">${dateVal}</td>`;
+        }
+        htmlTable += `<td style="background-color: #f9f9f9; border: 1px solid #000000;"></td><td style="background-color: #f9f9f9; border: 1px solid #000000;"></td>`;
+
+        // Month B day dates
+        let mBWorkedDays = 0;
+        for (let idx = 0; idx < 21; idx++) {
+          const dateVal = mB ? (attendanceDayDates[`${targetGrade}_${targetSubject}_${mB}_day_${idx}`] || '') : '';
+          if (dateVal.trim() !== '') mBWorkedDays++;
+          htmlTable += `<td style="background-color: #f9f9f9; font-size: 9px; font-weight: bold; text-align: center; border: 1px solid #000000;">${dateVal}</td>`;
+        }
+        htmlTable += `<td style="background-color: #f9f9f9; border: 1px solid #000000;"></td><td style="background-color: #f9f9f9; border: 1px solid #000000;"></td>`;
+        htmlTable += `</tr>`;
+
+        // 40 Student Rows
+        for (let rIdx = 0; rIdx < 40; rIdx++) {
+          const s = studentsList[rIdx];
+          htmlTable += `<tr>`;
+          htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${rIdx + 1}</td>`;
+
+          if (s) {
+            // Student attendance mA
+            let aA = 0, eA = 0, rA = 0, tA = 0, pA = 0;
+            for (let idx = 0; idx < 21; idx++) {
+              const st = studentAttendanceDetail[`${s.id}_${targetSubject}_${mA}_col_${idx}`] || '';
+              if (st === 'R') rA++;
+              const dVal = attendanceDayDates[`${targetGrade}_${targetSubject}_${mA}_day_${idx}`] || '';
+              if (dVal.trim() !== '') {
+                if (st === 'A') aA++;
+                else if (st === 'E') eA++;
+                else if (st === 'T') tA++;
+                else if (st === 'P') pA++;
+              }
+              htmlTable += `<td style="background-color: #ffffff; text-align: center; border: 1px solid #000000;">${st}</td>`;
+            }
+            const actA = Math.max(0, mAWorkedDays - rA);
+            const excAbsA = Math.floor(eA / 3);
+            const excPresA = eA - excAbsA;
+            const finPresA = pA + tA + excPresA;
+            const capTA = Math.min(actA, finPresA);
+            const pctA = actA > 0 ? Math.round((capTA / actA) * 100) : 0;
+            const retA = rA > 0;
+
+            htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${retA ? 'R' : capTA}</td>`;
+            htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${retA ? '-' : pctA + '%'}</td>`;
+
+            // Student attendance mB
+            if (mB) {
+              let aB = 0, eB = 0, rB = 0, tB = 0, pB = 0;
+              for (let idx = 0; idx < 21; idx++) {
+                const st = studentAttendanceDetail[`${s.id}_${targetSubject}_${mB}_col_${idx}`] || '';
+                if (st === 'R') rB++;
+                const dVal = attendanceDayDates[`${targetGrade}_${targetSubject}_${mB}_day_${idx}`] || '';
+                if (dVal.trim() !== '') {
+                  if (st === 'A') aB++;
+                  else if (st === 'E') eB++;
+                  else if (st === 'T') tB++;
+                  else if (st === 'P') pB++;
+                }
+                htmlTable += `<td style="background-color: #ffffff; text-align: center; border: 1px solid #000000;">${st}</td>`;
+              }
+              const actB = Math.max(0, mBWorkedDays - rB);
+              const excAbsB = Math.floor(eB / 3);
+              const excPresB = eB - excAbsB;
+              const finPresB = pB + tB + excPresB;
+              const capTB = Math.min(actB, finPresB);
+              const pctB = actB > 0 ? Math.round((capTB / actB) * 100) : 0;
+              const retB = rB > 0;
+
+              htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${retB ? 'R' : capTB}</td>`;
+              htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${retB ? '-' : pctB + '%'}</td>`;
+            } else {
+              for (let idx = 0; idx < 23; idx++) {
+                htmlTable += `<td style="background-color: #ffffff; border: 1px solid #000000;"></td>`;
+              }
+            }
+          } else {
+            // Empty row
+            for (let c = 0; c < 46; c++) {
+              htmlTable += `<td style="background-color: #ffffff; border: 1px solid #000000;"></td>`;
+            }
+          }
+          htmlTable += `</tr>`;
+        }
+
+        // Add spacing row between month pairs
+        htmlTable += `<tr><td colspan="47" style="height: 25px; border: none;"></td></tr>`;
+      });
+
+      htmlTable += `</table>`;
+    } else {
+      // --- PAGE 2 FORMAT: Special subjects (10 days per month, 4 months per section) ---
+      const quads = [
+        ['Agosto', 'Septiembre', 'Octubre', 'Noviembre'],
+        ['Diciembre', 'Enero', 'Febrero', 'Marzo'],
+        ['Abril', 'Mayo', 'Junio', '']
+      ];
+
+      htmlTable += `<table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 11px;">`;
+
+      quads.forEach((mQuad) => {
+        const titleText = subjectName.toUpperCase();
+        // Title Banner (Row 1)
+        htmlTable += `
+          <tr>
+            <th colspan="49" style="background-color: #a6a6a6; color: #000000; font-size: 15px; font-weight: bold; height: 35px; text-align: center; border: 1px solid #000000;">${titleText}</th>
+          </tr>
+          <tr>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 11px; width: 60px;">DOCENTE</td>
+            <td colspan="48" style="background-color: #ffffff; text-align: left; font-weight: bold; font-size: 12px; padding-left: 8px; border: 1px solid #000000;">${teacherName}</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #000000;"></td>
+        `;
+
+        mQuad.forEach((mName) => {
+          htmlTable += `<td colspan="12" style="background-color: #ffffff; font-weight: bold; font-size: 13px; text-align: left; padding-left: 6px; border: 1px solid #000000;">Mes: ${mName || '-'}</td>`;
+        });
+        htmlTable += `</tr>`;
+
+        // DÍAS TRABAJADOS Row
+        htmlTable += `
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #000000;"></td>
+        `;
+        mQuad.forEach(() => {
+          htmlTable += `
+            <td colspan="10" style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px;">DÍAS TRABAJADOS</td>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px; width: 30px;">T</td>
+            <td style="background-color: #d9d9d9; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10px; width: 35px;">%</td>
+          `;
+        });
+        htmlTable += `</tr>`;
+
+        // Day numbers 1..10 T % Row
+        htmlTable += `
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #000000;"></td>
+        `;
+        mQuad.forEach(() => {
+          for (let d = 1; d <= 10; d++) {
+            htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000; width: 22px;">${d}</td>`;
+          }
+          htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">T</td>`;
+          htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">%</td>`;
+        });
+        htmlTable += `</tr>`;
+
+        // Row DÍAS dates
+        htmlTable += `
+          <tr>
+            <td style="background-color: #f2f2f2; font-weight: bold; font-size: 9px; text-align: center; border: 1px solid #000000;">DÍAS</td>
+        `;
+
+        const quadWorkedDays = [0, 0, 0, 0];
+        mQuad.forEach((mName, qIdx) => {
+          if (mName) {
+            for (let idx = 0; idx < 10; idx++) {
+              const dateVal = attendanceDayDates[`${targetGrade}_${targetSubject}_${mName}_day_${idx}`] || '';
+              if (dateVal.trim() !== '') quadWorkedDays[qIdx]++;
+              htmlTable += `<td style="background-color: #f9f9f9; font-size: 9px; font-weight: bold; text-align: center; border: 1px solid #000000;">${dateVal}</td>`;
+            }
+            htmlTable += `<td style="background-color: #f9f9f9; border: 1px solid #000000;"></td><td style="background-color: #f9f9f9; border: 1px solid #000000;"></td>`;
+          } else {
+            for (let idx = 0; idx < 12; idx++) {
+              htmlTable += `<td style="background-color: #f9f9f9; border: 1px solid #000000;"></td>`;
+            }
+          }
+        });
+        htmlTable += `</tr>`;
+
+        // 40 Student Rows
+        for (let rIdx = 0; rIdx < 40; rIdx++) {
+          const s = studentsList[rIdx];
+          htmlTable += `<tr>`;
+          htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${rIdx + 1}</td>`;
+
+          if (s) {
+            mQuad.forEach((mName, qIdx) => {
+              if (mName) {
+                let aCount = 0, eCount = 0, rCount = 0, tCount = 0, pCount = 0;
+                for (let idx = 0; idx < 10; idx++) {
+                  const st = studentAttendanceDetail[`${s.id}_${targetSubject}_${mName}_col_${idx}`] || '';
+                  if (st === 'R') rCount++;
+                  const dVal = attendanceDayDates[`${targetGrade}_${targetSubject}_${mName}_day_${idx}`] || '';
+                  if (dVal.trim() !== '') {
+                    if (st === 'A') aCount++;
+                    else if (st === 'E') eCount++;
+                    else if (st === 'T') tCount++;
+                    else if (st === 'P') pCount++;
+                  }
+                  htmlTable += `<td style="background-color: #ffffff; text-align: center; border: 1px solid #000000;">${st}</td>`;
+                }
+
+                const mWorked = quadWorkedDays[qIdx];
+                const actDays = Math.max(0, mWorked - rCount);
+                const excAbs = Math.floor(eCount / 3);
+                const excPres = eCount - excAbs;
+                const finPres = pCount + tCount + excPres;
+                const capT = Math.min(actDays, finPres);
+                const pct = actDays > 0 ? Math.round((capT / actDays) * 100) : 0;
+                const ret = rCount > 0;
+
+                htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${ret ? 'R' : capT}</td>`;
+                htmlTable += `<td style="background-color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000;">${ret ? '-' : pct + '%'}</td>`;
+              } else {
+                for (let idx = 0; idx < 12; idx++) {
+                  htmlTable += `<td style="background-color: #ffffff; border: 1px solid #000000;"></td>`;
+                }
+              }
+            });
+          } else {
+            for (let c = 0; c < 48; c++) {
+              htmlTable += `<td style="background-color: #ffffff; border: 1px solid #000000;"></td>`;
+            }
+          }
+          htmlTable += `</tr>`;
+        }
+
+        // Spacing row
+        htmlTable += `<tr><td colspan="49" style="height: 25px; border: none;"></td></tr>`;
+      });
+
+      htmlTable += `</table>`;
+    }
+
+    // Build Excel file Blob
+    const htmlBlobContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+      <meta charset="utf-8"/>
+      <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Asistencia MINERD</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+      <style>
+        table { border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; }
+        th, td { border: 1px solid #000000; text-align: center; vertical-align: middle; }
+      </style>
+      </head>
+      <body>
+        ${htmlTable}
+      </body>
+      </html>
+    `;
+
+    const cleanGrade = targetGrade.replace(/\s+/g, '_');
+    const cleanSubject = subjectName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+    const fileName = `Asistencia_MINERD_${cleanGrade}_${cleanSubject}.xls`;
+
+    const blob = new Blob(['\ufeff' + htmlBlobContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
   
   const calculateStudentAvg = (s) => {
@@ -3388,6 +3796,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
                   Control Calificaciones
                 </div>
+                <div className={`nav-item ${activeTab === 'admin_attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_attendance'); setSidebarCollapsed(true); }}>
+                  Control Asistencia
+                </div>
                 <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
                   Registro de Calificación General
                 </div>
@@ -3645,35 +4056,64 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       </div>
 
                                       {/* Assignment creator inside the row */}
-                                      <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                                        <select 
-                                          className="form-select-compact" 
-                                          style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '85px' }}
-                                          value={newAssignment.grade}
-                                          onChange={(e) => setNewAssignment(prev => ({ ...prev, grade: e.target.value }))}
-                                        >
-                                          {grades.map(g => (
-                                            <option key={g} value={g}>{g}</option>
-                                          ))}
-                                        </select>
-                                        <select 
-                                          className="form-select-compact" 
-                                          style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '95px' }}
-                                          value={newAssignment.subject}
-                                          onChange={(e) => setNewAssignment(prev => ({ ...prev, subject: e.target.value }))}
-                                        >
-                                          {Object.keys(getSubjectsForGrade(subjects, newAssignment.grade || grades[0])).map(subKey => (
-                                            <option key={subKey} value={subKey}>{subjects[subKey].name}</option>
-                                          ))}
-                                        </select>
-                                        <button 
-                                          className="btn-primary" 
-                                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px' }} 
-                                          onClick={() => handleAddAssignment(u.id)}
-                                        >
-                                          ＋ Asignar
-                                        </button>
-                                      </div>
+                                      {(() => {
+                                        const defaultG = grades[0] || '1ro A';
+                                        const defaultSubs = Object.keys(getSubjectsForGrade(subjects, defaultG));
+                                        const defaultS = defaultSubs[0] || 'matematica';
+                                        const rowForm = rowAssignmentForms[u.id] || { grade: defaultG, subject: defaultS };
+                                        const rowSubs = Object.keys(getSubjectsForGrade(subjects, rowForm.grade));
+
+                                        return (
+                                          <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                                            <select 
+                                              className="form-select-compact" 
+                                              style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '85px' }}
+                                              value={rowForm.grade}
+                                              onChange={(e) => {
+                                                const selectedG = e.target.value;
+                                                const availSubs = Object.keys(getSubjectsForGrade(subjects, selectedG));
+                                                setRowAssignmentForms(prev => ({
+                                                  ...prev,
+                                                  [u.id]: {
+                                                    grade: selectedG,
+                                                    subject: availSubs[0] || 'matematica'
+                                                  }
+                                                }));
+                                              }}
+                                            >
+                                              {grades.map(g => (
+                                                <option key={g} value={g}>{g}</option>
+                                              ))}
+                                            </select>
+                                            <select 
+                                              className="form-select-compact" 
+                                              style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '95px' }}
+                                              value={rowForm.subject}
+                                              onChange={(e) => {
+                                                const selectedS = e.target.value;
+                                                setRowAssignmentForms(prev => ({
+                                                  ...prev,
+                                                  [u.id]: {
+                                                    ...rowForm,
+                                                    subject: selectedS
+                                                  }
+                                                }));
+                                              }}
+                                            >
+                                              {rowSubs.map(subKey => (
+                                                <option key={subKey} value={subKey}>{subjects[subKey]?.name || subKey}</option>
+                                              ))}
+                                            </select>
+                                            <button 
+                                              className="btn-primary" 
+                                              style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px' }} 
+                                              onClick={() => handleAddAssignment(u.id, rowForm.grade, rowForm.subject)}
+                                            >
+                                              ＋ Asignar
+                                            </button>
+                                          </div>
+                                        );
+                                      })()}
                                     </div>
                                   </td>
                                   <td style={{ textAlign: 'center' }}>
@@ -4434,11 +4874,29 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                         {effectiveGradesObj.bloque1.map((eff, pIdx) => {
                                           const base = baseGradesObj.bloque1[pIdx];
                                           const rp = rpGradesObj.bloque1[pIdx];
+                                          const hasRp = rp !== null && rp !== undefined && rp !== '';
+                                          const isLower = hasRp && Number(rp) < base;
+
                                           return (
                                             <React.Fragment key={`ce1_${pIdx}`}>
                                               <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
-                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
-                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: isLower ? 'rgba(220, 53, 69, 0.12)' : (base < 70 ? 'rgba(239, 68, 68, 0.03)' : '') }}>
+                                                {hasRp ? (
+                                                  <span 
+                                                    style={{
+                                                      padding: '0.15rem 0.4rem',
+                                                      borderRadius: '4px',
+                                                      backgroundColor: isLower ? '#dc3545' : 'rgba(16, 185, 129, 0.2)',
+                                                      color: isLower ? '#ffffff' : '#065f46',
+                                                      fontWeight: 'bold',
+                                                      fontSize: '0.8rem',
+                                                      display: 'inline-block'
+                                                    }}
+                                                    title={isLower ? `RP (${Number(rp)}) es menor que la nota base (${base.toFixed(0)}). Prevalece la nota base.` : `RP (${Number(rp)}) aprobada.`}
+                                                  >
+                                                    {Number(rp).toFixed(0)}
+                                                  </span>
+                                                ) : '-'}
                                               </td>
                                             </React.Fragment>
                                           );
@@ -4448,11 +4906,29 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                         {effectiveGradesObj.bloque2.map((eff, pIdx) => {
                                           const base = baseGradesObj.bloque2[pIdx];
                                           const rp = rpGradesObj.bloque2[pIdx];
+                                          const hasRp = rp !== null && rp !== undefined && rp !== '';
+                                          const isLower = hasRp && Number(rp) < base;
+
                                           return (
                                             <React.Fragment key={`ce2_${pIdx}`}>
                                               <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
-                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
-                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: isLower ? 'rgba(220, 53, 69, 0.12)' : (base < 70 ? 'rgba(239, 68, 68, 0.03)' : '') }}>
+                                                {hasRp ? (
+                                                  <span 
+                                                    style={{
+                                                      padding: '0.15rem 0.4rem',
+                                                      borderRadius: '4px',
+                                                      backgroundColor: isLower ? '#dc3545' : 'rgba(16, 185, 129, 0.2)',
+                                                      color: isLower ? '#ffffff' : '#065f46',
+                                                      fontWeight: 'bold',
+                                                      fontSize: '0.8rem',
+                                                      display: 'inline-block'
+                                                    }}
+                                                    title={isLower ? `RP (${Number(rp)}) es menor que la nota base (${base.toFixed(0)}). Prevalece la nota base.` : `RP (${Number(rp)}) aprobada.`}
+                                                  >
+                                                    {Number(rp).toFixed(0)}
+                                                  </span>
+                                                ) : '-'}
                                               </td>
                                             </React.Fragment>
                                           );
@@ -4462,11 +4938,61 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                         {effectiveGradesObj.bloque3.map((eff, pIdx) => {
                                           const base = baseGradesObj.bloque3[pIdx];
                                           const rp = rpGradesObj.bloque3[pIdx];
+                                          const hasRp = rp !== null && rp !== undefined && rp !== '';
+                                          const isLower = hasRp && Number(rp) < base;
+
                                           return (
                                             <React.Fragment key={`ce3_${pIdx}`}>
                                               <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
-                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
-                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: isLower ? 'rgba(220, 53, 69, 0.12)' : (base < 70 ? 'rgba(239, 68, 68, 0.03)' : '') }}>
+                                                {hasRp ? (
+                                                  <span 
+                                                    style={{
+                                                      padding: '0.15rem 0.4rem',
+                                                      borderRadius: '4px',
+                                                      backgroundColor: isLower ? '#dc3545' : 'rgba(16, 185, 129, 0.2)',
+                                                      color: isLower ? '#ffffff' : '#065f46',
+                                                      fontWeight: 'bold',
+                                                      fontSize: '0.8rem',
+                                                      display: 'inline-block'
+                                                    }}
+                                                    title={isLower ? `RP (${Number(rp)}) es menor que la nota base (${base.toFixed(0)}). Prevalece la nota base.` : `RP (${Number(rp)}) aprobada.`}
+                                                  >
+                                                    {Number(rp).toFixed(0)}
+                                                  </span>
+                                                ) : '-'}
+                                              </td>
+                                            </React.Fragment>
+                                          );
+                                        })}
+
+                                        {/* Render CE4 */}
+                                        {effectiveGradesObj.bloque4.map((eff, pIdx) => {
+                                          const base = baseGradesObj.bloque4[pIdx];
+                                          const rp = rpGradesObj.bloque4[pIdx];
+                                          const hasRp = rp !== null && rp !== undefined && rp !== '';
+                                          const isLower = hasRp && Number(rp) < base;
+
+                                          return (
+                                            <React.Fragment key={`ce4_${pIdx}`}>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: isLower ? 'rgba(220, 53, 69, 0.12)' : (base < 70 ? 'rgba(239, 68, 68, 0.03)' : '') }}>
+                                                {hasRp ? (
+                                                  <span 
+                                                    style={{
+                                                      padding: '0.15rem 0.4rem',
+                                                      borderRadius: '4px',
+                                                      backgroundColor: isLower ? '#dc3545' : 'rgba(16, 185, 129, 0.2)',
+                                                      color: isLower ? '#ffffff' : '#065f46',
+                                                      fontWeight: 'bold',
+                                                      fontSize: '0.8rem',
+                                                      display: 'inline-block'
+                                                    }}
+                                                    title={isLower ? `RP (${Number(rp)}) es menor que la nota base (${base.toFixed(0)}). Prevalece la nota base.` : `RP (${Number(rp)}) aprobada.`}
+                                                  >
+                                                    {Number(rp).toFixed(0)}
+                                                  </span>
+                                                ) : '-'}
                                               </td>
                                             </React.Fragment>
                                           );
@@ -4597,10 +5123,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {Object.keys(getSubjectsForGrade(subjects, selectedAdminReportGrade)).map(subKey => {
                       const sub = subjects[subKey];
-                      const teacher = users.find(u => 
-                        u.role === 'teacher' && 
-                        u.assignments.some(a => a.grade === selectedAdminReportGrade && a.subject === subKey)
-                      );
+                      const teacher = getAssignedTeacher(users, subjects, selectedAdminReportGrade, subKey);
                       const isExpanded = expandedReportSubjects[subKey];
                       const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade);
 
@@ -4794,6 +5317,304 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </tbody>
                       </table>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'admin_attendance' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <h2>Control de Asistencia General</h2>
+                  <p style={{ color: 'var(--text-secondary)', marginTop: '-1rem', marginBottom: '0.5rem' }}>
+                    Supervisa y descarga los registros de asistencia oficiales del MINERD para todos los grados y asignaturas del centro educativo.
+                  </p>
+
+                  {/* Horizontal Grades Bar */}
+                  <div className="report-grades-bar" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+                    {grades.map(g => (
+                      <button 
+                        key={g} 
+                        className={`btn-secondary ${selectedAdminAttendanceGrade === g ? 'btn-primary active-report-grade' : ''}`} 
+                        onClick={() => setSelectedAdminAttendanceGrade(g)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 'bold' }}
+                      >
+                        🏫 {g}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Banner */}
+                  {selectedAdminAttendanceGrade && renderGradeHeaderBanner(selectedAdminAttendanceGrade, 'Control de Asistencia Oficial')}
+
+                  {/* MINERD Warning Banner */}
+                  <div className="minerd-warning-banner">
+                    <span className="minerd-warning-icon">⚠️</span>
+                    <p className="minerd-warning-text">
+                      <strong>Nota Oficial MINERD:</strong> Las únicas literales que se deben usar son: <strong>P</strong> (Presente), <strong>A</strong> (Ausente), <strong>E</strong> (Excusa), <strong>T</strong> (Tardanza), <strong>R</strong> (Retirado). No se deben dejar espacios en blanco y se deben escribir las razones en caso de no docencia.
+                    </p>
+                  </div>
+
+                  {/* Subjects Accordion */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {Object.keys(getSubjectsForGrade(subjects, selectedAdminAttendanceGrade)).map(subKey => {
+                      const sub = subjects[subKey];
+                      const teacher = getAssignedTeacher(users, subjects, selectedAdminAttendanceGrade, subKey);
+                      const isExpanded = expandedAdminAttendanceSubjects[subKey];
+                      const gradeStudents = students.filter(s => s.grade === selectedAdminAttendanceGrade);
+
+                      return (
+                        <div 
+                          key={subKey} 
+                          className="glass-panel" 
+                          style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}
+                        >
+                          <div
+                            className="accordion-header"
+                            style={{
+                              width: '100%',
+                              padding: '1rem 1.25rem',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              background: isExpanded ? 'var(--primary-glow)' : 'var(--bg-secondary)',
+                              borderBottom: isExpanded ? '1px solid var(--border-color)' : 'none',
+                              color: isExpanded ? 'var(--primary)' : 'var(--text-primary)',
+                              fontWeight: 'bold',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                              <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: sub.color }}></span>
+                              <strong style={{ fontSize: '1.05rem' }}>{sub.name}</strong>
+                              <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                                Docente: <strong>{teacher ? teacher.name : 'Sin docente asignado'}</strong>
+                              </span>
+                            </span>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <button
+                                className="btn btn-success"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.4rem',
+                                  backgroundColor: '#107c41',
+                                  color: '#ffffff',
+                                  fontWeight: '700',
+                                  fontSize: '0.8rem',
+                                  padding: '0.45rem 0.9rem',
+                                  borderRadius: '6px',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 2px 6px rgba(16, 124, 65, 0.2)'
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  exportAttendanceToExcel(selectedAdminAttendanceGrade, subKey);
+                                }}
+                                title="Exportar asistencia de esta materia a Excel según plantilla oficial MINERD"
+                              >
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                                  <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                Exportar a Excel
+                              </button>
+
+                              <button
+                                type="button"
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  color: 'inherit',
+                                  fontWeight: 'bold'
+                                }}
+                                onClick={() => setExpandedAdminAttendanceSubjects(prev => ({ ...prev, [subKey]: !prev[subKey] }))}
+                              >
+                                {isExpanded ? '▲ Ocultar' : '▼ Ver Asistencia'}
+                              </button>
+                            </div>
+                          </div>
+
+                          {isExpanded && (
+                            <div className="accordion-content animate-fade-in" style={{ padding: '1.25rem' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+                                <div className="attendance-month-tabs" style={{ marginBottom: 0 }}>
+                                  {['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'].map(m => (
+                                    <button 
+                                      key={m} 
+                                      className={`attendance-month-btn ${selectedAttendanceMonth === m ? 'active' : ''}`}
+                                      onClick={() => setSelectedAttendanceMonth(m)}
+                                    >
+                                      {m}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {(() => {
+                                const activeColumns = [];
+                                Array.from({ length: 21 }).forEach((_, idx) => {
+                                  const dateKey = `${selectedAdminAttendanceGrade}_${subKey}_${selectedAttendanceMonth}_day_${idx}`;
+                                  const dateVal = attendanceDayDates[dateKey] || '';
+                                  if (dateVal.trim() !== '') {
+                                    activeColumns.push(idx);
+                                  }
+                                });
+                                const currentMonthWorkedDays = activeColumns.length;
+
+                                return (
+                                  <div className="custom-table-container">
+                                    <table className="custom-table" style={{ tableLayout: 'fixed', width: '1000px' }}>
+                                      <thead>
+                                        <tr>
+                                          <th rowSpan={2} style={{ width: '40px', verticalAlign: 'middle', textAlign: 'center' }}>#</th>
+                                          <th rowSpan={2} style={{ width: '180px', verticalAlign: 'middle' }}>Estudiante</th>
+                                          <th colSpan={21} style={{ textAlign: 'center', backgroundColor: '#e2e8f0', color: '#1e293b', fontWeight: '800', letterSpacing: '0.08em', fontSize: '0.85rem', padding: '0.5rem', borderBottom: '1.5px solid var(--border-color)' }}>
+                                            DÍAS TRABAJADOS ({selectedAttendanceMonth})
+                                          </th>
+                                          <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle', width: '55px', fontWeight: 'bold' }}>T</th>
+                                          <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle', width: '55px', fontWeight: 'bold' }}>%</th>
+                                        </tr>
+                                        <tr>
+                                          {Array.from({ length: 21 }).map((_, idx) => (
+                                            <th key={idx} style={{ textAlign: 'center', width: '32px', padding: '0.4rem 0.2rem', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                              {idx + 1}
+                                            </th>
+                                          ))}
+                                        </tr>
+                                        <tr style={{ backgroundColor: 'var(--bg-primary)' }}>
+                                          <td></td>
+                                          <td style={{ fontWeight: 'bold', fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', verticalAlign: 'middle' }}>
+                                            DÍAS
+                                          </td>
+                                          {Array.from({ length: 21 }).map((_, idx) => {
+                                            const dateKey = `${selectedAdminAttendanceGrade}_${subKey}_${selectedAttendanceMonth}_day_${idx}`;
+                                            const dateVal = attendanceDayDates[dateKey] || '';
+                                            return (
+                                              <td key={idx} style={{ padding: '0.2rem', textAlign: 'center', borderBottom: '2px solid var(--border-color)' }}>
+                                                <input 
+                                                  type="text"
+                                                  maxLength="2"
+                                                  style={{
+                                                    width: '26px',
+                                                    height: '24px',
+                                                    padding: '0.1rem',
+                                                    textAlign: 'center',
+                                                    fontSize: '0.72rem',
+                                                    fontWeight: '800',
+                                                    border: '1.5px solid var(--border-color)',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'var(--bg-secondary)',
+                                                    color: 'var(--text-primary)',
+                                                    outline: 'none'
+                                                  }}
+                                                  value={dateVal}
+                                                  placeholder=""
+                                                  onChange={(e) => {
+                                                    const val = e.target.value.replace(/\D/g, '');
+                                                    setAttendanceDayDatesAndSave(prev => ({
+                                                      ...prev,
+                                                      [dateKey]: val
+                                                    }));
+                                                  }}
+                                                />
+                                              </td>
+                                            );
+                                          })}
+                                          <td style={{ padding: '0.2rem', textAlign: 'center', borderBottom: '2px solid var(--border-color)' }}>
+                                            <div style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: '800', border: '1.5px solid var(--primary)', borderRadius: '4px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', margin: '0 auto' }}>
+                                              {currentMonthWorkedDays}
+                                            </div>
+                                          </td>
+                                          <td style={{ borderBottom: '2px solid var(--border-color)' }}></td>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {gradeStudents.map((s, sIdx) => {
+                                          let aCount = 0, eCount = 0, rCount = 0, tCount = 0, pCount = 0;
+                                          Array.from({ length: 21 }).forEach((_, idx) => {
+                                            const attendanceKey = `${s.id}_${subKey}_${selectedAttendanceMonth}_col_${idx}`;
+                                            const status = studentAttendanceDetail[attendanceKey] || '';
+                                            if (status === 'R') rCount++;
+
+                                            const dateKey = `${selectedAdminAttendanceGrade}_${subKey}_${selectedAttendanceMonth}_day_${idx}`;
+                                            const dateVal = attendanceDayDates[dateKey] || '';
+                                            if (dateVal.trim() !== '') {
+                                              if (status === 'A') aCount++;
+                                              else if (status === 'E') eCount++;
+                                              else if (status === 'T') tCount++;
+                                              else if (status === 'P') pCount++;
+                                            }
+                                          });
+
+                                          const activeDays = Math.max(0, currentMonthWorkedDays - rCount);
+                                          const excuseAbsences = Math.floor(eCount / 3);
+                                          const excusePresences = eCount - excuseAbsences;
+                                          const finalPresentDays = pCount + tCount + excusePresences;
+                                          const cappedT = Math.min(activeDays, finalPresentDays);
+                                          const attendancePercentage = activeDays > 0 ? Math.round((cappedT / activeDays) * 100) : 0;
+                                          const isRetiredStudent = rCount > 0;
+
+                                          return (
+                                            <tr key={s.id}>
+                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{sIdx + 1}</td>
+                                              <td style={{ fontWeight: 600, fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</td>
+                                              {Array.from({ length: 21 }).map((_, idx) => {
+                                                const attendanceKey = `${s.id}_${subKey}_${selectedAttendanceMonth}_col_${idx}`;
+                                                const status = studentAttendanceDetail[attendanceKey] || '';
+                                                return (
+                                                  <td key={idx} style={{ textAlign: 'center', padding: '0.3rem 0.1rem' }}>
+                                                    <button 
+                                                      className={`attendance-cell-btn ${
+                                                        status === 'P' ? 'present' : 
+                                                        status === 'A' ? 'absent' : 
+                                                        status === 'T' ? 'tardy' : 
+                                                        status === 'E' ? 'excuse' : 
+                                                        status === 'R' ? 'retired' : ''
+                                                      }`}
+                                                      onClick={() => {
+                                                        let nextStatus = '';
+                                                        if (status === '') nextStatus = 'P';
+                                                        else if (status === 'P') nextStatus = 'A';
+                                                        else if (status === 'A') nextStatus = 'T';
+                                                        else if (status === 'T') nextStatus = 'E';
+                                                        else if (status === 'E') nextStatus = 'R';
+                                                        else if (status === 'R') nextStatus = '';
+                                                        
+                                                        setStudentAttendanceDetailAndSave(prev => ({
+                                                          ...prev,
+                                                          [attendanceKey]: nextStatus
+                                                        }));
+                                                      }}
+                                                    >
+                                                      {status}
+                                                    </button>
+                                                  </td>
+                                                );
+                                              })}
+                                              <td style={{ textAlign: 'center', fontWeight: 'bold', color: isRetiredStudent ? 'var(--danger)' : 'var(--success)', fontFamily: 'var(--font-mono)', fontSize: isRetiredStudent ? '0.78rem' : 'inherit' }}>
+                                                {isRetiredStudent ? 'Retirado' : cappedT}
+                                              </td>
+                                              <td style={{ textAlign: 'center', fontWeight: 'bold', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
+                                                {isRetiredStudent ? '-' : `${attendancePercentage}%`}
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -5323,10 +6144,30 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   ) : (
                     /* Existing Block view */
                     (() => {
-                      const showRP1 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[0] || 0) < 70);
-                      const showRP2 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[1] || 0) < 70);
-                      const showRP3 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[2] || 0) < 70);
-                      const showRP4 = studentsFilteredByGrade.some(s => (s.grades?.[selectedSubject]?.[activeBloque]?.[3] || 0) < 70);
+                      const showRP1 = studentsFilteredByGrade.some(s => {
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[0] ?? 80;
+                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
+                        const rpVal = studentRpGrades[rpKey]?.[0];
+                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
+                      });
+                      const showRP2 = studentsFilteredByGrade.some(s => {
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[1] ?? 80;
+                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
+                        const rpVal = studentRpGrades[rpKey]?.[1];
+                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
+                      });
+                      const showRP3 = studentsFilteredByGrade.some(s => {
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[2] ?? 80;
+                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
+                        const rpVal = studentRpGrades[rpKey]?.[2];
+                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
+                      });
+                      const showRP4 = studentsFilteredByGrade.some(s => {
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[3] ?? 80;
+                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
+                        const rpVal = studentRpGrades[rpKey]?.[3];
+                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
+                      });
 
                       return (
                         <div className="custom-table-container">
@@ -5380,16 +6221,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           </div>
                                         </td>
                                         {showRP1 && (
-                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                          <td style={{ backgroundColor: (rpArray[0] !== null && rpArray[0] !== '' && Number(rpArray[0]) < blockArray[0]) ? 'rgba(220, 53, 69, 0.12)' : 'rgba(239, 68, 68, 0.04)' }}>
                                             <input 
                                               type="number" 
                                               className="form-input" 
-                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={rpArray[0] !== null ? rpArray[0] : ''}
+                                              style={getRpInputStyle(rpArray[0], blockArray[0])}
+                                              value={rpArray[0] !== null && rpArray[0] !== undefined ? rpArray[0] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
                                               min="0"
                                               max="100"
                                               placeholder="-"
+                                              title={(rpArray[0] !== null && rpArray[0] !== '' && Number(rpArray[0]) < blockArray[0]) ? `Nota de recuperación (${rpArray[0]}) es menor que la calificación del periodo (${blockArray[0]}). Prevalece la nota original.` : 'Nota de recuperación pedagógica'}
                                             />
                                           </td>
                                         )}
@@ -5409,16 +6251,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           </div>
                                         </td>
                                         {showRP2 && (
-                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                          <td style={{ backgroundColor: (rpArray[1] !== null && rpArray[1] !== '' && Number(rpArray[1]) < blockArray[1]) ? 'rgba(220, 53, 69, 0.12)' : 'rgba(239, 68, 68, 0.04)' }}>
                                             <input 
                                               type="number" 
                                               className="form-input" 
-                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={rpArray[1] !== null ? rpArray[1] : ''}
+                                              style={getRpInputStyle(rpArray[1], blockArray[1])}
+                                              value={rpArray[1] !== null && rpArray[1] !== undefined ? rpArray[1] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
                                               min="0"
                                               max="100"
                                               placeholder="-"
+                                              title={(rpArray[1] !== null && rpArray[1] !== '' && Number(rpArray[1]) < blockArray[1]) ? `Nota de recuperación (${rpArray[1]}) es menor que la calificación del periodo (${blockArray[1]}). Prevalece la nota original.` : 'Nota de recuperación pedagógica'}
                                             />
                                           </td>
                                         )}
@@ -5438,16 +6281,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           </div>
                                         </td>
                                         {showRP3 && (
-                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                          <td style={{ backgroundColor: (rpArray[2] !== null && rpArray[2] !== '' && Number(rpArray[2]) < blockArray[2]) ? 'rgba(220, 53, 69, 0.12)' : 'rgba(239, 68, 68, 0.04)' }}>
                                             <input 
                                               type="number" 
                                               className="form-input" 
-                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={rpArray[2] !== null ? rpArray[2] : ''}
+                                              style={getRpInputStyle(rpArray[2], blockArray[2])}
+                                              value={rpArray[2] !== null && rpArray[2] !== undefined ? rpArray[2] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
                                               min="0"
                                               max="100"
                                               placeholder="-"
+                                              title={(rpArray[2] !== null && rpArray[2] !== '' && Number(rpArray[2]) < blockArray[2]) ? `Nota de recuperación (${rpArray[2]}) es menor que la calificación del periodo (${blockArray[2]}). Prevalece la nota original.` : 'Nota de recuperación pedagógica'}
                                             />
                                           </td>
                                         )}
@@ -5467,12 +6311,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           </div>
                                         </td>
                                         {showRP4 && (
-                                          <td style={{ backgroundColor: 'rgba(239, 68, 68, 0.04)' }}>
+                                          <td style={{ backgroundColor: (rpArray[3] !== null && rpArray[3] !== '' && Number(rpArray[3]) < blockArray[3]) ? 'rgba(220, 53, 69, 0.12)' : 'rgba(239, 68, 68, 0.04)' }}>
                                             <input 
                                               type="number" 
                                               className="form-input" 
-                                              style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={rpArray[3] !== null ? rpArray[3] : ''}
+                                              style={getRpInputStyle(rpArray[3], blockArray[3])}
+                                              value={rpArray[3] !== null && rpArray[3] !== undefined ? rpArray[3] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
                                               min="0"
                                               max="100"
@@ -5655,16 +6499,50 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías no suman ni restan al total.
                 </p>
 
-                <div className="attendance-month-tabs">
-                  {['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'].map(m => (
-                    <button 
-                      key={m} 
-                      className={`attendance-month-btn ${selectedAttendanceMonth === m ? 'active' : ''}`}
-                      onClick={() => setSelectedAttendanceMonth(m)}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+                  <div className="attendance-month-tabs" style={{ marginBottom: 0 }}>
+                    {['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'].map(m => (
+                      <button 
+                        key={m} 
+                        className={`attendance-month-btn ${selectedAttendanceMonth === m ? 'active' : ''}`}
+                        onClick={() => setSelectedAttendanceMonth(m)}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+
+                  {selectedGrade && selectedSubject && (
+                    <button
+                      className="btn btn-success"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        backgroundColor: '#107c41',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '0.88rem',
+                        padding: '0.6rem 1.2rem',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: '0 3px 10px rgba(16, 124, 65, 0.25)',
+                        transition: 'all 0.2s ease-in-out'
+                      }}
+                      onClick={exportAttendanceToExcel}
+                      title="Exportar asistencia de esta materia a un archivo Excel (.xlsx)"
                     >
-                      {m}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                      </svg>
+                      Exportar Asistencia a Excel
                     </button>
-                  ))}
+                  )}
                 </div>
 
                 {selectedGrade && selectedSubject ? (

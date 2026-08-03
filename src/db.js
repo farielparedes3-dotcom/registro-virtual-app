@@ -4,7 +4,6 @@ import {
   collection, 
   doc, 
   setDoc, 
-  deleteDoc, 
   onSnapshot, 
   writeBatch,
   getDocs
@@ -40,7 +39,7 @@ if (isFirebaseEnabled) {
 // Memory caches to prevent infinite write loops in useEffects
 const remoteCache = {};
 
-// Helper: safe equals check to skip writes
+// Helper: safe equals check to skip redundant writes
 const hasChanged = (key, data) => {
   const serialized = JSON.stringify(data);
   if (remoteCache[key] === serialized) {
@@ -66,45 +65,54 @@ export const dbService = {
     if (!isFirebaseEnabled) {
       if (!fallbackSubscribers['users']) fallbackSubscribers['users'] = [];
       fallbackSubscribers['users'].push(callback);
-      // load initial
       const saved = localStorage.getItem('users');
       if (saved) callback(JSON.parse(saved));
       return () => {};
     }
     return onSnapshot(collection(firestore, 'users'), (snapshot) => {
       const usersList = [];
-      snapshot.forEach(doc => {
-        usersList.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach(docItem => {
+        usersList.push({ id: docItem.id, ...docItem.data() });
       });
       remoteCache['users'] = JSON.stringify(usersList);
+      localStorage.setItem('users', JSON.stringify(usersList));
       callback(usersList);
     });
   },
   async saveUsers(usersList) {
     if (!hasChanged('users', usersList)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('users', JSON.stringify(usersList));
-      triggerFallbackUpdate('users', usersList);
-      return;
+    localStorage.setItem('users', JSON.stringify(usersList));
+    triggerFallbackUpdate('users', usersList);
+    if (!isFirebaseEnabled) return;
+
+    try {
+      const querySnapshot = await getDocs(collection(firestore, 'users'));
+      const existingIds = new Set();
+      querySnapshot.forEach(d => existingIds.add(d.id));
+
+      const ops = [];
+      usersList.forEach(user => {
+        const { id, ...data } = user;
+        ops.push({ type: 'set', ref: doc(firestore, 'users', id), data });
+        existingIds.delete(id);
+      });
+
+      existingIds.forEach(id => {
+        ops.push({ type: 'delete', ref: doc(firestore, 'users', id) });
+      });
+
+      for (let i = 0; i < ops.length; i += 400) {
+        const batch = writeBatch(firestore);
+        const chunk = ops.slice(i, i + 400);
+        chunk.forEach(op => {
+          if (op.type === 'set') batch.set(op.ref, op.data);
+          else if (op.type === 'delete') batch.delete(op.ref);
+        });
+        await batch.commit();
+      }
+    } catch (err) {
+      console.error('Error saving users to Firestore:', err);
     }
-    // Sync array to Firestore individual documents
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'users'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    usersList.forEach(user => {
-      const { id, ...data } = user;
-      const ref = doc(firestore, 'users', id);
-      batch.set(ref, data);
-      existingIds.delete(id);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'users', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 2. STUDENTS COLLECTION ---
@@ -118,37 +126,48 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'students'), (snapshot) => {
       const studentsList = [];
-      snapshot.forEach(doc => {
-        studentsList.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach(docItem => {
+        studentsList.push({ id: docItem.id, ...docItem.data() });
       });
       remoteCache['students'] = JSON.stringify(studentsList);
+      localStorage.setItem('students', JSON.stringify(studentsList));
       callback(studentsList);
     });
   },
   async saveStudents(studentsList) {
     if (!hasChanged('students', studentsList)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('students', JSON.stringify(studentsList));
-      triggerFallbackUpdate('students', studentsList);
-      return;
+    localStorage.setItem('students', JSON.stringify(studentsList));
+    triggerFallbackUpdate('students', studentsList);
+    if (!isFirebaseEnabled) return;
+
+    try {
+      const querySnapshot = await getDocs(collection(firestore, 'students'));
+      const existingIds = new Set();
+      querySnapshot.forEach(d => existingIds.add(d.id));
+
+      const ops = [];
+      studentsList.forEach(student => {
+        const { id, ...data } = student;
+        ops.push({ type: 'set', ref: doc(firestore, 'students', id), data });
+        existingIds.delete(id);
+      });
+
+      existingIds.forEach(id => {
+        ops.push({ type: 'delete', ref: doc(firestore, 'students', id) });
+      });
+
+      for (let i = 0; i < ops.length; i += 400) {
+        const batch = writeBatch(firestore);
+        const chunk = ops.slice(i, i + 400);
+        chunk.forEach(op => {
+          if (op.type === 'set') batch.set(op.ref, op.data);
+          else if (op.type === 'delete') batch.delete(op.ref);
+        });
+        await batch.commit();
+      }
+    } catch (err) {
+      console.error('Error saving students to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'students'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    studentsList.forEach(student => {
-      const { id, ...data } = student;
-      const ref = doc(firestore, 'students', id);
-      batch.set(ref, data);
-      existingIds.delete(id);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'students', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 3. CALENDAR EVENTS ---
@@ -162,37 +181,48 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'events'), (snapshot) => {
       const eventsList = [];
-      snapshot.forEach(doc => {
-        eventsList.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach(docItem => {
+        eventsList.push({ id: docItem.id, ...docItem.data() });
       });
       remoteCache['events'] = JSON.stringify(eventsList);
+      localStorage.setItem('s_events', JSON.stringify(eventsList));
       callback(eventsList);
     });
   },
   async saveEvents(eventsList) {
     if (!hasChanged('events', eventsList)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_events', JSON.stringify(eventsList));
-      triggerFallbackUpdate('events', eventsList);
-      return;
+    localStorage.setItem('s_events', JSON.stringify(eventsList));
+    triggerFallbackUpdate('events', eventsList);
+    if (!isFirebaseEnabled) return;
+
+    try {
+      const querySnapshot = await getDocs(collection(firestore, 'events'));
+      const existingIds = new Set();
+      querySnapshot.forEach(d => existingIds.add(d.id));
+
+      const ops = [];
+      eventsList.forEach(event => {
+        const { id, ...data } = event;
+        ops.push({ type: 'set', ref: doc(firestore, 'events', id), data });
+        existingIds.delete(id);
+      });
+
+      existingIds.forEach(id => {
+        ops.push({ type: 'delete', ref: doc(firestore, 'events', id) });
+      });
+
+      for (let i = 0; i < ops.length; i += 400) {
+        const batch = writeBatch(firestore);
+        const chunk = ops.slice(i, i + 400);
+        chunk.forEach(op => {
+          if (op.type === 'set') batch.set(op.ref, op.data);
+          else if (op.type === 'delete') batch.delete(op.ref);
+        });
+        await batch.commit();
+      }
+    } catch (err) {
+      console.error('Error saving events to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'events'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    eventsList.forEach(event => {
-      const { id, ...data } = event;
-      const ref = doc(firestore, 'events', id);
-      batch.set(ref, data);
-      existingIds.delete(id);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'events', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 4. ALERT WARNING LOGS ---
@@ -206,38 +236,49 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'alert_logs'), (snapshot) => {
       const logsList = [];
-      snapshot.forEach(doc => {
-        logsList.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach(docItem => {
+        logsList.push({ id: docItem.id, ...docItem.data() });
       });
       logsList.sort((a,b) => b.id - a.id);
       remoteCache['alert_logs'] = JSON.stringify(logsList);
+      localStorage.setItem('s_alert_logs', JSON.stringify(logsList));
       callback(logsList);
     });
   },
   async saveAlertLogs(logsList) {
     if (!hasChanged('alert_logs', logsList)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_alert_logs', JSON.stringify(logsList));
-      triggerFallbackUpdate('alert_logs', logsList);
-      return;
+    localStorage.setItem('s_alert_logs', JSON.stringify(logsList));
+    triggerFallbackUpdate('alert_logs', logsList);
+    if (!isFirebaseEnabled) return;
+
+    try {
+      const querySnapshot = await getDocs(collection(firestore, 'alert_logs'));
+      const existingIds = new Set();
+      querySnapshot.forEach(d => existingIds.add(d.id));
+
+      const ops = [];
+      logsList.forEach(log => {
+        const { id, ...data } = log;
+        ops.push({ type: 'set', ref: doc(firestore, 'alert_logs', id), data });
+        existingIds.delete(id);
+      });
+
+      existingIds.forEach(id => {
+        ops.push({ type: 'delete', ref: doc(firestore, 'alert_logs', id) });
+      });
+
+      for (let i = 0; i < ops.length; i += 400) {
+        const batch = writeBatch(firestore);
+        const chunk = ops.slice(i, i + 400);
+        chunk.forEach(op => {
+          if (op.type === 'set') batch.set(op.ref, op.data);
+          else if (op.type === 'delete') batch.delete(op.ref);
+        });
+        await batch.commit();
+      }
+    } catch (err) {
+      console.error('Error saving alert logs to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'alert_logs'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    logsList.forEach(log => {
-      const { id, ...data } = log;
-      const ref = doc(firestore, 'alert_logs', id);
-      batch.set(ref, data);
-      existingIds.delete(id);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'alert_logs', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 5. GLOBAL CONFIGS (Subjects, Grades, Staff, Attendance) ---
@@ -263,8 +304,8 @@ export const dbService = {
 
     return onSnapshot(collection(firestore, 'config'), (snapshot) => {
       const conf = {};
-      snapshot.forEach(doc => {
-        conf[doc.id] = doc.data();
+      snapshot.forEach(docItem => {
+        conf[docItem.id] = docItem.data();
       });
       remoteCache['config'] = JSON.stringify(conf);
       callback({
@@ -278,37 +319,45 @@ export const dbService = {
   },
   async saveSubjects(subjects) {
     if (!hasChanged('config_subjects', subjects)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_subjects', JSON.stringify(subjects));
-      return;
+    localStorage.setItem('s_subjects', JSON.stringify(subjects));
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'config', 'subjects'), { data: subjects });
+    } catch (e) {
+      console.error('Error saving subjects to Firestore:', e);
     }
-    await setDoc(doc(firestore, 'config', 'subjects'), { data: subjects });
   },
   async saveGrades(grades) {
     if (!hasChanged('config_grades', grades)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_grades', JSON.stringify(grades));
-      return;
+    localStorage.setItem('s_grades', JSON.stringify(grades));
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'config', 'grades'), { data: grades });
+    } catch (e) {
+      console.error('Error saving grades to Firestore:', e);
     }
-    await setDoc(doc(firestore, 'config', 'grades'), { data: grades });
   },
   async saveGradeStaff(staff) {
     if (!hasChanged('config_staff', staff)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_grade_staff', JSON.stringify(staff));
-      return;
+    localStorage.setItem('s_grade_staff', JSON.stringify(staff));
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'config', 'staff'), { data: staff });
+    } catch (e) {
+      console.error('Error saving grade staff to Firestore:', e);
     }
-    await setDoc(doc(firestore, 'config', 'staff'), { data: staff });
   },
   async saveAttendanceConfigs(monthlyDays, attendanceDates) {
     const payload = { monthlyDays, attendanceDates };
     if (!hasChanged('config_attendance', payload)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_monthly_worked_days', JSON.stringify(monthlyDays));
-      localStorage.setItem('s_attendance_day_dates', JSON.stringify(attendanceDates));
-      return;
+    localStorage.setItem('s_monthly_worked_days', JSON.stringify(monthlyDays));
+    localStorage.setItem('s_attendance_day_dates', JSON.stringify(attendanceDates));
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'config', 'attendance'), payload);
+    } catch (e) {
+      console.error('Error saving attendance configs to Firestore:', e);
     }
-    await setDoc(doc(firestore, 'config', 'attendance'), payload);
   },
 
   // --- 6. EVALUATION INSTRUMENT CONFIGURATIONS ---
@@ -322,36 +371,29 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'eval_configs'), (snapshot) => {
       const configs = {};
-      snapshot.forEach(doc => {
-        configs[doc.id] = doc.data().blocks;
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        if (docItem.id === 'store') {
+          Object.assign(configs, data.blocks || data.configs || {});
+        } else if (data && data.blocks !== undefined) {
+          configs[docItem.id] = data.blocks;
+        }
       });
       remoteCache['eval_configs'] = JSON.stringify(configs);
+      localStorage.setItem('s_eval_configs', JSON.stringify(configs));
       callback(configs);
     });
   },
   async saveEvalConfigs(configsObject) {
     if (!hasChanged('eval_configs', configsObject)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_eval_configs', JSON.stringify(configsObject));
-      triggerFallbackUpdate('eval_configs', configsObject);
-      return;
+    localStorage.setItem('s_eval_configs', JSON.stringify(configsObject));
+    triggerFallbackUpdate('eval_configs', configsObject);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'eval_configs', 'store'), { blocks: configsObject });
+    } catch (err) {
+      console.error('Error saving eval configs to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'eval_configs'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    Object.keys(configsObject).forEach(key => {
-      const ref = doc(firestore, 'eval_configs', key);
-      batch.set(ref, { blocks: configsObject[key] });
-      existingIds.delete(key);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'eval_configs', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 7. STUDENT ASSESSMENTS (RUBRIC CRITERIA RATINGS) ---
@@ -365,36 +407,29 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'student_assessments'), (snapshot) => {
       const assessments = {};
-      snapshot.forEach(doc => {
-        assessments[doc.id] = doc.data().ratings;
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        if (docItem.id === 'store') {
+          Object.assign(assessments, data.ratings || data.assessments || {});
+        } else if (data && data.ratings !== undefined) {
+          assessments[docItem.id] = data.ratings;
+        }
       });
       remoteCache['student_assessments'] = JSON.stringify(assessments);
+      localStorage.setItem('s_student_assessments', JSON.stringify(assessments));
       callback(assessments);
     });
   },
   async saveStudentAssessments(assessmentsObject) {
     if (!hasChanged('student_assessments', assessmentsObject)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_student_assessments', JSON.stringify(assessmentsObject));
-      triggerFallbackUpdate('student_assessments', assessmentsObject);
-      return;
+    localStorage.setItem('s_student_assessments', JSON.stringify(assessmentsObject));
+    triggerFallbackUpdate('student_assessments', assessmentsObject);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'student_assessments', 'store'), { ratings: assessmentsObject });
+    } catch (err) {
+      console.error('Error saving student assessments to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'student_assessments'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    Object.keys(assessmentsObject).forEach(key => {
-      const ref = doc(firestore, 'student_assessments', key);
-      batch.set(ref, { ratings: assessmentsObject[key] });
-      existingIds.delete(key);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'student_assessments', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 8. STUDENT FINAL/PERIOD GRADES ---
@@ -408,36 +443,29 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'student_rp_grades'), (snapshot) => {
       const rpGrades = {};
-      snapshot.forEach(doc => {
-        rpGrades[doc.id] = doc.data().grades;
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        if (docItem.id === 'store') {
+          Object.assign(rpGrades, data.grades || {});
+        } else if (data && data.grades !== undefined) {
+          rpGrades[docItem.id] = data.grades;
+        }
       });
       remoteCache['student_rp_grades'] = JSON.stringify(rpGrades);
+      localStorage.setItem('s_student_rp_grades', JSON.stringify(rpGrades));
       callback(rpGrades);
     });
   },
   async saveStudentRpGrades(rpGradesObject) {
     if (!hasChanged('student_rp_grades', rpGradesObject)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_student_rp_grades', JSON.stringify(rpGradesObject));
-      triggerFallbackUpdate('student_rp_grades', rpGradesObject);
-      return;
+    localStorage.setItem('s_student_rp_grades', JSON.stringify(rpGradesObject));
+    triggerFallbackUpdate('student_rp_grades', rpGradesObject);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'student_rp_grades', 'store'), { grades: rpGradesObject });
+    } catch (err) {
+      console.error('Error saving student RP grades to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'student_rp_grades'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    Object.keys(rpGradesObject).forEach(key => {
-      const ref = doc(firestore, 'student_rp_grades', key);
-      batch.set(ref, { grades: rpGradesObject[key] });
-      existingIds.delete(key);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'student_rp_grades', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 9. STUDENT ATTENDANCE DETAILS ---
@@ -451,36 +479,29 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'student_attendance'), (snapshot) => {
       const attendance = {};
-      snapshot.forEach(doc => {
-        attendance[doc.id] = doc.data().detail;
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        if (docItem.id === 'store') {
+          Object.assign(attendance, data.detail || {});
+        } else if (data && data.detail !== undefined) {
+          attendance[docItem.id] = data.detail;
+        }
       });
       remoteCache['student_attendance'] = JSON.stringify(attendance);
+      localStorage.setItem('s_student_attendance_detail', JSON.stringify(attendance));
       callback(attendance);
     });
   },
   async saveStudentAttendance(attendanceObject) {
     if (!hasChanged('student_attendance', attendanceObject)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_student_attendance_detail', JSON.stringify(attendanceObject));
-      triggerFallbackUpdate('student_attendance', attendanceObject);
-      return;
+    localStorage.setItem('s_student_attendance_detail', JSON.stringify(attendanceObject));
+    triggerFallbackUpdate('student_attendance', attendanceObject);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'student_attendance', 'store'), { detail: attendanceObject });
+    } catch (err) {
+      console.error('Error saving student attendance to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'student_attendance'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    Object.keys(attendanceObject).forEach(key => {
-      const ref = doc(firestore, 'student_attendance', key);
-      batch.set(ref, { detail: attendanceObject[key] });
-      existingIds.delete(key);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'student_attendance', id));
-    });
-
-    await batch.commit();
   },
 
   // --- 10. PROMOTION GRADES ---
@@ -494,35 +515,28 @@ export const dbService = {
     }
     return onSnapshot(collection(firestore, 'promotion_grades'), (snapshot) => {
       const promGrades = {};
-      snapshot.forEach(doc => {
-        promGrades[doc.id] = doc.data().grades;
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        if (docItem.id === 'store') {
+          Object.assign(promGrades, data.grades || {});
+        } else if (data && data.grades !== undefined) {
+          promGrades[docItem.id] = data.grades;
+        }
       });
       remoteCache['promotion_grades'] = JSON.stringify(promGrades);
+      localStorage.setItem('s_promotion_grades', JSON.stringify(promGrades));
       callback(promGrades);
     });
   },
   async savePromotionGrades(promotionGradesObject) {
     if (!hasChanged('promotion_grades', promotionGradesObject)) return;
-    if (!isFirebaseEnabled) {
-      localStorage.setItem('s_promotion_grades', JSON.stringify(promotionGradesObject));
-      triggerFallbackUpdate('promotion_grades', promotionGradesObject);
-      return;
+    localStorage.setItem('s_promotion_grades', JSON.stringify(promotionGradesObject));
+    triggerFallbackUpdate('promotion_grades', promotionGradesObject);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'promotion_grades', 'store'), { grades: promotionGradesObject });
+    } catch (err) {
+      console.error('Error saving promotion grades to Firestore:', err);
     }
-    const batch = writeBatch(firestore);
-    const querySnapshot = await getDocs(collection(firestore, 'promotion_grades'));
-    const existingIds = new Set();
-    querySnapshot.forEach(doc => existingIds.add(doc.id));
-
-    Object.keys(promotionGradesObject).forEach(key => {
-      const ref = doc(firestore, 'promotion_grades', key);
-      batch.set(ref, { grades: promotionGradesObject[key] });
-      existingIds.delete(key);
-    });
-
-    existingIds.forEach(id => {
-      batch.delete(doc(firestore, 'promotion_grades', id));
-    });
-
-    await batch.commit();
   }
 };
