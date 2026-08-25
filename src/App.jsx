@@ -19,6 +19,21 @@ const DEFAULT_SUBJECTS = {
 
 const DEFAULT_GRADES = ['1ro A', '2do A', '3ro A', '4to A', '5to A', '6to A'];
 
+const MOTIVATIONAL_QUOTES = [
+  "La educación es el pasaporte hacia el futuro, el mañana pertenece a quienes se preparan para él hoy. — Malcolm X",
+  "El aprendizaje es un tesoro que seguirá a su dueño a todas partes. — Proverbio Chino",
+  "La calidad no es un acto, es un hábito. Hagamos las cosas con excelencia hoy. — Aristóteles",
+  "Un maestro afecta la eternidad; nunca se sabe dónde termina su influencia. — Henry Adams",
+  "El éxito en la vida no se mide por lo que logras, sino por los obstáculos que superas. — Booker T. Washington",
+  "Enseñar es aprender dos veces. — Joseph Joubert",
+  "La educación no cambia el mundo, cambia a las personas que van a cambiar el mundo. — Paulo Freire",
+  "El arte supremo del maestro consiste en despertar el goce de la expresión creativa y del conocimiento. — Albert Einstein",
+  "La perseverancia puede transformar el fracaso en un logro extraordinario. — Matt Biondi",
+  "La educación es el arma más poderosa que puedes usar para cambiar el mundo. — Nelson Mandela",
+  "Haz de cada día tu obra maestra. — John Wooden",
+  "El verdadero maestro defiende a sus alumnos contra su propia influencia personal. — Amos Bronson Alcott"
+];
+
 const getSubjectsList = () => {
   try {
     const saved = localStorage.getItem('s_subjects');
@@ -45,6 +60,7 @@ const DEFAULT_USERS = [
     email: 'profesor.mate@school.edu', 
     password: 'profe123', 
     role: 'teacher', 
+    classroomGrade: '1ro A',
     assignments: [
       { grade: '1ro A', subject: 'matematica' },
       { grade: '2do A', subject: 'matematica' },
@@ -58,6 +74,7 @@ const DEFAULT_USERS = [
     email: 'profesor.ciencias@school.edu', 
     password: 'profe123', 
     role: 'teacher', 
+    classroomGrade: '',
     assignments: [
       { grade: '1ro A', subject: 'ciencias_naturaleza' },
       { grade: '2do A', subject: 'ciencias_naturaleza' }
@@ -70,11 +87,25 @@ const DEFAULT_USERS = [
     email: 'profesor.lengua@school.edu', 
     password: 'profe123', 
     role: 'teacher', 
+    classroomGrade: '',
     assignments: [
       { grade: '1ro A', subject: 'lengua_espanola' },
       { grade: '2do A', subject: 'lengua_espanola' }
     ], 
     active: true 
+  },
+  {
+    id: 'u5',
+    name: 'Prof. Mario Paredes',
+    email: 'mario.paredes@docente.edu.do',
+    password: 'mario123',
+    role: 'teacher',
+    classroomGrade: '4to A',
+    assignments: [
+      { grade: '4to A', subject: 'matematica' },
+      { grade: '4to A', subject: 'ciencias_naturaleza' }
+    ],
+    active: true
   }
 ];
 
@@ -789,6 +820,17 @@ export default function App() {
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('s_users');
     let list = saved ? JSON.parse(saved) : DEFAULT_USERS;
+    
+    // Ensure all existing teachers have classroomGrade
+    list = list.map(u => {
+      if (u.role === 'teacher' && u.classroomGrade === undefined) {
+        let cg = '';
+        if (u.id === 'u2' || u.email === 'profesor.mate@school.edu') cg = '1ro A';
+        return { ...u, classroomGrade: cg };
+      }
+      return u;
+    });
+
     const hasFariel = list.some(u => u.email === 'farielparedes3@gmail.com');
     if (!hasFariel) {
       list = list.map(u => u.id === 'u1' ? { ...u, name: 'Fariel Paredes', email: 'farielparedes3@gmail.com', password: 'Lina2754' } : u);
@@ -803,8 +845,26 @@ export default function App() {
           active: true
         });
       }
-      localStorage.setItem('s_users', JSON.stringify(list));
     }
+
+    const hasMario = list.some(u => u.email === 'mario.paredes@docente.edu.do');
+    if (!hasMario) {
+      list.push({
+        id: 'u5',
+        name: 'Prof. Mario Paredes',
+        email: 'mario.paredes@docente.edu.do',
+        password: 'mario123',
+        role: 'teacher',
+        classroomGrade: '4to A',
+        assignments: [
+          { grade: '4to A', subject: 'matematica' },
+          { grade: '4to A', subject: 'ciencias_naturaleza' }
+        ],
+        active: true
+      });
+    }
+
+    localStorage.setItem('s_users', JSON.stringify(list));
     return list;
   });
 
@@ -929,14 +989,41 @@ export default function App() {
     score: 0,
     period: '',
     sending: false,
-    progress: 0
+    progress: 0,
+    type: 'académico', // 'académico' | 'conductual'
+    selectedSituations: [],
+    customSituation: '',
+    antecedent: '',
+    customAntecedent: '',
+    comments: '',
+    modifiedWithAI: false,
+    finalText: '',
+    coordinatorEmail: '',
+    counselorEmail: ''
   });
   const [alertLogs, setAlertLogs] = useState(() => {
     const saved = localStorage.getItem('s_alert_logs');
     return saved ? JSON.parse(saved) : [];
   });
+  const [folderExplorerLevel, setFolderExplorerLevel] = useState('root'); // 'root' | 'grade' | 'student'
+  const [folderExplorerGrade, setFolderExplorerGrade] = useState('');
+  const [folderExplorerStudentName, setFolderExplorerStudentName] = useState('');
+  const [selectedManualReportStudentId, setSelectedManualReportStudentId] = useState('');
+  const [viewingReportLog, setViewingReportLog] = useState(null);
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedBulletinStudentId, setSelectedBulletinStudentId] = useState('');
+  const [salida1Name, setSalida1Name] = useState(() => {
+    return localStorage.getItem('s_salida1_name') || 'Química';
+  });
+  const [salida2Name, setSalida2Name] = useState(() => {
+    return localStorage.getItem('s_salida2_name') || 'Computación';
+  });
+  const [studentComments, setStudentComments] = useState(() => {
+    const saved = localStorage.getItem('s_student_comments');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [randomQuote, setRandomQuote] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
@@ -1293,6 +1380,25 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    localStorage.setItem('s_salida1_name', salida1Name);
+  }, [salida1Name]);
+
+  useEffect(() => {
+    localStorage.setItem('s_salida2_name', salida2Name);
+  }, [salida2Name]);
+
+  useEffect(() => {
+    localStorage.setItem('s_student_comments', JSON.stringify(studentComments));
+  }, [studentComments]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const idx = Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length);
+      setRandomQuote(MOTIVATIONAL_QUOTES[idx]);
+    }
+  }, [currentUser]);
+
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher') {
@@ -1312,8 +1418,137 @@ export default function App() {
       if (gradeSubjects.length > 0) {
         setSelectedSubject(gradeSubjects[0]);
       }
+      setSelectedBulletinStudentId('');
     }
   }, [selectedGrade, currentUser]);
+
+  const handleUpdatePromoField = (studentId, subjectKey, field, val) => {
+    const promoKey = `${studentId}_${subjectKey}`;
+    const numVal = val === '' ? null : Number(val);
+    setPromotionGradesAndSave(prev => ({
+      ...prev,
+      [promoKey]: {
+        ...(prev[promoKey] || { cec: null, ceex: null, ce: null }),
+        [field]: numVal
+      }
+    }));
+  };
+
+  const handleUpdateCustomSubjectGrade = (studentId, subjectKey, bloqueKey, compIdx, val) => {
+    const numVal = val === '' ? 80 : Math.min(100, Math.max(0, Number(val) || 0));
+    setStudentsAndSave(prev => prev.map(s => {
+      if (s.id !== studentId) return s;
+      const currentGrades = s.grades || {};
+      const subjectData = currentGrades[subjectKey] || {
+        bloque1: [80, 80, 80, 80],
+        bloque2: [80, 80, 80, 80],
+        bloque3: [80, 80, 80, 80],
+        bloque4: [80, 80, 80, 80]
+      };
+      let bloqueArray;
+      if (compIdx === -1) {
+        bloqueArray = [numVal, numVal, numVal, numVal];
+      } else {
+        bloqueArray = [...(subjectData[bloqueKey] || [80, 80, 80, 80])];
+        bloqueArray[compIdx] = numVal;
+      }
+      
+      return {
+        ...s,
+        grades: {
+          ...currentGrades,
+          [subjectKey]: {
+            ...subjectData,
+            [bloqueKey]: bloqueArray
+          }
+        }
+      };
+    }));
+  };
+
+  const getAttendanceStats = (studentId, bloqueKey) => {
+    const bloqueMonths = {
+      bloque1: ['Agosto', 'Septiembre', 'Octubre'],
+      bloque2: ['Noviembre', 'Diciembre', 'Enero'],
+      bloque3: ['Febrero', 'Marzo'],
+      bloque4: ['Abril', 'Mayo', 'Junio']
+    };
+    const months = bloqueMonths[bloqueKey] || [];
+    let present = 0;
+    let absent = 0;
+    
+    Object.keys(studentAttendanceDetail).forEach(key => {
+      if (key.startsWith(`${studentId}_`)) {
+        const parts = key.split('_');
+        const month = parts[2];
+        if (months.includes(month)) {
+          const val = studentAttendanceDetail[key];
+          if (val === 'P' || val === 'T') {
+            present++;
+          } else if (val === 'A') {
+            absent++;
+          }
+        }
+      }
+    });
+
+    if (present === 0 && absent === 0) {
+      if (bloqueKey === 'bloque1') return { present: 22, absent: 0 };
+      if (bloqueKey === 'bloque2') return { present: 20, absent: 1 };
+      if (bloqueKey === 'bloque3') return { present: 18, absent: 0 };
+      return { present: 21, absent: 1 };
+    }
+
+    return { present, absent };
+  };
+
+  const getMonthlyAttendanceStats = (studentId, monthName, fallbackWorkedDays) => {
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+    
+    Object.keys(studentAttendanceDetail).forEach(key => {
+      if (key.startsWith(`${studentId}_`)) {
+        const parts = key.split('_');
+        const month = parts[2];
+        if (month === monthName) {
+          const val = studentAttendanceDetail[key];
+          if (val === 'P') {
+            present++;
+          } else if (val === 'T') {
+            late++;
+          } else if (val === 'A') {
+            absent++;
+          }
+        }
+      }
+    });
+
+    if (present === 0 && absent === 0 && late === 0) {
+      const mockAbs = Math.random() > 0.85 ? 1 : 0;
+      const mockLate = Math.random() > 0.8 ? 1 : 0;
+      const mockPres = fallbackWorkedDays - mockAbs - mockLate;
+      return {
+        workedDays: fallbackWorkedDays,
+        present: mockPres,
+        late: mockLate,
+        absent: mockAbs,
+        pct: Math.round((mockPres / fallbackWorkedDays) * 100)
+      };
+    }
+
+    const totalRecorded = present + late + absent;
+    const workedDays = Math.max(totalRecorded, fallbackWorkedDays);
+    const pct = workedDays > 0 ? Math.round(((present + late) / workedDays) * 100) : 100;
+    
+    return {
+      workedDays,
+      present,
+      late,
+      absent,
+      pct
+    };
+  };
 
   // Sync edit state in Instruments Tab
   useEffect(() => {
@@ -1567,6 +1802,16 @@ export default function App() {
           ...u,
           assignments: u.assignments.filter((_, idx) => idx !== indexToRemove)
         };
+      }
+      return u;
+    }));
+  };
+
+  const handleUpdateClassroomGrade = (userId, newGrade) => {
+    if (currentUser.role !== 'admin') return;
+    setUsersAndSave(prev => prev.map(u => {
+      if (u.id === userId) {
+        return { ...u, classroomGrade: newGrade };
       }
       return u;
     }));
@@ -1948,9 +2193,207 @@ export default function App() {
       period,
       sending: false,
       progress: 0,
+      type: 'académico',
+      selectedSituations: [],
+      customSituation: '',
+      antecedent: 'Primera vez (Incidente aislado)',
+      customAntecedent: '',
+      comments: '',
+      modifiedWithAI: false,
+      finalText: '',
       coordinatorEmail: contacts.coordinator || '',
       counselorEmail: contacts.counselor || ''
     });
+  };
+
+  const compileReportText = (modalState) => {
+    if (modalState.modifiedWithAI && modalState.finalText) {
+      return modalState.finalText;
+    }
+    
+    const situationsStr = modalState.selectedSituations
+      .map(s => s === 'Otro (especificar)' ? modalState.customSituation : s)
+      .filter(Boolean)
+      .join(', ');
+    
+    const antecedentStr = modalState.antecedent === 'Otra (especificar)' 
+      ? modalState.customAntecedent 
+      : modalState.antecedent;
+    
+    const subName = modalState.subjectKey ? (subjects[modalState.subjectKey]?.name || modalState.subjectKey) : '';
+    const periodName = modalState.period ? (modalState.period === 'final' ? 'Fin de Año' : `Periodo ${modalState.period.replace('bloque', '')}`) : '';
+    
+    let text = `Estimados Coordinador y Orientador Encargados,\n\n`;
+    text += `Por este medio se emite un REPORTE ${modalState.type.toUpperCase()} formal en relación al estudiante ${modalState.student.name} del grado ${modalState.student.grade}.\n\n`;
+    
+    text += `DETALLE DEL CASO:\n`;
+    if (subName) {
+      text += `• Asignatura: ${subName}\n`;
+    }
+    if (modalState.score) {
+      text += `• Rendimiento/Calificación: ${modalState.score.toFixed(0)}/100 (${periodName})\n`;
+    }
+    if (situationsStr) {
+      text += `• Situaciones observadas: ${situationsStr}\n`;
+    }
+    if (antecedentStr) {
+      text += `• Persistencia de la situación: ${antecedentStr}\n`;
+    }
+    if (modalState.comments) {
+      text += `• Comentarios y observaciones del docente: ${modalState.comments}\n`;
+    }
+    
+    text += `\nSolicitamos gestionar una reunión de seguimiento o plan de apoyo con los padres o tutores del estudiante a la mayor brevedad posible.\n\n`;
+    text += `Atentamente,\nDirección / Equipo Docente del Liceo Ana Rosa Castillo`;
+    
+    return text;
+  };
+
+  const handleOptimizeReportWithAI = async () => {
+    const baseText = compileReportText(alertFormModal);
+    setAlertFormModal(prev => ({ ...prev, sending: true, progress: 15 }));
+    
+    const promptText = `
+Escribe una carta de reporte pedagógico formal y profesional para el Liceo Ana Rosa Castillo.
+Basándote únicamente en el siguiente reporte crudo:
+${baseText}
+
+INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
+1. Usa un tono pedagógico formal, asertivo y constructivo.
+2. Evita clichés genéricos y enfócate en describir la situación de manera concisa.
+3. No incluyas secciones que estén vacías, ni listas con respuestas negativas o desmarcadas.
+4. Genera ÚNICAMENTE el texto redactado final de la carta (con saludos formales, cuerpo y despedida). No agregues notas aclaratorias, preámbulos ni introducciones externas como "Aquí tienes tu carta" o similares.
+5. El reporte generado no debe contener viñetas rústicas, listas de viñetas ("•") ni datos brutos. Toda la información seleccionada (situaciones, materia, calificación, persistencia) debe estar integrada de forma fluida y natural en el texto narrativo de la carta.
+6. El resultado final debe ser limpio y listo para imprimirse o enviarse por correo.
+`;
+
+    if (aiProvider === 'gemini' && aiApiKey.trim()) {
+      try {
+        setAlertFormModal(prev => ({ ...prev, progress: 45 }));
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiApiKey}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }]
+          })
+        });
+        
+        setAlertFormModal(prev => ({ ...prev, progress: 75 }));
+        const result = await response.json();
+        const generated = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (generated) {
+          setAlertFormModal(prev => ({
+            ...prev,
+            modifiedWithAI: true,
+            finalText: generated.trim(),
+            sending: false,
+            progress: 0
+          }));
+        } else {
+          throw new Error('No se recibió texto generado de Gemini.');
+        }
+      } catch (error) {
+        console.error("AI report optimization failed:", error);
+        alert('Error al conectar con la API de Gemini. Se utilizará la optimización local simulada.');
+        runMockAIOptimization();
+      }
+    } else {
+      runMockAIOptimization();
+    }
+  };
+
+  const runMockAIOptimization = () => {
+    setTimeout(() => {
+      setAlertFormModal(prev => ({ ...prev, progress: 50 }));
+      setTimeout(() => {
+        setAlertFormModal(prev => {
+          const sName = prev.student?.name || 'Estudiante';
+          const grade = prev.student?.grade || '';
+          const typeStr = prev.type === 'académico' ? 'académico' : 'conductual';
+          const subName = prev.subjectKey ? (subjects[prev.subjectKey]?.name || prev.subjectKey) : '';
+          const periodName = prev.period ? (prev.period === 'final' ? 'Promedio Final' : `Periodo ${prev.period.replace('bloque', '')}`) : '';
+          
+          const situationsStr = prev.selectedSituations
+            .map(s => s === 'Otro (especificar)' ? prev.customSituation : s)
+            .filter(Boolean)
+            .join(', ');
+            
+          const antecedentStr = prev.antecedent === 'Otra (especificar)' 
+            ? prev.customAntecedent 
+            : prev.antecedent;
+
+          let caseDetails = `se han observado conductas que inciden en su desarrollo`;
+          if (situationsStr) {
+            caseDetails = `se han detectado las siguientes situaciones: ${situationsStr.toLowerCase()}`;
+          }
+
+          let schoolDetails = '';
+          if (subName && prev.score) {
+            schoolDetails = ` en la asignatura de ${subName}, registrando una calificación de ${prev.score.toFixed(0)}/100 durante el ${periodName}`;
+          } else if (subName) {
+            schoolDetails = ` en la asignatura de ${subName}`;
+          }
+
+          let persistDetails = '';
+          if (antecedentStr) {
+            persistDetails = ` Se hace constar que esta condición ${antecedentStr.toLowerCase()}.`;
+          }
+
+          let commentDetails = '';
+          if (prev.comments) {
+            commentDetails = ` Observaciones adicionales del docente: "${prev.comments}".`;
+          }
+
+          const optText = `Estimados Coordinador y Orientador Encargados,
+
+Por este medio me dirijo a ustedes para formalizar el reporte pedagógico de tipo ${typeStr.toUpperCase()} del estudiante ${sName.toUpperCase()}, perteneciente al grado ${grade}.
+
+Durante el seguimiento en el aula, ${caseDetails}${schoolDetails}.${persistDetails}${commentDetails}
+
+Recomendamos iniciar un plan de acompañamiento conjunto y convocar a los padres del estudiante para establecer compromisos que apoyen su desarrollo integral.
+
+Atentamente,
+Equipo Docente del Liceo Ana Rosa Castillo`;
+
+          return {
+            ...prev,
+            modifiedWithAI: true,
+            finalText: optText,
+            sending: false,
+            progress: 0
+          };
+        });
+      }, 500);
+    }, 400);
+  };
+
+  const handleRegisterSentReportLog = () => {
+    const contentText = compileReportText(alertFormModal);
+    const newLog = {
+      id: Date.now().toString(),
+      studentId: alertFormModal.student.id,
+      studentName: alertFormModal.student.name,
+      grade: alertFormModal.student.grade,
+      subjectName: alertFormModal.subjectKey ? (subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey) : 'Incidencia Directa',
+      periodName: alertFormModal.period ? (alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`) : 'N/A',
+      score: alertFormModal.score ? alertFormModal.score.toFixed(0) : 'N/A',
+      coordinator: alertFormModal.coordinatorEmail,
+      counselor: alertFormModal.counselorEmail,
+      timestamp: new Date().toLocaleString(),
+      type: alertFormModal.type,
+      selectedSituations: alertFormModal.selectedSituations,
+      customSituation: alertFormModal.customSituation,
+      antecedent: alertFormModal.antecedent,
+      customAntecedent: alertFormModal.customAntecedent,
+      comments: alertFormModal.comments,
+      modifiedWithAI: alertFormModal.modifiedWithAI,
+      finalText: contentText
+    };
+    
+    setAlertLogsAndSave(logs => [newLog, ...logs]);
+    setAlertFormModal(prev => ({ ...prev, isOpen: false }));
   };
 
   const handleSimulateSendAlert = () => {
@@ -1966,29 +2409,411 @@ export default function App() {
         if (prev.progress >= 100) {
           clearInterval(interval);
           
+          const contentText = compileReportText(prev);
+          
           const newLog = {
             id: Date.now().toString(),
+            studentId: prev.student.id,
             studentName: prev.student.name,
             grade: prev.student.grade,
-            subjectName: subjects[prev.subjectKey]?.name || prev.subjectKey,
-            periodName: prev.period === 'final' ? 'Promedio Final' : `Periodo ${prev.period.replace('bloque', '')}`,
-            score: prev.score.toFixed(0),
+            subjectName: prev.subjectKey ? (subjects[prev.subjectKey]?.name || prev.subjectKey) : 'Incidencia Directa',
+            periodName: prev.period ? (prev.period === 'final' ? 'Promedio Final' : `Periodo ${prev.period.replace('bloque', '')}`) : 'N/A',
+            score: prev.score ? prev.score.toFixed(0) : 'N/A',
             coordinator: prev.coordinatorEmail,
             counselor: prev.counselorEmail,
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            type: prev.type,
+            selectedSituations: prev.selectedSituations,
+            customSituation: prev.customSituation,
+            antecedent: prev.antecedent,
+            customAntecedent: prev.customAntecedent,
+            comments: prev.comments,
+            modifiedWithAI: prev.modifiedWithAI,
+            finalText: contentText
           };
 
-          setAlertLogs(logs => [newLog, ...logs]);
-          alert('¡Alerta Académica emitida con éxito! Notificación enviada a:\n- Coordinador: ' + prev.coordinatorEmail + '\n- Orientador: ' + prev.counselorEmail);
+          setAlertLogsAndSave(logs => [newLog, ...logs]);
+          alert(`¡Reporte/Alerta generado con éxito!\nTipo: ${prev.type.toUpperCase()}\nEstudiante: ${prev.student.name}\n\nLos correos han sido simulados y guardados en el archivo digital.`);
           
           return { ...prev, isOpen: false, sending: false, progress: 0 };
         }
         return { ...prev, progress: prev.progress + 30 };
       });
-    }, 300);
+    }, 200);
   };
 
-  // --- Docente: Instrument Configuration ---
+  const handleLaunchManualReport = () => {
+    if (!selectedManualReportStudentId) {
+      alert('Por favor, selecciona un estudiante de la lista.');
+      return;
+    }
+    const stud = students.find(s => s.id === selectedManualReportStudentId);
+    if (stud) {
+      handleOpenAlertModal(stud, '', 0, '');
+    }
+  };
+
+  const renderReportsTabContent = () => {
+    const visibleGradesForExplorer = currentUser.role === 'admin' 
+      ? grades 
+      : (currentUser.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades);
+
+    const filteredAlertLogs = alertLogs.filter(log => {
+      if (currentUser.role === 'admin') return true;
+      return visibleGradesForExplorer.includes(log.grade);
+    });
+
+    const visibleStudents = students.filter(s => {
+      if (currentUser.role === 'admin') return true;
+      return visibleGradesForExplorer.includes(s.grade);
+    });
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2>Gestión de Reportes y Archivo Digital</h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '-1rem', marginBottom: 0 }}>
+              Registra incidencias disciplinarias o académicas, optimiza con Inteligencia Artificial y consulta el archivo de carpetas digitales.
+            </p>
+          </div>
+        </div>
+
+        {/* Manual Report Trigger Panel */}
+        <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <h4 style={{ margin: 0, color: 'var(--primary)' }}>⚡ Emitir Nuevo Reporte Manual</h4>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'end', flexWrap: 'wrap' }}>
+            <div className="form-group-compact" style={{ marginBottom: 0, flex: 1, minWidth: '240px' }}>
+              <label>Seleccionar Estudiante</label>
+              <select 
+                className="form-select"
+                value={selectedManualReportStudentId}
+                onChange={(e) => setSelectedManualReportStudentId(e.target.value)}
+                style={{ width: '100%', padding: '0.45rem' }}
+              >
+                <option value="">-- Buscar alumno --</option>
+                {visibleStudents.map(s => (
+                  <option key={s.id} value={s.id}>{s.name} ({s.grade})</option>
+                ))}
+              </select>
+            </div>
+            <button 
+              className="btn-primary" 
+              style={{ height: '38px', borderRadius: '6px', fontWeight: 'bold' }}
+              onClick={handleLaunchManualReport}
+            >
+              🚨 Crear Reporte
+            </button>
+          </div>
+        </div>
+
+        {/* Digital Folder Explorer */}
+        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h4 style={{ margin: 0, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>📂</span> Archivo Digital de Reportes (Carpetas)
+          </h4>
+
+          {/* Breadcrumbs */}
+          <div className="folder-breadcrumbs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', backgroundColor: 'var(--bg-primary)', borderRadius: '6px', fontSize: '0.82rem', border: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
+            <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setFolderExplorerLevel('root')}>
+              📁 Archivo Principal
+            </span>
+            {folderExplorerLevel !== 'root' && (
+              <>
+                <span style={{ color: 'var(--text-secondary)' }}>&gt;</span>
+                <span 
+                  style={{ color: folderExplorerLevel === 'grade' ? 'var(--text-primary)' : 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }} 
+                  onClick={() => {
+                    setFolderExplorerLevel('grade');
+                    setFolderExplorerStudentName('');
+                  }}
+                >
+                  🏫 {folderExplorerGrade} Reporte
+                </span>
+              </>
+            )}
+            {folderExplorerLevel === 'student' && (
+              <>
+                <span style={{ color: 'var(--text-secondary)' }}>&gt;</span>
+                <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                  👤 {folderExplorerStudentName}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Root view: Grades as folders */}
+          {folderExplorerLevel === 'root' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem', marginTop: '0.5rem' }}>
+              {visibleGradesForExplorer.map(g => {
+                const reportCount = filteredAlertLogs.filter(log => log.grade === g).length;
+                return (
+                  <div 
+                    key={g} 
+                    className="folder-item animate-fade-in" 
+                    onClick={() => {
+                      setFolderExplorerGrade(g);
+                      setFolderExplorerLevel('grade');
+                    }}
+                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.25s ease', boxShadow: 'var(--shadow-sm)' }}
+                  >
+                    <div style={{ fontSize: '3rem', marginBottom: '0.5rem', lineHeight: 1 }}>📁</div>
+                    <span style={{ fontWeight: 'bold', fontSize: '0.88rem', textAlign: 'center', color: 'var(--text-primary)' }}>{g} Reporte</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{reportCount} archivo(s)</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Grade view: Students as subfolders */}
+          {folderExplorerLevel === 'grade' && (() => {
+            const studentsWithReportsInGrade = Array.from(new Set(
+              filteredAlertLogs
+                .filter(log => log.grade === folderExplorerGrade)
+                .map(log => log.studentName)
+            )).sort();
+
+            return (
+              <div style={{ marginTop: '0.5rem' }}>
+                {studentsWithReportsInGrade.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2.5rem 1rem' }}>
+                    <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>📂</span>
+                    <p style={{ fontSize: '0.85rem' }}>No hay carpetas de estudiantes creadas para <strong>{folderExplorerGrade}</strong> aún.</p>
+                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', marginTop: '0.5rem' }} onClick={() => setFolderExplorerLevel('root')}>Volver Atrás</button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
+                    {studentsWithReportsInGrade.map(sName => {
+                      const studentReportsCount = filteredAlertLogs.filter(log => log.grade === folderExplorerGrade && log.studentName === sName).length;
+                      return (
+                        <div 
+                          key={sName} 
+                          className="folder-item animate-fade-in" 
+                          onClick={() => {
+                            setFolderExplorerStudentName(sName);
+                            setFolderExplorerLevel('student');
+                          }}
+                          style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.25s ease', boxShadow: 'var(--shadow-sm)' }}
+                        >
+                          <div style={{ fontSize: '3rem', marginBottom: '0.5rem', lineHeight: 1 }}>📂</div>
+                          <span style={{ fontWeight: 'bold', fontSize: '0.82rem', textAlign: 'center', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{sName}</span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{studentReportsCount} archivo(s)</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* Student view: Individual reports with dates and titles */}
+          {folderExplorerLevel === 'student' && (() => {
+            const studentLogs = filteredAlertLogs.filter(
+              log => log.grade === folderExplorerGrade && log.studentName === folderExplorerStudentName
+            );
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+                {studentLogs.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>
+                    <p style={{ fontSize: '0.85rem' }}>No hay reportes en esta carpeta.</p>
+                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }} onClick={() => setFolderExplorerLevel('grade')}>Volver Atrás</button>
+                  </div>
+                ) : (
+                  studentLogs.map(log => {
+                    const isBehavioral = log.type === 'conductual';
+                    const reportTitle = `${log.timestamp.split(',')[0].replace(/\//g, '-')} - ${isBehavioral ? 'Conductual' : 'Académico'}`;
+                    return (
+                      <div 
+                        key={log.id} 
+                        className="animate-fade-in" 
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', gap: '1rem', flexWrap: 'wrap' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <span style={{ fontSize: '1.4rem' }}>{isBehavioral ? '📕' : '📘'}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                              {reportTitle}
+                            </strong>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                              Asignatura: {log.subjectName} | Destinatarios: {log.coordinator || 'N/A'}, {log.counselor || 'N/A'}
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button 
+                            className="btn-secondary" 
+                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', fontWeight: 'bold' }}
+                            onClick={() => setViewingReportLog(log)}
+                          >
+                            👁️ Ver Detalle
+                          </button>
+                          {currentUser.role === 'admin' && (
+                            <button 
+                              className="btn-danger" 
+                              style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', fontWeight: 'bold', backgroundColor: 'rgba(234, 67, 53, 0.1)', color: '#ea4335', border: '1px solid rgba(234, 67, 53, 0.2)' }}
+                              onClick={() => {
+                                if (window.confirm('¿Está seguro de eliminar este reporte de forma permanente de la carpeta?')) {
+                                  setAlertLogsAndSave(prev => prev.filter(x => x.id !== log.id));
+                                  alert('Reporte eliminado de la base de datos.');
+                                }
+                              }}
+                            >
+                              🗑️ Borrar
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            );
+          })()}
+        </div>
+
+        {/* Log Viewer Detail Modal */}
+        {viewingReportLog && (
+          <div className="modal-backdrop" style={{ zIndex: 1100 }}>
+            <div className="modal-card animate-fade-in" style={{ maxWidth: '650px', width: '90%' }}>
+              <div className="modal-header no-print-element">
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>📄 Reporte Pedagógico Guardado</h3>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Detalle del archivo digital y opciones de impresión/envío</span>
+                </div>
+                <button 
+                  style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }} 
+                  onClick={() => setViewingReportLog(null)}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="modal-body" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                
+                {/* Print Sheet Styling - Wrapped in a printable container */}
+                <div className="report-print-sheet" style={{ padding: '2rem 1.5rem', backgroundColor: '#ffffff', color: '#000000', border: '1px solid #ddd', borderRadius: '4px', fontFamily: 'Courier New, Georgia, serif', fontSize: '0.9rem', lineHeight: '1.5', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)' }}>
+                  
+                  {/* School Header */}
+                  <div style={{ textAlign: 'center', borderBottom: '2px double #000000', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                    <h3 style={{ margin: '0 0 0.25rem 0', fontWeight: 'bold', letterSpacing: '1px', fontSize: '1.1rem', color: '#000000' }}>MINISTERIO DE EDUCACIÓN (MINERD)</h3>
+                    <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: '800', fontSize: '1rem', color: '#000000' }}>LICEO ANA ROSA CASTILLO</h4>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Distrito Escolar 14-01 Nagua | Reporte Oficial</span>
+                  </div>
+
+                  <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                    <strong style={{ fontSize: '1.05rem', textDecoration: 'underline', textTransform: 'uppercase' }}>
+                      REPORTE PEDAGÓGICO DE TIPO: {viewingReportLog.type?.toUpperCase() || 'ALERTA ACADÉMICA'}
+                    </strong>
+                  </div>
+
+                  {/* Metadata block */}
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ padding: '0.25rem 0', width: '140px', fontWeight: 'bold' }}>Estudiante:</td>
+                        <td style={{ padding: '0.25rem 0', borderBottom: '1px dashed #000000' }}>{viewingReportLog.studentName}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '0.25rem 0', fontWeight: 'bold' }}>Grado / Sección:</td>
+                        <td style={{ padding: '0.25rem 0', borderBottom: '1px dashed #000000' }}>{viewingReportLog.grade}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '0.25rem 0', fontWeight: 'bold' }}>Asignatura:</td>
+                        <td style={{ padding: '0.25rem 0', borderBottom: '1px dashed #000000' }}>{viewingReportLog.subjectName}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '0.25rem 0', fontWeight: 'bold' }}>Fecha Registro:</td>
+                        <td style={{ padding: '0.25rem 0', borderBottom: '1px dashed #000000' }}>{viewingReportLog.timestamp}</td>
+                      </tr>
+                      {viewingReportLog.score !== 'N/A' && (
+                        <tr>
+                          <td style={{ padding: '0.25rem 0', fontWeight: 'bold' }}>Calificación/Periodo:</td>
+                          <td style={{ padding: '0.25rem 0', borderBottom: '1px dashed #000000' }}>{viewingReportLog.score}% ({viewingReportLog.periodName})</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+
+                  {/* Document Body */}
+                  <div style={{ whiteSpace: 'pre-wrap', marginTop: '1rem', minHeight: '150px', padding: '0.5rem 0' }}>
+                    {viewingReportLog.finalText || viewingReportLog.comments}
+                  </div>
+
+                  {/* Signatures block */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginTop: '3.5rem', fontSize: '0.8rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ width: '180px', borderBottom: '1px solid #000000', marginBottom: '0.25rem' }}></div>
+                      <span>Docente Emisor</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ width: '180px', borderBottom: '1px solid #000000', marginBottom: '0.25rem' }}></div>
+                      <span>Coordinador/Orientador</span>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div className="modal-footer no-print-element" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <button className="btn-secondary" onClick={() => setViewingReportLog(null)}>Cerrar</button>
+                
+                <button 
+                  className="btn-secondary"
+                  onClick={() => {
+                    navigator.clipboard.writeText(viewingReportLog.finalText || '');
+                    alert('Texto copiado al portapapeles.');
+                  }}
+                >
+                  📋 Copiar Texto
+                </button>
+
+                {/* Resend actions */}
+                {(() => {
+                  const subjectStr = `[REPORTE LARC] Grado: ${viewingReportLog.grade} | Alumno: ${viewingReportLog.studentName} | Tipo: ${viewingReportLog.type?.toUpperCase()}`;
+                  const encodedTo = encodeURIComponent(`${viewingReportLog.coordinator},${viewingReportLog.counselor}`);
+                  const encodedSubject = encodeURIComponent(subjectStr);
+                  const encodedBody = encodeURIComponent(viewingReportLog.finalText || '');
+                  
+                  return (
+                    <>
+                      <a 
+                        href={`mailto:${viewingReportLog.coordinator};${viewingReportLog.counselor}?subject=${encodedSubject}&body=${encodedBody}`}
+                        className="btn-secondary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        ✉️ Reenviar Local
+                      </a>
+                      <a 
+                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#ea4335', fontWeight: 'bold' }}
+                      >
+                        📧 Gmail Web
+                      </a>
+                    </>
+                  );
+                })()}
+
+                <button 
+                  className="btn-primary" 
+                  onClick={() => window.print()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#7c3aed' }}
+                >
+                  🖨️ Imprimir / PDF
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
   const updateActiveInstrumentConfig = (updatedFields) => {
     setInstrumentEditState(prev => {
       const nextState = { ...prev, ...updatedFields };
@@ -3605,35 +4430,89 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     );
   };
 
-  // --- VIEW: Login ---
   if (!currentUser) {
     return (
       <div className="login-container">
-        {/* Left Side: Modern illustration and curves */}
+        {/* Left Side: Circular emblem and 12 Curricular modules grid */}
         <div className="login-left-illustration">
-          <div className="login-left-content">
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.78rem', color: '#ffb300', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
-                REGISTRO DE EVALUACIÓN DIGITAL
+          <div className="login-left-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            
+            {/* Circular Official Emblem */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+              <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '3px solid #ffb300', boxShadow: '0 8px 16px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <span style={{ fontSize: '2.5rem', zIndex: 2, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>🎓</span>
+                <span style={{ fontSize: '0.6rem', fontWeight: '900', color: '#ffb300', letterSpacing: '0.12em', marginTop: '0.15rem', zIndex: 2 }}>L.A.R.C.</span>
               </div>
-              <h1 className="school-title-highlight" style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0.25rem 0', letterSpacing: '0.02em', lineHeight: 1.2 }}>
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#ffb300', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>
+                Registro de Evaluación Digital
+              </div>
+              <h1 className="school-title-highlight" style={{ fontSize: '1.75rem', fontWeight: '900', color: '#ffffff', margin: '0.2rem 0', letterSpacing: '0.02em', lineHeight: 1.1, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                 LICEO ANA ROSA CASTILLO
               </h1>
-              <div style={{ marginTop: '0.75rem' }}>
-                <span className="district-badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.25)', padding: '0.45rem 1.25rem', borderRadius: '50px', fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'inline-block' }}>
-                  DISTRITO EDUCATIVO 14-01 NAGUA
+              <div style={{ marginTop: '0.5rem' }}>
+                <span className="district-badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '0.35rem 1rem', borderRadius: '50px', fontSize: '0.72rem', fontWeight: '800', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'inline-block' }}>
+                  Distrito Educativo 14-01 Nagua
                 </span>
               </div>
             </div>
 
-            <img 
-              src="/dr_education_banner.png" 
-              alt="Liceo Ana Rosa Castillo" 
-              className="login-illustration-img" 
-            />
+            {/* Grid of 12 Interactive Curricular Modules */}
+            <div className="login-feature-grid">
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📙</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Registro Anecdótico</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📈</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Escala Estimativa</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>☑️</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Lista de Cotejo</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📊</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Rúbricas</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>💬</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Asistente IA</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📂</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Planificación</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📕</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Reportes PDF</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📉</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Rendimiento</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📅</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Control Asistencia</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>📄</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Boletines</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>🚨</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Incidencias</span>
+              </div>
+              <div className="login-feature-card">
+                <span style={{ fontSize: '1.3rem', marginBottom: '0.15rem' }}>⚙️</span>
+                <span style={{ fontSize: '0.62rem', fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 1.1 }}>Configuración</span>
+              </div>
+            </div>
 
-            <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.92rem', lineHeight: '1.6', margin: '1.5rem 0 0 0', textAlign: 'center', maxWidth: '440px' }}>
-              Plataforma digital para la gestión del registro por competencias y rúbricas. Alineado con las normativas del Ministerio de Educación de la República Dominicana.
+            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.78rem', lineHeight: '1.4', margin: '1.5rem 0 0 0', textAlign: 'center', maxWidth: '440px' }}>
+              Plataforma digital para la gestión del registro por competencias y rúbricas del Liceo Ana Rosa Castillo.
             </p>
           </div>
         </div>
@@ -3680,21 +4559,49 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </button>
             </form>
 
-            <div className="demo-box-clean">
-              <div className="demo-title-clean">Ingreso Rápido de Demostración</div>
-              <div className="demo-buttons-clean">
-                <button className="btn-demo-clean" onClick={() => handleQuickLogin('farielparedes3@gmail.com', 'Lina2754')}>
-                  <span className="role">Administrador</span>
-                  <span className="email">farielparedes3@gmail.com</span>
-                </button>
-                <button className="btn-demo-clean" onClick={() => handleQuickLogin('profesor.mate@school.edu', 'profe123')}>
-                  <span className="role">Prof. Matemáticas</span>
-                  <span className="email">profesor.mate@school.edu</span>
+            <div className="demo-box-clean" style={{ marginTop: '1.5rem', borderTop: '1px dashed var(--border-color)', paddingTop: '1.25rem' }}>
+              <div className="demo-title-clean" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', textAlign: 'center' }}>
+                Ingreso Rápido de Demostración
+              </div>
+              <div className="demo-buttons-clean" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <button 
+                  type="button"
+                  className="btn-demo-clean" 
+                  onClick={() => handleQuickLogin('mario.paredes@docente.edu.do', 'mario123')}
+                  style={{ display: 'flex', flexDirection: 'column', padding: '0.6rem 1rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', transition: 'transform 0.2s', width: '100%' }}
+                >
+                  <span className="role" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary)' }}>👨‍🏫 Prof. Mario Paredes (Docente de Prueba)</span>
+                  <span className="email" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>mario.paredes@docente.edu.do (Un solo click)</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Floating PWA Installation prompt badge matching DocenteProRD look */}
+        {isInstallable && (
+          <div className="pwa-install-toast no-print-element" style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 9999, display: 'flex', alignItems: 'center', gap: '0.75rem', backgroundColor: '#003876', color: '#ffffff', padding: '0.75rem 1.25rem', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)', animation: 'slideInUp 0.3s ease', maxWidth: '340px' }}>
+            <span style={{ fontSize: '1.5rem' }}>📥</span>
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 'bold' }}>Instalar Liceo Ana Rosa Castillo</span>
+              <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.85)' }}>Acceso rápido y soporte offline</span>
+            </div>
+            <button 
+              type="button" 
+              onClick={handleInstallApp}
+              style={{ backgroundColor: '#ffffff', color: '#003876', border: 'none', borderRadius: '4px', padding: '0.35rem 0.75rem', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              Instalar
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setIsInstallable(false)}
+              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', marginLeft: '0.25rem' }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -3801,6 +4708,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
                 <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
                   Registro de Calificación General
+                </div>
+                <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
+                  🚨 Reportes e Incidencias
                 </div>
                 <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
                   Calendario Escolar
@@ -3987,6 +4897,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               <tr>
                                 <th>Docente</th>
                                 <th style={{ width: '100px' }}>Estado</th>
+                                <th>Aula Tutor (Encargado)</th>
                                 <th>Grados y Asignaturas Asignadas</th>
                                 <th style={{ width: '90px', textAlign: 'center' }}>Acción</th>
                               </tr>
@@ -4016,6 +4927,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                     >
                                       {u.active ? '✓ Activo' : '✕ Inactivo'}
                                     </button>
+                                  </td>
+                                  <td>
+                                    <select 
+                                      className="form-select"
+                                      value={u.classroomGrade || ''}
+                                      onChange={(e) => handleUpdateClassroomGrade(u.id, e.target.value)}
+                                      style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', minWidth: '120px' }}
+                                    >
+                                      <option value="">-- Sin Aula Tutor --</option>
+                                      {grades.map(g => (
+                                        <option key={g} value={g}>{g}</option>
+                                      ))}
+                                    </select>
                                   </td>
                                   <td>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -5625,6 +6549,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   {renderCalendarComponent()}
                 </div>
               )}
+
+              {activeTab === 'reports' && (
+                <div>
+                  {renderReportsTabContent()}
+                </div>
+              )}
             </section>
           </div>
         </div>
@@ -5729,6 +6659,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 setSidebarCollapsed(true);
               }}>Instrumentos de Eval.</div>
               <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control de Asistencia</div>
+              {currentUser.classroomGrade && (
+                <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>📄 Boletín de Calificaciones</div>
+              )}
+              <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>🚨 Reportes e Incidencias</div>
               <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>Instructivo de Uso</div>
               <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>Calendario Escolar</div>
             </div>
@@ -5738,12 +6672,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'dashboard' && (
               <div>
                 {/* Greeting Card with flat illustration banner */}
-                <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+                <div className="glass-panel welcome-banner-card-epic" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'relative', zIndex: 2 }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
                     <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
-                    <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
-                      Bienvenido al Registro de Evaluación Digital del Liceo Ana Rosa Castillo. Navega por tus asignaturas como en Google Classroom, asigne calificaciones y controle la asistencia de manera oficial.
+                    <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                      💡 {randomQuote || "Que hoy sea un día excelente para inspirar y educar con el corazón."}
                     </p>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
@@ -6810,6 +7744,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 {renderCalendarComponent()}
               </div>
             )}
+
+            {activeTab === 'reports' && (
+              <div>
+                {renderReportsTabContent()}
+              </div>
+            )}
             {activeTab === 'instruments' && (
               <div>
                 {renderClassroomBreadcrumbs()}
@@ -7620,6 +8560,490 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
               </div>
             )}
+
+            {/* TEACHER: Tab Bulletin (Boletín de Calificaciones) */}
+            {activeTab === 'bulletin' && (
+              <div>
+                {!currentUser.classroomGrade ? (
+                  <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                    <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>⚠️</span>
+                    <h3>Acceso Restringido</h3>
+                    <p style={{ fontSize: '0.85rem' }}>Esta sección es exclusiva para maestros encargados de aula (tutores de grado).</p>
+                  </div>
+                ) : (
+                  <div>
+                    {/* Controls - Hide when printing */}
+                    <div className="glass-panel no-print-element" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <h2 style={{ margin: 0, color: 'var(--primary)', fontWeight: 800 }}>📄 Boletín Oficial de Calificaciones</h2>
+                          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            Generación y descarga de boletines académicos a doble cara para el grado tutor: <strong>{currentUser.classroomGrade}</strong>.
+                          </p>
+                        </div>
+                        {selectedBulletinStudentId && (
+                          <button 
+                            onClick={() => window.print()}
+                            className="btn-primary" 
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', padding: '0.6rem 1.25rem', fontWeight: 'bold', color: '#ffffff', cursor: 'pointer' }}
+                          >
+                            🖨️ Descargar / Imprimir Boletín (PDF)
+                          </button>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Estudiante</label>
+                          <select 
+                            className="form-select" 
+                            value={selectedBulletinStudentId} 
+                            onChange={(e) => setSelectedBulletinStudentId(e.target.value)}
+                            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                          >
+                            <option value="">-- Seleccionar Estudiante --</option>
+                            {students.filter(s => s.grade === currentUser.classroomGrade).map(s => (
+                              <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Custom Salidas - Only for 4th, 5th, 6th Grade */}
+                        {['4to A', '5to A', '6to A'].includes(currentUser.classroomGrade) && (
+                          <>
+                            <div className="form-group" style={{ margin: 0 }}>
+                              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 1</label>
+                              <input 
+                                type="text" 
+                                className="form-input" 
+                                value={salida1Name} 
+                                onChange={(e) => setSalida1Name(e.target.value)}
+                                placeholder="Química, Biología, etc."
+                                style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                              />
+                            </div>
+                            <div className="form-group" style={{ margin: 0 }}>
+                              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 2</label>
+                              <input 
+                                type="text" 
+                                className="form-input" 
+                                value={salida2Name} 
+                                onChange={(e) => setSalida2Name(e.target.value)}
+                                placeholder="Computación, etc."
+                                style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {!selectedBulletinStudentId ? (
+                      <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                        <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>📄</span>
+                        <h3>Por favor, seleccione un estudiante de su grado tutor para visualizar su Boletín Oficial</h3>
+                        <p style={{ fontSize: '0.85rem' }}>El documento oficial se generará automáticamente a doble cara con los datos reales del registro escolar.</p>
+                      </div>
+                    ) : (
+                      (() => {
+                        const student = students.find(s => s.id === selectedBulletinStudentId);
+                        if (!student) return null;
+
+                        // Helper to compile grades
+                        const compileSubjectGrades = (stu, subKey) => {
+                          const sGrades = stu.grades?.[subKey] || {
+                            bloque1: [80, 80, 80, 80],
+                            bloque2: [80, 80, 80, 80],
+                            bloque3: [80, 80, 80, 80],
+                            bloque4: [80, 80, 80, 80]
+                          };
+
+                          const getBlockAverage = (bloqueArray) => {
+                            if (!bloqueArray || bloqueArray.length === 0) return 80;
+                            const sum = bloqueArray.reduce((a, b) => a + b, 0);
+                            return Math.round(sum / bloqueArray.length);
+                          };
+
+                          const p1 = getBlockAverage(sGrades.bloque1);
+                          const p2 = getBlockAverage(sGrades.bloque2);
+                          const p3 = getBlockAverage(sGrades.bloque3);
+                          const p4 = getBlockAverage(sGrades.bloque4);
+                          const rp = Math.round((p1 + p2 + p3 + p4) / 4);
+
+                          const promoKey = `${stu.id}_${subKey}`;
+                          const pData = promotionGrades[promoKey] || { cec: null, ceex: null, ce: null };
+                          const cpc = pData.cec;
+                          const cex = pData.ceex;
+
+                          let cc = null;
+                          if (cpc !== null && cpc !== undefined) {
+                            cc = Math.round((rp * 0.5) + (cpc * 0.5));
+                          }
+
+                          let cexc = null;
+                          if (cex !== null && cex !== undefined) {
+                            cexc = Math.round((rp * 0.3) + (cex * 0.7));
+                          }
+
+                          let cf = rp;
+                          if (rp < 70) {
+                            if (cc !== null && cc >= 70) {
+                              cf = cc;
+                            } else if (cc !== null && cc < 70 && cexc !== null) {
+                              cf = cexc;
+                            } else if (cc !== null) {
+                              cf = cc;
+                            }
+                          }
+
+                          return { p1, p2, p3, p4, rp, cpc, cc, cex, cexc, cf };
+                        };
+
+                        const standardSubjects = [
+                          { key: 'lengua_espanola', name: 'Lengua Española' },
+                          { key: 'matematica', name: 'Matemática' },
+                          { key: 'ciencias_sociales', name: 'Ciencias Sociales' },
+                          { key: 'ciencias_naturaleza', name: 'Ciencias de la Naturaleza' },
+                          { key: 'artistica', name: 'Educación Artística' },
+                          { key: 'educacion_fisica', name: 'Educación Física' },
+                          { key: 'formacion_religiosa', name: 'Formación Integral Humana y Religiosa' },
+                          { key: 'ingles', name: 'Lengua Extranjera - Inglés' },
+                          { key: 'frances', name: 'Lengua Extranjera - Francés' }
+                        ];
+
+                        const optativeSubjects = ['4to A', '5to A', '6to A'].includes(currentUser.classroomGrade) ? [
+                          { key: 'salida1', name: salida1Name || 'Salida Optativa 1' },
+                          { key: 'salida2', name: salida2Name || 'Salida Optativa 2' }
+                        ] : [];
+
+                        const activeSubjectsList = [...standardSubjects, ...optativeSubjects];
+
+                        const compiledGradesList = activeSubjectsList.map(sub => {
+                          const compiled = compileSubjectGrades(student, sub.key);
+                          return {
+                            ...sub,
+                            ...compiled
+                          };
+                        });
+
+                        const allFinalPassed = compiledGradesList.every(g => g.cf >= 70);
+                        const finalConditionLabel = allFinalPassed ? 'PROMOVIDO' : 'REPITENTE / PENDIENTE';
+
+                        const overallAverage = Math.round(compiledGradesList.reduce((sum, g) => sum + g.cf, 0) / compiledGradesList.length);
+                        const currentCommentVal = studentComments[student.id] || '';
+                        
+                        let autoComment = '';
+                        if (overallAverage >= 90) {
+                          autoComment = "Excelente desempeño durante este año escolar. Ha alcanzado un altísimo nivel de logro en todas las competencias curriculares clave.";
+                        } else if (overallAverage >= 80) {
+                          autoComment = "Muy buen desempeño académico. Ha consolidado con éxito sus aprendizajes, mostrando gran compromiso y responsabilidad en sus tareas diarias.";
+                        } else if (overallAverage >= 70) {
+                          autoComment = "Rendimiento satisfactorio. Ha logrado las competencias necesarias del grado, pero se recomienda seguir repasando y profundizando áreas específicas en el próximo año escolar.";
+                        } else {
+                          autoComment = "Atención pedagógica: El estudiante requiere reforzamiento intensivo y tutorías académicas adicionales en las asignaturas clave no superadas para lograr los aprendizajes esperados.";
+                        }
+
+                        const displayComment = currentCommentVal.trim() !== '' ? currentCommentVal : autoComment;
+
+                        return (
+                          <div className="bulletin-printable-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                            
+                            {/* ================= PAGE 1 (ANVERSO) ================= */}
+                            <div className="bulletin-page bulletin-page-1" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '1.5in 1.2in', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', boxSizing: 'border-box', position: 'relative' }}>
+                              
+                              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', display: 'flex' }}>
+                                <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                                <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                                <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                              </div>
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #000000', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '2px solid #ffb300', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                    <span style={{ fontSize: '1.6rem' }}>🎓</span>
+                                  </div>
+                                  <div>
+                                    <h1 style={{ fontSize: '1.25rem', fontWeight: '900', margin: 0, letterSpacing: '0.02em', color: '#000000' }}>LICEO ANA ROSA CASTILLO</h1>
+                                    <span style={{ fontSize: '0.7rem', color: '#334155', fontWeight: 'bold' }}>DISTRITO EDUCATIVO 14-01 NAGUA, REP. DOM.</span>
+                                  </div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ backgroundColor: '#003876', color: '#ffffff', padding: '0.3rem 0.75rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', display: 'inline-block' }}>BOLETÍN OFICIAL</div>
+                                  <div style={{ fontSize: '0.7rem', fontWeight: 'bold', marginTop: '0.25rem' }}>AÑO ESCOLAR: 2025-2026</div>
+                                </div>
+                              </div>
+
+                              <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1.25rem 0', color: '#000000' }}>
+                                REGISTRO OFICIAL DE EVALUACIÓN DEL APRENDIZAJE (SEGUNDO CICLO SECUNDARIA)
+                              </h3>
+
+                              {/* Student Details */}
+                              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.75rem', border: '1px solid #000000', padding: '0.75rem', borderRadius: '6px', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
+                                <div>
+                                  <strong>Estudiante:</strong> <span style={{ textTransform: 'uppercase' }}>{student.name}</span>
+                                </div>
+                                <div>
+                                  <strong>Grado:</strong> {student.grade}
+                                </div>
+                                <div>
+                                  <strong>Código RNE:</strong> <span style={{ fontFamily: 'monospace' }}>{student.id.toUpperCase().replace('S_', 'RNE-')}</span>
+                                </div>
+                                <div>
+                                  <strong>Centro Educativo:</strong> Liceo Ana Rosa Castillo
+                                </div>
+                                <div>
+                                  <strong>Distrito Escolar:</strong> 14-01 Nagua
+                                </div>
+                                <div>
+                                  <strong>Sección:</strong> Única
+                                </div>
+                              </div>
+
+                              {/* Grades Table */}
+                              <table className="bulletin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
+                                <thead>
+                                  <tr style={{ backgroundColor: '#f1f5f9' }}>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'left', width: '38%' }}>Asignatura / Área Curricular</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P1</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P2</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P3</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P4</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', fontWeight: 'bold' }}>RP</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fef3c7' }}>CPC</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fef3c7' }}>CC</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fee2e2' }}>CEX</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fee2e2' }}>CEXC</th>
+                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '8%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>CF</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {compiledGradesList.map((g) => (
+                                    <tr key={g.key}>
+                                      <td style={{ border: '1px solid #000000', padding: '0.5rem', fontWeight: 'bold' }}>{g.name}</td>
+                                      
+                                      {/* Period 1 */}
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                                        <input 
+                                          type="number" 
+                                          className="no-print-input"
+                                          value={g.p1} 
+                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque1', -1, e.target.value)}
+                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                                        />
+                                      </td>
+                                      
+                                      {/* Period 2 */}
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                                        <input 
+                                          type="number" 
+                                          className="no-print-input"
+                                          value={g.p2} 
+                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque2', -1, e.target.value)}
+                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                                        />
+                                      </td>
+                                      
+                                      {/* Period 3 */}
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                                        <input 
+                                          type="number" 
+                                          className="no-print-input"
+                                          value={g.p3} 
+                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque3', -1, e.target.value)}
+                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                                        />
+                                      </td>
+                                      
+                                      {/* Period 4 */}
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                                        <input 
+                                          type="number" 
+                                          className="no-print-input"
+                                          value={g.p4} 
+                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque4', -1, e.target.value)}
+                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                                        />
+                                      </td>
+
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: '900', backgroundColor: '#f8fafc' }}>{g.rp}</td>
+                                      
+                                      {/* CPC */}
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.1rem', backgroundColor: '#fffbeb' }}>
+                                        {g.rp < 70 ? (
+                                          <input 
+                                            type="number" 
+                                            className="no-print-input"
+                                            placeholder="-"
+                                            value={g.cpc || ''} 
+                                            onChange={(e) => handleUpdatePromoField(student.id, g.key, 'cec', e.target.value)}
+                                            style={{ width: '100%', border: 'none', backgroundColor: 'transparent', textAlign: 'center', fontWeight: 'bold', color: '#b45309' }}
+                                          />
+                                        ) : '-'}
+                                      </td>
+
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#fffbeb', color: g.cc < 70 ? '#ce1126' : 'inherit' }}>
+                                        {g.cc !== null ? g.cc : '-'}
+                                      </td>
+
+                                      {/* CEX */}
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.1rem', backgroundColor: '#fef2f2' }}>
+                                        {(g.rp < 70 && (g.cc === null || g.cc < 70)) ? (
+                                          <input 
+                                            type="number" 
+                                            className="no-print-input"
+                                            placeholder="-"
+                                            value={g.cex || ''} 
+                                            onChange={(e) => handleUpdatePromoField(student.id, g.key, 'ceex', e.target.value)}
+                                            style={{ width: '100%', border: 'none', backgroundColor: 'transparent', textAlign: 'center', fontWeight: 'bold', color: '#dc2626' }}
+                                          />
+                                        ) : '-'}
+                                      </td>
+
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#fef2f2', color: g.cexc < 70 ? '#ce1126' : 'inherit' }}>
+                                        {g.cexc !== null ? g.cexc : '-'}
+                                      </td>
+
+                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: '900', backgroundColor: '#f1f5f9', color: g.cf < 70 ? '#ce1126' : '#1e3a8a' }}>{g.cf}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+
+                              <div style={{ border: '1px solid #000000', padding: '0.6rem', borderRadius: '4px', fontSize: '0.7rem', backgroundColor: '#f8fafc' }}>
+                                <div style={{ fontWeight: 'bold', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Leyenda y Criterios Oficiales:</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                                  <div>
+                                    • <strong>P1 - P4:</strong> Calificaciones Parciales correspondientes a cada Período Escolar.<br />
+                                    • <strong>RP:</strong> Promedio de Rendimiento Parcial del Año.<br />
+                                    • <strong>CPC / CC:</strong> Examen Completivo (50%) / Calificación Completiva Final.
+                                  </div>
+                                  <div>
+                                    • <strong>CEX / CEXC:</strong> Examen Extraordinario (70%) / Calificación Extraordinaria Final.<br />
+                                    • <strong>CF:</strong> Calificación Final (Mínimo de aprobación: 70 puntos).
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+
+                            {/* ================= PAGE 2 (REVERSO) ================= */}
+                            <div className="bulletin-page bulletin-page-2" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '1.5in 1.2in', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', boxSizing: 'border-box', position: 'relative' }}>
+                              
+                              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', display: 'flex' }}>
+                                <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+                                <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+                                <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+                              </div>
+
+                              <h3 style={{ borderBottom: '2px solid #000000', paddingBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '900', textTransform: 'uppercase', margin: '0 0 1rem 0' }}>
+                                CONTROL DE ASISTENCIA Y RENDIMIENTO ANUAL
+                              </h3>
+
+                              {/* Attendance Table */}
+                              <div style={{ marginBottom: '1.5rem' }}>
+                                <h4 style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>Registro Mensual de Asistencia:</h4>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                                  <thead>
+                                    <tr style={{ backgroundColor: '#f1f5f9', fontWeight: 'bold' }}>
+                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'left' }}>Mes</th>
+                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Días Laborados</th>
+                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Asistencias (P)</th>
+                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Ausencias (A)</th>
+                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Tardanzas (T)</th>
+                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>% Asistencia</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {[
+                                      { name: 'Agosto', days: 12 },
+                                      { name: 'Septiembre', days: 21 },
+                                      { name: 'Octubre', days: 22 },
+                                      { name: 'Noviembre', days: 20 },
+                                      { name: 'Diciembre', days: 15 },
+                                      { name: 'Enero', days: 20 },
+                                      { name: 'Febrero', days: 19 },
+                                      { name: 'Marzo', days: 21 },
+                                      { name: 'Abril', days: 20 },
+                                      { name: 'Mayo', days: 21 },
+                                      { name: 'Junio', days: 10 }
+                                    ].map((m) => {
+                                      const stats = getMonthlyAttendanceStats(student.id, m.name, m.days);
+                                      return (
+                                        <tr key={m.name}>
+                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', fontWeight: 'bold' }}>{m.name}</td>
+                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.workedDays}</td>
+                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.present}</td>
+                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.absent}</td>
+                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.late}</td>
+                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center', fontWeight: 'bold', backgroundColor: stats.pct < 80 ? '#fee2e2' : 'transparent' }}>{stats.pct}%</td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+
+                              {/* Pedagogical Observations Comment Box */}
+                              <div style={{ marginBottom: '1.5rem' }}>
+                                <h4 style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: '0 0 0.4rem 0' }}>Observaciones Pedagógicas del Docente:</h4>
+                                <div className="no-print-textarea-wrapper">
+                                  <textarea 
+                                    className="no-print-textarea"
+                                    value={currentCommentVal} 
+                                    onChange={(e) => setStudentComments(prev => ({ ...prev, [student.id]: e.target.value }))}
+                                    placeholder={autoComment}
+                                    style={{ width: '100%', minHeight: '90px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #000000', fontSize: '0.78rem', resize: 'none', display: 'block', outline: 'none', boxSizing: 'border-box' }}
+                                  />
+                                </div>
+                                <div className="print-only-text" style={{ display: 'none', border: '1px solid #000000', padding: '0.5rem', borderRadius: '4px', minHeight: '90px', fontSize: '0.78rem', boxSizing: 'border-box', whiteSpace: 'pre-wrap' }}>
+                                  {displayComment}
+                                </div>
+                              </div>
+
+                              {/* Promotion Final Condition Panel */}
+                              <div style={{ border: '1px solid #000000', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', fontSize: '0.85rem', backgroundColor: '#f8fafc' }}>
+                                <div>
+                                  <strong>Condición Académica Final:</strong>
+                                  <span style={{ marginLeft: '0.5rem', fontWeight: '900', color: allFinalPassed ? '#15803d' : '#b91c1c', border: '2px solid', padding: '0.2rem 0.6rem', borderRadius: '4px', display: 'inline-block', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                                    {finalConditionLabel}
+                                  </span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '1rem', fontWeight: 'bold' }}>
+                                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    <input type="checkbox" checked={allFinalPassed} readOnly style={{ transform: 'scale(1.2)' }} /> PROMOVIDO
+                                  </label>
+                                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    <input type="checkbox" checked={!allFinalPassed} readOnly style={{ transform: 'scale(1.2)' }} /> REPITENTE / PENDIENTE
+                                  </label>
+                                </div>
+                              </div>
+
+                              {/* Official Signatures */}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3.5rem', borderTop: '1px dashed #94a3b8', paddingTop: '1.5rem', fontSize: '0.8rem', color: '#000000' }}>
+                                <div style={{ textAlign: 'center', width: '40%' }}>
+                                  <div style={{ borderBottom: '1px solid #000000', width: '220px', margin: '0 auto 0.4rem auto' }}></div>
+                                  <strong>Maestro(a) Encargado(a) del Grado</strong>
+                                </div>
+                                <div style={{ textAlign: 'center', width: '40%' }}>
+                                  <div style={{ borderBottom: '1px solid #000000', width: '220px', margin: '0 auto 0.4rem auto' }}></div>
+                                  <strong>Director(a) del Centro Educativo</strong>
+                                </div>
+                                <div style={{ textAlign: 'center', width: '20%' }}>
+                                  <div style={{ border: '1px solid #000000', width: '100px', height: '60px', margin: '0 auto 0.4rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.62rem', color: '#64748b' }}>
+                                    SELLO
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+                        );
+                      })()
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </div>
@@ -7716,13 +9140,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
       {/* ACADEMIC WARNING ALARM MODAL */}
       {alertFormModal.isOpen && alertFormModal.student && (
-        <div className="modal-backdrop">
-          <div className="modal-card animate-fade-in" style={{ maxWidth: '600px' }}>
+        <div className="modal-backdrop" style={{ zIndex: 1050 }}>
+          <div className="modal-card animate-fade-in" style={{ maxWidth: '700px', width: '90%' }}>
             <div className="modal-header">
               <div>
-                <h3 style={{ fontSize: '1.2rem', color: 'var(--danger)' }}>🚨 Borrador de Alerta Académica</h3>
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>🚨</span> Borrador de Reporte / Alerta Escolar
+                </h3>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  Notificación de bajo rendimiento (Calificación por debajo de 70)
+                  Generación oficial y enrutamiento de notificaciones del estudiante.
                 </span>
               </div>
               <button 
@@ -7733,60 +9159,218 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </button>
             </div>
 
-            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="alert alert-danger" style={{ fontSize: '0.85rem', margin: 0, padding: '0.75rem 1rem' }}>
-                <strong>Nota Crítica Detectada:</strong> El estudiante <strong>{alertFormModal.student.name}</strong> tiene una calificación de <strong>{alertFormModal.score.toFixed(0)}%</strong> en la asignatura <strong>{subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey}</strong> ({alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`}).
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxHeight: '70vh', overflowY: 'auto', paddingRight: '0.5rem' }}>
+              
+              {/* Context Summary */}
+              <div className="alert alert-danger" style={{ fontSize: '0.85rem', margin: 0, padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <div><strong>Estudiante:</strong> {alertFormModal.student.name} ({alertFormModal.student.grade})</div>
+                {alertFormModal.subjectKey && (
+                  <div>
+                    <strong>Alerta de Rendimiento:</strong> Asignatura: {subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} (Nota: {alertFormModal.score.toFixed(0)}% en {alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`})
+                  </div>
+                )}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {/* Form Grid */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                
+                {/* 1. Tipo de Reporte */}
                 <div className="form-group-compact">
-                  <label>De (Dirección Liceo)</label>
-                  <input type="text" className="form-input-compact" value="liceo.anarosacastillo@minerd.edu.do" readOnly />
+                  <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>Tipo de Reporte</label>
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+                      <input 
+                        type="radio" 
+                        name="report_type" 
+                        value="académico"
+                        checked={alertFormModal.type === 'académico'} 
+                        onChange={() => setAlertFormModal(prev => ({ ...prev, type: 'académico', selectedSituations: [] }))} 
+                      />
+                      <span>Académico</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+                      <input 
+                        type="radio" 
+                        name="report_type" 
+                        value="conductual"
+                        checked={alertFormModal.type === 'conductual'} 
+                        onChange={() => setAlertFormModal(prev => ({ ...prev, type: 'conductual', selectedSituations: [] }))} 
+                      />
+                      <span>Conductual / Disciplinario</span>
+                    </label>
+                  </div>
                 </div>
-                <div className="form-group-compact">
-                  <label>Para (Coordinador Encargado)</label>
-                  <input 
-                    type="email" 
-                    className="form-input-compact" 
-                    placeholder="coordinador@liceo.edu" 
-                    value={alertFormModal.coordinatorEmail}
-                    onChange={(e) => setAlertFormModal(prev => ({ ...prev, coordinatorEmail: e.target.value }))}
-                  />
+
+                 {/* 2. Checkboxes de Situaciones */}
+                 <div className="form-group-compact">
+                   <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>
+                     Situaciones {alertFormModal.type === 'académico' ? 'Académicas' : 'Conductuales'} Detectadas
+                   </label>
+                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', backgroundColor: 'var(--bg-secondary)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                     {(alertFormModal.type === 'académico' ? [
+                       'Plagio',
+                       'Entrega tardía',
+                       'Falta de entrega de tareas',
+                       'Bajo rendimiento en evaluaciones',
+                       'Poco interés / participación',
+                       'Dificultad de aprendizaje',
+                       'Inasistencias constantes',
+                       'Otro (especificar)'
+                     ] : [
+                       'Indisciplina o alteración del orden',
+                       'Falta de respeto a compañeros o docentes',
+                       'Uso inapropiado de móvil/dispositivo',
+                       'Llegadas tardías constantes a clase',
+                       'Salidas del aula sin autorización',
+                       'Agresión física o verbal',
+                       'Daño voluntario a la propiedad escolar',
+                       'Otro (especificar)'
+                     ]).map(sit => {
+                       const isChecked = alertFormModal.selectedSituations.includes(sit);
+                       return (
+                         <label key={sit} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.8rem', cursor: 'pointer', padding: '0.2rem 0' }}>
+                           <input 
+                             type="checkbox" 
+                             checked={isChecked}
+                             style={{ marginTop: '0.15rem' }}
+                             onChange={(e) => {
+                               const checked = e.target.checked;
+                               setAlertFormModal(prev => {
+                                 const list = checked 
+                                   ? [...prev.selectedSituations, sit] 
+                                   : prev.selectedSituations.filter(x => x !== sit);
+                                 return { ...prev, selectedSituations: list, modifiedWithAI: false, finalText: '' };
+                               });
+                             }}
+                           />
+                           <span>{sit}</span>
+                         </label>
+                       );
+                     })}
+                   </div>
+                 </div>
+ 
+                 {/* 2.1 Entrada de Situación Personalizada */}
+                 {alertFormModal.selectedSituations.includes('Otro (especificar)') && (
+                   <div className="form-group-compact">
+                     <label>Especifique la situación:</label>
+                     <input 
+                       type="text" 
+                       className="form-input-compact" 
+                       placeholder="Describa el incidente aquí..."
+                       value={alertFormModal.customSituation}
+                       onChange={(e) => setAlertFormModal(prev => ({ ...prev, customSituation: e.target.value, modifiedWithAI: false, finalText: '' }))}
+                     />
+                   </div>
+                 )}
+ 
+                 {/* 3. Antecedentes (Persistencia) */}
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                   <div className="form-group-compact">
+                     <label style={{ fontWeight: 'bold' }}>Antecedentes (¿Desde cuándo persiste esta situación?)</label>
+                     <select 
+                       className="form-select"
+                       value={alertFormModal.antecedent}
+                       onChange={(e) => setAlertFormModal(prev => ({ ...prev, antecedent: e.target.value, modifiedWithAI: false, finalText: '' }))}
+                       style={{ width: '100%', padding: '0.4rem' }}
+                     >
+                       <option value="Primera vez (Incidente aislado)">Primera vez (Incidente aislado)</option>
+                       <option value="Persiste desde hace 1 semana">Persiste desde hace 1 semana</option>
+                       <option value="Persiste desde hace 2 semanas">Persiste desde hace 2 semanas</option>
+                       <option value="Persiste desde hace 1 mes">Persiste desde hace 1 mes</option>
+                       <option value="Persiste durante todo el periodo actual">Persiste durante todo el periodo actual</option>
+                       <option value="Persiste desde el inicio del año escolar">Persiste desde el inicio del año escolar</option>
+                       <option value="Otra (especificar)">Otra (especificar)</option>
+                     </select>
+                   </div>
+                  {alertFormModal.antecedent === 'Otra (especificar)' && (
+                    <div className="form-group-compact">
+                      <label style={{ fontWeight: 'bold' }}>Especifique la persistencia:</label>
+                      <input 
+                        type="text" 
+                        className="form-input-compact" 
+                        placeholder="Ej. Desde hace 3 meses..."
+                        value={alertFormModal.customAntecedent}
+                        onChange={(e) => setAlertFormModal(prev => ({ ...prev, customAntecedent: e.target.value, modifiedWithAI: false, finalText: '' }))}
+                      />
+                    </div>
+                  )}
                 </div>
+
+                {/* 4. Comentarios Adicionales */}
                 <div className="form-group-compact">
-                  <label>Para (Orientador Encargado)</label>
-                  <input 
-                    type="email" 
-                    className="form-input-compact" 
-                    placeholder="orientador@liceo.edu" 
-                    value={alertFormModal.counselorEmail}
-                    onChange={(e) => setAlertFormModal(prev => ({ ...prev, counselorEmail: e.target.value }))}
-                  />
-                </div>
-                <div className="form-group-compact">
-                  <label>Asunto del Correo</label>
-                  <input 
-                    type="text" 
-                    className="form-input-compact" 
-                    value={`[ALERTA ACADÉMICA] Convocatoria a reunión de padres - Alumno: ${alertFormModal.student.name} - Grado: ${alertFormModal.student.grade}`} 
-                    readOnly 
-                  />
-                </div>
-                <div className="form-group-compact">
-                  <label>Borrador de Mensaje</label>
+                  <label style={{ fontWeight: 'bold' }}>Notas y Comentarios adicionales del docente</label>
                   <textarea 
                     className="form-input-compact" 
-                    style={{ minHeight: '160px', padding: '0.5rem', fontSize: '0.85rem', lineHeight: '1.4', fontFamily: 'inherit' }}
-                    readOnly
-                    value={`Estimados Coordinador y Orientador Encargados,\n\nPor este medio se emite una ALERTA ACADÉMICA formal en relación al estudiante ${alertFormModal.student.name} del grado ${alertFormModal.student.grade}.\n\nEl alumno presenta un rendimiento crítico acumulado de ${alertFormModal.score.toFixed(0)}/100 en la asignatura de ${subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} durante el periodo ${alertFormModal.period === 'final' ? 'Final' : alertFormModal.period.replace('bloque', '')}.\n\nSolicitamos formalmente que se gestione de manera coordinada una convocatoria de reunión de padres, madres o tutores del menor a la mayor brevedad posible para trazar un plan de seguimiento y rescate académico.\n\nAtentamente,\nDirección Liceo Ana Rosa Castillo`}
+                    placeholder="Notas internas que servirán como contexto adicional para el reporte..."
+                    value={alertFormModal.comments}
+                    onChange={(e) => setAlertFormModal(prev => ({ ...prev, comments: e.target.value, modifiedWithAI: false, finalText: '' }))}
+                    style={{ minHeight: '60px', padding: '0.4rem', fontSize: '0.82rem' }}
                   />
+                </div>
+
+                {/* 5. Destinatarios Config */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group-compact">
+                    <label style={{ fontWeight: 'bold' }}>Coordinador Encargado</label>
+                    <input 
+                      type="email" 
+                      className="form-input-compact" 
+                      placeholder="coordinador@liceo.edu" 
+                      value={alertFormModal.coordinatorEmail}
+                      onChange={(e) => setAlertFormModal(prev => ({ ...prev, coordinatorEmail: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-group-compact">
+                    <label style={{ fontWeight: 'bold' }}>Orientador Encargado</label>
+                    <input 
+                      type="email" 
+                      className="form-input-compact" 
+                      placeholder="orientador@liceo.edu" 
+                      value={alertFormModal.counselorEmail}
+                      onChange={(e) => setAlertFormModal(prev => ({ ...prev, counselorEmail: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                {/* AI Button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '0.25rem' }}>
+                  <button 
+                    type="button" 
+                    className="btn-primary" 
+                    onClick={handleOptimizeReportWithAI}
+                    disabled={alertFormModal.sending}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--primary)', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', color: '#ffffff' }}
+                  >
+                    <span>✨ Redactar / Optimizar con IA (Gemini)</span>
+                  </button>
+                </div>
+
+                {/* 6. Borrador Editable Final */}
+                <div className="form-group-compact">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                    <label style={{ fontWeight: 'bold', margin: 0 }}>Texto Definitivo del Reporte (Editable)</label>
+                    {alertFormModal.modifiedWithAI && (
+                      <span style={{ fontSize: '0.72rem', color: 'var(--success)', fontWeight: 'bold' }}>✓ Optimizado por IA</span>
+                    )}
+                  </div>
+                  <textarea 
+                    className="form-input-compact" 
+                    style={{ minHeight: '180px', padding: '0.6rem', fontSize: '0.82rem', lineHeight: '1.4', fontFamily: 'inherit', border: '1px solid #000000', backgroundColor: '#fcfcfc', color: '#000000' }}
+                    value={alertFormModal.finalText || compileReportText(alertFormModal)}
+                    onChange={(e) => setAlertFormModal(prev => ({ ...prev, finalText: e.target.value, modifiedWithAI: true }))}
+                  />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                    Nota: Este texto es lo que se guardará en la carpeta digital del alumno y se enviará en el correo. Puedes modificarlo directamente.
+                  </span>
                 </div>
               </div>
 
+              {/* Progress bar for sending/AI */}
               {alertFormModal.sending && (
                 <div style={{ marginTop: '0.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.25rem' }}>
-                    <span>Emitiendo alerta y enrutando correo...</span>
+                    <span>Procesando solicitud...</span>
                     <span>{alertFormModal.progress}%</span>
                   </div>
                   <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
@@ -7794,10 +9378,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   </div>
                 </div>
               )}
+
+              {/* Envelope Rule Guide / Help Box */}
+              <div style={{ backgroundColor: 'var(--primary-glow)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-primary)', marginTop: '0.5rem' }}>
+                <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.25rem' }}>
+                  <span>📂</span> <span>Cómo organizar automáticamente en carpetas en tu correo:</span>
+                </div>
+                <p style={{ margin: 0, lineHeight: '1.4', color: 'var(--text-secondary)' }}>
+                  Para que los reportes de <strong>{alertFormModal.student.grade}</strong> de <strong>{alertFormModal.student.name}</strong> se organicen automáticamente al recibirse, solicita al Orientador/Coordinador crear una <strong>Regla/Filtro</strong> en su Outlook/Gmail:
+                  <br />
+                  • <strong>Condición:</strong> Si el asunto contiene <code>[REPORTE LARC] Grado: {alertFormModal.student.grade} | Alumno: {alertFormModal.student.name}</code>
+                  <br />
+                  • <strong>Acción:</strong> Mover a carpeta: <code>{alertFormModal.student.grade} Reporte / {alertFormModal.student.name}</code>.
+                </p>
+              </div>
+
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: '0.5rem' }}>
               <button 
+                type="button"
                 className="btn-secondary" 
                 onClick={() => setAlertFormModal(prev => ({ ...prev, isOpen: false }))}
                 disabled={alertFormModal.sending}
@@ -7805,35 +9405,70 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 Cerrar
               </button>
               
-              <a 
-                href={`mailto:${alertFormModal.coordinatorEmail},${alertFormModal.counselorEmail}?subject=${encodeURIComponent(`[ALERTA ACADÉMICA] Convocatoria a reunión de padres - Alumno: ${alertFormModal.student.name} - Grado: ${alertFormModal.student.grade}`)}&body=${encodeURIComponent(`Estimados Coordinador y Orientador Encargados,\n\nPor este medio se emite una ALERTA ACADÉMICA formal en relación al estudiante ${alertFormModal.student.name} del grado ${alertFormModal.student.grade}.\n\nEl alumno presenta un rendimiento crítico acumulado de ${alertFormModal.score.toFixed(0)}/100 en la asignatura de ${subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} durante el periodo ${alertFormModal.period === 'final' ? 'Final' : alertFormModal.period.replace('bloque', '')}.\n\nSolicitamos formalmente que se gestione de manera coordinada una convocatoria de reunión de padres, madres o tutores del menor a la mayor brevedad posible para trazar un plan de seguimiento y rescate académico.\n\nAtentamente,\nDirección Liceo Ana Rosa Castillo`)}`}
+              <button
+                type="button"
                 className="btn-secondary"
-                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontWeight: 'bold' }}
+                style={{ fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                 onClick={() => {
-                  const newLog = {
-                    id: Date.now().toString(),
-                    studentName: alertFormModal.student.name,
-                    grade: alertFormModal.student.grade,
-                    subjectName: subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey,
-                    periodName: alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`,
-                    score: alertFormModal.score.toFixed(0),
-                    coordinator: alertFormModal.coordinatorEmail,
-                    counselor: alertFormModal.counselorEmail,
-                    timestamp: new Date().toLocaleString()
-                  };
-                  setAlertLogs(logs => [newLog, ...logs]);
-                  setAlertFormModal(prev => ({ ...prev, isOpen: false }));
+                  const finalTxt = alertFormModal.finalText || compileReportText(alertFormModal);
+                  navigator.clipboard.writeText(finalTxt);
+                  alert('¡Texto copiado al portapapeles con éxito!');
                 }}
               >
-                ✉️ Enviar con Outlook/Gmail
-              </a>
+                📋 Copiar Texto
+              </button>
+
+              {/* Compose Options */}
+              {(() => {
+                const finalTxt = alertFormModal.finalText || compileReportText(alertFormModal);
+                const subjectStr = `[REPORTE LARC] Grado: ${alertFormModal.student.grade} | Alumno: ${alertFormModal.student.name} | Tipo: ${alertFormModal.type.toUpperCase()}`;
+                const encodedTo = encodeURIComponent(`${alertFormModal.coordinatorEmail},${alertFormModal.counselorEmail}`);
+                const encodedSubject = encodeURIComponent(subjectStr);
+                const encodedBody = encodeURIComponent(finalTxt);
+                
+                return (
+                  <>
+                     <a 
+                       href={`mailto:${alertFormModal.coordinatorEmail};${alertFormModal.counselorEmail}?subject=${encodedSubject}&body=${encodedBody}`}
+                       className="btn-secondary"
+                       style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontWeight: 'bold' }}
+                       onClick={handleRegisterSentReportLog}
+                     >
+                      ✉️ Correo Local
+                    </a>
+                    
+                    <a 
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary"
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: '#ea4335', fontWeight: 'bold' }}
+                      onClick={handleRegisterSentReportLog}
+                    >
+                      📧 Gmail Web
+                    </a>
+                    
+                    <a 
+                      href={`https://outlook.live.com/mail/0/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary"
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: '#0078d4', fontWeight: 'bold' }}
+                      onClick={handleRegisterSentReportLog}
+                    >
+                      Ⓜ️ Outlook Web
+                    </a>
+                  </>
+                );
+              })()}
 
               <button 
+                type="button"
                 className="btn-danger" 
                 onClick={handleSimulateSendAlert}
                 disabled={alertFormModal.sending}
               >
-                {alertFormModal.sending ? 'Enviando...' : '⚡ Simular Envío'}
+                {alertFormModal.sending ? 'Generando...' : '⚡ Simular Registro'}
               </button>
             </div>
           </div>
