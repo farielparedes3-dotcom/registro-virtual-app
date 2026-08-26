@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
+// Vercel deployment trigger
 
 import { dbService } from './db';
 
