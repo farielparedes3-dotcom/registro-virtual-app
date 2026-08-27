@@ -1031,6 +1031,80 @@ export default function App() {
     return localStorage.getItem('theme') || 'light';
   });
 
+  // --- User Profile State ---
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    avatar: ''
+  });
+  const [showProfilePassword, setShowProfilePassword] = useState(false);
+  const [profileSuccessMsg, setProfileSuccessMsg] = useState('');
+  const profileFileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (currentUser) {
+      setProfileForm({
+        name: currentUser.name || '',
+        username: currentUser.username || (currentUser.email ? currentUser.email.split('@')[0] : ''),
+        email: currentUser.email || '',
+        password: currentUser.password || '',
+        avatar: currentUser.avatar || ''
+      });
+    }
+  }, [currentUser, activeTab]);
+
+  const handleProfileAvatarUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('La imagen seleccionada supera los 2MB. Por favor elige una imagen más pequeña.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        setProfileForm(prev => ({ ...prev, avatar: uploadEvent.target.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveProfile = (e) => {
+    if (e) e.preventDefault();
+    if (!profileForm.name.trim()) {
+      alert('Por favor ingresa tu Nombre Completo.');
+      return;
+    }
+    if (!profileForm.email.trim()) {
+      alert('Por favor ingresa tu Correo Electrónico.');
+      return;
+    }
+
+    const updatedUser = {
+      ...currentUser,
+      name: profileForm.name.trim(),
+      username: profileForm.username.trim() || profileForm.email.split('@')[0],
+      email: profileForm.email.trim(),
+      password: profileForm.password,
+      avatar: profileForm.avatar
+    };
+
+    // Save updated current user
+    setCurrentUser(updatedUser);
+    localStorage.setItem('s_current_user', JSON.stringify(updatedUser));
+
+    // Save updated user in users array
+    setUsers(prevUsers => {
+      const updatedList = prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u);
+      localStorage.setItem('s_users', JSON.stringify(updatedList));
+      return updatedList;
+    });
+
+    setProfileSuccessMsg('¡Perfil actualizado correctamente!');
+    setTimeout(() => setProfileSuccessMsg(''), 4000);
+  };
+
   // --- Filtering States ---
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('math');
@@ -4612,6 +4686,222 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     );
   }
 
+  // --- HELPER: Render Profile Tab Content ---
+  const renderProfileTabContent = () => {
+    if (!currentUser) return null;
+
+    const initials = currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'US';
+    const isTeacher = currentUser.role === 'teacher';
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: '850px', margin: '0 auto' }}>
+        
+        {/* Header Banner & Avatar Card */}
+        <div className="glass-panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+            
+            {/* Avatar Preview + Upload Button */}
+            <div style={{ position: 'relative' }}>
+              {profileForm.avatar ? (
+                <img 
+                  src={profileForm.avatar} 
+                  alt={profileForm.name} 
+                  style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--primary)', boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} 
+                />
+              ) : (
+                <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary) 0%, #00224a 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.2rem', fontWeight: 'bold', border: '4px solid #ffffff', boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }}>
+                  {initials}
+                </div>
+              )}
+              
+              <button
+                type="button"
+                onClick={() => profileFileInputRef.current && profileFileInputRef.current.click()}
+                style={{ position: 'absolute', bottom: 0, right: 0, width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#ffffff', border: '2px solid #ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', fontSize: '1rem' }}
+                title="Cambiar Foto de Perfil"
+              >
+                📷
+              </button>
+              <input 
+                type="file" 
+                ref={profileFileInputRef} 
+                onChange={handleProfileAvatarUpload} 
+                accept="image/*" 
+                style={{ display: 'none' }} 
+              />
+            </div>
+
+            {/* User Title & Details */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
+              <h2 style={{ margin: 0, color: 'var(--primary)', fontWeight: 800, fontSize: '1.6rem' }}>
+                {profileForm.name || currentUser.name}
+              </h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <span style={{ backgroundColor: isTeacher ? 'rgba(16, 185, 129, 0.12)' : 'rgba(59, 130, 246, 0.12)', color: isTeacher ? '#059669' : '#2563eb', padding: '0.25rem 0.65rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 'bold', border: '1px solid currentColor' }}>
+                  {isTeacher ? '👨‍🏫 Docente' : '⚙️ Administrador Principal'}
+                </span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  📧 {profileForm.email || currentUser.email}
+                </span>
+                {currentUser.classroomGrade && (
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 'bold' }}>
+                    🏫 Tutor de: {currentUser.classroomGrade}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {profileSuccessMsg && (
+            <div className="alert alert-success animate-fade-in" style={{ margin: '0.5rem 0 0 0', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem' }}>
+              <span>✅</span> <strong>{profileSuccessMsg}</strong>
+            </div>
+          )}
+        </div>
+
+        {/* Profile Details Edit Form */}
+        <div className="glass-card" style={{ padding: '2rem' }}>
+          <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '2px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <span>👤</span> Configuración de Mi Perfil y Cuenta
+          </h3>
+
+          <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+              
+              {/* Nombre Completo */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  Nombre Completo *
+                </label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={profileForm.name} 
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))} 
+                  placeholder="Ej: Lic. Fariel Paredes" 
+                  required 
+                />
+              </div>
+
+              {/* Usuario */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  Nombre de Usuario *
+                </label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={profileForm.username} 
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, username: e.target.value }))} 
+                  placeholder="Ej: fariel.paredes" 
+                  required 
+                />
+              </div>
+
+              {/* Correo Electrónico */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  Correo Electrónico *
+                </label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  value={profileForm.email} 
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))} 
+                  placeholder="usuario@school.edu" 
+                  required 
+                />
+              </div>
+
+              {/* Contraseña */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  Contraseña *
+                </label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input 
+                    type={showProfilePassword ? "text" : "password"} 
+                    className="form-input" 
+                    value={profileForm.password} 
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, password: e.target.value }))} 
+                    placeholder="Ingresa tu contraseña" 
+                    style={{ paddingRight: '2.5rem', width: '100%' }}
+                    required 
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowProfilePassword(!showProfilePassword)}
+                    style={{ position: 'absolute', right: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.2rem' }}
+                    title={showProfilePassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  >
+                    {showProfilePassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Foto de Perfil & Presets */}
+            <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <label style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>🖼️</span> Foto de Perfil / Avatar
+              </label>
+              
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => profileFileInputRef.current && profileFileInputRef.current.click()}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}
+                >
+                  📁 Subir Imagen desde el Dispositivo
+                </button>
+
+                {profileForm.avatar && (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setProfileForm(prev => ({ ...prev, avatar: '' }))}
+                    style={{ color: 'var(--danger)', fontSize: '0.85rem' }}
+                  >
+                    🗑️ Quitar Foto
+                  </button>
+                )}
+              </div>
+
+              {/* URL Directa de Imagen (Opcional) */}
+              <div style={{ marginTop: '0.35rem' }}>
+                <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>O ingresar URL directa de imagen:</label>
+                <input 
+                  type="url" 
+                  className="form-input" 
+                  value={profileForm.avatar && !profileForm.avatar.startsWith('data:') ? profileForm.avatar : ''} 
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, avatar: e.target.value }))} 
+                  placeholder="https://ejemplo.com/mi-foto.jpg" 
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <button 
+                type="submit" 
+                className="btn-primary" 
+                style={{ padding: '0.75rem 2rem', fontSize: '0.95rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              >
+                💾 Guardar Cambios en Mi Perfil
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    );
+  };
+
   // --- HELPER: Render Official MINERD 2-Page Bulletin Document ---
   const renderBulletinContent = (student, targetGrade) => {
     if (!student) return null;
@@ -5067,15 +5357,27 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               )}
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem' }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                AD
-              </div>
+            <div 
+              onClick={() => setActiveTab('profile')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
+              title="Ver / Editar Mi Perfil"
+            >
+              {currentUser.avatar ? (
+                <img 
+                  src={currentUser.avatar} 
+                  alt={currentUser.name} 
+                  style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                />
+              ) : (
+                <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                  {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'AD'}
+                </div>
+              )}
               <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Administrador Principal</span>
               </div>
-              <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={handleLogout}>
+              <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>
                 Salir
               </button>
             </div>
@@ -5098,6 +5400,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div className="sidebar-nav">
                 <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
                   <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
+                </div>
+                <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarCollapsed(true); }}>
+                  <span style={{ fontSize: '1.1rem' }}>👤</span> Mi Perfil
                 </div>
                 <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => { setActiveTab('teachers'); setSidebarCollapsed(true); }}>
                   <span style={{ fontSize: '1.1rem' }}>👨‍🏫</span> Asignación Docentes
@@ -7095,6 +7400,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   </div>
                 </div>
               )}
+
+              {activeTab === 'profile' && renderProfileTabContent()}
             </section>
           </div>
         </div>
@@ -7160,15 +7467,27 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             )}
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem' }}>
-            <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-              {currentUser.name.slice(0,2).toUpperCase()}
-            </div>
+          <div 
+            onClick={() => setActiveTab('profile')}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
+            title="Ver / Editar Mi Perfil"
+          >
+            {currentUser.avatar ? (
+              <img 
+                src={currentUser.avatar} 
+                alt={currentUser.name} 
+                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+              />
+            ) : (
+              <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'US'}
+              </div>
+            )}
             <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Docente</span>
             </div>
-            <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={handleLogout}>Salir</button>
+            <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
           </div>
         </div>
       </header>
@@ -7196,6 +7515,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className="sidebar-nav">
               <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
                 <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
+              </div>
+              <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>👤</span> Mi Perfil
               </div>
               <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>
                 <span style={{ fontSize: '1.1rem' }}>📊</span> Control de Calificaciones
@@ -9230,6 +9552,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 })()}
               </div>
             )}
+
+            {activeTab === 'profile' && renderProfileTabContent()}
           </section>
         </div>
       </div>
