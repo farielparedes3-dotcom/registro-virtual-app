@@ -4612,6 +4612,400 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     );
   }
 
+  // --- HELPER: Render Official MINERD 2-Page Bulletin Document ---
+  const renderBulletinContent = (student, targetGrade) => {
+    if (!student) return null;
+
+    const compileSubjectGrades = (stu, subKey) => {
+      const sGrades = stu.grades?.[subKey] || {
+        bloque1: [80, 80, 80, 80],
+        bloque2: [80, 80, 80, 80],
+        bloque3: [80, 80, 80, 80],
+        bloque4: [80, 80, 80, 80]
+      };
+
+      const getBlockAverage = (bloqueArray) => {
+        if (!bloqueArray || bloqueArray.length === 0) return 80;
+        const sum = bloqueArray.reduce((a, b) => a + b, 0);
+        return Math.round(sum / bloqueArray.length);
+      };
+
+      const p1 = getBlockAverage(sGrades.bloque1);
+      const p2 = getBlockAverage(sGrades.bloque2);
+      const p3 = getBlockAverage(sGrades.bloque3);
+      const p4 = getBlockAverage(sGrades.bloque4);
+      const rp = Math.round((p1 + p2 + p3 + p4) / 4);
+
+      const promoKey = `${stu.id}_${subKey}`;
+      const pData = promotionGrades[promoKey] || { cec: null, ceex: null, ce: null };
+      const cpc = pData.cec;
+      const cex = pData.ceex;
+
+      let cc = null;
+      if (cpc !== null && cpc !== undefined) {
+        cc = Math.round((rp * 0.5) + (cpc * 0.5));
+      }
+
+      let cexc = null;
+      if (cex !== null && cex !== undefined) {
+        cexc = Math.round((rp * 0.3) + (cex * 0.7));
+      }
+
+      let cf = rp;
+      if (rp < 70) {
+        if (cc !== null && cc >= 70) {
+          cf = cc;
+        } else if (cc !== null && cc < 70 && cexc !== null) {
+          cf = cexc;
+        } else if (cc !== null) {
+          cf = cc;
+        }
+      }
+
+      return { p1, p2, p3, p4, rp, cpc, cc, cex, cexc, cf };
+    };
+
+    const standardSubjects = [
+      { key: 'lengua_espanola', name: 'Lengua Española' },
+      { key: 'matematica', name: 'Matemática' },
+      { key: 'ciencias_sociales', name: 'Ciencias Sociales' },
+      { key: 'ciencias_naturaleza', name: 'Ciencias de la Naturaleza' },
+      { key: 'artistica', name: 'Educación Artística' },
+      { key: 'educacion_fisica', name: 'Educación Física' },
+      { key: 'formacion_religiosa', name: 'Formación Integral Humana y Religiosa' },
+      { key: 'ingles', name: 'Lengua Extranjera - Inglés' },
+      { key: 'frances', name: 'Lengua Extranjera - Francés' }
+    ];
+
+    const optativeSubjects = ['4to A', '5to A', '6to A'].includes(targetGrade) ? [
+      { key: 'salida1', name: salida1Name || 'Salida Optativa 1' },
+      { key: 'salida2', name: salida2Name || 'Salida Optativa 2' }
+    ] : [];
+
+    const activeSubjectsList = [...standardSubjects, ...optativeSubjects];
+
+    const compiledGradesList = activeSubjectsList.map(sub => {
+      const compiled = compileSubjectGrades(student, sub.key);
+      return {
+        ...sub,
+        ...compiled
+      };
+    });
+
+    const allFinalPassed = compiledGradesList.every(g => g.cf >= 70);
+    const finalConditionLabel = allFinalPassed ? 'PROMOVIDO' : 'REPITENTE / PENDIENTE';
+
+    const overallAverage = Math.round(compiledGradesList.reduce((sum, g) => sum + g.cf, 0) / compiledGradesList.length);
+    const currentCommentVal = studentComments[student.id] || '';
+    
+    let autoComment = '';
+    if (overallAverage >= 90) {
+      autoComment = "Excelente desempeño durante este año escolar. Ha alcanzado un altísimo nivel de logro en todas las competencias curriculares clave.";
+    } else if (overallAverage >= 80) {
+      autoComment = "Muy buen desempeño académico. Ha consolidado con éxito sus aprendizajes, mostrando gran compromiso y responsabilidad en sus tareas diarias.";
+    } else if (overallAverage >= 70) {
+      autoComment = "Rendimiento satisfactorio. Ha logrado las competencias necesarias del grado, pero se recomienda seguir repasando y profundizando áreas específicas en el próximo año escolar.";
+    } else {
+      autoComment = "Atención pedagógica: El estudiante requiere reforzamiento intensivo y tutorías académicas adicionales en las asignaturas clave no superadas para lograr los aprendizajes esperados.";
+    }
+
+    const displayComment = currentCommentVal.trim() !== '' ? currentCommentVal : autoComment;
+
+    return (
+      <div className="bulletin-printable-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        
+        {/* ================= PAGE 1 (ANVERSO) ================= */}
+        <div className="bulletin-page bulletin-page-1" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '1.5in 1.2in', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', boxSizing: 'border-box', position: 'relative' }}>
+          
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', display: 'flex' }}>
+            <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+            <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+            <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #000000', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '2px solid #ffb300', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '1.6rem' }}>🎓</span>
+              </div>
+              <div>
+                <h1 style={{ fontSize: '1.25rem', fontWeight: '900', margin: 0, letterSpacing: '0.02em', color: '#000000' }}>LICEO ANA ROSA CASTILLO</h1>
+                <span style={{ fontSize: '0.7rem', color: '#334155', fontWeight: 'bold' }}>DISTRITO EDUCATIVO 14-01 NAGUA, REP. DOM.</span>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ backgroundColor: '#003876', color: '#ffffff', padding: '0.3rem 0.75rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', display: 'inline-block' }}>BOLETÍN OFICIAL</div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 'bold', marginTop: '0.25rem' }}>AÑO ESCOLAR: 2025-2026</div>
+            </div>
+          </div>
+
+          <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1.25rem 0', color: '#000000' }}>
+            REGISTRO OFICIAL DE EVALUACIÓN DEL APRENDIZAJE (SEGUNDO CICLO SECUNDARIA)
+          </h3>
+
+          {/* Student Details */}
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.75rem', border: '1px solid #000000', padding: '0.75rem', borderRadius: '6px', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
+            <div>
+              <strong>Estudiante:</strong> <span style={{ textTransform: 'uppercase' }}>{student.name}</span>
+            </div>
+            <div>
+              <strong>Grado:</strong> {student.grade}
+            </div>
+            <div>
+              <strong>Código RNE:</strong> <span style={{ fontFamily: 'monospace' }}>{student.id.toUpperCase().replace('S_', 'RNE-')}</span>
+            </div>
+            <div>
+              <strong>Centro Educativo:</strong> Liceo Ana Rosa Castillo
+            </div>
+            <div>
+              <strong>Distrito Escolar:</strong> 14-01 Nagua
+            </div>
+            <div>
+              <strong>Sección:</strong> Única
+            </div>
+          </div>
+
+          {/* Grades Table */}
+          <table className="bulletin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f1f5f9' }}>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'left', width: '38%' }}>Asignatura / Área Curricular</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P1</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P2</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P3</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P4</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', fontWeight: 'bold' }}>RP</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fef3c7' }}>CPC</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fef3c7' }}>CC</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fee2e2' }}>CEX</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fee2e2' }}>CEXC</th>
+                <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '8%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>CF</th>
+              </tr>
+            </thead>
+            <tbody>
+              {compiledGradesList.map((g) => (
+                <tr key={g.key}>
+                  <td style={{ border: '1px solid #000000', padding: '0.5rem', fontWeight: 'bold' }}>{g.name}</td>
+                  
+                  {/* Period 1 */}
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                    <input 
+                      type="number" 
+                      className="no-print-input"
+                      value={g.p1} 
+                      onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque1', -1, e.target.value)}
+                      style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                    />
+                  </td>
+                  
+                  {/* Period 2 */}
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                    <input 
+                      type="number" 
+                      className="no-print-input"
+                      value={g.p2} 
+                      onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque2', -1, e.target.value)}
+                      style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                    />
+                  </td>
+                  
+                  {/* Period 3 */}
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                    <input 
+                      type="number" 
+                      className="no-print-input"
+                      value={g.p3} 
+                      onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque3', -1, e.target.value)}
+                      style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                    />
+                  </td>
+                  
+                  {/* Period 4 */}
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
+                    <input 
+                      type="number" 
+                      className="no-print-input"
+                      value={g.p4} 
+                      onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque4', -1, e.target.value)}
+                      style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
+                    />
+                  </td>
+
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: '900', backgroundColor: '#f8fafc' }}>{g.rp}</td>
+                  
+                  {/* CPC */}
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.1rem', backgroundColor: '#fffbeb' }}>
+                    {g.rp < 70 ? (
+                      <input 
+                        type="number" 
+                        className="no-print-input"
+                        placeholder="-"
+                        value={g.cpc || ''} 
+                        onChange={(e) => handleUpdatePromoField(student.id, g.key, 'cec', e.target.value)}
+                        style={{ width: '100%', border: 'none', backgroundColor: 'transparent', textAlign: 'center', fontWeight: 'bold', color: '#b45309' }}
+                      />
+                    ) : '-'}
+                  </td>
+
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#fffbeb', color: g.cc < 70 ? '#ce1126' : 'inherit' }}>
+                    {g.cc !== null ? g.cc : '-'}
+                  </td>
+
+                  {/* CEX */}
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.1rem', backgroundColor: '#fef2f2' }}>
+                    {(g.rp < 70 && (g.cc === null || g.cc < 70)) ? (
+                      <input 
+                        type="number" 
+                        className="no-print-input"
+                        placeholder="-"
+                        value={g.cex || ''} 
+                        onChange={(e) => handleUpdatePromoField(student.id, g.key, 'ceex', e.target.value)}
+                        style={{ width: '100%', border: 'none', backgroundColor: 'transparent', textAlign: 'center', fontWeight: 'bold', color: '#dc2626' }}
+                      />
+                    ) : '-'}
+                  </td>
+
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#fef2f2', color: g.cexc < 70 ? '#ce1126' : 'inherit' }}>
+                    {g.cexc !== null ? g.cexc : '-'}
+                  </td>
+
+                  <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: '900', backgroundColor: '#f1f5f9', color: g.cf < 70 ? '#ce1126' : '#1e3a8a' }}>{g.cf}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div style={{ border: '1px solid #000000', padding: '0.6rem', borderRadius: '4px', fontSize: '0.7rem', backgroundColor: '#f8fafc' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Leyenda y Criterios Oficiales:</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              <div>
+                • <strong>P1 - P4:</strong> Calificaciones Parciales correspondientes a cada Período Escolar.<br />
+                • <strong>RP:</strong> Promedio de Rendimiento Parcial del Año.<br />
+                • <strong>CPC / CC:</strong> Examen Completivo (50%) / Calificación Completiva Final.
+              </div>
+              <div>
+                • <strong>CEX / CEXC:</strong> Examen Extraordinario (70%) / Calificación Extraordinaria Final.<br />
+                • <strong>CF:</strong> Calificación Final (Mínimo de aprobación: 70 puntos).
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        {/* ================= PAGE 2 (REVERSO) ================= */}
+        <div className="bulletin-page bulletin-page-2" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '1.5in 1.2in', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', boxSizing: 'border-box', position: 'relative' }}>
+          
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', display: 'flex' }}>
+            <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+            <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+            <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+          </div>
+
+          <h3 style={{ borderBottom: '2px solid #000000', paddingBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '900', textTransform: 'uppercase', margin: '0 0 1rem 0' }}>
+            CONTROL DE ASISTENCIA Y RENDIMIENTO ANUAL
+          </h3>
+
+          {/* Attendance Table */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>Registro Mensual de Asistencia:</h4>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f1f5f9', fontWeight: 'bold' }}>
+                  <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'left' }}>Mes</th>
+                  <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Días Laborados</th>
+                  <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Asistencias (P)</th>
+                  <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Ausencias (A)</th>
+                  <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Tardanzas (T)</th>
+                  <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>% Asistencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: 'Agosto', days: 12 },
+                  { name: 'Septiembre', days: 21 },
+                  { name: 'Octubre', days: 22 },
+                  { name: 'Noviembre', days: 20 },
+                  { name: 'Diciembre', days: 15 },
+                  { name: 'Enero', days: 20 },
+                  { name: 'Febrero', days: 19 },
+                  { name: 'Marzo', days: 21 },
+                  { name: 'Abril', days: 20 },
+                  { name: 'Mayo', days: 21 },
+                  { name: 'Junio', days: 10 }
+                ].map((m) => {
+                  const stats = getMonthlyAttendanceStats(student.id, m.name, m.days);
+                  return (
+                    <tr key={m.name}>
+                      <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', fontWeight: 'bold' }}>{m.name}</td>
+                      <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.workedDays}</td>
+                      <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.present}</td>
+                      <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.absent}</td>
+                      <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.late}</td>
+                      <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center', fontWeight: 'bold', backgroundColor: stats.pct < 80 ? '#fee2e2' : 'transparent' }}>{stats.pct}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pedagogical Observations Comment Box */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: '0 0 0.4rem 0' }}>Observaciones Pedagógicas del Docente:</h4>
+            <div className="no-print-textarea-wrapper">
+              <textarea 
+                className="no-print-textarea"
+                value={currentCommentVal} 
+                onChange={(e) => setStudentComments(prev => ({ ...prev, [student.id]: e.target.value }))}
+                placeholder={autoComment}
+                style={{ width: '100%', minHeight: '90px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #000000', fontSize: '0.78rem', resize: 'none', display: 'block', outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div className="print-only-text" style={{ display: 'none', border: '1px solid #000000', padding: '0.5rem', borderRadius: '4px', minHeight: '90px', fontSize: '0.78rem', boxSizing: 'border-box', whiteSpace: 'pre-wrap' }}>
+              {displayComment}
+            </div>
+          </div>
+
+          {/* Promotion Final Condition Panel */}
+          <div style={{ border: '1px solid #000000', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', fontSize: '0.85rem', backgroundColor: '#f8fafc' }}>
+            <div>
+              <strong>Condición Académica Final:</strong>
+              <span style={{ marginLeft: '0.5rem', fontWeight: '900', color: allFinalPassed ? '#15803d' : '#b91c1c', border: '2px solid', padding: '0.2rem 0.6rem', borderRadius: '4px', display: 'inline-block', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                {finalConditionLabel}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', fontWeight: 'bold' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <input type="checkbox" checked={allFinalPassed} readOnly style={{ transform: 'scale(1.2)' }} /> PROMOVIDO
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <input type="checkbox" checked={!allFinalPassed} readOnly style={{ transform: 'scale(1.2)' }} /> REPITENTE / PENDIENTE
+              </label>
+            </div>
+          </div>
+
+          {/* Official Signatures */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3.5rem', borderTop: '1px dashed #94a3b8', paddingTop: '1.5rem', fontSize: '0.8rem', color: '#000000' }}>
+            <div style={{ textAlign: 'center', width: '40%' }}>
+              <div style={{ borderBottom: '1px solid #000000', width: '220px', margin: '0 auto 0.4rem auto' }}></div>
+              <strong>Maestro(a) Encargado(a) del Grado</strong>
+            </div>
+            <div style={{ textAlign: 'center', width: '40%' }}>
+              <div style={{ borderBottom: '1px solid #000000', width: '220px', margin: '0 auto 0.4rem auto' }}></div>
+              <strong>Director(a) del Centro Educativo</strong>
+            </div>
+            <div style={{ textAlign: 'center', width: '20%' }}>
+              <div style={{ border: '1px solid #000000', width: '100px', height: '60px', margin: '0 auto 0.4rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.62rem', color: '#64748b' }}>
+                SELLO
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    );
+  };
+
   // --- VIEW: Admin Dashboard ---
   if (currentUser.role === 'admin') {
     return (
@@ -4626,7 +5020,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             >
               ☰
             </button>
-            <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div 
+              className="header-logo" 
+              onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+              title="Ir a Inicio"
+            >
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
                 <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
                 <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
@@ -6654,30 +7053,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     (() => {
                       const student = students.find(s => s.id === selectedBulletinStudentId);
                       if (!student) return null;
-                      // Reuse the same bulletin rendering by temporarily treating adminBulletinGrade as classroomGrade
-                      const fakeUser = { ...currentUser, classroomGrade: adminBulletinGrade };
-                      // We render the bulletin sheet directly using the same logic
-                      return (
-                        <div className="glass-panel" style={{ padding: '1rem' }}>
-                          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                            📄 Vista previa del Boletín para <strong>{student.name}</strong> — Grado <strong>{adminBulletinGrade}</strong>. 
-                            Presione el botón de Imprimir en la parte superior para descargar en PDF.
-                          </p>
-                          <div style={{ opacity: 0.7, textAlign: 'center', padding: '2rem', border: '2px dashed var(--border-color)', borderRadius: '8px' }}>
-                            <span style={{ fontSize: '2rem' }}>📋</span>
-                            <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
-                              El boletín se generará cuando presione Imprimir. Para ver la vista previa completa use la pestaña <strong>Boletín</strong> del docente tutor del grado, o presione directamente el botón de imprimir.
-                            </p>
-                            <button
-                              onClick={() => window.print()}
-                              className="btn-primary"
-                              style={{ marginTop: '1rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', padding: '0.6rem 1.25rem', fontWeight: 'bold', color: '#ffffff', cursor: 'pointer' }}
-                            >
-                              🖨️ Generar e Imprimir Boletín PDF
-                            </button>
-                          </div>
-                        </div>
-                      );
+                      return renderBulletinContent(student, adminBulletinGrade);
                     })()
                   )}
                 </div>
@@ -6741,7 +7117,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           >
             ☰
           </button>
-          <div className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div 
+            className="header-logo" 
+            onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+            title="Ir a Inicio"
+          >
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
               <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
               <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
@@ -6831,11 +7212,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>
                 <span style={{ fontSize: '1.1rem' }}>📅</span> Control de Asistencia
               </div>
-              {currentUser.classroomGrade && (
-                <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín de Calificaciones
-                </div>
-              )}
+              <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín de Calificaciones
+              </div>
               <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
                 <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
               </div>
@@ -8744,484 +9123,111 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* TEACHER: Tab Bulletin (Boletín de Calificaciones) */}
             {activeTab === 'bulletin' && (
               <div>
-                {!currentUser.classroomGrade ? (
-                  <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
-                    <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>⚠️</span>
-                    <h3>Acceso Restringido</h3>
-                    <p style={{ fontSize: '0.85rem' }}>Esta sección es exclusiva para maestros encargados de aula (tutores de grado).</p>
-                  </div>
-                ) : (
-                  <div>
-                    {/* Controls - Hide when printing */}
-                    <div className="glass-panel no-print-element" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <h2 style={{ margin: 0, color: 'var(--primary)', fontWeight: 800 }}>📄 Boletín Oficial de Calificaciones</h2>
-                          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                            Generación y descarga de boletines académicos a doble cara para el grado tutor: <strong>{currentUser.classroomGrade}</strong>.
-                          </p>
-                        </div>
-                        {selectedBulletinStudentId && (
-                          <button 
-                            onClick={() => window.print()}
-                            className="btn-primary" 
-                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', padding: '0.6rem 1.25rem', fontWeight: 'bold', color: '#ffffff', cursor: 'pointer' }}
-                          >
-                            🖨️ Descargar / Imprimir Boletín (PDF)
-                          </button>
-                        )}
-                      </div>
+                {(() => {
+                  const targetGrade = currentUser.classroomGrade || selectedGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
+                  const availableStudents = students.filter(s => s.grade === targetGrade);
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
-                        <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Estudiante</label>
-                          <select 
-                            className="form-select" 
-                            value={selectedBulletinStudentId} 
-                            onChange={(e) => setSelectedBulletinStudentId(e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
-                          >
-                            <option value="">-- Seleccionar Estudiante --</option>
-                            {students.filter(s => s.grade === currentUser.classroomGrade).map(s => (
-                              <option key={s.id} value={s.id}>{s.name}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        {/* Custom Salidas - Only for 4th, 5th, 6th Grade */}
-                        {['4to A', '5to A', '6to A'].includes(currentUser.classroomGrade) && (
-                          <>
-                            <div className="form-group" style={{ margin: 0 }}>
-                              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 1</label>
-                              <input 
-                                type="text" 
-                                className="form-input" 
-                                value={salida1Name} 
-                                onChange={(e) => setSalida1Name(e.target.value)}
-                                placeholder="Química, Biología, etc."
-                                style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
-                              />
-                            </div>
-                            <div className="form-group" style={{ margin: 0 }}>
-                              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 2</label>
-                              <input 
-                                type="text" 
-                                className="form-input" 
-                                value={salida2Name} 
-                                onChange={(e) => setSalida2Name(e.target.value)}
-                                placeholder="Computación, etc."
-                                style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {!selectedBulletinStudentId ? (
-                      <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
-                        <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>📄</span>
-                        <h3>Por favor, seleccione un estudiante de su grado tutor para visualizar su Boletín Oficial</h3>
-                        <p style={{ fontSize: '0.85rem' }}>El documento oficial se generará automáticamente a doble cara con los datos reales del registro escolar.</p>
-                      </div>
-                    ) : (
-                      (() => {
-                        const student = students.find(s => s.id === selectedBulletinStudentId);
-                        if (!student) return null;
-
-                        // Helper to compile grades
-                        const compileSubjectGrades = (stu, subKey) => {
-                          const sGrades = stu.grades?.[subKey] || {
-                            bloque1: [80, 80, 80, 80],
-                            bloque2: [80, 80, 80, 80],
-                            bloque3: [80, 80, 80, 80],
-                            bloque4: [80, 80, 80, 80]
-                          };
-
-                          const getBlockAverage = (bloqueArray) => {
-                            if (!bloqueArray || bloqueArray.length === 0) return 80;
-                            const sum = bloqueArray.reduce((a, b) => a + b, 0);
-                            return Math.round(sum / bloqueArray.length);
-                          };
-
-                          const p1 = getBlockAverage(sGrades.bloque1);
-                          const p2 = getBlockAverage(sGrades.bloque2);
-                          const p3 = getBlockAverage(sGrades.bloque3);
-                          const p4 = getBlockAverage(sGrades.bloque4);
-                          const rp = Math.round((p1 + p2 + p3 + p4) / 4);
-
-                          const promoKey = `${stu.id}_${subKey}`;
-                          const pData = promotionGrades[promoKey] || { cec: null, ceex: null, ce: null };
-                          const cpc = pData.cec;
-                          const cex = pData.ceex;
-
-                          let cc = null;
-                          if (cpc !== null && cpc !== undefined) {
-                            cc = Math.round((rp * 0.5) + (cpc * 0.5));
-                          }
-
-                          let cexc = null;
-                          if (cex !== null && cex !== undefined) {
-                            cexc = Math.round((rp * 0.3) + (cex * 0.7));
-                          }
-
-                          let cf = rp;
-                          if (rp < 70) {
-                            if (cc !== null && cc >= 70) {
-                              cf = cc;
-                            } else if (cc !== null && cc < 70 && cexc !== null) {
-                              cf = cexc;
-                            } else if (cc !== null) {
-                              cf = cc;
-                            }
-                          }
-
-                          return { p1, p2, p3, p4, rp, cpc, cc, cex, cexc, cf };
-                        };
-
-                        const standardSubjects = [
-                          { key: 'lengua_espanola', name: 'Lengua Española' },
-                          { key: 'matematica', name: 'Matemática' },
-                          { key: 'ciencias_sociales', name: 'Ciencias Sociales' },
-                          { key: 'ciencias_naturaleza', name: 'Ciencias de la Naturaleza' },
-                          { key: 'artistica', name: 'Educación Artística' },
-                          { key: 'educacion_fisica', name: 'Educación Física' },
-                          { key: 'formacion_religiosa', name: 'Formación Integral Humana y Religiosa' },
-                          { key: 'ingles', name: 'Lengua Extranjera - Inglés' },
-                          { key: 'frances', name: 'Lengua Extranjera - Francés' }
-                        ];
-
-                        const optativeSubjects = ['4to A', '5to A', '6to A'].includes(currentUser.classroomGrade) ? [
-                          { key: 'salida1', name: salida1Name || 'Salida Optativa 1' },
-                          { key: 'salida2', name: salida2Name || 'Salida Optativa 2' }
-                        ] : [];
-
-                        const activeSubjectsList = [...standardSubjects, ...optativeSubjects];
-
-                        const compiledGradesList = activeSubjectsList.map(sub => {
-                          const compiled = compileSubjectGrades(student, sub.key);
-                          return {
-                            ...sub,
-                            ...compiled
-                          };
-                        });
-
-                        const allFinalPassed = compiledGradesList.every(g => g.cf >= 70);
-                        const finalConditionLabel = allFinalPassed ? 'PROMOVIDO' : 'REPITENTE / PENDIENTE';
-
-                        const overallAverage = Math.round(compiledGradesList.reduce((sum, g) => sum + g.cf, 0) / compiledGradesList.length);
-                        const currentCommentVal = studentComments[student.id] || '';
-                        
-                        let autoComment = '';
-                        if (overallAverage >= 90) {
-                          autoComment = "Excelente desempeño durante este año escolar. Ha alcanzado un altísimo nivel de logro en todas las competencias curriculares clave.";
-                        } else if (overallAverage >= 80) {
-                          autoComment = "Muy buen desempeño académico. Ha consolidado con éxito sus aprendizajes, mostrando gran compromiso y responsabilidad en sus tareas diarias.";
-                        } else if (overallAverage >= 70) {
-                          autoComment = "Rendimiento satisfactorio. Ha logrado las competencias necesarias del grado, pero se recomienda seguir repasando y profundizando áreas específicas en el próximo año escolar.";
-                        } else {
-                          autoComment = "Atención pedagógica: El estudiante requiere reforzamiento intensivo y tutorías académicas adicionales en las asignaturas clave no superadas para lograr los aprendizajes esperados.";
-                        }
-
-                        const displayComment = currentCommentVal.trim() !== '' ? currentCommentVal : autoComment;
-
-                        return (
-                          <div className="bulletin-printable-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                            
-                            {/* ================= PAGE 1 (ANVERSO) ================= */}
-                            <div className="bulletin-page bulletin-page-1" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '1.5in 1.2in', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', boxSizing: 'border-box', position: 'relative' }}>
-                              
-                              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', display: 'flex' }}>
-                                <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
-                                <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
-                                <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
-                              </div>
-
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #000000', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '2px solid #ffb300', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                    <span style={{ fontSize: '1.6rem' }}>🎓</span>
-                                  </div>
-                                  <div>
-                                    <h1 style={{ fontSize: '1.25rem', fontWeight: '900', margin: 0, letterSpacing: '0.02em', color: '#000000' }}>LICEO ANA ROSA CASTILLO</h1>
-                                    <span style={{ fontSize: '0.7rem', color: '#334155', fontWeight: 'bold' }}>DISTRITO EDUCATIVO 14-01 NAGUA, REP. DOM.</span>
-                                  </div>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                  <div style={{ backgroundColor: '#003876', color: '#ffffff', padding: '0.3rem 0.75rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', display: 'inline-block' }}>BOLETÍN OFICIAL</div>
-                                  <div style={{ fontSize: '0.7rem', fontWeight: 'bold', marginTop: '0.25rem' }}>AÑO ESCOLAR: 2025-2026</div>
-                                </div>
-                              </div>
-
-                              <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1.25rem 0', color: '#000000' }}>
-                                REGISTRO OFICIAL DE EVALUACIÓN DEL APRENDIZAJE (SEGUNDO CICLO SECUNDARIA)
-                              </h3>
-
-                              {/* Student Details */}
-                              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.75rem', border: '1px solid #000000', padding: '0.75rem', borderRadius: '6px', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
-                                <div>
-                                  <strong>Estudiante:</strong> <span style={{ textTransform: 'uppercase' }}>{student.name}</span>
-                                </div>
-                                <div>
-                                  <strong>Grado:</strong> {student.grade}
-                                </div>
-                                <div>
-                                  <strong>Código RNE:</strong> <span style={{ fontFamily: 'monospace' }}>{student.id.toUpperCase().replace('S_', 'RNE-')}</span>
-                                </div>
-                                <div>
-                                  <strong>Centro Educativo:</strong> Liceo Ana Rosa Castillo
-                                </div>
-                                <div>
-                                  <strong>Distrito Escolar:</strong> 14-01 Nagua
-                                </div>
-                                <div>
-                                  <strong>Sección:</strong> Única
-                                </div>
-                              </div>
-
-                              {/* Grades Table */}
-                              <table className="bulletin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
-                                <thead>
-                                  <tr style={{ backgroundColor: '#f1f5f9' }}>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'left', width: '38%' }}>Asignatura / Área Curricular</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P1</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P2</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P3</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%' }}>P4</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', fontWeight: 'bold' }}>RP</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fef3c7' }}>CPC</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fef3c7' }}>CC</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fee2e2' }}>CEX</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '7%', backgroundColor: '#fee2e2' }}>CEXC</th>
-                                    <th style={{ border: '1px solid #000000', padding: '0.5rem', textAlign: 'center', width: '8%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>CF</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {compiledGradesList.map((g) => (
-                                    <tr key={g.key}>
-                                      <td style={{ border: '1px solid #000000', padding: '0.5rem', fontWeight: 'bold' }}>{g.name}</td>
-                                      
-                                      {/* Period 1 */}
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
-                                        <input 
-                                          type="number" 
-                                          className="no-print-input"
-                                          value={g.p1} 
-                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque1', -1, e.target.value)}
-                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
-                                        />
-                                      </td>
-                                      
-                                      {/* Period 2 */}
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
-                                        <input 
-                                          type="number" 
-                                          className="no-print-input"
-                                          value={g.p2} 
-                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque2', -1, e.target.value)}
-                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
-                                        />
-                                      </td>
-                                      
-                                      {/* Period 3 */}
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
-                                        <input 
-                                          type="number" 
-                                          className="no-print-input"
-                                          value={g.p3} 
-                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque3', -1, e.target.value)}
-                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
-                                        />
-                                      </td>
-                                      
-                                      {/* Period 4 */}
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.2rem' }}>
-                                        <input 
-                                          type="number" 
-                                          className="no-print-input"
-                                          value={g.p4} 
-                                          onChange={(e) => handleUpdateCustomSubjectGrade(student.id, g.key, 'bloque4', -1, e.target.value)}
-                                          style={{ width: '100%', border: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}
-                                        />
-                                      </td>
-
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: '900', backgroundColor: '#f8fafc' }}>{g.rp}</td>
-                                      
-                                      {/* CPC */}
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.1rem', backgroundColor: '#fffbeb' }}>
-                                        {g.rp < 70 ? (
-                                          <input 
-                                            type="number" 
-                                            className="no-print-input"
-                                            placeholder="-"
-                                            value={g.cpc || ''} 
-                                            onChange={(e) => handleUpdatePromoField(student.id, g.key, 'cec', e.target.value)}
-                                            style={{ width: '100%', border: 'none', backgroundColor: 'transparent', textAlign: 'center', fontWeight: 'bold', color: '#b45309' }}
-                                          />
-                                        ) : '-'}
-                                      </td>
-
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#fffbeb', color: g.cc < 70 ? '#ce1126' : 'inherit' }}>
-                                        {g.cc !== null ? g.cc : '-'}
-                                      </td>
-
-                                      {/* CEX */}
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', padding: '0.1rem', backgroundColor: '#fef2f2' }}>
-                                        {(g.rp < 70 && (g.cc === null || g.cc < 70)) ? (
-                                          <input 
-                                            type="number" 
-                                            className="no-print-input"
-                                            placeholder="-"
-                                            value={g.cex || ''} 
-                                            onChange={(e) => handleUpdatePromoField(student.id, g.key, 'ceex', e.target.value)}
-                                            style={{ width: '100%', border: 'none', backgroundColor: 'transparent', textAlign: 'center', fontWeight: 'bold', color: '#dc2626' }}
-                                          />
-                                        ) : '-'}
-                                      </td>
-
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#fef2f2', color: g.cexc < 70 ? '#ce1126' : 'inherit' }}>
-                                        {g.cexc !== null ? g.cexc : '-'}
-                                      </td>
-
-                                      <td style={{ border: '1px solid #000000', textAlign: 'center', fontWeight: '900', backgroundColor: '#f1f5f9', color: g.cf < 70 ? '#ce1126' : '#1e3a8a' }}>{g.cf}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-
-                              <div style={{ border: '1px solid #000000', padding: '0.6rem', borderRadius: '4px', fontSize: '0.7rem', backgroundColor: '#f8fafc' }}>
-                                <div style={{ fontWeight: 'bold', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Leyenda y Criterios Oficiales:</div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                                  <div>
-                                    • <strong>P1 - P4:</strong> Calificaciones Parciales correspondientes a cada Período Escolar.<br />
-                                    • <strong>RP:</strong> Promedio de Rendimiento Parcial del Año.<br />
-                                    • <strong>CPC / CC:</strong> Examen Completivo (50%) / Calificación Completiva Final.
-                                  </div>
-                                  <div>
-                                    • <strong>CEX / CEXC:</strong> Examen Extraordinario (70%) / Calificación Extraordinaria Final.<br />
-                                    • <strong>CF:</strong> Calificación Final (Mínimo de aprobación: 70 puntos).
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-
-                            {/* ================= PAGE 2 (REVERSO) ================= */}
-                            <div className="bulletin-page bulletin-page-2" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '1.5in 1.2in', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', boxSizing: 'border-box', position: 'relative' }}>
-                              
-                              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '8px', display: 'flex' }}>
-                                <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
-                                <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
-                                <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
-                              </div>
-
-                              <h3 style={{ borderBottom: '2px solid #000000', paddingBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '900', textTransform: 'uppercase', margin: '0 0 1rem 0' }}>
-                                CONTROL DE ASISTENCIA Y RENDIMIENTO ANUAL
-                              </h3>
-
-                              {/* Attendance Table */}
-                              <div style={{ marginBottom: '1.5rem' }}>
-                                <h4 style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>Registro Mensual de Asistencia:</h4>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
-                                  <thead>
-                                    <tr style={{ backgroundColor: '#f1f5f9', fontWeight: 'bold' }}>
-                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'left' }}>Mes</th>
-                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Días Laborados</th>
-                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Asistencias (P)</th>
-                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Ausencias (A)</th>
-                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>Tardanzas (T)</th>
-                                      <th style={{ border: '1px solid #000000', padding: '0.4rem', textAlign: 'center' }}>% Asistencia</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {[
-                                      { name: 'Agosto', days: 12 },
-                                      { name: 'Septiembre', days: 21 },
-                                      { name: 'Octubre', days: 22 },
-                                      { name: 'Noviembre', days: 20 },
-                                      { name: 'Diciembre', days: 15 },
-                                      { name: 'Enero', days: 20 },
-                                      { name: 'Febrero', days: 19 },
-                                      { name: 'Marzo', days: 21 },
-                                      { name: 'Abril', days: 20 },
-                                      { name: 'Mayo', days: 21 },
-                                      { name: 'Junio', days: 10 }
-                                    ].map((m) => {
-                                      const stats = getMonthlyAttendanceStats(student.id, m.name, m.days);
-                                      return (
-                                        <tr key={m.name}>
-                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', fontWeight: 'bold' }}>{m.name}</td>
-                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.workedDays}</td>
-                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.present}</td>
-                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.absent}</td>
-                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center' }}>{stats.late}</td>
-                                          <td style={{ border: '1px solid #000000', padding: '0.35rem 0.4rem', textAlign: 'center', fontWeight: 'bold', backgroundColor: stats.pct < 80 ? '#fee2e2' : 'transparent' }}>{stats.pct}%</td>
-                                        </tr>
-                                      );
-                                    })}
-                                  </tbody>
-                                </table>
-                              </div>
-
-                              {/* Pedagogical Observations Comment Box */}
-                              <div style={{ marginBottom: '1.5rem' }}>
-                                <h4 style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: '0 0 0.4rem 0' }}>Observaciones Pedagógicas del Docente:</h4>
-                                <div className="no-print-textarea-wrapper">
-                                  <textarea 
-                                    className="no-print-textarea"
-                                    value={currentCommentVal} 
-                                    onChange={(e) => setStudentComments(prev => ({ ...prev, [student.id]: e.target.value }))}
-                                    placeholder={autoComment}
-                                    style={{ width: '100%', minHeight: '90px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #000000', fontSize: '0.78rem', resize: 'none', display: 'block', outline: 'none', boxSizing: 'border-box' }}
-                                  />
-                                </div>
-                                <div className="print-only-text" style={{ display: 'none', border: '1px solid #000000', padding: '0.5rem', borderRadius: '4px', minHeight: '90px', fontSize: '0.78rem', boxSizing: 'border-box', whiteSpace: 'pre-wrap' }}>
-                                  {displayComment}
-                                </div>
-                              </div>
-
-                              {/* Promotion Final Condition Panel */}
-                              <div style={{ border: '1px solid #000000', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', fontSize: '0.85rem', backgroundColor: '#f8fafc' }}>
-                                <div>
-                                  <strong>Condición Académica Final:</strong>
-                                  <span style={{ marginLeft: '0.5rem', fontWeight: '900', color: allFinalPassed ? '#15803d' : '#b91c1c', border: '2px solid', padding: '0.2rem 0.6rem', borderRadius: '4px', display: 'inline-block', fontSize: '0.8rem', textTransform: 'uppercase' }}>
-                                    {finalConditionLabel}
-                                  </span>
-                                </div>
-                                <div style={{ display: 'flex', gap: '1rem', fontWeight: 'bold' }}>
-                                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                                    <input type="checkbox" checked={allFinalPassed} readOnly style={{ transform: 'scale(1.2)' }} /> PROMOVIDO
-                                  </label>
-                                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                                    <input type="checkbox" checked={!allFinalPassed} readOnly style={{ transform: 'scale(1.2)' }} /> REPITENTE / PENDIENTE
-                                  </label>
-                                </div>
-                              </div>
-
-                              {/* Official Signatures */}
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3.5rem', borderTop: '1px dashed #94a3b8', paddingTop: '1.5rem', fontSize: '0.8rem', color: '#000000' }}>
-                                <div style={{ textAlign: 'center', width: '40%' }}>
-                                  <div style={{ borderBottom: '1px solid #000000', width: '220px', margin: '0 auto 0.4rem auto' }}></div>
-                                  <strong>Maestro(a) Encargado(a) del Grado</strong>
-                                </div>
-                                <div style={{ textAlign: 'center', width: '40%' }}>
-                                  <div style={{ borderBottom: '1px solid #000000', width: '220px', margin: '0 auto 0.4rem auto' }}></div>
-                                  <strong>Director(a) del Centro Educativo</strong>
-                                </div>
-                                <div style={{ textAlign: 'center', width: '20%' }}>
-                                  <div style={{ border: '1px solid #000000', width: '100px', height: '60px', margin: '0 auto 0.4rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.62rem', color: '#64748b' }}>
-                                    SELLO
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
+                  return (
+                    <div>
+                      {/* Controls - Hide when printing */}
+                      <div className="glass-panel no-print-element" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <h2 style={{ margin: 0, color: 'var(--primary)', fontWeight: 800 }}>📄 Boletín Oficial de Calificaciones</h2>
+                            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                              Generación y descarga de boletines académicos a doble cara para el grado: <strong>{targetGrade}</strong>.
+                            </p>
                           </div>
-                        );
-                      })()
-                    )}
-                  </div>
-                )}
+                          {selectedBulletinStudentId && (
+                            <button 
+                              onClick={() => window.print()}
+                              className="btn-primary" 
+                              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', padding: '0.6rem 1.25rem', fontWeight: 'bold', color: '#ffffff', cursor: 'pointer' }}
+                            >
+                              🖨️ Descargar / Imprimir Boletín (PDF)
+                            </button>
+                          )}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
+                          {/* Grade selector if teacher has multiple grades */}
+                          {teacherUniqueGrades.length > 1 && (
+                            <div className="form-group" style={{ margin: 0 }}>
+                              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Grado</label>
+                              <select 
+                                className="form-select" 
+                                value={selectedGrade} 
+                                onChange={(e) => { setSelectedGrade(e.target.value); setSelectedBulletinStudentId(''); }}
+                                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                              >
+                                {teacherUniqueGrades.map(g => (
+                                  <option key={g} value={g}>{g}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Estudiante</label>
+                            <select 
+                              className="form-select" 
+                              value={selectedBulletinStudentId} 
+                              onChange={(e) => setSelectedBulletinStudentId(e.target.value)}
+                              style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                            >
+                              <option value="">-- Seleccionar Estudiante --</option>
+                              {availableStudents.map(s => (
+                                <option key={s.id} value={s.id}>{s.name}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Custom Salidas - Only for 4th, 5th, 6th Grade */}
+                          {['4to A', '5to A', '6to A'].includes(targetGrade) && (
+                            <>
+                              <div className="form-group" style={{ margin: 0 }}>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 1</label>
+                                <input 
+                                  type="text" 
+                                  className="form-input" 
+                                  value={salida1Name} 
+                                  onChange={(e) => setSalida1Name(e.target.value)}
+                                  placeholder="Química, Biología, etc."
+                                  style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                                />
+                              </div>
+                              <div className="form-group" style={{ margin: 0 }}>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 2</label>
+                                <input 
+                                  type="text" 
+                                  className="form-input" 
+                                  value={salida2Name} 
+                                  onChange={(e) => setSalida2Name(e.target.value)}
+                                  placeholder="Computación, etc."
+                                  style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {!selectedBulletinStudentId ? (
+                        <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                          <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>📄</span>
+                          <h3>Por favor, seleccione un estudiante de {targetGrade} para visualizar su Boletín Oficial</h3>
+                          <p style={{ fontSize: '0.85rem' }}>El documento oficial se generará automáticamente a doble cara con los datos reales del registro escolar.</p>
+                        </div>
+                      ) : (
+                        (() => {
+                          const student = students.find(s => s.id === selectedBulletinStudentId);
+                          if (!student) return null;
+                          return renderBulletinContent(student, targetGrade);
+                        })()
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </section>
