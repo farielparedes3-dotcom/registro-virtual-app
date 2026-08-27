@@ -6,16 +6,18 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for (let r of registrations) { r.unregister(); }
-        });
-      }
-      if ('caches' in window) {
-        caches.keys().then(function(names) {
-          for (let n of names) { caches.delete(n); }
-        });
-      }
+      try {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            if (registrations) { for (let r of registrations) { r.unregister(); } }
+          }).catch(function(){});
+        }
+        if ('caches' in window && caches.keys) {
+          caches.keys().then(function(names) {
+            if (names) { for (let n of names) { caches.delete(n); } }
+          }).catch(function(){});
+        }
+      } catch (e) {}
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
