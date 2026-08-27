@@ -15,6 +15,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
         console.log('⚡ Service Worker registered:', registration);
+        registration.update();
         
         // Listen for new service worker installation
         registration.onupdatefound = () => {
@@ -23,7 +24,7 @@ if ('serviceWorker' in navigator) {
             installingWorker.onstatechange = () => {
               if (installingWorker.state === 'installed') {
                 if (navigator.serviceWorker.controller) {
-                  console.log('✨ New version found! Triggering update prompt.');
+                  console.log('✨ New version found! Reloading for fresh update.');
                   window.dispatchEvent(new CustomEvent('sw-update-available', { detail: registration }));
                 }
               }

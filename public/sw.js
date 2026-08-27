@@ -1,47 +1,50 @@
-const CACHE_NAME = 'larc-registro-cache-v1.0.0';
+const CACHE_NAME = 'larc-registro-cache-v1.0.2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
   '/manifest.json',
   '/favicon.svg',
   '/dr_education_banner.png'
 ];
 
-// Install Event: cache initial assets
+// Install Event: cache static media assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Pre-caching static assets');
+      console.log('[Service Worker] Pre-caching media assets');
       return cache.addAll(ASSETS_TO_CACHE);
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate Event: clear old caches
+// Activate Event: IMMEDIATELY purge all old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[Service Worker] Clearing old cache:', cache);
-            return caches.delete(cache);
-          }
+          console.log('[Service Worker] Purging cache:', cache);
+          return caches.delete(cache);
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Fetch Event: network first, falling back to cache
+// Fetch Event: Always fetch fresh network for HTML/JS
 self.addEventListener('fetch', (event) => {
-  // Only handle HTTP/HTTPS (skip chrome-extension, etc.)
   if (!event.request.url.startsWith('http')) return;
 
+  // Never cache HTML or JS bundles so new deployments show instantly
+  if (event.request.mode === 'navigate' || event.request.destination === 'script' || event.request.destination === 'style') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // If successful, clone response and write to cache
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) return cachedResponse;
+      return fetch(event.request).then((response) => {
         if (response && response.status === 200 && response.type === 'basic') {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -49,26 +52,14 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return response;
-      })
-      .catch(() => {
-        // If network request fails, search in cache
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          // If offline and request is HTML document, return root index
-          if (event.request.headers.get('accept').includes('text/html')) {
-            return caches.match('/');
-          }
-        });
-      })
+      });
+    })
   );
 });
 
 // Skip waiting message listener
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    console.log('[Service Worker] Skipping waiting and activating new worker');
     self.skipWaiting();
   }
 });

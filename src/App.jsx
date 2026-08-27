@@ -4636,7 +4636,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   if (!currentUser) {
     return (
-      <div className="login-container">
+      <div className="login-container" style={{ minHeight: '100vh', width: '100%', backgroundColor: '#f0f4f8', color: '#1c2b3d' }}>
         {/* Left Side: Circular emblem and 12 Curricular modules grid */}
         <div className="login-left-illustration">
           <div className="login-left-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
