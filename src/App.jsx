@@ -1444,14 +1444,10 @@ export default function App() {
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('s_current_user', JSON.stringify(currentUser));
-      const latest = users.find(u => u.id === currentUser.id);
-      if (latest && JSON.stringify(latest) !== JSON.stringify(currentUser)) {
-        setCurrentUser(latest);
-      }
     } else {
       localStorage.removeItem('s_current_user');
     }
-  }, [currentUser, users]);
+  }, [currentUser]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -1480,7 +1476,7 @@ export default function App() {
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher') {
-      const uniqueGrades = [...new Set(currentUser.assignments.map(a => a.grade))];
+      const uniqueGrades = [...new Set((currentUser.assignments || []).map(a => a.grade))];
       if (uniqueGrades.length > 0) {
         setSelectedGrade(uniqueGrades[0]);
       }
@@ -1490,7 +1486,7 @@ export default function App() {
   // When selectedGrade changes, automatically set selectedSubject
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher' && selectedGrade) {
-      const gradeSubjects = currentUser.assignments
+      const gradeSubjects = (currentUser.assignments || [])
         .filter(a => a.grade === selectedGrade)
         .map(a => a.subject);
       if (gradeSubjects.length > 0) {
@@ -1715,11 +1711,14 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    setCurrentUser(null);
     localStorage.removeItem('s_current_user');
+    setCurrentUser(null);
     setSelectedGrade('');
     setSelectedSubject('math');
     setActiveTab('dashboard');
+    setLoginEmail('');
+    setLoginPassword('');
+    setLoginError('');
   };
 
   const handleQuickLogin = (emailOrUsername, password) => {
@@ -2576,17 +2575,17 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
   };
 
   const renderReportsTabContent = () => {
-    const visibleGradesForExplorer = currentUser.role === 'admin' 
+    const visibleGradesForExplorer = currentUser?.role === 'admin' 
       ? grades 
-      : (currentUser.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades);
+      : (currentUser?.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades);
 
     const filteredAlertLogs = alertLogs.filter(log => {
-      if (currentUser.role === 'admin') return true;
+      if (currentUser?.role === 'admin') return true;
       return visibleGradesForExplorer.includes(log.grade);
     });
 
     const visibleStudents = students.filter(s => {
-      if (currentUser.role === 'admin') return true;
+      if (currentUser?.role === 'admin') return true;
       return visibleGradesForExplorer.includes(s.grade);
     });
 
@@ -4375,11 +4374,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
 
   const teacherUniqueGrades = currentUser && currentUser.role === 'teacher'
-    ? [...new Set(currentUser.assignments.map(a => a.grade))]
+    ? [...new Set((currentUser.assignments || []).map(a => a.grade))]
     : [];
 
   const teacherGradeSubjects = currentUser && currentUser.role === 'teacher' && selectedGrade
-    ? currentUser.assignments.filter(a => a.grade === selectedGrade).map(a => a.subject)
+    ? (currentUser.assignments || []).filter(a => a.grade === selectedGrade).map(a => a.subject)
     : [];
 
   const studentsFilteredByGrade = selectedGrade
@@ -9628,7 +9627,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'bulletin' && (
               <div>
                 {(() => {
-                  const targetGrade = currentUser.classroomGrade || selectedGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
+                  const targetGrade = currentUser?.classroomGrade || selectedGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
                   const availableStudents = students.filter(s => s.grade === targetGrade);
 
                   return (
