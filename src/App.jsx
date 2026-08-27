@@ -58,7 +58,7 @@ const DEFAULT_USERS = [
   { 
     id: 'u2', 
     name: 'Prof. Mateo Gómez', 
-    email: 'profesor.mate@school.edu', 
+    email: 'mateo.gomez@docente.edu.do', 
     password: 'profe123', 
     role: 'teacher', 
     classroomGrade: '1ro A',
@@ -72,7 +72,7 @@ const DEFAULT_USERS = [
   { 
     id: 'u3', 
     name: 'Prof. Clara Ruiz', 
-    email: 'profesor.ciencias@school.edu', 
+    email: 'clara.ruiz@docente.edu.do', 
     password: 'profe123', 
     role: 'teacher', 
     classroomGrade: '',
@@ -85,7 +85,7 @@ const DEFAULT_USERS = [
   { 
     id: 'u4', 
     name: 'Prof. Luis Castro', 
-    email: 'profesor.lengua@school.edu', 
+    email: 'luis.castro@docente.edu.do', 
     password: 'profe123', 
     role: 'teacher', 
     classroomGrade: '',
@@ -1000,14 +1000,16 @@ export default function App() {
     modifiedWithAI: false,
     finalText: '',
     coordinatorEmail: '',
-    counselorEmail: ''
+    counselorEmail: '',
+    reportPeriod: 'P1'
   });
   const [alertLogs, setAlertLogs] = useState(() => {
     const saved = localStorage.getItem('s_alert_logs');
     return saved ? JSON.parse(saved) : [];
   });
-  const [folderExplorerLevel, setFolderExplorerLevel] = useState('root'); // 'root' | 'grade' | 'student'
+  const [folderExplorerLevel, setFolderExplorerLevel] = useState('root'); // 'root' | 'grade' | 'period' | 'student'
   const [folderExplorerGrade, setFolderExplorerGrade] = useState('');
+  const [folderExplorerPeriod, setFolderExplorerPeriod] = useState('P1');
   const [folderExplorerStudentName, setFolderExplorerStudentName] = useState('');
   const [selectedManualReportStudentId, setSelectedManualReportStudentId] = useState('');
   const [viewingReportLog, setViewingReportLog] = useState(null);
@@ -2451,16 +2453,26 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
 
   const handleRegisterSentReportLog = () => {
     const contentText = compileReportText(alertFormModal);
+    let pVal = alertFormModal.reportPeriod || 'P1';
+    if (alertFormModal.period) {
+      if (alertFormModal.period.includes('1')) pVal = 'P1';
+      else if (alertFormModal.period.includes('2')) pVal = 'P2';
+      else if (alertFormModal.period.includes('3')) pVal = 'P3';
+      else if (alertFormModal.period.includes('4')) pVal = 'P4';
+    }
+
     const newLog = {
       id: Date.now().toString(),
       studentId: alertFormModal.student.id,
       studentName: alertFormModal.student.name,
       grade: alertFormModal.student.grade,
+      period: pVal,
       subjectName: alertFormModal.subjectKey ? (subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey) : 'Incidencia Directa',
-      periodName: alertFormModal.period ? (alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`) : 'N/A',
+      periodName: alertFormModal.period ? (alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`) : `Período ${pVal}`,
       score: alertFormModal.score ? alertFormModal.score.toFixed(0) : 'N/A',
       coordinator: alertFormModal.coordinatorEmail,
       counselor: alertFormModal.counselorEmail,
+      teacherEmail: currentUser ? currentUser.email : '',
       timestamp: new Date().toLocaleString(),
       type: alertFormModal.type,
       selectedSituations: alertFormModal.selectedSituations,
@@ -2595,7 +2607,15 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
 
           {/* Breadcrumbs */}
           <div className="folder-breadcrumbs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', backgroundColor: 'var(--bg-primary)', borderRadius: '6px', fontSize: '0.82rem', border: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
-            <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setFolderExplorerLevel('root')}>
+            <span 
+              style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }} 
+              onClick={() => {
+                setFolderExplorerLevel('root');
+                setFolderExplorerGrade('');
+                setFolderExplorerPeriod('');
+                setFolderExplorerStudentName('');
+              }}
+            >
               📁 Archivo Principal
             </span>
             {folderExplorerLevel !== 'root' && (
@@ -2605,10 +2625,25 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                   style={{ color: folderExplorerLevel === 'grade' ? 'var(--text-primary)' : 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }} 
                   onClick={() => {
                     setFolderExplorerLevel('grade');
+                    setFolderExplorerPeriod('');
                     setFolderExplorerStudentName('');
                   }}
                 >
-                  🏫 {folderExplorerGrade} Reporte
+                  🏫 Grado {folderExplorerGrade}
+                </span>
+              </>
+            )}
+            {(folderExplorerLevel === 'period' || folderExplorerLevel === 'student') && (
+              <>
+                <span style={{ color: 'var(--text-secondary)' }}>&gt;</span>
+                <span 
+                  style={{ color: folderExplorerLevel === 'period' ? 'var(--text-primary)' : 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }} 
+                  onClick={() => {
+                    setFolderExplorerLevel('period');
+                    setFolderExplorerStudentName('');
+                  }}
+                >
+                  🗓️ {folderExplorerPeriod === 'P1' ? 'Período 1 (P1)' : folderExplorerPeriod === 'P2' ? 'Período 2 (P2)' : folderExplorerPeriod === 'P3' ? 'Período 3 (P3)' : 'Período 4 (P4)'}
                 </span>
               </>
             )}
@@ -2622,7 +2657,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
             )}
           </div>
 
-          {/* Root view: Grades as folders */}
+          {/* Level 1 (root): Grades as folders */}
           {folderExplorerLevel === 'root' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem', marginTop: '0.5rem' }}>
               {visibleGradesForExplorer.map(g => {
@@ -2638,34 +2673,65 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                     style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.25s ease', boxShadow: 'var(--shadow-sm)' }}
                   >
                     <div style={{ fontSize: '3rem', marginBottom: '0.5rem', lineHeight: 1 }}>📁</div>
-                    <span style={{ fontWeight: 'bold', fontSize: '0.88rem', textAlign: 'center', color: 'var(--text-primary)' }}>{g} Reporte</span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{reportCount} archivo(s)</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '0.88rem', textAlign: 'center', color: 'var(--text-primary)' }}>Grado {g}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{reportCount} reporte(s)</span>
                   </div>
                 );
               })}
             </div>
           )}
 
-          {/* Grade view: Students as subfolders */}
-          {folderExplorerLevel === 'grade' && (() => {
-            const studentsWithReportsInGrade = Array.from(new Set(
-              filteredAlertLogs
-                .filter(log => log.grade === folderExplorerGrade)
-                .map(log => log.studentName)
-            )).sort();
+          {/* Level 2 (grade): Periods (P1, P2, P3, P4) as subfolders */}
+          {folderExplorerLevel === 'grade' && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
+                {[
+                  { key: 'P1', label: 'Período 1 (P1)' },
+                  { key: 'P2', label: 'Período 2 (P2)' },
+                  { key: 'P3', label: 'Período 3 (P3)' },
+                  { key: 'P4', label: 'Período 4 (P4)' }
+                ].map(p => {
+                  const periodLogsCount = filteredAlertLogs.filter(log => log.grade === folderExplorerGrade && (log.period === p.key || (!log.period && p.key === 'P1'))).length;
+                  return (
+                    <div 
+                      key={p.key} 
+                      className="folder-item animate-fade-in" 
+                      onClick={() => {
+                        setFolderExplorerPeriod(p.key);
+                        setFolderExplorerLevel('period');
+                      }}
+                      style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.25s ease', boxShadow: 'var(--shadow-sm)' }}
+                    >
+                      <div style={{ fontSize: '3rem', marginBottom: '0.5rem', lineHeight: 1 }}>📁</div>
+                      <span style={{ fontWeight: 'bold', fontSize: '0.88rem', textAlign: 'center', color: 'var(--text-primary)' }}>{p.label}</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{periodLogsCount} reporte(s)</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Level 3 (period): Students as subfolders */}
+          {folderExplorerLevel === 'period' && (() => {
+            const periodLogs = filteredAlertLogs.filter(log => 
+              log.grade === folderExplorerGrade && 
+              (log.period === folderExplorerPeriod || (!log.period && folderExplorerPeriod === 'P1'))
+            );
+            const studentsInPeriod = Array.from(new Set(periodLogs.map(log => log.studentName))).sort();
 
             return (
               <div style={{ marginTop: '0.5rem' }}>
-                {studentsWithReportsInGrade.length === 0 ? (
+                {studentsInPeriod.length === 0 ? (
                   <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2.5rem 1rem' }}>
                     <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>📂</span>
-                    <p style={{ fontSize: '0.85rem' }}>No hay carpetas de estudiantes creadas para <strong>{folderExplorerGrade}</strong> aún.</p>
-                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', marginTop: '0.5rem' }} onClick={() => setFolderExplorerLevel('root')}>Volver Atrás</button>
+                    <p style={{ fontSize: '0.85rem' }}>No hay reportes registrados para <strong>{folderExplorerGrade}</strong> en el <strong>{folderExplorerPeriod}</strong>.</p>
+                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', marginTop: '0.5rem' }} onClick={() => setFolderExplorerLevel('grade')}>Volver a Períodos</button>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
-                    {studentsWithReportsInGrade.map(sName => {
-                      const studentReportsCount = filteredAlertLogs.filter(log => log.grade === folderExplorerGrade && log.studentName === sName).length;
+                    {studentsInPeriod.map(sName => {
+                      const studentReportsCount = periodLogs.filter(log => log.studentName === sName).length;
                       return (
                         <div 
                           key={sName} 
@@ -2688,10 +2754,12 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
             );
           })()}
 
-          {/* Student view: Individual reports with dates and titles */}
+          {/* Level 4 (student): Individual reports with dates and titles */}
           {folderExplorerLevel === 'student' && (() => {
-            const studentLogs = filteredAlertLogs.filter(
-              log => log.grade === folderExplorerGrade && log.studentName === folderExplorerStudentName
+            const studentLogs = filteredAlertLogs.filter(log => 
+              log.grade === folderExplorerGrade && 
+              (log.period === folderExplorerPeriod || (!log.period && folderExplorerPeriod === 'P1')) &&
+              log.studentName === folderExplorerStudentName
             );
 
             return (
@@ -2699,7 +2767,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                 {studentLogs.length === 0 ? (
                   <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>
                     <p style={{ fontSize: '0.85rem' }}>No hay reportes en esta carpeta.</p>
-                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }} onClick={() => setFolderExplorerLevel('grade')}>Volver Atrás</button>
+                    <button className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }} onClick={() => setFolderExplorerLevel('period')}>Volver a Alumnos</button>
                   </div>
                 ) : (
                   studentLogs.map(log => {
@@ -2718,7 +2786,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                               {reportTitle}
                             </strong>
                             <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                              Asignatura: {log.subjectName} | Destinatarios: {log.coordinator || 'N/A'}, {log.counselor || 'N/A'}
+                              Asignatura: {log.subjectName} | Período: {log.period || 'P1'} | Destinatarios: {log.coordinator || 'N/A'}, {log.counselor || 'N/A'}
                             </span>
                           </div>
                         </div>
@@ -2851,31 +2919,58 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                   📋 Copiar Texto
                 </button>
 
-                {/* Resend actions */}
+                {/* Resend & Share Actions */}
                 {(() => {
                   const subjectStr = `[REPORTE LARC] Grado: ${viewingReportLog.grade} | Alumno: ${viewingReportLog.studentName} | Tipo: ${viewingReportLog.type?.toUpperCase()}`;
-                  const encodedTo = encodeURIComponent(`${viewingReportLog.coordinator},${viewingReportLog.counselor}`);
+                  const encodedTo = encodeURIComponent(`${viewingReportLog.coordinator || ''},${viewingReportLog.counselor || ''}`);
                   const encodedSubject = encodeURIComponent(subjectStr);
                   const encodedBody = encodeURIComponent(viewingReportLog.finalText || '');
-                  
+                  const directShareRef = `📍 REPORTE PEDAGÓGICO LARC\nAlumno: ${viewingReportLog.studentName}\nGrado: ${viewingReportLog.grade} | Período: ${viewingReportLog.period || 'P1'}\nAsignatura: ${viewingReportLog.subjectName}\nResumen: ${viewingReportLog.finalText || viewingReportLog.comments}`;
+
                   return (
                     <>
-                      <a 
-                        href={`mailto:${viewingReportLog.coordinator};${viewingReportLog.counselor}?subject=${encodedSubject}&body=${encodedBody}`}
+                      <button 
                         className="btn-secondary"
-                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ fontSize: '0.8rem', fontWeight: 'bold' }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(directShareRef);
+                          alert('🔗 Enlace directo y resumen del reporte copiado al portapapeles. ¡Puedes pegarlo directamente a la orientadora o en Teams/WhatsApp!');
+                        }}
+                        title="Copiar resumen y datos clave para compartir directamente con orientación"
                       >
-                        ✉️ Reenviar Local
-                      </a>
+                        🔗 Enlace Directo Orientación
+                      </button>
+
                       <a 
-                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`}
+                        href={`https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-secondary"
-                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#ea4335', fontWeight: 'bold' }}
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold' }}
+                        title="Abrir en Microsoft Outlook 365 Web"
                       >
-                        📧 Gmail Web
+                        📧 Outlook (M365)
                       </a>
+
+                      <a 
+                        href={`mailto:${viewingReportLog.coordinator || ''};${viewingReportLog.counselor || ''}?subject=${encodedSubject}&body=${encodedBody}`}
+                        className="btn-secondary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="Enviar usando la aplicación de correo del equipo"
+                      >
+                        ✉️ Correo Local
+                      </a>
+
+                      {currentUser?.email && (
+                        <a 
+                          href={`mailto:${currentUser.email}?subject=${encodeURIComponent('[COPIA PERFIL] ' + subjectStr)}&body=${encodedBody}`}
+                          className="btn-secondary"
+                          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success)', fontWeight: 'bold' }}
+                          title="Enviar una copia de respaldo a mi propio correo institucional"
+                        >
+                          📩 Copia a Mi Correo
+                        </a>
+                      )}
                     </>
                   );
                 })()}
@@ -5298,6 +5393,29 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   // --- VIEW: Admin Dashboard ---
   if (currentUser.role === 'admin') {
+    const totalStudents = students ? students.length : 0;
+    const globalAverage = totalStudents > 0
+      ? (students.reduce((acc, s) => {
+          let sum = 0;
+          let count = 0;
+          if (s.grades) {
+            Object.values(s.grades).forEach(bObj => {
+              if (bObj && typeof bObj === 'object') {
+                Object.values(bObj).forEach(arr => {
+                  if (Array.isArray(arr) && arr.length > 0) {
+                    const avg = arr.reduce((a, b) => a + (Number(b) || 0), 0) / arr.length;
+                    sum += avg;
+                    count++;
+                  }
+                });
+              }
+            });
+          }
+          const stuAvg = count > 0 ? sum / count : 85;
+          return acc + stuAvg;
+        }, 0) / totalStudents).toFixed(1)
+      : '85.0';
+
     return (
       <div className="app-container">
         <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
@@ -7577,7 +7695,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                 <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
                 <div className="classroom-grid">
-                  {currentUser.assignments.map((a, idx) => {
+                  {(currentUser?.assignments || []).map((a, idx) => {
                     const theme = getGradeThemeInfo(a.grade);
                     const bannerBg = `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary || theme.color} 100%)`;
                     const subjectName = subjects[a.subject]?.name || a.subject;
@@ -9938,36 +10056,38 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 
                 return (
                   <>
-                     <a 
-                       href={`mailto:${alertFormModal.coordinatorEmail};${alertFormModal.counselorEmail}?subject=${encodedSubject}&body=${encodedBody}`}
-                       className="btn-secondary"
-                       style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontWeight: 'bold' }}
-                       onClick={handleRegisterSentReportLog}
-                     >
-                      ✉️ Correo Local
-                    </a>
-                    
                     <a 
-                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-secondary"
-                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: '#ea4335', fontWeight: 'bold' }}
-                      onClick={handleRegisterSentReportLog}
-                    >
-                      📧 Gmail Web
-                    </a>
-                    
-                    <a 
-                      href={`https://outlook.live.com/mail/0/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
+                      href={`https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn-secondary"
                       style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: '#0078d4', fontWeight: 'bold' }}
                       onClick={handleRegisterSentReportLog}
+                      title="Enviar vía Microsoft Outlook 365 Institucional"
                     >
-                      Ⓜ️ Outlook Web
+                      📧 Outlook (M365)
                     </a>
+
+                    <a 
+                      href={`mailto:${alertFormModal.coordinatorEmail};${alertFormModal.counselorEmail}?subject=${encodedSubject}&body=${encodedBody}`}
+                      className="btn-secondary"
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontWeight: 'bold' }}
+                      onClick={handleRegisterSentReportLog}
+                    >
+                      ✉️ Correo Local
+                    </a>
+
+                    {currentUser?.email && (
+                      <a 
+                        href={`mailto:${currentUser.email}?subject=${encodeURIComponent('[COPIA PERFIL] ' + subjectStr)}&body=${encodedBody}`}
+                        className="btn-secondary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--success)', fontWeight: 'bold' }}
+                        onClick={handleRegisterSentReportLog}
+                        title="Guardar / Enviar copia a mi propio correo institucional"
+                      >
+                        📩 Copia a Mi Correo
+                      </a>
+                    )}
                   </>
                 );
               })()}
