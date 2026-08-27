@@ -1014,6 +1014,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedBulletinStudentId, setSelectedBulletinStudentId] = useState('');
+  const [adminBulletinGrade, setAdminBulletinGrade] = useState('');
   const [salida1Name, setSalida1Name] = useState(() => {
     return localStorage.getItem('s_salida1_name') || 'Química';
   });
@@ -2174,13 +2175,17 @@ export default function App() {
 
   // --- Admin: Grade & Subject Report Warnings ---
   const handleSaveStaffContacts = (gradeName, coordinatorEmail, counselorEmail) => {
-    setGradeStaffContacts(prev => ({
-      ...prev,
-      [gradeName]: {
-        coordinator: coordinatorEmail,
-        counselor: counselorEmail
-      }
-    }));
+    setGradeStaffContacts(prev => {
+      const updated = {
+        ...prev,
+        [gradeName]: {
+          coordinator: coordinatorEmail,
+          counselor: counselorEmail
+        }
+      };
+      localStorage.setItem('s_grade_staff', JSON.stringify(updated));
+      return updated;
+    });
     alert('Contactos de coordinación y orientación actualizados para ' + gradeName);
   };
 
@@ -4693,31 +4698,34 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </button>
               <div className="sidebar-nav">
                 <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
-                  Inicio
+                  <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
                 </div>
                 <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => { setActiveTab('teachers'); setSidebarCollapsed(true); }}>
-                  Asignación Docentes
+                  <span style={{ fontSize: '1.1rem' }}>👨‍🏫</span> Asignación Docentes
                 </div>
                 <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => { setActiveTab('students'); setSidebarCollapsed(true); }}>
-                  Estudiantes por Grado
+                  <span style={{ fontSize: '1.1rem' }}>🎒</span> Estudiantes por Grado
                 </div>
                 <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
-                  Control Calificaciones
+                  <span style={{ fontSize: '1.1rem' }}>📊</span> Control Calificaciones
                 </div>
                 <div className={`nav-item ${activeTab === 'admin_attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_attendance'); setSidebarCollapsed(true); }}>
-                  Control Asistencia
+                  <span style={{ fontSize: '1.1rem' }}>📅</span> Control Asistencia
                 </div>
                 <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
-                  Registro de Calificación General
+                  <span style={{ fontSize: '1.1rem' }}>📋</span> Registro General
+                </div>
+                <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
+                  <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín Calificaciones
                 </div>
                 <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
-                  🚨 Reportes e Incidencias
+                  <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
                 </div>
                 <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
-                  Calendario Escolar
+                  <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
                 </div>
                 <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
-                  Manual / Instructivo
+                  <span style={{ fontSize: '1.1rem' }}>📖</span> Manual / Instructivo
                 </div>
               </div>
             </aside>
@@ -5923,20 +5931,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           );
                                         })}
 
-                                        {/* Render CE4 */}
-                                        {effectiveGradesObj.bloque4.map((eff, pIdx) => {
-                                          const base = baseGradesObj.bloque4[pIdx];
-                                          const rp = rpGradesObj.bloque4[pIdx];
-                                          return (
-                                            <React.Fragment key={`ce4_${pIdx}`}>
-                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', color: base < 70 ? 'var(--danger)' : 'inherit' }}>{base.toFixed(0)}</td>
-                                              <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', borderRight: pIdx === 3 ? '1.5px solid var(--border-color)' : '', backgroundColor: base < 70 ? 'rgba(239, 68, 68, 0.03)' : '', color: 'var(--danger)', fontWeight: 'bold' }}>
-                                                {base < 70 && rp !== null && rp !== undefined && rp !== '' ? Number(rp).toFixed(0) : '-'}
-                                              </td>
-                                            </React.Fragment>
-                                          );
-                                        })}
-
                                         {/* Averages columns */}
                                         <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: pcAverages[0] < 70 ? 'var(--danger)' : 'inherit' }}>{pcAverages[0].toFixed(1)}</td>
                                         <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: pcAverages[1] < 70 ? 'var(--danger)' : 'inherit' }}>{pcAverages[1].toFixed(1)}</td>
@@ -6556,6 +6550,175 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   {renderReportsTabContent()}
                 </div>
               )}
+
+              {/* ADMIN: Tab Bulletin (Boletín de Calificaciones) */}
+              {activeTab === 'bulletin' && (
+                <div>
+                  {/* Controls - Hide when printing */}
+                  <div className="glass-panel no-print-element" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <h2 style={{ margin: 0, color: 'var(--primary)', fontWeight: 800 }}>📄 Boletín Oficial de Calificaciones</h2>
+                        <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          Generación y descarga de boletines académicos a doble cara para cualquier grado del plantel.
+                        </p>
+                      </div>
+                      {selectedBulletinStudentId && (
+                        <button 
+                          onClick={() => window.print()}
+                          className="btn-primary" 
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', padding: '0.6rem 1.25rem', fontWeight: 'bold', color: '#ffffff', cursor: 'pointer' }}
+                        >
+                          🖨️ Descargar / Imprimir Boletín (PDF)
+                        </button>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
+                      {/* Grade Selector for Admin */}
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Grado</label>
+                        <select
+                          className="form-select"
+                          value={adminBulletinGrade || ''}
+                          onChange={(e) => { setAdminBulletinGrade(e.target.value); setSelectedBulletinStudentId(''); }}
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                        >
+                          <option value="">-- Seleccionar Grado --</option>
+                          {grades.map(g => (
+                            <option key={g} value={g}>{g}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Student Selector for Admin */}
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Estudiante</label>
+                        <select 
+                          className="form-select" 
+                          value={selectedBulletinStudentId} 
+                          onChange={(e) => setSelectedBulletinStudentId(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                          disabled={!adminBulletinGrade}
+                        >
+                          <option value="">-- Seleccionar Estudiante --</option>
+                          {students.filter(s => s.grade === adminBulletinGrade).map(s => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Custom Salidas - Only for 4th, 5th, 6th Grade */}
+                      {['4to A', '5to A', '6to A'].includes(adminBulletinGrade) && (
+                        <>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 1</label>
+                            <input 
+                              type="text" 
+                              className="form-input" 
+                              value={salida1Name} 
+                              onChange={(e) => setSalida1Name(e.target.value)}
+                              placeholder="Química, Biología, etc."
+                              style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                            />
+                          </div>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 2</label>
+                            <input 
+                              type="text" 
+                              className="form-input" 
+                              value={salida2Name} 
+                              onChange={(e) => setSalida2Name(e.target.value)}
+                              placeholder="Computación, etc."
+                              style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {!adminBulletinGrade ? (
+                    <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                      <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🏫</span>
+                      <h3>Seleccione un Grado para comenzar</h3>
+                      <p style={{ fontSize: '0.85rem' }}>Elija primero el grado y luego el estudiante para visualizar su Boletín Oficial.</p>
+                    </div>
+                  ) : !selectedBulletinStudentId ? (
+                    <div className="glass-panel text-center no-print-element" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                      <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>📄</span>
+                      <h3>Seleccione un estudiante de {adminBulletinGrade} para visualizar su Boletín Oficial</h3>
+                      <p style={{ fontSize: '0.85rem' }}>El documento oficial se generará automáticamente a doble cara con los datos reales del registro escolar.</p>
+                    </div>
+                  ) : (
+                    (() => {
+                      const student = students.find(s => s.id === selectedBulletinStudentId);
+                      if (!student) return null;
+                      // Reuse the same bulletin rendering by temporarily treating adminBulletinGrade as classroomGrade
+                      const fakeUser = { ...currentUser, classroomGrade: adminBulletinGrade };
+                      // We render the bulletin sheet directly using the same logic
+                      return (
+                        <div className="glass-panel" style={{ padding: '1rem' }}>
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                            📄 Vista previa del Boletín para <strong>{student.name}</strong> — Grado <strong>{adminBulletinGrade}</strong>. 
+                            Presione el botón de Imprimir en la parte superior para descargar en PDF.
+                          </p>
+                          <div style={{ opacity: 0.7, textAlign: 'center', padding: '2rem', border: '2px dashed var(--border-color)', borderRadius: '8px' }}>
+                            <span style={{ fontSize: '2rem' }}>📋</span>
+                            <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
+                              El boletín se generará cuando presione Imprimir. Para ver la vista previa completa use la pestaña <strong>Boletín</strong> del docente tutor del grado, o presione directamente el botón de imprimir.
+                            </p>
+                            <button
+                              onClick={() => window.print()}
+                              className="btn-primary"
+                              style={{ marginTop: '1rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', padding: '0.6rem 1.25rem', fontWeight: 'bold', color: '#ffffff', cursor: 'pointer' }}
+                            >
+                              🖨️ Generar e Imprimir Boletín PDF
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()
+                  )}
+                </div>
+              )}
+
+              {/* ADMIN: Tab Instructions */}
+              {activeTab === 'instructions' && (
+                <div>
+                  <h2>Manual del Administrador</h2>
+                  <div className="glass-card instruction-card">
+                    <div className="instruction-step">
+                      <div className="instruction-step-num">1</div>
+                      <div>
+                        <strong>Gestión de Docentes y Estructura Escolar</strong>
+                        <p style={{ fontSize: '0.85rem' }}>En "Asignación Docentes" puedes registrar nuevos docentes, asignarlos a sus grados tutores y configurar el correo de coordinación y orientación para cada grado. Estos correos se usarán automáticamente al emitir reportes.</p>
+                      </div>
+                    </div>
+                    <div className="instruction-step">
+                      <div className="instruction-step-num">2</div>
+                      <div>
+                        <strong>Boletín de Calificaciones</strong>
+                        <p style={{ fontSize: '0.85rem' }}>Desde la sección "Boletín Calificaciones" puedes generar el Boletín Oficial MINERD para cualquier estudiante de cualquier grado. Selecciona el grado, el estudiante y presiona Imprimir para obtener el PDF.</p>
+                      </div>
+                    </div>
+                    <div className="instruction-step">
+                      <div className="instruction-step-num">3</div>
+                      <div>
+                        <strong>Sistema de Reportes e Incidencias</strong>
+                        <p style={{ fontSize: '0.85rem' }}>Desde "Reportes e Incidencias" puedes emitir reportes académicos o conductuales para cualquier alumno del plantel. Los reportes se guardan en el Archivo Digital organizado por Grado → Alumno → Fecha. Cada reporte puede enviarse directamente por correo al coordinador y orientador del grado.</p>
+                      </div>
+                    </div>
+                    <div className="instruction-step">
+                      <div className="instruction-step-num">4</div>
+                      <div>
+                        <strong>Configuración de Contactos para Reportes</strong>
+                        <p style={{ fontSize: '0.85rem' }}>Para que los correos lleguen automáticamente al destinatario correcto, ve a "Asignación Docentes", expande el bloque de "Contactos de Coordinación por Grado" y configura el correo del Coordinador y Orientador para cada grado. Estos datos se guardan de forma permanente.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </section>
           </div>
         </div>
@@ -6650,22 +6813,38 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
 
             <div className="sidebar-nav">
-              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>Inicio</div>
-              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>Control de Calificaciones</div>
+              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
+              </div>
+              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>📊</span> Control de Calificaciones
+              </div>
               <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
                 if (activeBloque === 'promedio_ce') {
                   setActiveBloque('bloque1');
                 }
                 setActiveTab('instruments');
                 setSidebarCollapsed(true);
-              }}>Instrumentos de Eval.</div>
-              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>Control de Asistencia</div>
+              }}>
+                <span style={{ fontSize: '1.1rem' }}>📝</span> Instrumentos de Eval.
+              </div>
+              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>📅</span> Control de Asistencia
+              </div>
               {currentUser.classroomGrade && (
-                <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>📄 Boletín de Calificaciones</div>
+                <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
+                  <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín de Calificaciones
+                </div>
               )}
-              <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>🚨 Reportes e Incidencias</div>
-              <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>Instructivo de Uso</div>
-              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>Calendario Escolar</div>
+              <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
+              </div>
+              <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>📖</span> Instructivo de Uso
+              </div>
+              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
+              </div>
             </div>
           </aside>
 

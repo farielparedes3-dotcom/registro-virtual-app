@@ -6,7 +6,8 @@ import {
   setDoc, 
   onSnapshot, 
   writeBatch,
-  getDocs
+  getDocs,
+  enableIndexedDbPersistence
 } from 'firebase/firestore';
 
 // Firebase credentials loaded from Vite env variables
@@ -28,7 +29,14 @@ if (isFirebaseEnabled) {
   try {
     app = initializeApp(firebaseConfig);
     firestore = getFirestore(app);
-    console.log('⚡ Firebase Cloud Database initialized successfully.');
+    enableIndexedDbPersistence(firestore).catch((err) => {
+      if (err.code === 'failed-precondition') {
+        console.warn('⚠️ Firestore offline persistence failed-precondition (multiple tabs open).');
+      } else if (err.code === 'unimplemented') {
+        console.warn('⚠️ Firestore offline persistence unimplemented (browser not supported).');
+      }
+    });
+    console.log('⚡ Firebase Cloud Database initialized successfully with offline persistence.');
   } catch (error) {
     console.error('❌ Failed to initialize Firebase:', error);
   }
@@ -537,6 +545,62 @@ export const dbService = {
       await setDoc(doc(firestore, 'promotion_grades', 'store'), { grades: promotionGradesObject });
     } catch (err) {
       console.error('Error saving promotion grades to Firestore:', err);
+    }
+  },
+
+  // --- 11. STUDENT REPORTS ---
+  subscribeStudentReports(callback) {
+    if (!isFirebaseEnabled) {
+      if (!fallbackSubscribers['student_reports']) fallbackSubscribers['student_reports'] = [];
+      fallbackSubscribers['student_reports'].push(callback);
+      const saved = localStorage.getItem('s_student_reports');
+      if (saved) callback(JSON.parse(saved));
+      return () => {};
+    }
+    return onSnapshot(doc(firestore, 'student_reports', 'store'), (snapshot) => {
+      const data = snapshot.exists() ? (snapshot.data().reports || []) : [];
+      remoteCache['student_reports'] = JSON.stringify(data);
+      localStorage.setItem('s_student_reports', JSON.stringify(data));
+      callback(data);
+    });
+  },
+  async saveStudentReports(reportsArray) {
+    if (!hasChanged('student_reports', reportsArray)) return;
+    localStorage.setItem('s_student_reports', JSON.stringify(reportsArray));
+    triggerFallbackUpdate('student_reports', reportsArray);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'student_reports', 'store'), { reports: reportsArray });
+    } catch (err) {
+      console.error('Error saving student reports to Firestore:', err);
+    }
+  },
+
+  // --- 12. PLANIFICACIONES ---
+  subscribePlanificaciones(callback) {
+    if (!isFirebaseEnabled) {
+      if (!fallbackSubscribers['planificaciones']) fallbackSubscribers['planificaciones'] = [];
+      fallbackSubscribers['planificaciones'].push(callback);
+      const saved = localStorage.getItem('s_planificaciones');
+      if (saved) callback(JSON.parse(saved));
+      return () => {};
+    }
+    return onSnapshot(doc(firestore, 'planificaciones', 'store'), (snapshot) => {
+      const data = snapshot.exists() ? (snapshot.data().list || []) : [];
+      remoteCache['planificaciones'] = JSON.stringify(data);
+      localStorage.setItem('s_planificaciones', JSON.stringify(data));
+      callback(data);
+    });
+  },
+  async savePlanificaciones(planificacionesArray) {
+    if (!hasChanged('planificaciones', planificacionesArray)) return;
+    localStorage.setItem('s_planificaciones', JSON.stringify(planificacionesArray));
+    triggerFallbackUpdate('planificaciones', planificacionesArray);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'planificaciones', 'store'), { list: planificacionesArray });
+    } catch (err) {
+      console.error('Error saving planificaciones to Firestore:', err);
     }
   }
 };

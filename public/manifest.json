@@ -1,0 +1,29 @@
+{
+  "short_name": "RegistroLARC",
+  "name": "Liceo Ana Rosa Castillo - Registro de Evaluación Digital",
+  "description": "Plataforma oficial del Liceo Ana Rosa Castillo para control de calificaciones, asistencia e incidencias curriculares.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#003876",
+  "display": "standalone",
+  "orientation": "any"
+}
