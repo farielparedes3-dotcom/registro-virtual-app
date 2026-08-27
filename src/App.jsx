@@ -1672,12 +1672,21 @@ export default function App() {
   };
 
   const handleLogin = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoginError('');
 
-    const foundUser = users.find(u => u.email.toLowerCase().trim() === loginEmail.toLowerCase().trim());
+    const inputVal = loginEmail.toLowerCase().trim();
+
+    // Match by email, username, or email prefix
+    const foundUser = users.find(u => {
+      const uEmail = (u.email || '').toLowerCase().trim();
+      const uUsername = (u.username || '').toLowerCase().trim();
+      const emailPrefix = uEmail.split('@')[0];
+      return uEmail === inputVal || uUsername === inputVal || emailPrefix === inputVal;
+    });
+
     if (!foundUser) {
-      setLoginError('El correo electrónico no está registrado.');
+      setLoginError('El usuario o correo electrónico institucional no está registrado.');
       return;
     }
 
@@ -1691,7 +1700,14 @@ export default function App() {
       return;
     }
 
-    setCurrentUser(foundUser);
+    const safeUser = {
+      ...foundUser,
+      assignments: foundUser.assignments || [],
+      classroomGrade: foundUser.classroomGrade || ''
+    };
+
+    setCurrentUser(safeUser);
+    localStorage.setItem('s_current_user', JSON.stringify(safeUser));
     setLoginEmail('');
     setLoginPassword('');
     setLoginError('');
@@ -1700,15 +1716,29 @@ export default function App() {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    localStorage.removeItem('s_current_user');
     setSelectedGrade('');
     setSelectedSubject('math');
     setActiveTab('dashboard');
   };
 
-  const handleQuickLogin = (email, password) => {
-    const foundUser = users.find(u => u.email === email);
+  const handleQuickLogin = (emailOrUsername, password) => {
+    const inputVal = emailOrUsername.toLowerCase().trim();
+    const foundUser = users.find(u => {
+      const uEmail = (u.email || '').toLowerCase().trim();
+      const uUsername = (u.username || '').toLowerCase().trim();
+      const emailPrefix = uEmail.split('@')[0];
+      return uEmail === inputVal || uUsername === inputVal || emailPrefix === inputVal;
+    });
+
     if (foundUser) {
-      setCurrentUser(foundUser);
+      const safeUser = {
+        ...foundUser,
+        assignments: foundUser.assignments || [],
+        classroomGrade: foundUser.classroomGrade || ''
+      };
+      setCurrentUser(safeUser);
+      localStorage.setItem('s_current_user', JSON.stringify(safeUser));
       setActiveTab('dashboard');
     }
   };
@@ -4694,16 +4724,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
         {/* Right Side: Clean login form */}
         <div className="login-right-form">
-          <div className="login-card-clean animate-fade-in">
-            <h2 className="login-clean-title">Acceso al Portal</h2>
-            <p className="login-clean-subtitle">Ingresa tus credenciales para continuar</p>
+          <div className="login-card-clean animate-fade-in" style={{ backgroundColor: 'var(--bg-secondary)', padding: '2.5rem 2rem', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid var(--border-color)' }}>
+            
+            {/* Mobile emblem header */}
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '2px solid #ffb300', margin: '0 auto 0.75rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '1.8rem' }}>🎓</span>
+              </div>
+              <h2 className="login-clean-title" style={{ margin: 0, fontSize: '1.75rem' }}>Acceso al Portal</h2>
+              <p className="login-clean-subtitle" style={{ margin: '0.25rem 0 0 0' }}>Liceo Ana Rosa Castillo — Nagua 14-01</p>
+            </div>
 
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div className="form-group">
-                <label className="login-clean-label">Correo Electrónico</label>
+                <label className="login-clean-label">Usuario o Correo Institucional</label>
                 <input 
-                  type="email" 
-                  placeholder="ejemplo@school.edu" 
+                  type="text" 
+                  placeholder="usuario@docente.edu.do o usuario" 
                   className="form-input login-clean-input"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
@@ -4724,7 +4761,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
 
               {loginError && (
-                <div style={{ color: '#ff8a80', fontSize: '0.85rem', fontWeight: 600, paddingLeft: '0.25rem' }}>
+                <div style={{ color: '#ea4335', fontSize: '0.85rem', fontWeight: 600, padding: '0.5rem 0.75rem', backgroundColor: 'rgba(234, 67, 53, 0.1)', borderRadius: '6px', border: '1px solid rgba(234, 67, 53, 0.2)' }}>
                   ⚠️ {loginError}
                 </div>
               )}
@@ -4736,17 +4773,44 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
             <div className="demo-box-clean" style={{ marginTop: '1.5rem', borderTop: '1px dashed var(--border-color)', paddingTop: '1.25rem' }}>
               <div className="demo-title-clean" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', textAlign: 'center' }}>
-                Ingreso Rápido de Demostración
+                Acceso Rápido con 1 Clic (Seleccionar Cuenta):
               </div>
-              <div className="demo-buttons-clean" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <div className="demo-buttons-clean" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <button 
+                  type="button"
+                  className="btn-demo-clean" 
+                  onClick={() => handleQuickLogin('farielparedes3@gmail.com', 'Lina2754')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
+                >
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: 'var(--primary)' }}>⚙️ Administrador: Fariel Paredes</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
+                </button>
                 <button 
                   type="button"
                   className="btn-demo-clean" 
                   onClick={() => handleQuickLogin('mario.paredes@docente.edu.do', 'mario123')}
-                  style={{ display: 'flex', flexDirection: 'column', padding: '0.6rem 1rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', transition: 'transform 0.2s', width: '100%' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
                 >
-                  <span className="role" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary)' }}>👨‍🏫 Prof. Mario Paredes (Docente de Prueba)</span>
-                  <span className="email" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>mario.paredes@docente.edu.do (Un solo click)</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#107c41' }}>👨‍🏫 Docente: Prof. Mario Paredes</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
+                </button>
+                <button 
+                  type="button"
+                  className="btn-demo-clean" 
+                  onClick={() => handleQuickLogin('mateo.gomez@docente.edu.do', 'profe123')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
+                >
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#107c41' }}>👨‍🏫 Docente: Prof. Mateo Gómez</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
+                </button>
+                <button 
+                  type="button"
+                  className="btn-demo-clean" 
+                  onClick={() => handleQuickLogin('clara.ruiz@docente.edu.do', 'profe123')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
+                >
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#107c41' }}>👩‍🏫 Docente: Prof. Clara Ruiz</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
                 </button>
               </div>
             </div>
