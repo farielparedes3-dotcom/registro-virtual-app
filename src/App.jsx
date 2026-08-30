@@ -819,8 +819,10 @@ const renderGradeHeaderBanner = (gradeName, extraText = '') => {
 export default function App() {
   // --- Core States ---
   const [users, setUsers] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_users');
     let list = saved ? JSON.parse(saved) : DEFAULT_USERS;
+    if (!Array.isArray(list)) list = DEFAULT_USERS;
     
     // Ensure all existing teachers have classroomGrade
     list = list.map(u => {
@@ -867,53 +869,70 @@ export default function App() {
 
     localStorage.setItem('s_users', JSON.stringify(list));
     return list;
+    } catch (e) { localStorage.removeItem('s_users'); return DEFAULT_USERS; }
   });
 
   const [currentUser, setCurrentUser] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_current_user');
     return saved ? JSON.parse(saved) : null;
+    } catch (e) { localStorage.removeItem('s_current_user'); return null; }
   });
 
   const [students, setStudents] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_students');
     const parsed = saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
-    return parsed.map(s => ({
+    return (Array.isArray(parsed) ? parsed : DEFAULT_STUDENTS).map(s => ({
       ...s,
       grades: normalizeStudentGrades(s.grades)
     }));
+    } catch (e) { localStorage.removeItem('s_students'); return DEFAULT_STUDENTS.map(s => ({ ...s, grades: normalizeStudentGrades(s.grades) })); }
   });
 
   const [studentRpGrades, setStudentRpGrades] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_student_rp_grades');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_student_rp_grades'); return {}; }
   });
 
   const [promotionGrades, setPromotionGrades] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_promotion_grades');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_promotion_grades'); return {}; }
   });
 
   const [studentAttendanceDetail, setStudentAttendanceDetail] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_student_attendance_detail');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_student_attendance_detail'); return {}; }
   });
 
   const [monthlyWorkedDays, setMonthlyWorkedDays] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_monthly_worked_days');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_monthly_worked_days'); return {}; }
   });
 
   const [attendanceDayDates, setAttendanceDayDates] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_attendance_day_dates');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_attendance_day_dates'); return {}; }
   });
 
   const [activeBloque, setActiveBloque] = useState('bloque1');
   const [selectedAttendanceMonth, setSelectedAttendanceMonth] = useState('Agosto');
 
   const [calendarEvents, setCalendarEvents] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_events');
     return saved ? JSON.parse(saved) : DEFAULT_EVENTS;
+    } catch (e) { localStorage.removeItem('s_events'); return DEFAULT_EVENTS; }
   });
 
   const [evaluationConfigs, setEvaluationConfigs] = useState(() => {
@@ -934,19 +953,25 @@ export default function App() {
   });
 
   const [studentAssessments, setStudentAssessments] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_student_assessments');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_student_assessments'); return {}; }
   });
 
   const [subjects, setSubjects] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_subjects');
     return saved ? JSON.parse(saved) : DEFAULT_SUBJECTS;
+    } catch (e) { localStorage.removeItem('s_subjects'); return DEFAULT_SUBJECTS; }
   });
 
   const [grades, setGrades] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_grades');
     const raw = saved ? JSON.parse(saved) : DEFAULT_GRADES;
     return sortGrades(raw);
+    } catch (e) { localStorage.removeItem('s_grades'); return sortGrades(DEFAULT_GRADES); }
   });
 
   const [expandedSections, setExpandedSections] = useState({
@@ -965,23 +990,29 @@ export default function App() {
 
   // --- Admin Report & Alarms States ---
   const [selectedAdminReportGrade, setSelectedAdminReportGrade] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_grades');
     const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
-    return list[0] || '1ro A';
+    return (Array.isArray(list) ? list[0] : null) || '1ro A';
+    } catch (e) { return '1ro A'; }
   });
   const [selectedAdminReportSubject, setSelectedAdminReportSubject] = useState('lengua_espanola');
   const [expandedReportSubjects, setExpandedReportSubjects] = useState({});
 
   const [selectedAdminAttendanceGrade, setSelectedAdminAttendanceGrade] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_grades');
     const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
-    return list[0] || '1ro A';
+    return (Array.isArray(list) ? list[0] : null) || '1ro A';
+    } catch (e) { return '1ro A'; }
   });
   const [expandedAdminAttendanceSubjects, setExpandedAdminAttendanceSubjects] = useState({});
 
   const [gradeStaffContacts, setGradeStaffContacts] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_grade_staff');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_grade_staff'); return {}; }
   });
   const [alertFormModal, setAlertFormModal] = useState({
     isOpen: false,
@@ -1004,8 +1035,10 @@ export default function App() {
     reportPeriod: 'P1'
   });
   const [alertLogs, setAlertLogs] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_alert_logs');
     return saved ? JSON.parse(saved) : [];
+    } catch (e) { localStorage.removeItem('s_alert_logs'); return []; }
   });
   const [folderExplorerLevel, setFolderExplorerLevel] = useState('root'); // 'root' | 'grade' | 'period' | 'student'
   const [folderExplorerGrade, setFolderExplorerGrade] = useState('');
@@ -1024,8 +1057,10 @@ export default function App() {
     return localStorage.getItem('s_salida2_name') || 'Computación';
   });
   const [studentComments, setStudentComments] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_student_comments');
     return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_student_comments'); return {}; }
   });
   const [randomQuote, setRandomQuote] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -1112,9 +1147,11 @@ export default function App() {
   const [selectedSubject, setSelectedSubject] = useState('math');
   const [classroomGrade, setClassroomGrade] = useState(null);
   const [activeAdminGrade, setActiveAdminGrade] = useState(() => {
+    try {
     const saved = localStorage.getItem('s_grades');
     const list = saved ? JSON.parse(saved) : DEFAULT_GRADES;
-    return list[0] || '1ro A';
+    return (Array.isArray(list) ? list[0] : null) || '1ro A';
+    } catch (e) { return '1ro A'; }
   });
   const [calendarYear, setCalendarYear] = useState(() => new Date().getFullYear());
   const [calendarMonth, setCalendarMonth] = useState(() => new Date().getMonth());

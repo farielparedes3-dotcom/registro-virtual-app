@@ -16,10 +16,12 @@ export class ErrorBoundary extends React.Component {
 
   handleReset = () => {
     try {
-      localStorage.removeItem('s_current_user');
+      // Clear ALL app-specific localStorage keys to remove corrupted data
+      const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('s_'));
+      keysToRemove.forEach(k => localStorage.removeItem(k));
     } catch(e) {}
     this.setState({ hasError: false, error: null });
-    window.location.href = window.location.origin + window.location.pathname;
+    window.location.reload();
   };
 
   render() {
