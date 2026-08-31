@@ -4,6 +4,7 @@ import './App.css';
 // Vercel deployment trigger
 
 import { dbService } from './db';
+import SignatureModal from './components/SignatureModal';
 import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup, importFullDatabaseBackup } from './utils/dbBackup';
 
 // Global configuration
@@ -1094,17 +1095,24 @@ export default function App() {
     return localStorage.getItem('theme') || 'light';
   });
 
-  // --- User Profile State ---
+  // --- User Profile & Digital Signature States ---
   const [profileForm, setProfileForm] = useState({
     name: '',
     username: '',
     email: '',
     password: '',
-    avatar: ''
+    avatar: '',
+    teacherSignature: '',
+    microsoftEmail: ''
   });
   const [showProfilePassword, setShowProfilePassword] = useState(false);
   const [profileSuccessMsg, setProfileSuccessMsg] = useState('');
   const profileFileInputRef = useRef(null);
+
+  // Digital Signature Modal States
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [signatureModalRole, setSignatureModalRole] = useState('Docente');
+  const [signatureModalTarget, setSignatureModalTarget] = useState('profile'); // 'profile' | 'counselor_report'
 
   useEffect(() => {
     if (currentUser) {
@@ -1113,10 +1121,39 @@ export default function App() {
         username: currentUser.username || (currentUser.email ? currentUser.email.split('@')[0] : ''),
         email: currentUser.email || '',
         password: currentUser.password || '',
-        avatar: currentUser.avatar || ''
+        avatar: currentUser.avatar || '',
+        teacherSignature: currentUser.teacherSignature || '',
+        microsoftEmail: currentUser.microsoftEmail || currentUser.email || ''
       });
     }
   }, [currentUser, activeTab]);
+
+
+  const handleSignatureModalSave = (signatureDataUrl) => {
+    if (signatureModalTarget === 'profile') {
+      setProfileForm(prev => ({ ...prev, teacherSignature: signatureDataUrl }));
+    } else if (signatureModalTarget === 'counselor_report' && viewingReportLog) {
+      const updatedLogs = alertLogs.map(log => {
+        if (log.id === viewingReportLog.id) {
+          return {
+            ...log,
+            counselorSignature: signatureDataUrl,
+            counselorName: currentUser?.name || 'Orientación / Psicología',
+            counselorSignedDate: new Date().toLocaleString()
+          };
+        }
+        return log;
+      });
+      setAlertLogsAndSave(updatedLogs);
+      setViewingReportLog(prev => prev ? ({
+        ...prev,
+        counselorSignature: signatureDataUrl,
+        counselorName: currentUser?.name || 'Orientación / Psicología',
+        counselorSignedDate: new Date().toLocaleString()
+      }) : null);
+      alert('¡Firma de la Orientadora/Psicóloga vinculada y guardada correctamente en el informe oficial!');
+    }
+  };
 
   const handleProfileAvatarUpload = (e) => {
     const file = e.target.files && e.target.files[0];
@@ -1150,7 +1187,9 @@ export default function App() {
       username: profileForm.username.trim() || profileForm.email.split('@')[0],
       email: profileForm.email.trim(),
       password: profileForm.password,
-      avatar: profileForm.avatar
+      avatar: profileForm.avatar,
+      teacherSignature: profileForm.teacherSignature,
+      microsoftEmail: profileForm.microsoftEmail.trim()
     };
 
     // Save updated current user
@@ -2573,7 +2612,9 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
       customAntecedent: alertFormModal.customAntecedent,
       comments: alertFormModal.comments,
       modifiedWithAI: alertFormModal.modifiedWithAI,
-      finalText: contentText
+      finalText: contentText,
+      teacherSignature: currentUser?.teacherSignature || profileForm.teacherSignature || '',
+      teacherName: currentUser?.name || 'Docente Emisor'
     };
     
     setAlertLogsAndSave(logs => [newLog, ...logs]);
@@ -2613,7 +2654,9 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
             customAntecedent: prev.customAntecedent,
             comments: prev.comments,
             modifiedWithAI: prev.modifiedWithAI,
-            finalText: contentText
+            finalText: contentText,
+            teacherSignature: currentUser?.teacherSignature || profileForm.teacherSignature || '',
+            teacherName: currentUser?.name || 'Docente Emisor'
           };
 
           setAlertLogsAndSave(logs => [newLog, ...logs]);
@@ -2982,15 +3025,55 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                     {viewingReportLog.finalText || viewingReportLog.comments}
                   </div>
 
-                  {/* Signatures block */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginTop: '3.5rem', fontSize: '0.8rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '180px', borderBottom: '1px solid #000000', marginBottom: '0.25rem' }}></div>
-                      <span>Docente Emisor</span>
+                  {/* Signatures block with Digital Signatures */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem', marginTop: '3rem', fontSize: '0.8rem' }}>
+                    {/* Teacher Signature */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
+                        {(viewingReportLog.teacherSignature || currentUser?.teacherSignature) ? (
+                          <img 
+                            src={viewingReportLog.teacherSignature || currentUser?.teacherSignature} 
+                            alt="Firma Docente" 
+                            style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
+                          />
+                        ) : (
+                          <span style={{ fontSize: '0.72rem', color: '#888', fontStyle: 'italic' }}>[Firma Docente Registrada]</span>
+                        )}
+                      </div>
+                      <div style={{ width: '180px', borderBottom: '1.5px solid #000000', marginBottom: '0.25rem' }}></div>
+                      <span style={{ fontWeight: 'bold', color: '#002244' }}>{viewingReportLog.teacherName || currentUser?.name || 'Docente Emisor'}</span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Firma del Maestro(a) Emisor(a)</span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '180px', borderBottom: '1px solid #000000', marginBottom: '0.25rem' }}></div>
-                      <span>Coordinador/Orientador</span>
+
+                    {/* Counselor Signature */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
+                        {viewingReportLog.counselorSignature ? (
+                          <img 
+                            src={viewingReportLog.counselorSignature} 
+                            alt="Firma Orientadora" 
+                            style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn-secondary no-print-element"
+                            onClick={() => {
+                              setSignatureModalRole('Orientadora / Psicóloga');
+                              setSignatureModalTarget('counselor_report');
+                              setIsSignatureModalOpen(true);
+                            }}
+                            style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem', border: '1px dashed #0078d4', color: '#0078d4', backgroundColor: 'rgba(0,120,212,0.06)', borderRadius: '6px', fontWeight: 'bold' }}
+                          >
+                            ✍️ Firmar como Orientadora
+                          </button>
+                        )}
+                      </div>
+                      <div style={{ width: '180px', borderBottom: '1.5px solid #000000', marginBottom: '0.25rem' }}></div>
+                      <span style={{ fontWeight: 'bold', color: '#002244' }}>{viewingReportLog.counselorName || 'Orientación / Psicología Escolar'}</span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                        {viewingReportLog.counselorSignedDate ? 'Firmado el ' + viewingReportLog.counselorSignedDate : 'Firma de la Orientadora / Psicóloga'}
+                      </span>
                     </div>
                   </div>
 
@@ -5103,6 +5186,87 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   style={{ fontSize: '0.82rem' }}
                 />
               </div>
+            </div>
+
+            {/* Firma Digital del Maestro */}
+            <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <label style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>✍️</span> Firma Digital Oficial del Maestro(a)
+                </span>
+                {profileForm.teacherSignature && (
+                  <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(25, 135, 84, 0.15)', color: 'var(--success)', padding: '0.15rem 0.5rem', borderRadius: '20px', fontWeight: 'bold' }}>
+                    ✓ Firma Registrada
+                  </span>
+                )}
+              </label>
+
+              <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ width: '200px', height: '70px', border: '1px dashed var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  {profileForm.teacherSignature ? (
+                    <img src={profileForm.teacherSignature} alt="Firma Docente" style={{ maxHeight: '60px', maxWidth: '180px', objectFit: 'contain' }} />
+                  ) : (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin firma registrada</span>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => {
+                      setSignatureModalRole('Docente');
+                      setSignatureModalTarget('profile');
+                      setIsSignatureModalOpen(true);
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}
+                  >
+                    🖊️ Dibujar / Actualizar Firma Digital
+                  </button>
+                  {profileForm.teacherSignature && (
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setProfileForm(prev => ({ ...prev, teacherSignature: '' }))}
+                      style={{ color: 'var(--danger)', fontSize: '0.78rem', alignSelf: 'flex-start' }}
+                    >
+                      🗑️ Quitar Firma
+                    </button>
+                  )}
+                </div>
+              </div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                Esta firma se estampará de forma oficial en cada reporte pedagógico, escala estimativa y alerta generada.
+              </span>
+            </div>
+
+            {/* Vinculación con Cuenta Institucional Microsoft 365 / Outlook */}
+            <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <label style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#0078d4', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>📧</span> Cuenta Institucional Microsoft 365 / Outlook
+                </span>
+                <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(0, 120, 212, 0.12)', color: '#0078d4', padding: '0.15rem 0.5rem', borderRadius: '20px', fontWeight: 'bold' }}>
+                  🌐 Microsoft 365 Habilitado
+                </span>
+              </label>
+
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.35rem' }}>
+                  Correo Institucional Docente (Outlook / Microsoft 365):
+                </label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  value={profileForm.microsoftEmail} 
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, microsoftEmail: e.target.value }))} 
+                  placeholder="usuario@docente.edu.do u usuario@outlook.com" 
+                  style={{ fontSize: '0.85rem', borderColor: '#0078d4' }}
+                />
+              </div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                Los informes enviados a la orientadora incluirán copia de respaldo automática enviada a este buzón de correo Microsoft Outlook.
+              </span>
             </div>
 
             {/* Submit Button */}
@@ -10230,6 +10394,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
         </div>
       )}
+
+      <SignatureModal
+        isOpen={isSignatureModalOpen}
+        onClose={() => setIsSignatureModalOpen(false)}
+        onSave={handleSignatureModalSave}
+        signerRole={signatureModalRole}
+        title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
+      />
 
       <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
         <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Docente Activo.</p>
