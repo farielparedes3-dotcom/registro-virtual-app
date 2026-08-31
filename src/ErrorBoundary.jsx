@@ -3,7 +3,7 @@ import React from 'react';
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -11,28 +11,31 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("React ErrorBoundary caught an error:", error, errorInfo);
+    console.error("React ErrorBoundary caught:", error, errorInfo);
+    this.setState({ errorInfo });
   }
 
   handleReset = () => {
     try {
-      // Clear ALL app-specific localStorage keys to remove corrupted data
-      const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('s_'));
-      keysToRemove.forEach(k => localStorage.removeItem(k));
+      // Nuclear option: clear ALL localStorage to remove any corrupted data
+      localStorage.clear();
     } catch(e) {}
-    this.setState({ hasError: false, error: null });
-    window.location.reload();
+    // Force a full page reload (not React re-render)
+    window.location.replace(window.location.origin);
   };
 
   render() {
     if (this.state.hasError) {
+      const errorMsg = this.state.error ? String(this.state.error) : 'Error desconocido';
+      const errorStack = this.state.errorInfo ? this.state.errorInfo.componentStack : '';
+      
       return (
         <div style={{
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justify: 'center',
+          justifyContent: 'center',
           backgroundColor: '#f0f4f8',
           color: '#1c2b3d',
           padding: '2rem',
@@ -40,7 +43,7 @@ export class ErrorBoundary extends React.Component {
           textAlign: 'center'
         }}>
           <div style={{
-            maxWidth: '480px',
+            maxWidth: '520px',
             width: '100%',
             backgroundColor: '#ffffff',
             padding: '2.5rem 2rem',
@@ -53,11 +56,34 @@ export class ErrorBoundary extends React.Component {
             <h2 style={{ color: '#003876', margin: '0 0 0.5rem 0', fontSize: '1.5rem', fontWeight: 800 }}>
               LICEO ANA ROSA CASTILLO
             </h2>
-            <p style={{ color: '#5d6770', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+            <p style={{ color: '#5d6770', fontSize: '0.9rem', marginBottom: '1rem', lineHeight: 1.5 }}>
               Registro de Evaluación Digital — Nagua 14-01
             </p>
+            
+            {/* Show error details for debugging */}
+            <details style={{ 
+              textAlign: 'left', 
+              marginBottom: '1.5rem', 
+              backgroundColor: '#fef2f2', 
+              padding: '0.75rem', 
+              borderRadius: '8px',
+              border: '1px solid #fecaca',
+              fontSize: '0.75rem',
+              color: '#991b1b',
+              maxHeight: '200px',
+              overflow: 'auto'
+            }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                ⚠️ Detalles técnicos del error
+              </summary>
+              <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', margin: 0 }}>
+                {errorMsg}
+                {errorStack ? '\n\nComponent Stack:' + errorStack : ''}
+              </pre>
+            </details>
+
             <p style={{ color: '#334155', fontSize: '0.85rem', marginBottom: '1.5rem', backgroundColor: '#f1f5f9', padding: '0.75rem', borderRadius: '8px' }}>
-              La sesión ha sido restablecida. Haz clic a continuación para cargar la pantalla de acceso.
+              Se detectó un problema. Haz clic para restablecer completamente la aplicación y acceder al portal.
             </p>
             <button
               onClick={this.handleReset}
@@ -73,7 +99,7 @@ export class ErrorBoundary extends React.Component {
                 boxShadow: '0 4px 15px rgba(0, 56, 118, 0.2)'
               }}
             >
-              🔑 Ir al Acceso de Usuario
+              🔑 Restablecer y Acceder al Portal
             </button>
           </div>
         </div>
