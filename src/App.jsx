@@ -817,6 +817,31 @@ const renderGradeHeaderBanner = (gradeName, extraText = '') => {
 };
 
 export default function App() {
+  // --- PWA Install State ---
+  const [isInstallable, setIsInstallable] = useState(false);
+  const deferredPrompt = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      deferredPrompt.current = e;
+      setIsInstallable(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt.current) {
+      deferredPrompt.current.prompt();
+      const { outcome } = await deferredPrompt.current.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstallable(false);
+      }
+      deferredPrompt.current = null;
+    }
+  };
+
   // --- Core States ---
   const [users, setUsers] = useState(() => {
     try {
