@@ -1155,6 +1155,27 @@ export default function App() {
     }
   };
 
+
+  const handleExportReportPDF = (containerId, fileName) => {
+    const element = document.getElementById(containerId);
+    if (!element) {
+      alert('No se encontró el documento para exportar a PDF.');
+      return;
+    }
+    if (window.html2pdf) {
+      const opt = {
+        margin:       [0.3, 0.4, 0.4, 0.4],
+        filename:     fileName || 'Reporte_Oficial_LARC.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      window.html2pdf().set(opt).from(element).save();
+    } else {
+      window.print();
+    }
+  };
+
   const handleProfileAvatarUpload = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -2897,8 +2918,43 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
               log.studentName === folderExplorerStudentName
             );
 
+            const folderSummaryText = `📍 EXPEDIENTE DIGITAL COMPLETO - LICEO ANA ROSA CASTILLO\nEstudiante: ${folderExplorerStudentName}\nGrado: ${folderExplorerGrade} | Período: ${folderExplorerPeriod}\nTotal Reportes: ${studentLogs.length}\n\nDETALLE DE REPORTES:\n` + 
+              studentLogs.map((l, idx) => `${idx + 1}. [${l.type?.toUpperCase()}] ${l.timestamp.split(',')[0]} - Asignatura: ${l.subjectName}\nResumen: ${l.finalText || l.comments}\n`).join('\n');
+
+            const encodedFolderSubject = encodeURIComponent(`[EXPEDIENTE COMPLETO LARC] Alumno: ${folderExplorerStudentName} | Grado: ${folderExplorerGrade}`);
+            const encodedFolderBody = encodeURIComponent(folderSummaryText);
+            const counselorAddr = studentLogs[0]?.counselor || '';
+
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+                {/* Folder Top Actions Banner */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-primary)', padding: '0.85rem 1.25rem', borderRadius: '10px', border: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div>
+                    <strong style={{ fontSize: '0.9rem', color: 'var(--primary)' }}>📁 Carpeta Digital de: {folderExplorerStudentName}</strong>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block' }}>{studentLogs.length} archivo(s) registrado(s) en este período</span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <a 
+                      href={`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(counselorAddr)}&subject=${encodedFolderSubject}&body=${encodedFolderBody}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary"
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#0078d4', fontWeight: 'bold', fontSize: '0.8rem' }}
+                      title="Compartir la carpeta completa de este estudiante por Microsoft Outlook 365"
+                    >
+                      📧 Compartir Carpeta por Outlook (M365)
+                    </a>
+
+                    <a 
+                      href={`mailto:${counselorAddr}?subject=${encodedFolderSubject}&body=${encodedFolderBody}`}
+                      className="btn-secondary"
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem' }}
+                    >
+                      ✉️ Correo Local
+                    </a>
+                  </div>
+                </div>
                 {studentLogs.length === 0 ? (
                   <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>
                     <p style={{ fontSize: '0.85rem' }}>No hay reportes en esta carpeta.</p>
@@ -2977,7 +3033,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
               <div className="modal-body" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
                 
                 {/* Print Sheet Styling - Wrapped in a printable container */}
-                <div className="report-print-sheet" style={{ padding: '2rem 1.5rem', backgroundColor: '#ffffff', color: '#000000', border: '1px solid #ddd', borderRadius: '4px', fontFamily: 'Courier New, Georgia, serif', fontSize: '0.9rem', lineHeight: '1.5', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)' }}>
+                <div id="official-report-pdf-sheet" className="report-print-sheet" style={{ padding: '2rem 1.5rem', backgroundColor: '#ffffff', color: '#000000', border: '1px solid #ddd', borderRadius: '4px', fontFamily: 'Courier New, Georgia, serif', fontSize: '0.9rem', lineHeight: '1.5', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)' }}>
                   
                   {/* School Header */}
                   <div style={{ textAlign: 'center', borderBottom: '2px double #000000', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
@@ -3083,6 +3139,15 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
 
               <div className="modal-footer no-print-element" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button className="btn-secondary" onClick={() => setViewingReportLog(null)}>Cerrar</button>
+
+                <button 
+                  className="btn-primary"
+                  style={{ backgroundColor: '#ce1126', borderColor: '#ce1126', color: '#ffffff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  onClick={() => handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${viewingReportLog.studentName.replace(/\s+/g, '_')}_${viewingReportLog.grade}.pdf`)}
+                  title="Descargar documento oficial en formato PDF con firmas digitales"
+                >
+                  📄 Descargar PDF Oficial Firmado
+                </button>
                 
                 <button 
                   className="btn-secondary"
