@@ -4,6 +4,7 @@ import './App.css';
 // Vercel deployment trigger
 
 import { dbService } from './db';
+import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup, importFullDatabaseBackup } from './utils/dbBackup';
 
 // Global configuration
 const DEFAULT_SUBJECTS = {

@@ -17,10 +17,10 @@ export class ErrorBoundary extends React.Component {
 
   handleReset = () => {
     try {
-      // Nuclear option: clear ALL localStorage to remove any corrupted data
-      localStorage.clear();
+      // ONLY clear session data so user can re-login, NEVER delete student academic records!
+      localStorage.removeItem('s_current_user');
     } catch(e) {}
-    // Force a full page reload (not React re-render)
+    // Force a full page reload
     window.location.replace(window.location.origin);
   };
 
