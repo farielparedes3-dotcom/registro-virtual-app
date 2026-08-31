@@ -109,6 +109,26 @@ const DEFAULT_USERS = [
       { grade: '4to A', subject: 'ciencias_naturaleza' }
     ],
     active: true
+  },
+{
+    id: 'u6',
+    name: 'Licda. María Santos (Orientadora)',
+    email: 'orientacion.nagua@docente.edu.do',
+    password: 'orientacion123',
+    role: 'counselor',
+    classroomGrade: '',
+    assignments: [],
+    active: true
+  },
+  {
+    id: 'u7',
+    name: 'Licda. Carmen Morales (Psicóloga)',
+    email: 'psicologia.nagua@docente.edu.do',
+    password: 'psicologia123',
+    role: 'counselor',
+    classroomGrade: '',
+    assignments: [],
+    active: true
   }
 ];
 
@@ -1094,6 +1114,62 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
+
+  // --- Counselor Notifications & Voice Note State ---
+  const [isNotifDrawerOpen, setIsNotifDrawerOpen] = useState(false);
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const voiceRecognitionRef = useRef(null);
+
+  const startVoiceRecording = (onTranscribeCallback) => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Tu navegador no soporta la transcripción directa por voz. Te sugerimos usar Google Chrome o Microsoft Edge.');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'es-DO';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        setIsRecordingVoice(true);
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          onTranscribeCallback(transcript);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        setIsRecordingVoice(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecordingVoice(false);
+      };
+
+      voiceRecognitionRef.current = recognition;
+      recognition.start();
+    } catch (e) {
+      console.error("Error starting speech recognition:", e);
+      setIsRecordingVoice(false);
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (voiceRecognitionRef.current) {
+      voiceRecognitionRef.current.stop();
+      setIsRecordingVoice(false);
+    }
+  };
 
   // --- User Profile & Digital Signature States ---
   const [profileForm, setProfileForm] = useState({
@@ -5818,6 +5894,21 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <button 
+              type="button"
+              className="theme-toggle"
+              onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
+              title="Notificaciones de Reportes para Orientación"
+              style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+            >
+              <span style={{ fontSize: '1.15rem' }}>🔔</span>
+              {alertLogs.length > 0 && (
+                <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                  {alertLogs.length > 99 ? '99+' : alertLogs.length}
+                </span>
+              )}
+            </button>
+
             <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
               {theme === 'light' ? (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -10459,6 +10550,67 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
         </div>
       )}
+
+
+        {/* Notification Drawer Modal for Counselors & Teachers */}
+        {isNotifDrawerOpen && (
+          <div className="modal-backdrop" style={{ zIndex: 1200 }} onClick={() => setIsNotifDrawerOpen(false)}>
+            <div className="modal-card animate-fade-in" style={{ maxWidth: '520px', width: '90%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                <div>
+                  <h3 style={{ margin: 0, color: 'var(--primary)', fontSize: '1.1rem', fontWeight: 'bold' }}>🔔 Centro de Notificaciones de Reportes</h3>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Alertas pedagógicas enviadas a Orientación / Psicología Escolar</span>
+                </div>
+                <button style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setIsNotifDrawerOpen(false)}>✕</button>
+              </div>
+
+              <div className="modal-body" style={{ overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {alertLogs.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem 1rem' }}>
+                    <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>🔕</span>
+                    <p style={{ fontSize: '0.85rem' }}>No hay reportes ni alertas pendientes en el centro de notificaciones.</p>
+                  </div>
+                ) : (
+                  alertLogs.map(log => {
+                    const isBehavioral = log.type === 'conductual';
+                    return (
+                      <div 
+                        key={log.id} 
+                        onClick={() => {
+                          setViewingReportLog(log);
+                          setIsNotifDrawerOpen(false);
+                        }}
+                        style={{ padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.35rem', transition: 'all 0.2s ease', boxShadow: 'var(--shadow-sm)' }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.78rem', fontWeight: 'bold', color: isBehavioral ? '#ea4335' : '#0078d4', backgroundColor: isBehavioral ? 'rgba(234, 67, 53, 0.1)' : 'rgba(0, 120, 212, 0.1)', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+                            {isBehavioral ? '📕 Reporte Conductual' : '📘 Alerta Académica'}
+                          </span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{log.timestamp}</span>
+                        </div>
+
+                        <strong style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+                          Estudiante: {log.studentName} ({log.grade})
+                        </strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                          Asignatura: {log.subjectName} | Período: {log.period || 'P1'}
+                        </span>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
+                          <span style={{ fontSize: '0.72rem', color: log.counselorSignature ? 'var(--success)' : 'var(--danger)', fontWeight: 'bold' }}>
+                            {log.counselorSignature ? '✓ Firmado por Orientadora' : '⏳ Pendiente de Firma Orientadora'}
+                          </span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 'bold' }}>Ver e Intervenir ➔</span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
 
       <SignatureModal
         isOpen={isSignatureModalOpen}
