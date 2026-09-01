@@ -914,6 +914,21 @@ export default function App() {
       });
     }
 
+        const hasVianelvi = list.some(u => u.email === 'vianelvi@docente.edu.do');
+    if (!hasVianelvi) {
+      list.push({ id: 'u_vianelvi', name: 'Licda. Vianelvi (Orientadora)', email: 'vianelvi@docente.edu.do', password: 'orientacion123', role: 'counselor', assignments: [], active: true });
+    }
+
+    const hasFrancina = list.some(u => u.email === 'francina@docente.edu.do');
+    if (!hasFrancina) {
+      list.push({ id: 'u_francina', name: 'Licda. Francina (Orientadora)', email: 'francina@docente.edu.do', password: 'orientacion123', role: 'counselor', assignments: [], active: true });
+    }
+
+    const hasNathaly = list.some(u => u.email === 'nathaly@docente.edu.do');
+    if (!hasNathaly) {
+      list.push({ id: 'u_nathaly', name: 'Licda. Nathaly (Orientadora)', email: 'nathaly@docente.edu.do', password: 'orientacion123', role: 'counselor', assignments: [], active: true });
+    }
+
     localStorage.setItem('s_users', JSON.stringify(list));
     return list;
     } catch (e) { localStorage.removeItem('s_users'); return DEFAULT_USERS; }
@@ -1922,12 +1937,21 @@ export default function App() {
 
   const handleQuickLogin = (emailOrUsername, password) => {
     const inputVal = emailOrUsername.toLowerCase().trim();
-    const foundUser = users.find(u => {
+    let foundUser = users.find(u => {
       const uEmail = (u.email || '').toLowerCase().trim();
       const uUsername = (u.username || '').toLowerCase().trim();
       const emailPrefix = uEmail.split('@')[0];
       return uEmail === inputVal || uUsername === inputVal || emailPrefix === inputVal;
     });
+
+    if (!foundUser) {
+      foundUser = DEFAULT_USERS.find(u => {
+        const uEmail = (u.email || '').toLowerCase().trim();
+        const uUsername = (u.username || '').toLowerCase().trim();
+        const emailPrefix = uEmail.split('@')[0];
+        return uEmail === inputVal || uUsername === inputVal || emailPrefix === inputVal;
+      });
+    }
 
     if (foundUser) {
       const safeUser = {
@@ -1938,6 +1962,8 @@ export default function App() {
       setCurrentUser(safeUser);
       localStorage.setItem('s_current_user', JSON.stringify(safeUser));
       setActiveTab('dashboard');
+    } else {
+      alert('No se encontró el usuario seleccionado.');
     }
   };
 
@@ -5059,17 +5085,35 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
             <div className="demo-box-clean" style={{ marginTop: '1.5rem', borderTop: '1px dashed var(--border-color)', paddingTop: '1.25rem' }}>
               <div className="demo-title-clean" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', textAlign: 'center' }}>
-                Acceso Rápido de Prueba (1 Clic):
+                Acceso Rápido para Orientadoras (1 Clic):
               </div>
               <div className="demo-buttons-clean" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <button 
                   type="button"
                   className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('orientacion.nagua@docente.edu.do', 'orientacion123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.9rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
+                  onClick={() => handleQuickLogin('vianelvi@docente.edu.do', 'orientacion123')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#6f42c1' }}>🔑 Orientadora / Psicóloga: Licda. María Santos</span>
-                  <span style={{ fontSize: '0.78rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Vianelvi</span>
+                  <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
+                </button>
+                <button 
+                  type="button"
+                  className="btn-demo-clean" 
+                  onClick={() => handleQuickLogin('francina@docente.edu.do', 'orientacion123')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
+                >
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Francina</span>
+                  <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
+                </button>
+                <button 
+                  type="button"
+                  className="btn-demo-clean" 
+                  onClick={() => handleQuickLogin('nathaly@docente.edu.do', 'orientacion123')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
+                >
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Nathaly</span>
+                  <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
                 </button>
               </div>
             </div>
