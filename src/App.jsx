@@ -1074,7 +1074,8 @@ export default function App() {
   const [expandedSections, setExpandedSections] = useState({
     teachers: true,
     subjects: false,
-    grades: false
+    grades: false,
+    counselors: true
   });
 
   const [subjectForm, setSubjectForm] = useState({ name: '', color: '#003876' });
@@ -1283,22 +1284,22 @@ export default function App() {
 
 
 
-  // Helper: Generate default calligraphic SVG signature for users without an uploaded signature
+  // Helper: Generate clean, professional cursive SVG signature for users without an uploaded signature
   const generateCalligraphicSignatureSVG = (name, idStr = 'default') => {
     if (!name) name = 'Firma Oficial';
     const cleanName = name.replace(/^(Prof\.|Licda\.|Lic\.|Dr\.|Dra\.)\s+/i, '');
     const charCodeSum = idStr.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    const fontAngle = (charCodeSum % 7) - 3;
-    const fontOption = (charCodeSum % 2) === 0 ? 'Dancing Script' : 'Caveat';
+    const fonts = ['Great Vibes', 'Dancing Script', 'Alex Brush'];
+    const fontChoice = fonts[charCodeSum % fonts.length];
+    const angle = (charCodeSum % 5) - 2;
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="65" viewBox="0 0 220 65">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="55" viewBox="0 0 220 55">
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&amp;family=Dancing+Script:wght@700&amp;display=swap');
-        .sig-text { font-family: '${fontOption}', 'Dancing Script', 'Caveat', cursive; font-size: 24px; fill: #002244; font-weight: 700; }
+        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Dancing+Script:wght@700&amp;family=Great+Vibes&amp;display=swap');
+        .sig-text { font-family: '${fontChoice}', 'Great Vibes', 'Dancing Script', 'Alex Brush', cursive; font-size: 26px; fill: #001e3d; font-style: italic; font-weight: 500; }
       </style>
-      <g transform="rotate(${fontAngle} 110 32)">
-        <text x="12" y="38" class="sig-text">${cleanName}</text>
-        <path d="M 10 44 Q 50 52 195 42 Q 150 48 100 46" fill="none" stroke="#003876" stroke-width="1.8" stroke-linecap="round"/>
+      <g transform="rotate(${angle} 110 28)">
+        <text x="110" y="36" text-anchor="middle" class="sig-text">${cleanName}</text>
       </g>
     </svg>`;
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
@@ -6462,52 +6463,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     )}
                   </div>
 
-                                        {/* Subsection: Counselor Grade Assignments */}
-                      <div style={{ gridColumn: 'span 2', marginTop: '1rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--border-color)' }}>
-                        <h4 style={{ margin: '0 0 0.5rem 0', color: '#6f42c1', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <span>👩‍⚕️</span> Asignación de Grados a Trabajar para Orientación y Psicología
-                        </h4>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 1rem 0' }}>
-                          Habilita qué grados específicos atenderá cada Orientadora/Psicóloga. Solo tendrán acceso a las carpetas, notificaciones y boletines de los grados seleccionados.
-                        </p>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-                          {users.filter(u => u.role === 'counselor').map(counselor => {
-                            const assigned = counselor.assignedGrades || grades;
-                            return (
-                              <div key={counselor.id} className="glass-panel" style={{ padding: '1rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-                                <strong style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>
-                                  {counselor.name}
-                                </strong>
-                                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.75rem' }}>
-                                  📧 {counselor.email}
-                                </span>
-
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-                                  {grades.map(g => {
-                                    const isChecked = assigned.includes(g);
-                                    return (
-                                      <label key={g} style={{ fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.55rem', borderRadius: '4px', backgroundColor: isChecked ? 'rgba(111, 66, 193, 0.12)' : 'var(--bg-secondary)', color: isChecked ? '#6f42c1' : 'var(--text-secondary)', border: '1px solid currentColor', cursor: 'pointer', fontWeight: isChecked ? 'bold' : 'normal' }}>
-                                        <input
-                                          type="checkbox"
-                                          checked={isChecked}
-                                          onChange={(e) => {
-                                            const updatedAssigned = e.target.checked
-                                              ? [...assigned, g]
-                                              : assigned.filter(x => x !== g);
-                                            setUsersAndSave(prev => prev.map(u => u.id === counselor.id ? { ...u, assignedGrades: updatedAssigned } : u));
-                                          }}
-                                        />
-                                        {g}
-                                      </label>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
 
                   {/* BLOCK 2: ASIGNATURAS */}
                   <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
@@ -6777,6 +6733,92 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               {savingSubjects ? '💾 Guardando...' : '💾 Guardar Cambios en la Nube'}
                             </button>
                           </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+
+                  {/* BLOCK 4: ORIENTACIÓN Y PSICOLOGÍA ESCOLAR */}
+                  <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid #6f42c1', borderRadius: '12px', marginTop: '1rem' }}>
+                    <button 
+                      type="button" 
+                      className={`accordion-header ${expandedSections.counselors ? 'active' : ''}`}
+                      onClick={() => setExpandedSections(prev => ({ ...prev, counselors: !prev.counselors }))}
+                      style={{
+                        width: '100%',
+                        padding: '1.25rem 1.5rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'rgba(111, 66, 193, 0.06)',
+                        border: 'none',
+                        borderBottom: expandedSections.counselors ? '1px solid #6f42c1' : 'none',
+                        color: '#6f42c1',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.05rem',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span>👩‍⚕️</span>
+                        <strong>Asignación de Grados a Trabajar para Orientación y Psicología</strong>
+                        <span style={{ fontSize: '0.8rem', padding: '0.15rem 0.55rem', backgroundColor: 'rgba(111, 66, 193, 0.15)', color: '#6f42c1', borderRadius: '20px', fontWeight: 'bold' }}>
+                          {users.filter(u => u.role === 'counselor').length} orientadoras registradas
+                        </span>
+                      </span>
+                      <span>{expandedSections.counselors ? '▲ Ocultar' : '▼ Mostrar'}</span>
+                    </button>
+
+                    {expandedSections.counselors && (
+                      <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem' }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 1.25rem 0' }}>
+                          Habilita qué grados específicos atenderá cada Orientadora/Psicóloga. Solo tendrán acceso a las carpetas, notificaciones y boletines de los grados seleccionados.
+                        </p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+                          {users.filter(u => u.role === 'counselor').map(counselor => {
+                            const assigned = counselor.assignedGrades || grades;
+                            return (
+                              <div key={counselor.id} className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1.5px solid var(--border-color)', borderRadius: '10px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                  <strong style={{ fontSize: '0.95rem', color: 'var(--primary)' }}>
+                                    {counselor.name}
+                                  </strong>
+                                  <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(111, 66, 193, 0.15)', color: '#6f42c1', padding: '0.15rem 0.55rem', borderRadius: '12px', fontWeight: 'bold' }}>
+                                    {assigned.length} grado(s) asignado(s)
+                                  </span>
+                                </div>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '1rem' }}>
+                                  📧 {counselor.email}
+                                </span>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                                  {grades.map(g => {
+                                    const isChecked = assigned.includes(g);
+                                    return (
+                                      <label key={g} style={{ fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.65rem', borderRadius: '6px', backgroundColor: isChecked ? 'rgba(111, 66, 193, 0.12)' : 'var(--bg-secondary)', color: isChecked ? '#6f42c1' : 'var(--text-secondary)', border: '1px solid ' + (isChecked ? '#6f42c1' : 'var(--border-color)'), cursor: 'pointer', fontWeight: isChecked ? 'bold' : 'normal' }}>
+                                        <input
+                                          type="checkbox"
+                                          checked={isChecked}
+                                          style={{ transform: 'scale(1.1)', cursor: 'pointer' }}
+                                          onChange={(e) => {
+                                            const updatedAssigned = e.target.checked
+                                              ? [...assigned, g]
+                                              : assigned.filter(x => x !== g);
+                                            setUsersAndSave(prev => prev.map(u => u.id === counselor.id ? { ...u, assignedGrades: updatedAssigned } : u));
+                                          }}
+                                        />
+                                        {g}
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
