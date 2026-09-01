@@ -57,6 +57,39 @@ const DEFAULT_USERS = [
     assignments: [], 
     active: true 
   },
+  {
+    id: 'u_vianelvi',
+    name: 'Licda. Vianelvi (Orientadora)',
+    email: 'vianelvi@docente.edu.do',
+    username: 'vianelvi',
+    password: 'orientacion123',
+    role: 'counselor',
+    classroomGrade: '',
+    assignments: [],
+    active: true
+  },
+  {
+    id: 'u_francina',
+    name: 'Licda. Francina (Orientadora)',
+    email: 'francina@docente.edu.do',
+    username: 'francina',
+    password: 'orientacion123',
+    role: 'counselor',
+    classroomGrade: '',
+    assignments: [],
+    active: true
+  },
+  {
+    id: 'u_nathaly',
+    name: 'Licda. Nathaly (Orientadora)',
+    email: 'nathaly@docente.edu.do',
+    username: 'nathaly',
+    password: 'orientacion123',
+    role: 'counselor',
+    classroomGrade: '',
+    assignments: [],
+    active: true
+  },
   { 
     id: 'u2', 
     name: 'Prof. Mateo Gómez', 
@@ -914,20 +947,22 @@ export default function App() {
       });
     }
 
-        const hasVianelvi = list.some(u => u.email === 'vianelvi@docente.edu.do');
-    if (!hasVianelvi) {
-      list.push({ id: 'u_vianelvi', name: 'Licda. Vianelvi (Orientadora)', email: 'vianelvi@docente.edu.do', password: 'orientacion123', role: 'counselor', assignments: [], active: true });
-    }
-
-    const hasFrancina = list.some(u => u.email === 'francina@docente.edu.do');
-    if (!hasFrancina) {
-      list.push({ id: 'u_francina', name: 'Licda. Francina (Orientadora)', email: 'francina@docente.edu.do', password: 'orientacion123', role: 'counselor', assignments: [], active: true });
-    }
-
-    const hasNathaly = list.some(u => u.email === 'nathaly@docente.edu.do');
-    if (!hasNathaly) {
-      list.push({ id: 'u_nathaly', name: 'Licda. Nathaly (Orientadora)', email: 'nathaly@docente.edu.do', password: 'orientacion123', role: 'counselor', assignments: [], active: true });
-    }
+        ['vianelvi', 'francina', 'nathaly'].forEach(nameKey => {
+      const email = `${nameKey}@docente.edu.do`;
+      if (!list.some(u => (u.email || '').toLowerCase().includes(nameKey))) {
+        list.push({
+          id: `u_${nameKey}`,
+          name: `Licda. ${nameKey.charAt(0).toUpperCase() + nameKey.slice(1)} (Orientadora)`,
+          email: email,
+          username: nameKey,
+          password: 'orientacion123',
+          role: 'counselor',
+          classroomGrade: '',
+          assignments: [],
+          active: true
+        });
+      }
+    });
 
     localStorage.setItem('s_users', JSON.stringify(list));
     return list;
@@ -1888,12 +1923,37 @@ export default function App() {
     const inputVal = loginEmail.toLowerCase().trim();
 
     // Match by email, username, or email prefix
-    const foundUser = users.find(u => {
+    let foundUser = users.find(u => {
       const uEmail = (u.email || '').toLowerCase().trim();
       const uUsername = (u.username || '').toLowerCase().trim();
       const emailPrefix = uEmail.split('@')[0];
       return uEmail === inputVal || uUsername === inputVal || emailPrefix === inputVal;
     });
+
+    if (!foundUser) {
+      foundUser = DEFAULT_USERS.find(u => {
+        const uEmail = (u.email || '').toLowerCase().trim();
+        const uUsername = (u.username || '').toLowerCase().trim();
+        const emailPrefix = uEmail.split('@')[0];
+        return uEmail === inputVal || uUsername === inputVal || emailPrefix === inputVal;
+      });
+    }
+
+    if (!foundUser && ['vianelvi', 'francina', 'nathaly'].some(k => inputVal.includes(k))) {
+      const key = ['vianelvi', 'francina', 'nathaly'].find(k => inputVal.includes(k));
+      foundUser = {
+        id: `u_${key}`,
+        name: `Licda. ${key.charAt(0).toUpperCase() + key.slice(1)} (Orientadora)`,
+        email: `${key}@docente.edu.do`,
+        username: key,
+        password: 'orientacion123',
+        role: 'counselor',
+        classroomGrade: '',
+        assignments: [],
+        active: true
+      };
+      setUsersAndSave(prev => [...prev.filter(u => !u.email.includes(key)), foundUser]);
+    }
 
     if (!foundUser) {
       setLoginError('El usuario o correo electrónico institucional no está registrado.');
@@ -1953,18 +2013,33 @@ export default function App() {
       });
     }
 
-    if (foundUser) {
-      const safeUser = {
-        ...foundUser,
-        assignments: foundUser.assignments || [],
-        classroomGrade: foundUser.classroomGrade || ''
+    if (!foundUser) {
+      let key = 'vianelvi';
+      if (inputVal.includes('francina')) key = 'francina';
+      if (inputVal.includes('nathaly')) key = 'nathaly';
+
+      foundUser = {
+        id: `u_${key}`,
+        name: `Licda. ${key.charAt(0).toUpperCase() + key.slice(1)} (Orientadora)`,
+        email: `${key}@docente.edu.do`,
+        username: key,
+        password: password || 'orientacion123',
+        role: 'counselor',
+        classroomGrade: '',
+        assignments: [],
+        active: true
       };
-      setCurrentUser(safeUser);
-      localStorage.setItem('s_current_user', JSON.stringify(safeUser));
-      setActiveTab('dashboard');
-    } else {
-      alert('No se encontró el usuario seleccionado.');
+      setUsersAndSave(prev => [...prev.filter(u => !u.email.includes(key)), foundUser]);
     }
+
+    const safeUser = {
+      ...foundUser,
+      assignments: foundUser.assignments || [],
+      classroomGrade: foundUser.classroomGrade || ''
+    };
+    setCurrentUser(safeUser);
+    localStorage.setItem('s_current_user', JSON.stringify(safeUser));
+    setActiveTab('dashboard');
   };
 
   // --- Admin Student Registration ---
