@@ -1284,23 +1284,21 @@ export default function App() {
 
 
 
-  // Helper: Generate authentic Copperplate / Spencerian royal blue calligraphy SVG signature matching user sample
+  // Helper: Generate connected cursive script SVG signature in royal blue ink resting tightly on line
   const generateCalligraphicSignatureSVG = (name, idStr = 'default') => {
     if (!name) name = 'Firma Oficial';
     const cleanName = name.replace(/^(Prof\.|Licda\.|Lic\.|Dr\.|Dra\.)\s+/i, '');
     const charCodeSum = idStr.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    const fonts = ['Monsieur La Doulaise', 'Herr Von Muellerhoff', 'Pinyon Script', 'Alex Brush'];
+    const fonts = ['Brush Script MT', 'Dancing Script', 'Great Vibes', 'Monsieur La Doulaise', 'Lucida Calligraphy', 'Segoe Script'];
     const fontChoice = fonts[charCodeSum % fonts.length];
-    const angle = (charCodeSum % 5) - 2;
-    const fontSize = fontChoice === 'Monsieur La Doulaise' ? 34 : (fontChoice === 'Herr Von Muellerhoff' ? 32 : 28);
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="65" viewBox="0 0 240 65">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="52" viewBox="0 0 240 52">
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Herr+Von+Muellerhoff&amp;family=Monsieur+La+Doulaise&amp;family=Pinyon+Script&amp;display=swap');
-        .sig-text { font-family: '${fontChoice}', 'Monsieur La Doulaise', 'Herr Von Muellerhoff', 'Pinyon Script', 'Alex Brush', cursive; font-size: ${fontSize}px; fill: #0038a8; font-style: italic; font-weight: 400; }
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&amp;family=Great+Vibes&amp;family=Monsieur+La+Doulaise&amp;display=swap');
+        .sig-text { font-family: '${fontChoice}', 'Brush Script MT', 'Dancing Script', 'Great Vibes', 'Monsieur La Doulaise', 'Lucida Calligraphy', 'Segoe Script', cursive; font-size: 32px; fill: #0038a8; font-style: italic; font-weight: 500; }
       </style>
-      <g transform="rotate(${angle} 120 32)">
-        <text x="120" y="42" text-anchor="middle" class="sig-text">${cleanName}</text>
+      <g transform="rotate(-2 120 28)">
+        <text x="120" y="38" text-anchor="middle" class="sig-text">${cleanName}</text>
       </g>
     </svg>`;
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
@@ -3290,7 +3288,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem', marginTop: '3rem', fontSize: '0.8rem' }}>
                     {/* Teacher Signature */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                      <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
+                      <div style={{ height: '48px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '-6px' }}>
                         <img 
                           src={viewingReportLog.teacherSignature || currentUser?.teacherSignature || generateCalligraphicSignatureSVG(viewingReportLog.teacherName || currentUser?.name || 'Docente Emisor', viewingReportLog.id || 't')} 
                           alt="Firma Docente" 
@@ -3304,7 +3302,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
 
                     {/* Counselor Signature */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                      <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
+                      <div style={{ height: '48px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '-6px' }}>
                         <img 
                           src={viewingReportLog.counselorSignature || generateCalligraphicSignatureSVG(viewingReportLog.counselorName || (currentUser?.role === 'counselor' ? currentUser.name : 'Licda. Vianelvi (Orientadora)'), (viewingReportLog.id || 'c') + '_c')} 
                           alt="Firma Orientadora" 
@@ -3327,87 +3325,44 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                 <button className="btn-secondary" onClick={() => setViewingReportLog(null)}>Cerrar</button>
 
                 <button 
-                  className="btn-primary"
-                  style={{ backgroundColor: '#ce1126', borderColor: '#ce1126', color: '#ffffff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-                  onClick={() => handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${viewingReportLog.studentName.replace(/\s+/g, '_')}_${viewingReportLog.grade}.pdf`)}
-                  title="Descargar documento oficial en formato PDF con firmas digitales"
-                >
-                  📄 Descargar PDF Oficial Firmado
-                </button>
-                
-                <button 
                   className="btn-secondary"
+                  style={{ fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                   onClick={() => {
-                    navigator.clipboard.writeText(viewingReportLog.finalText || '');
-                    alert('Texto copiado al portapapeles.');
+                    navigator.clipboard.writeText(viewingReportLog.finalText || viewingReportLog.comments || '');
+                    alert('¡Texto del reporte copiado al portapapeles!');
                   }}
                 >
                   📋 Copiar Texto
                 </button>
 
-                {/* Resend & Share Actions */}
+                <button 
+                  className="btn-primary"
+                  style={{ backgroundColor: '#ce1126', borderColor: '#ce1126', color: '#ffffff', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  onClick={() => handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${viewingReportLog.studentName.replace(/\s+/g, '_')}_${viewingReportLog.grade}.pdf`)}
+                  title="Descargar/Guardar documento oficial en formato PDF"
+                >
+                  📄 Guardar como PDF
+                </button>
+
                 {(() => {
                   const subjectStr = `[REPORTE LARC] Grado: ${viewingReportLog.grade} | Alumno: ${viewingReportLog.studentName} | Tipo: ${viewingReportLog.type?.toUpperCase()}`;
-                  const encodedTo = encodeURIComponent(`${viewingReportLog.coordinator || ''},${viewingReportLog.counselor || ''}`);
+                  const encodedTo = encodeURIComponent(`${viewingReportLog.counselor || 'orientacion.nagua@docente.edu.do'}`);
                   const encodedSubject = encodeURIComponent(subjectStr);
-                  const encodedBody = encodeURIComponent(viewingReportLog.finalText || '');
-                  const directShareRef = `📍 REPORTE PEDAGÓGICO LARC\nAlumno: ${viewingReportLog.studentName}\nGrado: ${viewingReportLog.grade} | Período: ${viewingReportLog.period || 'P1'}\nAsignatura: ${viewingReportLog.subjectName}\nResumen: ${viewingReportLog.finalText || viewingReportLog.comments}`;
+                  const encodedBody = encodeURIComponent(viewingReportLog.finalText || viewingReportLog.comments || '');
 
                   return (
-                    <>
-                      <button 
-                        className="btn-secondary"
-                        style={{ fontSize: '0.8rem', fontWeight: 'bold' }}
-                        onClick={() => {
-                          navigator.clipboard.writeText(directShareRef);
-                          alert('🔗 Enlace directo y resumen del reporte copiado al portapapeles. ¡Puedes pegarlo directamente a la orientadora o en Teams/WhatsApp!');
-                        }}
-                        title="Copiar resumen y datos clave para compartir directamente con orientación"
-                      >
-                        🔗 Enlace Directo Orientación
-                      </button>
-
-                      <a 
-                        href={`https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-secondary"
-                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold' }}
-                        title="Abrir en Microsoft Outlook 365 Web"
-                      >
-                        📧 Outlook (M365)
-                      </a>
-
-                      <a 
-                        href={`mailto:${viewingReportLog.coordinator || ''};${viewingReportLog.counselor || ''}?subject=${encodedSubject}&body=${encodedBody}`}
-                        className="btn-secondary"
-                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                        title="Enviar usando la aplicación de correo del equipo"
-                      >
-                        ✉️ Correo Local
-                      </a>
-
-                      {currentUser?.email && (
-                        <a 
-                          href={`mailto:${currentUser.email}?subject=${encodeURIComponent('[COPIA PERFIL] ' + subjectStr)}&body=${encodedBody}`}
-                          className="btn-secondary"
-                          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success)', fontWeight: 'bold' }}
-                          title="Enviar una copia de respaldo a mi propio correo institucional"
-                        >
-                          📩 Copia a Mi Correo
-                        </a>
-                      )}
-                    </>
+                    <a 
+                      href={`https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary"
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold', border: '1px solid #0078d4' }}
+                      title="Enviar informe a la orientadora por correo institucional Outlook"
+                    >
+                      📧 Mandar por Correo (Outlook)
+                    </a>
                   );
                 })()}
-
-                <button 
-                  className="btn-primary" 
-                  onClick={() => window.print()}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#7c3aed' }}
-                >
-                  🖨️ Imprimir / PDF
-                </button>
               </div>
             </div>
           </div>
@@ -10702,66 +10657,60 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 onClick={() => {
                   const finalTxt = alertFormModal.finalText || compileReportText(alertFormModal);
                   navigator.clipboard.writeText(finalTxt);
-                  alert('¡Texto copiado al portapapeles con éxito!');
+                  alert('¡Texto del reporte copiado al portapapeles!');
                 }}
               >
                 📋 Copiar Texto
               </button>
 
-              {/* Compose Options */}
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: '#ce1126', border: '1px solid #ce1126' }}
+                onClick={() => {
+                  handleRegisterSentReportLog();
+                  setTimeout(() => {
+                    handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${alertFormModal.student.name.replace(/\s+/g, '_')}_${alertFormModal.student.grade}.pdf`);
+                  }, 300);
+                }}
+              >
+                📄 Guardar como PDF
+              </button>
+
+              <button 
+                type="button"
+                className="btn-primary" 
+                onClick={() => {
+                  handleRegisterSentReportLog();
+                  alert('¡Reporte enviado exitosamente a la orientadora en la plataforma!');
+                }}
+                disabled={alertFormModal.sending}
+                style={{ fontWeight: 'bold', backgroundColor: '#6f42c1', borderColor: '#6f42c1', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+              >
+                🔔 Mandar a Orientadora en Plataforma
+              </button>
+
               {(() => {
                 const finalTxt = alertFormModal.finalText || compileReportText(alertFormModal);
                 const subjectStr = `[REPORTE LARC] Grado: ${alertFormModal.student.grade} | Alumno: ${alertFormModal.student.name} | Tipo: ${alertFormModal.type.toUpperCase()}`;
-                const encodedTo = encodeURIComponent(`${alertFormModal.coordinatorEmail},${alertFormModal.counselorEmail}`);
+                const encodedTo = encodeURIComponent(`${alertFormModal.counselorEmail || 'orientacion.nagua@docente.edu.do'}`);
                 const encodedSubject = encodeURIComponent(subjectStr);
                 const encodedBody = encodeURIComponent(finalTxt);
                 
                 return (
-                  <>
-                    <a 
-                      href={`https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-secondary"
-                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: '#0078d4', fontWeight: 'bold' }}
-                      onClick={handleRegisterSentReportLog}
-                      title="Enviar vía Microsoft Outlook 365 Institucional"
-                    >
-                      📧 Outlook (M365)
-                    </a>
-
-                    <a 
-                      href={`mailto:${alertFormModal.coordinatorEmail};${alertFormModal.counselorEmail}?subject=${encodedSubject}&body=${encodedBody}`}
-                      className="btn-secondary"
-                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontWeight: 'bold' }}
-                      onClick={handleRegisterSentReportLog}
-                    >
-                      ✉️ Correo Local
-                    </a>
-
-                    {currentUser?.email && (
-                      <a 
-                        href={`mailto:${currentUser.email}?subject=${encodeURIComponent('[COPIA PERFIL] ' + subjectStr)}&body=${encodedBody}`}
-                        className="btn-secondary"
-                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--success)', fontWeight: 'bold' }}
-                        onClick={handleRegisterSentReportLog}
-                        title="Guardar / Enviar copia a mi propio correo institucional"
-                      >
-                        📩 Copia a Mi Correo
-                      </a>
-                    )}
-                  </>
+                  <a 
+                    href={`https://outlook.office.com/mail/deeplink/compose?to=${encodedTo}&subject=${encodedSubject}&body=${encodedBody}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary"
+                    style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold', border: '1px solid #0078d4' }}
+                    onClick={handleRegisterSentReportLog}
+                    title="Enviar informe a la orientadora por correo institucional Outlook"
+                  >
+                    📧 Mandar por Correo (Outlook)
+                  </a>
                 );
               })()}
-
-              <button 
-                type="button"
-                className="btn-danger" 
-                onClick={handleSimulateSendAlert}
-                disabled={alertFormModal.sending}
-              >
-                {alertFormModal.sending ? 'Generando...' : '⚡ Simular Registro'}
-              </button>
             </div>
           </div>
         </div>
