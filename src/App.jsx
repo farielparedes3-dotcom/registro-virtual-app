@@ -2879,7 +2879,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
   };
 
   const renderReportsTabContent = () => {
-    const visibleGradesForExplorer = currentUser?.role === 'admin' 
+    const visibleGradesForExplorer = (currentUser?.role === 'admin' || currentUser?.role === 'counselor') 
       ? grades 
       : (currentUser?.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades);
 
@@ -10669,6 +10669,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       <div 
                         key={log.id} 
                         onClick={() => {
+                          setActiveTab('reports');
+                          if (log.grade) setFolderExplorerGrade(log.grade);
+                          if (log.period) setFolderExplorerPeriod(log.period);
+                          if (log.studentName) {
+                            setFolderExplorerStudentName(log.studentName);
+                            setFolderExplorerLevel('student');
+                          }
                           setViewingReportLog(log);
                           setIsNotifDrawerOpen(false);
                         }}
