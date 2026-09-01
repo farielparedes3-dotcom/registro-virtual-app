@@ -8091,7 +8091,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
               <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
             </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Docente</span>
+            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
             <span 
               style={{ 
                 fontSize: '0.72rem', 
@@ -8115,6 +8115,21 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <button 
+            type="button"
+            className="theme-toggle"
+            onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
+            title="Notificaciones de Reportes para Orientación"
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+          >
+            <span style={{ fontSize: '1.15rem' }}>🔔</span>
+            {alertLogs.length > 0 && (
+              <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                {alertLogs.length > 99 ? '99+' : alertLogs.length}
+              </span>
+            )}
+          </button>
+
           <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
             {theme === 'light' ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -8141,7 +8156,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             )}
             <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Docente</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
             </div>
             <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
           </div>
