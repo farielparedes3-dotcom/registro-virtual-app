@@ -59,7 +59,7 @@ const DEFAULT_USERS = [
   },
   {
     id: 'u_vianelvi',
-    name: 'Licda. Vianelvi (Orientadora)',
+    name: 'Licda. Vianelvi Mejía Mejía (Orientadora)',
     email: 'vianelvi@docente.edu.do',
     username: 'vianelvi',
     password: 'orientacion123',
@@ -70,7 +70,7 @@ const DEFAULT_USERS = [
   },
   {
     id: 'u_francina',
-    name: 'Licda. Francina (Orientadora)',
+    name: 'Licda. Francina Rosario Rosario (Orientadora)',
     email: 'francina@docente.edu.do',
     username: 'francina',
     password: 'orientacion123',
@@ -81,7 +81,7 @@ const DEFAULT_USERS = [
   },
   {
     id: 'u_nathaly',
-    name: 'Licda. Nathaly (Orientadora)',
+    name: 'Licda. Nathaly Castillo Castillo (Orientadora)',
     email: 'nathaly@docente.edu.do',
     username: 'nathaly',
     password: 'orientacion123',
@@ -1287,7 +1287,10 @@ export default function App() {
   // Helper: Generate connected cursive script SVG signature in royal blue ink resting tightly on line
   const generateCalligraphicSignatureSVG = (name, idStr = 'default') => {
     if (!name) name = 'Firma Oficial';
-    const cleanName = name.replace(/^(Prof\.|Licda\.|Lic\.|Dr\.|Dra\.)\s+/i, '');
+    const cleanName = name
+      .replace(/\(Orientadora\)|\(Psicóloga\)/gi, '')
+      .replace(/^(Prof\.|Licda\.|Lic\.|Dr\.|Dra\.)\s+/i, '')
+      .trim();
     const charCodeSum = idStr.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
     const fonts = ['Brush Script MT', 'Dancing Script', 'Great Vibes', 'Monsieur La Doulaise', 'Lucida Calligraphy', 'Segoe Script'];
     const fontChoice = fonts[charCodeSum % fonts.length];
@@ -1365,11 +1368,9 @@ export default function App() {
     setCurrentUser(updatedUser);
     localStorage.setItem('s_current_user', JSON.stringify(updatedUser));
 
-    // Save updated user in users array
-    setUsers(prevUsers => {
-      const updatedList = prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u);
-      localStorage.setItem('s_users', JSON.stringify(updatedList));
-      return updatedList;
+    // Save updated user permanently in users array and IndexedDB
+    setUsersAndSave(prevUsers => {
+      return prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u);
     });
 
     setProfileSuccessMsg('¡Perfil actualizado correctamente!');
@@ -3304,7 +3305,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                       <div style={{ height: '48px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '-6px' }}>
                         <img 
-                          src={viewingReportLog.counselorSignature || generateCalligraphicSignatureSVG(viewingReportLog.counselorName || (currentUser?.role === 'counselor' ? currentUser.name : 'Licda. Vianelvi (Orientadora)'), (viewingReportLog.id || 'c') + '_c')} 
+                          src={viewingReportLog.counselorSignature || generateCalligraphicSignatureSVG(viewingReportLog.counselorName || (currentUser?.role === 'counselor' ? currentUser.name : 'Licda. Vianelvi Mejía Mejía (Orientadora)'), (viewingReportLog.id || 'c') + '_c')} 
                           alt="Firma Orientadora" 
                           style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
                         />
@@ -3357,9 +3358,13 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                       rel="noopener noreferrer"
                       className="btn-secondary"
                       style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold', border: '1px solid #0078d4' }}
-                      title="Enviar informe a la orientadora por correo institucional Outlook"
+                      onClick={() => {
+                        handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${(viewingReportLog.studentName || '').replace(/\s+/g, '_')}_${viewingReportLog.grade}.pdf`);
+                        alert('📄 Se ha descargado automáticamente el Reporte Oficial Firmado en PDF. Por favor adjúntalo a tu correo en Outlook.');
+                      }}
+                      title="Descargar PDF firmado y redactar correo en Outlook"
                     >
-                      📧 Mandar por Correo (Outlook)
+                      📧 Mandar por Correo con PDF Adjunto (Outlook)
                     </a>
                   );
                 })()}
@@ -5133,7 +5138,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   onClick={() => handleQuickLogin('vianelvi@docente.edu.do', 'orientacion123')}
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Vianelvi</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Vianelvi Mejía</span>
                   <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
                 </button>
                 <button 
@@ -5142,7 +5147,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   onClick={() => handleQuickLogin('francina@docente.edu.do', 'orientacion123')}
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Francina</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Francina Rosario</span>
                   <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
                 </button>
                 <button 
@@ -5151,7 +5156,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   onClick={() => handleQuickLogin('nathaly@docente.edu.do', 'orientacion123')}
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Nathaly</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Nathaly Castillo</span>
                   <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
                 </button>
               </div>
@@ -10704,10 +10709,16 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     rel="noopener noreferrer"
                     className="btn-secondary"
                     style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold', border: '1px solid #0078d4' }}
-                    onClick={handleRegisterSentReportLog}
-                    title="Enviar informe a la orientadora por correo institucional Outlook"
+                    onClick={() => {
+                      handleRegisterSentReportLog();
+                      setTimeout(() => {
+                        handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${alertFormModal.student.name.replace(/\s+/g, '_')}_${alertFormModal.student.grade}.pdf`);
+                      }, 300);
+                      alert('📄 Se ha guardado el reporte y descargado el PDF Oficial Firmado. Por favor adjúntalo a tu correo en Outlook.');
+                    }}
+                    title="Registrar reporte, descargar PDF firmado y abrir correo en Outlook"
                   >
-                    📧 Mandar por Correo (Outlook)
+                    📧 Mandar por Correo con PDF Adjunto (Outlook)
                   </a>
                 );
               })()}
