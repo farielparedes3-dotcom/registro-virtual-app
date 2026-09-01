@@ -1282,6 +1282,28 @@ export default function App() {
   };
 
 
+
+  // Helper: Generate default calligraphic SVG signature for users without an uploaded signature
+  const generateCalligraphicSignatureSVG = (name, idStr = 'default') => {
+    if (!name) name = 'Firma Oficial';
+    const cleanName = name.replace(/^(Prof\.|Licda\.|Lic\.|Dr\.|Dra\.)\s+/i, '');
+    const charCodeSum = idStr.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+    const fontAngle = (charCodeSum % 7) - 3;
+    const fontOption = (charCodeSum % 2) === 0 ? 'Dancing Script' : 'Caveat';
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="65" viewBox="0 0 220 65">
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&amp;family=Dancing+Script:wght@700&amp;display=swap');
+        .sig-text { font-family: '${fontOption}', 'Dancing Script', 'Caveat', cursive; font-size: 24px; fill: #002244; font-weight: 700; }
+      </style>
+      <g transform="rotate(${fontAngle} 110 32)">
+        <text x="12" y="38" class="sig-text">${cleanName}</text>
+        <path d="M 10 44 Q 50 52 195 42 Q 150 48 100 46" fill="none" stroke="#003876" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  };
+
   const handleExportReportPDF = (containerId, fileName) => {
     const element = document.getElementById(containerId);
     if (!element) {
@@ -2879,9 +2901,13 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
   };
 
   const renderReportsTabContent = () => {
-    const visibleGradesForExplorer = (currentUser?.role === 'admin' || currentUser?.role === 'counselor') 
+    const counselorAssignedGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
+      ? currentUser.assignedGrades
+      : grades;
+
+    const visibleGradesForExplorer = currentUser?.role === 'admin' 
       ? grades 
-      : (currentUser?.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades);
+      : (currentUser?.role === 'counselor' ? counselorAssignedGrades : (currentUser?.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades));
 
     const filteredAlertLogs = alertLogs.filter(log => {
       if (currentUser?.role === 'admin') return true;
@@ -3263,15 +3289,11 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                     {/* Teacher Signature */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                       <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
-                        {(viewingReportLog.teacherSignature || currentUser?.teacherSignature) ? (
-                          <img 
-                            src={viewingReportLog.teacherSignature || currentUser?.teacherSignature} 
-                            alt="Firma Docente" 
-                            style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
-                          />
-                        ) : (
-                          <span style={{ fontSize: '0.72rem', color: '#888', fontStyle: 'italic' }}>[Firma Docente Registrada]</span>
-                        )}
+                        <img 
+                          src={viewingReportLog.teacherSignature || currentUser?.teacherSignature || generateCalligraphicSignatureSVG(viewingReportLog.teacherName || currentUser?.name || 'Docente Emisor', viewingReportLog.id || 't')} 
+                          alt="Firma Docente" 
+                          style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
+                        />
                       </div>
                       <div style={{ width: '180px', borderBottom: '1.5px solid #000000', marginBottom: '0.25rem' }}></div>
                       <span style={{ fontWeight: 'bold', color: '#002244' }}>{viewingReportLog.teacherName || currentUser?.name || 'Docente Emisor'}</span>
@@ -3281,31 +3303,16 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                     {/* Counselor Signature */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                       <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
-                        {viewingReportLog.counselorSignature ? (
-                          <img 
-                            src={viewingReportLog.counselorSignature} 
-                            alt="Firma Orientadora" 
-                            style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
-                          />
-                        ) : (
-                          <button
-                            type="button"
-                            className="btn-secondary no-print-element"
-                            onClick={() => {
-                              setSignatureModalRole('Orientadora / Psicóloga');
-                              setSignatureModalTarget('counselor_report');
-                              setIsSignatureModalOpen(true);
-                            }}
-                            style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem', border: '1px dashed #0078d4', color: '#0078d4', backgroundColor: 'rgba(0,120,212,0.06)', borderRadius: '6px', fontWeight: 'bold' }}
-                          >
-                            ✍️ Firmar como Orientadora
-                          </button>
-                        )}
+                        <img 
+                          src={viewingReportLog.counselorSignature || generateCalligraphicSignatureSVG(viewingReportLog.counselorName || (currentUser?.role === 'counselor' ? currentUser.name : 'Licda. Vianelvi (Orientadora)'), (viewingReportLog.id || 'c') + '_c')} 
+                          alt="Firma Orientadora" 
+                          style={{ maxHeight: '55px', maxWidth: '170px', objectFit: 'contain' }} 
+                        />
                       </div>
                       <div style={{ width: '180px', borderBottom: '1.5px solid #000000', marginBottom: '0.25rem' }}></div>
-                      <span style={{ fontWeight: 'bold', color: '#002244' }}>{viewingReportLog.counselorName || 'Orientación / Psicología Escolar'}</span>
+                      <span style={{ fontWeight: 'bold', color: '#002244' }}>{viewingReportLog.counselorName || (currentUser?.role === 'counselor' ? currentUser.name : 'Orientación / Psicología Escolar')}</span>
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                        {viewingReportLog.counselorSignedDate ? 'Firmado el ' + viewingReportLog.counselorSignedDate : 'Firma de la Orientadora / Psicóloga'}
+                        {viewingReportLog.counselorSignedDate ? 'Firmado el ' + viewingReportLog.counselorSignedDate : 'Firma Digital de Orientación'}
                       </span>
                     </div>
                   </div>
@@ -6455,6 +6462,53 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     )}
                   </div>
 
+                                        {/* Subsection: Counselor Grade Assignments */}
+                      <div style={{ gridColumn: 'span 2', marginTop: '1rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--border-color)' }}>
+                        <h4 style={{ margin: '0 0 0.5rem 0', color: '#6f42c1', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span>👩‍⚕️</span> Asignación de Grados a Trabajar para Orientación y Psicología
+                        </h4>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 1rem 0' }}>
+                          Habilita qué grados específicos atenderá cada Orientadora/Psicóloga. Solo tendrán acceso a las carpetas, notificaciones y boletines de los grados seleccionados.
+                        </p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                          {users.filter(u => u.role === 'counselor').map(counselor => {
+                            const assigned = counselor.assignedGrades || grades;
+                            return (
+                              <div key={counselor.id} className="glass-panel" style={{ padding: '1rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                                <strong style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>
+                                  {counselor.name}
+                                </strong>
+                                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.75rem' }}>
+                                  📧 {counselor.email}
+                                </span>
+
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                  {grades.map(g => {
+                                    const isChecked = assigned.includes(g);
+                                    return (
+                                      <label key={g} style={{ fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.55rem', borderRadius: '4px', backgroundColor: isChecked ? 'rgba(111, 66, 193, 0.12)' : 'var(--bg-secondary)', color: isChecked ? '#6f42c1' : 'var(--text-secondary)', border: '1px solid currentColor', cursor: 'pointer', fontWeight: isChecked ? 'bold' : 'normal' }}>
+                                        <input
+                                          type="checkbox"
+                                          checked={isChecked}
+                                          onChange={(e) => {
+                                            const updatedAssigned = e.target.checked
+                                              ? [...assigned, g]
+                                              : assigned.filter(x => x !== g);
+                                            setUsersAndSave(prev => prev.map(u => u.id === counselor.id ? { ...u, assignedGrades: updatedAssigned } : u));
+                                          }}
+                                        />
+                                        {g}
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
                   {/* BLOCK 2: ASIGNATURAS */}
                   <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
                     <button 
@@ -8123,11 +8177,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
           >
             <span style={{ fontSize: '1.15rem' }}>🔔</span>
-            {alertLogs.length > 0 && (
-              <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                {alertLogs.length > 99 ? '99+' : alertLogs.length}
-              </span>
-            )}
+            {(() => {
+              const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
+                ? currentUser.assignedGrades
+                : grades;
+              const relevantLogs = alertLogs.filter(log => {
+                if (currentUser?.role === 'admin') return true;
+                if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
+                return true;
+              });
+              const unreadLogs = relevantLogs.filter(log => !log.readByCounselor);
+              if (unreadLogs.length === 0) return null;
+              return (
+                <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                  {unreadLogs.length > 99 ? '99+' : unreadLogs.length}
+                </span>
+              );
+            })()}
           </button>
 
           <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
@@ -10691,7 +10757,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             setFolderExplorerStudentName(log.studentName);
                             setFolderExplorerLevel('student');
                           }
-                          setViewingReportLog(log);
+                          
+                          // Mark as read by counselor
+                          const updatedLogs = alertLogs.map(x => x.id === log.id ? { ...x, readByCounselor: true } : x);
+                          setAlertLogsAndSave(updatedLogs);
+
+                          setViewingReportLog({ ...log, readByCounselor: true });
                           setIsNotifDrawerOpen(false);
                         }}
                         style={{ padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.35rem', transition: 'all 0.2s ease', boxShadow: 'var(--shadow-sm)' }}
