@@ -1284,22 +1284,23 @@ export default function App() {
 
 
 
-  // Helper: Generate clean, professional cursive SVG signature for users without an uploaded signature
+  // Helper: Generate authentic Copperplate / Spencerian royal blue calligraphy SVG signature matching user sample
   const generateCalligraphicSignatureSVG = (name, idStr = 'default') => {
     if (!name) name = 'Firma Oficial';
     const cleanName = name.replace(/^(Prof\.|Licda\.|Lic\.|Dr\.|Dra\.)\s+/i, '');
     const charCodeSum = idStr.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    const fonts = ['Great Vibes', 'Dancing Script', 'Alex Brush'];
+    const fonts = ['Monsieur La Doulaise', 'Herr Von Muellerhoff', 'Pinyon Script', 'Alex Brush'];
     const fontChoice = fonts[charCodeSum % fonts.length];
     const angle = (charCodeSum % 5) - 2;
+    const fontSize = fontChoice === 'Monsieur La Doulaise' ? 34 : (fontChoice === 'Herr Von Muellerhoff' ? 32 : 28);
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="55" viewBox="0 0 220 55">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="65" viewBox="0 0 240 65">
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Dancing+Script:wght@700&amp;family=Great+Vibes&amp;display=swap');
-        .sig-text { font-family: '${fontChoice}', 'Great Vibes', 'Dancing Script', 'Alex Brush', cursive; font-size: 26px; fill: #001e3d; font-style: italic; font-weight: 500; }
+        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Herr+Von+Muellerhoff&amp;family=Monsieur+La+Doulaise&amp;family=Pinyon+Script&amp;display=swap');
+        .sig-text { font-family: '${fontChoice}', 'Monsieur La Doulaise', 'Herr Von Muellerhoff', 'Pinyon Script', 'Alex Brush', cursive; font-size: ${fontSize}px; fill: #0038a8; font-style: italic; font-weight: 400; }
       </style>
-      <g transform="rotate(${angle} 110 28)">
-        <text x="110" y="36" text-anchor="middle" class="sig-text">${cleanName}</text>
+      <g transform="rotate(${angle} 120 32)">
+        <text x="120" y="42" text-anchor="middle" class="sig-text">${cleanName}</text>
       </g>
     </svg>`;
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
