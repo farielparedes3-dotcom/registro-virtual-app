@@ -5059,44 +5059,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
             <div className="demo-box-clean" style={{ marginTop: '1.5rem', borderTop: '1px dashed var(--border-color)', paddingTop: '1.25rem' }}>
               <div className="demo-title-clean" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', textAlign: 'center' }}>
-                Acceso Rápido con 1 Clic (Seleccionar Cuenta):
+                Acceso Rápido de Prueba (1 Clic):
               </div>
               <div className="demo-buttons-clean" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <button 
                   type="button"
                   className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('farielparedes3@gmail.com', 'Lina2754')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
+                  onClick={() => handleQuickLogin('orientacion.nagua@docente.edu.do', 'orientacion123')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.9rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: 'var(--primary)' }}>⚙️ Administrador: Fariel Paredes</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
-                </button>
-                <button 
-                  type="button"
-                  className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('mario.paredes@docente.edu.do', 'mario123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
-                >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#107c41' }}>👨‍🏫 Docente: Prof. Mario Paredes</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
-                </button>
-                <button 
-                  type="button"
-                  className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('mateo.gomez@docente.edu.do', 'profe123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
-                >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#107c41' }}>👨‍🏫 Docente: Prof. Mateo Gómez</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
-                </button>
-                <button 
-                  type="button"
-                  className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('clara.ruiz@docente.edu.do', 'profe123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'var(--bg-primary)', textAlign: 'left', width: '100%' }}
-                >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#107c41' }}>👩‍🏫 Docente: Prof. Clara Ruiz</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Entrar ➔</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#6f42c1' }}>🔑 Orientadora / Psicóloga: Licda. María Santos</span>
+                  <span style={{ fontSize: '0.78rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
                 </button>
               </div>
             </div>
