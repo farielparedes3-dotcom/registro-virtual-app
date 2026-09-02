@@ -950,18 +950,15 @@ export default function App() {
     const orientadorasToEnsure = [
       { id: 'u_vianelvi', name: 'Licda. Vianelvi Mejía (Orientadora)', email: 'vianelvi@docente.edu.do', username: 'vianelvi' },
       { id: 'u_francina', name: 'Licda. Francina Minaya (Orientadora)', email: 'francina@docente.edu.do', username: 'francina' },
-      { id: 'u_nathaly', name: 'Licda. Nathaly Castillo (Orientadora)', email: 'nathaly@docente.edu.do', username: 'nathaly' }
+      { id: 'u_nathaly', name: 'Licda. Nathaly Esteves (Orientadora)', email: 'nathaly@docente.edu.do', username: 'nathaly' }
     ];
 
     orientadorasToEnsure.forEach(item => {
       const idx = list.findIndex(u => (u.email || '').toLowerCase().includes(item.username) || u.id === item.id);
       if (idx >= 0) {
         list[idx] = {
-          ...list[idx],
           role: 'counselor',
-          name: item.name,
-          email: item.email,
-          username: item.username
+          ...list[idx]
         };
       } else {
         list.push({
@@ -1385,7 +1382,12 @@ export default function App() {
 
     // Save updated user permanently in users array and IndexedDB
     setUsersAndSave(prevUsers => {
-      return prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u);
+      const exists = prevUsers.some(u => u.id === updatedUser.id || u.email === updatedUser.email);
+      if (exists) {
+        return prevUsers.map(u => (u.id === updatedUser.id || u.email === updatedUser.email) ? updatedUser : u);
+      } else {
+        return [...prevUsers, updatedUser];
+      }
     });
 
     setProfileSuccessMsg('¡Perfil actualizado correctamente!');
@@ -6799,7 +6801,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       style={{ color: 'var(--danger)', border: '1px solid var(--danger)', fontSize: '0.72rem', padding: '0.2rem 0.5rem', fontWeight: 'bold', cursor: 'pointer' }}
                                       onClick={() => {
                                         if (confirm(`¿Estás seguro de eliminar la cuenta de ${counselor.name}?`)) {
-                                          setUsersAndSave(prev => prev.filter(u => u.id !== counselor.id));
+                                          setUsersAndSave(prev => prev.filter(u => u.id !== counselor.id && u.email !== counselor.email));
                                         }
                                       }}
                                       title="Eliminar Cuenta de Orientación"
@@ -6818,11 +6820,33 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                             checked={isChecked}
                                             style={{ transform: 'scale(1.1)', cursor: 'pointer' }}
                                             onChange={(e) => {
+                                              const isNowChecked = e.target.checked;
                                               const currentAssigned = Array.isArray(counselor.assignedGrades) ? counselor.assignedGrades : [...grades];
-                                              const updatedAssigned = e.target.checked
-                                                ? [...currentAssigned, g]
+                                              const updatedAssigned = isNowChecked
+                                                ? (currentAssigned.includes(g) ? currentAssigned : [...currentAssigned, g])
                                                 : currentAssigned.filter(x => x !== g);
-                                              setUsersAndSave(prev => prev.map(u => u.id === counselor.id ? { ...u, assignedGrades: updatedAssigned } : u));
+
+                                              // 1. Update user's assignedGrades
+                                              setUsersAndSave(prev => {
+                                                const exists = prev.some(u => u.id === counselor.id || u.email === counselor.email);
+                                                if (exists) {
+                                                  return prev.map(u => (u.id === counselor.id || u.email === counselor.email) ? { ...u, assignedGrades: updatedAssigned } : u);
+                                                } else {
+                                                  return [...prev, { ...counselor, assignedGrades: updatedAssigned }];
+                                                }
+                                              });
+
+                                              // 2. Sync with gradeStaff (Contactos de Coordinación y Orientación por Grado)
+                                              setGradeStaffAndSave(prevStaff => {
+                                                const nextStaff = { ...prevStaff };
+                                                if (!nextStaff[g]) nextStaff[g] = { coordinadorEmail: '', orientadorEmail: '' };
+                                                if (isNowChecked) {
+                                                  nextStaff[g] = { ...nextStaff[g], orientadorEmail: counselor.email };
+                                                } else if (nextStaff[g].orientadorEmail === counselor.email) {
+                                                  nextStaff[g] = { ...nextStaff[g], orientadorEmail: '' };
+                                                }
+                                                return nextStaff;
+                                              });
                                             }}
                                           />
                                           {g}
