@@ -70,7 +70,7 @@ const DEFAULT_USERS = [
   },
   {
     id: 'u_francina',
-    name: 'Licda. Francina Rosario Rosario (Orientadora)',
+    name: 'Licda. Francina Minaya (Orientadora)',
     email: 'francina@docente.edu.do',
     username: 'francina',
     password: 'orientacion123',
@@ -949,7 +949,7 @@ export default function App() {
 
     const orientadorasToEnsure = [
       { id: 'u_vianelvi', name: 'Licda. Vianelvi Mejía (Orientadora)', email: 'vianelvi@docente.edu.do', username: 'vianelvi' },
-      { id: 'u_francina', name: 'Licda. Francina Rosario (Orientadora)', email: 'francina@docente.edu.do', username: 'francina' },
+      { id: 'u_francina', name: 'Licda. Francina Minaya (Orientadora)', email: 'francina@docente.edu.do', username: 'francina' },
       { id: 'u_nathaly', name: 'Licda. Nathaly Castillo (Orientadora)', email: 'nathaly@docente.edu.do', username: 'nathaly' }
     ];
 
@@ -5161,7 +5161,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   onClick={() => handleQuickLogin('francina@docente.edu.do', 'orientacion123')}
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Francina Rosario</span>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Francina Minaya</span>
                   <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
                 </button>
                 <button 
