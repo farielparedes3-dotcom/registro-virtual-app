@@ -947,14 +947,28 @@ export default function App() {
       });
     }
 
-        ['vianelvi', 'francina', 'nathaly'].forEach(nameKey => {
-      const email = `${nameKey}@docente.edu.do`;
-      if (!list.some(u => (u.email || '').toLowerCase().includes(nameKey))) {
+    const orientadorasToEnsure = [
+      { id: 'u_vianelvi', name: 'Licda. Vianelvi Mejía (Orientadora)', email: 'vianelvi@docente.edu.do', username: 'vianelvi' },
+      { id: 'u_francina', name: 'Licda. Francina Rosario (Orientadora)', email: 'francina@docente.edu.do', username: 'francina' },
+      { id: 'u_nathaly', name: 'Licda. Nathaly Castillo (Orientadora)', email: 'nathaly@docente.edu.do', username: 'nathaly' }
+    ];
+
+    orientadorasToEnsure.forEach(item => {
+      const idx = list.findIndex(u => (u.email || '').toLowerCase().includes(item.username) || u.id === item.id);
+      if (idx >= 0) {
+        list[idx] = {
+          ...list[idx],
+          role: 'counselor',
+          name: item.name,
+          email: item.email,
+          username: item.username
+        };
+      } else {
         list.push({
-          id: `u_${nameKey}`,
-          name: `Licda. ${nameKey.charAt(0).toUpperCase() + nameKey.slice(1)} (Orientadora)`,
-          email: email,
-          username: nameKey,
+          id: item.id,
+          name: item.name,
+          email: item.email,
+          username: item.username,
           password: 'orientacion123',
           role: 'counselor',
           classroomGrade: '',
@@ -6726,9 +6740,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                         <span>👩‍⚕️</span>
                         <strong>Asignación de Grados a Trabajar para Orientación y Psicología</strong>
-                        <span style={{ fontSize: '0.8rem', padding: '0.15rem 0.55rem', backgroundColor: 'rgba(111, 66, 193, 0.15)', color: '#6f42c1', borderRadius: '20px', fontWeight: 'bold' }}>
-                          {users.filter(u => u.role === 'counselor').length} orientadoras registradas
-                        </span>
+                        {(() => {
+                        const counselorList = users.filter(u => {
+                          const r = (u.role || '').toLowerCase();
+                          const em = (u.email || '').toLowerCase();
+                          return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
+                        });
+                        const activeCounselors = counselorList.length > 0 ? counselorList : DEFAULT_USERS.filter(u => u.role === 'counselor');
+
+                        return (
+                          <>
+                            <span style={{ fontSize: '0.8rem', padding: '0.15rem 0.55rem', backgroundColor: 'rgba(111, 66, 193, 0.15)', color: '#6f42c1', borderRadius: '20px', fontWeight: 'bold' }}>
+                              {activeCounselors.length} orientadoras registradas
+                            </span>
+                          </>
+                        );
+                      })()}
                       </span>
                       <span>{expandedSections.counselors ? '▲ Ocultar' : '▼ Mostrar'}</span>
                     </button>
@@ -6740,7 +6767,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
-                          {users.filter(u => u.role === 'counselor').map(counselor => {
+                          {(() => {
+                            const counselorList = users.filter(u => {
+                              const r = (u.role || '').toLowerCase();
+                              const em = (u.email || '').toLowerCase();
+                              return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
+                            });
+                            const activeCounselors = counselorList.length > 0 ? counselorList : DEFAULT_USERS.filter(u => u.role === 'counselor');
+                            return activeCounselors.map(counselor => {
                             const assigned = counselor.assignedGrades || grades;
                             return (
                               <div key={counselor.id} className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1.5px solid var(--border-color)', borderRadius: '10px' }}>
@@ -6779,7 +6813,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 </div>
                               </div>
                             );
-                          })}
+                          });
+                        })()}
                         </div>
                       </div>
                     )}
