@@ -1157,6 +1157,7 @@ export default function App() {
   const [folderExplorerPeriod, setFolderExplorerPeriod] = useState('P1');
   const [folderExplorerStudentName, setFolderExplorerStudentName] = useState('');
   const [selectedManualReportStudentId, setSelectedManualReportStudentId] = useState('');
+  const [counselorForm, setCounselorForm] = useState({ name: '', email: '', password: '' });
   const [viewingReportLog, setViewingReportLog] = useState(null);
 
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -6774,48 +6775,135 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
                             });
                             const activeCounselors = counselorList.length > 0 ? counselorList : DEFAULT_USERS.filter(u => u.role === 'counselor');
-                            return activeCounselors.map(counselor => {
-                            const assigned = counselor.assignedGrades || grades;
-                            return (
-                              <div key={counselor.id} className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1.5px solid var(--border-color)', borderRadius: '10px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                  <strong style={{ fontSize: '0.95rem', color: 'var(--primary)' }}>
-                                    {counselor.name}
-                                  </strong>
-                                  <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(111, 66, 193, 0.15)', color: '#6f42c1', padding: '0.15rem 0.55rem', borderRadius: '12px', fontWeight: 'bold' }}>
-                                    {assigned.length} grado(s) asignado(s)
-                                  </span>
-                                </div>
-                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '1rem' }}>
-                                  📧 {counselor.email}
-                                </span>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-                                  {grades.map(g => {
-                                    const isChecked = assigned.includes(g);
-                                    return (
-                                      <label key={g} style={{ fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.65rem', borderRadius: '6px', backgroundColor: isChecked ? 'rgba(111, 66, 193, 0.12)' : 'var(--bg-secondary)', color: isChecked ? '#6f42c1' : 'var(--text-secondary)', border: '1px solid ' + (isChecked ? '#6f42c1' : 'var(--border-color)'), cursor: 'pointer', fontWeight: isChecked ? 'bold' : 'normal' }}>
-                                        <input
-                                          type="checkbox"
-                                          checked={isChecked}
-                                          style={{ transform: 'scale(1.1)', cursor: 'pointer' }}
-                                          onChange={(e) => {
-                                            const updatedAssigned = e.target.checked
-                                              ? [...assigned, g]
-                                              : assigned.filter(x => x !== g);
-                                            setUsersAndSave(prev => prev.map(u => u.id === counselor.id ? { ...u, assignedGrades: updatedAssigned } : u));
-                                          }}
-                                        />
-                                        {g}
-                                      </label>
-                                    );
-                                  })}
+                            return activeCounselors.map(counselor => {
+                              const assigned = Array.isArray(counselor.assignedGrades) ? counselor.assignedGrades : grades;
+                              return (
+                                <div key={counselor.id} className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1.5px solid var(--border-color)', borderRadius: '10px' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                                    <strong style={{ fontSize: '0.95rem', color: 'var(--primary)' }}>
+                                      {counselor.name}
+                                    </strong>
+                                    <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(111, 66, 193, 0.15)', color: '#6f42c1', padding: '0.15rem 0.55rem', borderRadius: '12px', fontWeight: 'bold' }}>
+                                      {assigned.length} grado(s) asignado(s)
+                                    </span>
+                                  </div>
+
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                      📧 {counselor.email}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      className="btn-secondary"
+                                      style={{ color: 'var(--danger)', border: '1px solid var(--danger)', fontSize: '0.72rem', padding: '0.2rem 0.5rem', fontWeight: 'bold', cursor: 'pointer' }}
+                                      onClick={() => {
+                                        if (confirm(`¿Estás seguro de eliminar la cuenta de ${counselor.name}?`)) {
+                                          setUsersAndSave(prev => prev.filter(u => u.id !== counselor.id));
+                                        }
+                                      }}
+                                      title="Eliminar Cuenta de Orientación"
+                                    >
+                                      🗑️ Eliminar
+                                    </button>
+                                  </div>
+
+                                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                                    {grades.map(g => {
+                                      const isChecked = assigned.includes(g);
+                                      return (
+                                        <label key={g} style={{ fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.65rem', borderRadius: '6px', backgroundColor: isChecked ? 'rgba(111, 66, 193, 0.12)' : 'var(--bg-secondary)', color: isChecked ? '#6f42c1' : 'var(--text-secondary)', border: '1px solid ' + (isChecked ? '#6f42c1' : 'var(--border-color)'), cursor: 'pointer', fontWeight: isChecked ? 'bold' : 'normal' }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={isChecked}
+                                            style={{ transform: 'scale(1.1)', cursor: 'pointer' }}
+                                            onChange={(e) => {
+                                              const currentAssigned = Array.isArray(counselor.assignedGrades) ? counselor.assignedGrades : [...grades];
+                                              const updatedAssigned = e.target.checked
+                                                ? [...currentAssigned, g]
+                                                : currentAssigned.filter(x => x !== g);
+                                              setUsersAndSave(prev => prev.map(u => u.id === counselor.id ? { ...u, assignedGrades: updatedAssigned } : u));
+                                            }}
+                                          />
+                                          {g}
+                                        </label>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
-                            );
-                          });
-                        })()}
+                              );
+                            });
+                          })()}
                         </div>
+
+                        {/* Add Counselor Form */}
+                        <div className="glass-panel" style={{ marginTop: '1.5rem', padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1.5px dashed #6f42c1', borderRadius: '10px' }}>
+                          <h4 style={{ margin: '0 0 0.75rem 0', color: '#6f42c1', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <span>➕</span> Registrar Nueva Orientadora o Psicóloga Escolar
+                          </h4>
+                          <form onSubmit={(e) => {
+                            e.preventDefault();
+                            const name = counselorForm.name.trim();
+                            const email = counselorForm.email.trim();
+                            const password = counselorForm.password.trim() || 'orientacion123';
+                            if (!name || !email) {
+                              alert('Por favor ingresa el nombre y correo electrónico.');
+                              return;
+                            }
+                            const newCounselor = {
+                              id: 'u_counselor_' + Date.now(),
+                              name: name.startsWith('Licda.') ? name : `Licda. ${name}`,
+                              email: email,
+                              username: email.split('@')[0],
+                              password: password,
+                              role: 'counselor',
+                              classroomGrade: '',
+                              assignments: [],
+                              assignedGrades: [...grades],
+                              active: true
+                            };
+                            setUsersAndSave(prev => [...prev.filter(u => u.email.toLowerCase() !== email.toLowerCase()), newCounselor]);
+                            setCounselorForm({ name: '', email: '', password: '' });
+                            alert(`¡Cuenta de Orientación creada con éxito para ${newCounselor.name}!`);
+                          }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
+                            <div className="form-group-compact" style={{ margin: 0 }}>
+                              <label style={{ fontWeight: 'bold' }}>Nombre y Apellido</label>
+                              <input 
+                                type="text" 
+                                className="form-input-compact" 
+                                placeholder="Ej: Licda. María Pérez" 
+                                value={counselorForm.name} 
+                                onChange={(e) => setCounselorForm(prev => ({ ...prev, name: e.target.value }))} 
+                                required 
+                              />
+                            </div>
+                            <div className="form-group-compact" style={{ margin: 0 }}>
+                              <label style={{ fontWeight: 'bold' }}>Correo Electrónico Institucional</label>
+                              <input 
+                                type="email" 
+                                className="form-input-compact" 
+                                placeholder="maria@docente.edu.do" 
+                                value={counselorForm.email} 
+                                onChange={(e) => setCounselorForm(prev => ({ ...prev, email: e.target.value }))} 
+                                required 
+                              />
+                            </div>
+                            <div className="form-group-compact" style={{ margin: 0 }}>
+                              <label style={{ fontWeight: 'bold' }}>Contraseña</label>
+                              <input 
+                                type="text" 
+                                className="form-input-compact" 
+                                placeholder="orientacion123" 
+                                value={counselorForm.password} 
+                                onChange={(e) => setCounselorForm(prev => ({ ...prev, password: e.target.value }))} 
+                              />
+                            </div>
+                            <button type="submit" className="btn-primary" style={{ backgroundColor: '#6f42c1', borderColor: '#6f42c1', fontWeight: 'bold', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              ＋ Crear Cuenta
+                            </button>
+                          </form>
+                        </div>
+
                       </div>
                     )}
                   </div>
