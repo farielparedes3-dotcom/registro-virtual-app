@@ -7239,7 +7239,36 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
               {activeTab === 'students' && (
                 <div>
-                  <h2>Estudiantes por Grado</h2>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <h2 style={{ margin: 0 }}>Gestión y Reordenamiento de Estudiantes ({activeAdminGrade})</h2>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        Asigna el número de orden exacto (1, 2, 3...) para cada alumno o muévelos de posición.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ fontSize: '0.82rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 'bold' }}
+                      onClick={() => {
+                        const currentGradeStudents = [...students.filter(x => x.grade === activeAdminGrade)].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+                        setStudentsAndSave(prev => {
+                          const updated = [...prev];
+                          currentGradeStudents.forEach((st, idx) => {
+                            const targetIdx = updated.findIndex(u => u.id === st.id);
+                            if (targetIdx >= 0) {
+                              updated[targetIdx] = { ...updated[targetIdx], orderNumber: idx + 1 };
+                            }
+                          });
+                          return updated;
+                        });
+                        alert(`¡Estudiantes de ${activeAdminGrade} reordenados alfabéticamente del 1 al ${currentGradeStudents.length}!`);
+                      }}
+                    >
+                      🔢 Enumerar Alfabéticamente del 1 al N°
+                    </button>
+                  </div>
+
                   <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                     {grades.map(g => (
                       <button key={g} className={`btn-secondary ${activeAdminGrade === g ? 'btn-primary' : ''}`} onClick={() => setActiveAdminGrade(g)}>{g}</button>
@@ -7272,23 +7301,107 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       <table className="custom-table">
                         <thead>
                           <tr>
-                            <th>Nombre</th>
-                            <th>Contacto</th>
+                            <th style={{ width: '90px', textAlign: 'center' }}>N° Orden</th>
+                            <th>Nombre Completo del Alumno</th>
+                            <th>Contacto / ID</th>
                             <th>Grado</th>
-                            <th>Acciones</th>
+                            <th style={{ textAlign: 'center', width: '220px' }}>Acciones y Posición</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {students.filter(s => s.grade === activeAdminGrade).map(s => (
-                            <tr key={s.id}>
-                              <td style={{ fontWeight: 600 }}>{s.name}</td>
-                              <td style={{ color: 'var(--text-secondary)' }}>{s.email}</td>
-                              <td><span className="badge badge-success">{s.grade}</span></td>
-                              <td>
-                                <button className="btn-danger" style={{ padding: '0.35rem 0.75rem' }} onClick={() => handleDeleteStudent(s.id)}>Eliminar</button>
-                              </td>
-                            </tr>
-                          ))}
+                          {(() => {
+                            const sortedList = students
+                              .filter(s => s.grade === activeAdminGrade)
+                              .sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+                            
+                            if (sortedList.length === 0) {
+                              return (
+                                <tr>
+                                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                                    No hay estudiantes matriculados en este grado.
+                                  </td>
+                                </tr>
+                              );
+                            }
+
+                            return sortedList.map((s, idx) => (
+                              <tr key={s.id}>
+                                <td style={{ textAlign: 'center' }}>
+                                  <input 
+                                    type="number"
+                                    min="1"
+                                    max="100"
+                                    className="form-input-compact"
+                                    style={{ width: '60px', textAlign: 'center', fontWeight: 'bold', color: 'var(--primary)' }}
+                                    value={s.orderNumber || (idx + 1)}
+                                    onChange={(e) => {
+                                      const val = parseInt(e.target.value) || (idx + 1);
+                                      setStudentsAndSave(prev => prev.map(item => item.id === s.id ? { ...item, orderNumber: val } : item));
+                                    }}
+                                  />
+                                </td>
+                                <td style={{ fontWeight: 700 }}>{s.name}</td>
+                                <td style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{s.email}</td>
+                                <td><span className="badge badge-success">{s.grade}</span></td>
+                                <td style={{ textAlign: 'center' }}>
+                                  <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>
+                                    <button 
+                                      type="button" 
+                                      className="btn-secondary" 
+                                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.78rem', fontWeight: 'bold' }}
+                                      onClick={() => {
+                                        const currentGradeStudents = students.filter(x => x.grade === activeAdminGrade).sort((a, b) => (Number(a.orderNumber) || 0) - (Number(b.orderNumber) || 0));
+                                        const currentIdx = currentGradeStudents.findIndex(x => x.id === s.id);
+                                        if (currentIdx > 0) {
+                                          const prevStudent = currentGradeStudents[currentIdx - 1];
+                                          const currentOrder = s.orderNumber || (currentIdx + 1);
+                                          const prevOrder = prevStudent.orderNumber || currentIdx;
+                                          setStudentsAndSave(prev => prev.map(item => {
+                                            if (item.id === s.id) return { ...item, orderNumber: prevOrder };
+                                            if (item.id === prevStudent.id) return { ...item, orderNumber: currentOrder };
+                                            return item;
+                                          }));
+                                        }
+                                      }}
+                                      title="Subir de número"
+                                    >
+                                      ⬆️ Subir
+                                    </button>
+                                    <button 
+                                      type="button" 
+                                      className="btn-secondary" 
+                                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.78rem', fontWeight: 'bold' }}
+                                      onClick={() => {
+                                        const currentGradeStudents = students.filter(x => x.grade === activeAdminGrade).sort((a, b) => (Number(a.orderNumber) || 0) - (Number(b.orderNumber) || 0));
+                                        const currentIdx = currentGradeStudents.findIndex(x => x.id === s.id);
+                                        if (currentIdx < currentGradeStudents.length - 1) {
+                                          const nextStudent = currentGradeStudents[currentIdx + 1];
+                                          const currentOrder = s.orderNumber || (currentIdx + 1);
+                                          const nextOrder = nextStudent.orderNumber || (currentIdx + 2);
+                                          setStudentsAndSave(prev => prev.map(item => {
+                                            if (item.id === s.id) return { ...item, orderNumber: nextOrder };
+                                            if (item.id === nextStudent.id) return { ...item, orderNumber: currentOrder };
+                                            return item;
+                                          }));
+                                        }
+                                      }}
+                                      title="Bajar de número"
+                                    >
+                                      ⬇️ Bajar
+                                    </button>
+                                    <button 
+                                      type="button" 
+                                      className="btn-delete-event" 
+                                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.78rem' }} 
+                                      onClick={() => handleDeleteStudent(s.id)}
+                                    >
+                                      ✕ Borrar
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ));
+                          })()}
                         </tbody>
                       </table>
                     </div>
@@ -7300,10 +7413,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           <input type="text" className="form-input" value={studentForm.name} onChange={(e) => setStudentForm(prev => ({ ...prev, name: e.target.value }))} required />
                         </div>
                         <div className="form-group">
-                          <label>Correo</label>
+                          <label>Correo / Matrícula</label>
                           <input type="email" className="form-input" value={studentForm.email} onChange={(e) => setStudentForm(prev => ({ ...prev, email: e.target.value }))} required />
                         </div>
-                        <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Inscribir</button>
+                        <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Inscribir Alumno</button>
                       </form>
                     </div>
                   </div>
