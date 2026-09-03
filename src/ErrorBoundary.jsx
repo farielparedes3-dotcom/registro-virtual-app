@@ -19,9 +19,10 @@ export class ErrorBoundary extends React.Component {
     try {
       // ONLY clear session data so user can re-login, NEVER delete student academic records!
       localStorage.removeItem('s_current_user');
+      sessionStorage.clear();
     } catch(e) {}
-    // Force a full page reload
-    window.location.replace(window.location.origin);
+    // Force a full clean page reload to origin
+    window.location.href = window.location.origin + window.location.pathname;
   };
 
   render() {

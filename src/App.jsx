@@ -1154,9 +1154,18 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-    const saved = localStorage.getItem('s_current_user');
-    return saved ? JSON.parse(saved) : null;
-    } catch (e) { localStorage.removeItem('s_current_user'); return null; }
+      const saved = localStorage.getItem('s_current_user');
+      if (!saved) return null;
+      const parsed = JSON.parse(saved);
+      if (!parsed || typeof parsed !== 'object' || !parsed.role || !parsed.email) {
+        localStorage.removeItem('s_current_user');
+        return null;
+      }
+      return parsed;
+    } catch (e) {
+      localStorage.removeItem('s_current_user');
+      return null;
+    }
   });
 
   const [students, setStudents] = useState(() => {
