@@ -5316,40 +5316,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </button>
             </form>
 
-            <div className="demo-box-clean" style={{ marginTop: '1.5rem', borderTop: '1px dashed var(--border-color)', paddingTop: '1.25rem' }}>
-              <div className="demo-title-clean" style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', textAlign: 'center' }}>
-                Acceso Rápido para Orientadoras (1 Clic):
-              </div>
-              <div className="demo-buttons-clean" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <button 
-                  type="button"
-                  className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('vianelvi@docente.edu.do', 'orientacion123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
-                >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Vianelvi Mejía</span>
-                  <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
-                </button>
-                <button 
-                  type="button"
-                  className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('francina@docente.edu.do', 'orientacion123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
-                >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Francina Minaya</span>
-                  <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
-                </button>
-                <button 
-                  type="button"
-                  className="btn-demo-clean" 
-                  onClick={() => handleQuickLogin('nathaly@docente.edu.do', 'orientacion123')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1.5px solid #6f42c1', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'rgba(111, 66, 193, 0.08)', textAlign: 'left', width: '100%' }}
-                >
-                  <span style={{ fontWeight: 'bold', fontSize: '0.82rem', color: '#6f42c1' }}>🔑 Orientadora: Licda. Nathaly Castillo</span>
-                  <span style={{ fontSize: '0.75rem', color: '#6f42c1', fontWeight: 'bold' }}>Probar Acceso ➔</span>
-                </button>
-              </div>
-            </div>
+            
           </div>
         </div>
 
