@@ -94,255 +94,236 @@ const DEFAULT_USERS = [
     active: true
   },
   { 
-    id: 'u2', 
-    name: 'Prof. Mateo Gómez', 
-    email: 'mateo.gomez@docente.edu.do', 
-    password: 'profe123', 
+    id: 't1', 
+    name: 'Prof. Hiranya Acosta', 
+    email: 'hiranya.acosta@docente.edu.do', 
+    password: 'hiranya123', 
     role: 'teacher', 
     classroomGrade: '1ro A',
     assignments: [
       { grade: '1ro A', subject: 'matematica' },
-      { grade: '2do A', subject: 'matematica' },
-      { grade: '1ro A', subject: 'ciencias_sociales' }
+      { grade: '1ro A', subject: 'lengua_espanola' }
     ],
     active: true 
   },
   { 
-    id: 'u3', 
-    name: 'Prof. Clara Ruiz', 
-    email: 'clara.ruiz@docente.edu.do', 
-    password: 'profe123', 
+    id: 't2', 
+    name: 'Prof. Luis Bencosme', 
+    email: 'luis.bencosme@docente.edu.do', 
+    password: 'luis123', 
     role: 'teacher', 
-    classroomGrade: '2do A',
+    classroomGrade: '1ro A',
     assignments: [
       { grade: '1ro A', subject: 'ciencias_naturaleza' },
-      { grade: '2do A', subject: 'ciencias_naturaleza' }
+      { grade: '1ro A', subject: 'ciencias_sociales' }
     ], 
     active: true 
   },
   { 
-    id: 'u4', 
-    name: 'Prof. Luis Castro', 
-    email: 'luis.castro@docente.edu.do', 
-    password: 'profe123', 
+    id: 't3', 
+    name: 'Prof. Miguel Brito', 
+    email: 'miguel.brito@docente.edu.do', 
+    password: 'miguel123', 
     role: 'teacher', 
-    classroomGrade: '1ro B',
-    assignments: [
-      { grade: '1ro A', subject: 'lengua_espanola' },
-      { grade: '2do A', subject: 'lengua_espanola' }
-    ], 
-    active: true 
-  },
-  {
-    id: 'u5',
-    name: 'Prof. Mario Paredes',
-    email: 'mario.paredes@docente.edu.do',
-    password: 'mario123',
-    role: 'teacher',
-    classroomGrade: '4to A',
-    assignments: [
-      { grade: '4to A', subject: 'matematica' },
-      { grade: '4to A', subject: 'ciencias_naturaleza' }
-    ],
-    active: true
-  },
-  {
-    id: 'u8',
-    name: 'Prof. Roberto Díaz',
-    email: 'roberto.diaz@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
     classroomGrade: '1ro B',
     assignments: [
       { grade: '1ro B', subject: 'matematica' },
-      { grade: '2do B', subject: 'matematica' }
+      { grade: '1ro B', subject: 'lengua_espanola' }
+    ], 
+    active: true 
+  },
+  {
+    id: 't4',
+    name: 'Prof. María De Jesús',
+    email: 'maria.dejesus@docente.edu.do',
+    password: 'maria123',
+    role: 'teacher',
+    classroomGrade: '1ro B',
+    assignments: [
+      { grade: '1ro B', subject: 'ciencias_naturaleza' },
+      { grade: '1ro B', subject: 'ciencias_sociales' }
     ],
     active: true
   },
   {
-    id: 'u9',
-    name: 'Prof. Ana Mercedes Fernández',
-    email: 'ana.fernandez@docente.edu.do',
-    password: 'profe123',
+    id: 't5',
+    name: 'Prof. María Eduardo',
+    email: 'maria.eduardo@docente.edu.do',
+    password: 'eduardo123',
+    role: 'teacher',
+    classroomGrade: '2do A',
+    assignments: [
+      { grade: '2do A', subject: 'matematica' },
+      { grade: '2do A', subject: 'lengua_espanola' }
+    ],
+    active: true
+  },
+  {
+    id: 't6',
+    name: 'Prof. Emiliana Espinal',
+    email: 'emiliana.espinal@docente.edu.do',
+    password: 'emiliana123',
+    role: 'teacher',
+    classroomGrade: '2do A',
+    assignments: [
+      { grade: '2do A', subject: 'ciencias_naturaleza' },
+      { grade: '2do A', subject: 'ciencias_sociales' }
+    ],
+    active: true
+  },
+  {
+    id: 't7',
+    name: 'Prof. Ricardo Frías',
+    email: 'ricardo.frias@docente.edu.do',
+    password: 'frias123',
     role: 'teacher',
     classroomGrade: '2do B',
     assignments: [
-      { grade: '1ro B', subject: 'lengua_espanola' },
+      { grade: '2do B', subject: 'matematica' },
       { grade: '2do B', subject: 'lengua_espanola' }
     ],
     active: true
   },
   {
-    id: 'u10',
-    name: 'Prof. Carlos Eduardo Mendoza',
-    email: 'carlos.mendoza@docente.edu.do',
-    password: 'profe123',
+    id: 't8',
+    name: 'Prof. Smarlin Hernández',
+    email: 'smarlin.hernandez@docente.edu.do',
+    password: 'smarlin123',
+    role: 'teacher',
+    classroomGrade: '2do B',
+    assignments: [
+      { grade: '2do B', subject: 'ciencias_naturaleza' },
+      { grade: '2do B', subject: 'ciencias_sociales' }
+    ],
+    active: true
+  },
+  {
+    id: 't9',
+    name: 'Prof. Santa Hilario',
+    email: 'santa.hilario@docente.edu.do',
+    password: 'santa123',
     role: 'teacher',
     classroomGrade: '3ro A',
     assignments: [
-      { grade: '3ro A', subject: 'ciencias_sociales' },
+      { grade: '3ro A', subject: 'matematica' },
+      { grade: '3ro A', subject: 'lengua_espanola' }
+    ],
+    active: true
+  },
+  {
+    id: 't10',
+    name: 'Prof. Xavier Javier',
+    email: 'xavier.javier@docente.edu.do',
+    password: 'xavier123',
+    role: 'teacher',
+    classroomGrade: '3ro A',
+    assignments: [
+      { grade: '3ro A', subject: 'ciencias_naturaleza' },
+      { grade: '3ro A', subject: 'ciencias_sociales' }
+    ],
+    active: true
+  },
+  {
+    id: 't11',
+    name: 'Prof. José King',
+    email: 'jose.king@docente.edu.do',
+    password: 'king123',
+    role: 'teacher',
+    classroomGrade: '3ro B',
+    assignments: [
+      { grade: '3ro B', subject: 'matematica' },
+      { grade: '3ro B', subject: 'lengua_espanola' }
+    ],
+    active: true
+  },
+  {
+    id: 't12',
+    name: 'Prof. Ramón López',
+    email: 'ramon.lopez@docente.edu.do',
+    password: 'ramon123',
+    role: 'teacher',
+    classroomGrade: '3ro B',
+    assignments: [
+      { grade: '3ro B', subject: 'ciencias_naturaleza' },
       { grade: '3ro B', subject: 'ciencias_sociales' }
     ],
     active: true
   },
   {
-    id: 'u11',
-    name: 'Prof. Carmen Rosa Almonte',
-    email: 'carmen.almonte@docente.edu.do',
-    password: 'profe123',
+    id: 't13',
+    name: 'Prof. Lohany Mateo',
+    email: 'lohany.mateo@docente.edu.do',
+    password: 'lohany123',
     role: 'teacher',
-    classroomGrade: '3ro B',
+    classroomGrade: '4to A',
     assignments: [
-      { grade: '1ro A', subject: 'ingles' },
-      { grade: '2do A', subject: 'ingles' },
-      { grade: '3ro A', subject: 'ingles' }
+      { grade: '4to A', subject: 'matematica' },
+      { grade: '4to A', subject: 'lengua_espanola' }
     ],
     active: true
   },
   {
-    id: 'u12',
-    name: 'Prof. José Antonio Ramírez',
-    email: 'jose.ramirez@docente.edu.do',
-    password: 'profe123',
+    id: 't14',
+    name: 'Prof. Teresita Mercedes',
+    email: 'teresita.mercedes@docente.edu.do',
+    password: 'teresita123',
+    role: 'teacher',
+    classroomGrade: '4to A',
+    assignments: [
+      { grade: '4to A', subject: 'ciencias_naturaleza' },
+      { grade: '4to A', subject: 'ciencias_sociales' }
+    ],
+    active: true
+  },
+  {
+    id: 't15',
+    name: 'Prof. Kareem Moreno',
+    email: 'kareem.moreno@docente.edu.do',
+    password: 'kareem123',
     role: 'teacher',
     classroomGrade: '4to B',
     assignments: [
-      { grade: '3ro A', subject: 'ciencias_naturaleza' },
-      { grade: '4to A', subject: 'salida_1' }
+      { grade: '4to B', subject: 'matematica' },
+      { grade: '4to B', subject: 'lengua_espanola' }
     ],
     active: true
   },
   {
-    id: 'u13',
-    name: 'Prof. Francisca Valerio',
-    email: 'francisca.valerio@docente.edu.do',
-    password: 'profe123',
+    id: 't16',
+    name: 'Prof. Diómedes Núñez',
+    email: 'diomedes.nunez@docente.edu.do',
+    password: 'diomedes123',
     role: 'teacher',
     classroomGrade: '5to A',
     assignments: [
-      { grade: '4to B', subject: 'ciencias_naturaleza' },
-      { grade: '5to A', subject: 'ciencias_naturaleza' }
+      { grade: '5to A', subject: 'matematica' },
+      { grade: '5to A', subject: 'lengua_espanola' }
     ],
     active: true
   },
   {
-    id: 'u14',
-    name: 'Prof. Juan Manuel Santos',
-    email: 'juan.santos@docente.edu.do',
-    password: 'profe123',
+    id: 't17',
+    name: 'Prof. José Robles',
+    email: 'jose.robles@docente.edu.do',
+    password: 'robles123',
     role: 'teacher',
     classroomGrade: '5to B',
     assignments: [
-      { grade: '5to A', subject: 'matematica' },
-      { grade: '5to B', subject: 'matematica' }
+      { grade: '5to B', subject: 'matematica' },
+      { grade: '5to B', subject: 'lengua_espanola' }
     ],
     active: true
   },
   {
-    id: 'u15',
-    name: 'Prof. Patricia Reyes',
-    email: 'patricia.reyes@docente.edu.do',
-    password: 'profe123',
+    id: 't18',
+    name: 'Prof. Matías Benavide',
+    email: 'matias.benavide@docente.edu.do',
+    password: 'matias123',
     role: 'teacher',
     classroomGrade: '6to A',
     assignments: [
-      { grade: '5to A', subject: 'lengua_espanola' },
-      { grade: '6to A', subject: 'lengua_espanola' }
-    ],
-    active: true
-  },
-  {
-    id: 'u16',
-    name: 'Prof. Gabriel Jiménez',
-    email: 'gabriel.jimenez@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '',
-    assignments: [
-      { grade: '1ro A', subject: 'educacion_fisica' },
-      { grade: '2do A', subject: 'educacion_fisica' },
-      { grade: '3ro A', subject: 'educacion_fisica' },
-      { grade: '4to A', subject: 'educacion_fisica' }
-    ],
-    active: true
-  },
-  {
-    id: 'u17',
-    name: 'Prof. Elena Beatriz Peralta',
-    email: 'elena.peralta@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '',
-    assignments: [
-      { grade: '1ro A', subject: 'artistica' },
-      { grade: '2do A', subject: 'artistica' },
-      { grade: '3ro A', subject: 'artistica' }
-    ],
-    active: true
-  },
-  {
-    id: 'u18',
-    name: 'Prof. Rafael Antonio Polanco',
-    email: 'rafael.polanco@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '',
-    assignments: [
-      { grade: '1ro A', subject: 'formacion_humana' },
-      { grade: '2do A', subject: 'formacion_humana' },
-      { grade: '3ro A', subject: 'formacion_humana' }
-    ],
-    active: true
-  },
-  {
-    id: 'u19',
-    name: 'Prof. Miguel Ángel Guzmán',
-    email: 'miguel.guzman@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '',
-    assignments: [
-      { grade: '4to A', subject: 'frances' },
-      { grade: '5to A', subject: 'frances' }
-    ],
-    active: true
-  },
-  {
-    id: 'u20',
-    name: 'Prof. Rosa Julia Martínez',
-    email: 'rosa.martinez@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '6to B',
-    assignments: [
-      { grade: '6to A', subject: 'ciencias_sociales' },
-      { grade: '6to B', subject: 'ciencias_sociales' }
-    ],
-    active: true
-  },
-  {
-    id: 'u21',
-    name: 'Prof. Domingo Antonio Rosario',
-    email: 'domingo.rosario@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '',
-    assignments: [
       { grade: '6to A', subject: 'matematica' },
-      { grade: '6to B', subject: 'matematica' }
-    ],
-    active: true
-  },
-  {
-    id: 'u22',
-    name: 'Prof. Yris Josefina Morel',
-    email: 'yris.morel@docente.edu.do',
-    password: 'profe123',
-    role: 'teacher',
-    classroomGrade: '',
-    assignments: [
-      { grade: '6to A', subject: 'salida_2' },
-      { grade: '6to B', subject: 'salida_2' }
+      { grade: '6to A', subject: 'lengua_espanola' }
     ],
     active: true
   }
