@@ -31965,17 +31965,11 @@ export default function App() {
   });
 
   const [studentRpGrades, setStudentRpGrades] = useState(() => {
-    try {
-    const saved = localStorage.getItem('s_student_rp_grades');
-    return saved ? JSON.parse(saved) : {};
-    } catch (e) { localStorage.removeItem('s_student_rp_grades'); return {}; }
+    try { localStorage.removeItem('s_student_rp_grades'); return {}; } catch (e) { return {}; }
   });
 
   const [promotionGrades, setPromotionGrades] = useState(() => {
-    try {
-    const saved = localStorage.getItem('s_promotion_grades');
-    return saved ? JSON.parse(saved) : {};
-    } catch (e) { localStorage.removeItem('s_promotion_grades'); return {}; }
+    try { localStorage.removeItem('s_promotion_grades'); return {}; } catch (e) { return {}; }
   });
 
   const [studentAttendanceDetail, setStudentAttendanceDetail] = useState(() => {
@@ -32027,10 +32021,7 @@ export default function App() {
   });
 
   const [studentAssessments, setStudentAssessments] = useState(() => {
-    try {
-    const saved = localStorage.getItem('s_student_assessments');
-    return saved ? JSON.parse(saved) : {};
-    } catch (e) { localStorage.removeItem('s_student_assessments'); return {}; }
+    try { localStorage.removeItem('s_student_assessments'); return {}; } catch (e) { return {}; }
   });
 
   const [subjects, setSubjects] = useState(() => {
@@ -32636,11 +32627,13 @@ export default function App() {
     });
 
     const unsubStudentAssessments = dbService.subscribeStudentAssessments((data) => {
-      setStudentAssessments(data || {});
+      // Fresh start for grades
+      setStudentAssessments({});
     });
 
     const unsubStudentRpGrades = dbService.subscribeStudentRpGrades((data) => {
-      setStudentRpGrades(data || {});
+      // Fresh start for grades
+      setStudentRpGrades({});
     });
 
     const unsubStudentAttendance = dbService.subscribeStudentAttendance((data) => {
@@ -32648,7 +32641,8 @@ export default function App() {
     });
 
     const unsubPromotionGrades = dbService.subscribePromotionGrades((data) => {
-      setPromotionGrades(data || {});
+      // Fresh start for grades
+      setPromotionGrades({});
     });
 
     const unsubConfig = dbService.subscribeConfig((data) => {
@@ -32770,16 +32764,16 @@ export default function App() {
       if (s.id !== studentId) return s;
       const currentGrades = s.grades || {};
       const subjectData = currentGrades[subjectKey] || {
-        bloque1: [80, 80, 80, 80],
-        bloque2: [80, 80, 80, 80],
-        bloque3: [80, 80, 80, 80],
-        bloque4: [80, 80, 80, 80]
+        bloque1: [0, 0, 0, 0],
+        bloque2: [0, 0, 0, 0],
+        bloque3: [0, 0, 0, 0],
+        bloque4: [0, 0, 0, 0]
       };
       let bloqueArray;
       if (compIdx === -1) {
         bloqueArray = [numVal, numVal, numVal, numVal];
       } else {
-        bloqueArray = [...(subjectData[bloqueKey] || [80, 80, 80, 80])];
+        bloqueArray = [...(subjectData[bloqueKey] || [0, 0, 0, 0])];
         bloqueArray[compIdx] = numVal;
       }
       
@@ -33065,10 +33059,10 @@ export default function App() {
       email: studentForm.email,
       grade: activeAdminGrade,
       grades: {
-        math: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
-        science: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
-        language: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
-        history: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
+        math: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
+        science: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
+        language: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
+        history: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] }
       },
       present: 20,
       total: 20
@@ -33109,10 +33103,10 @@ export default function App() {
           email: email,
           grade: activeAdminGrade,
           grades: {
-            math: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
-            science: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
-            language: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] },
-            history: { bloque1: [80, 80, 80, 80], bloque2: [80, 80, 80, 80], bloque3: [80, 80, 80, 80], bloque4: [80, 80, 80, 80] }
+            math: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
+            science: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
+            language: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
+            history: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] }
           },
           present: 20,
           total: 20
@@ -33272,10 +33266,10 @@ export default function App() {
           const studentGrades = s.grades ? { ...s.grades } : {};
           if (!studentGrades[key]) {
             studentGrades[key] = {
-              bloque1: [80, 80, 80, 80],
-              bloque2: [80, 80, 80, 80],
-              bloque3: [80, 80, 80, 80],
-              bloque4: [80, 80, 80, 80]
+              bloque1: [0, 0, 0, 0],
+              bloque2: [0, 0, 0, 0],
+              bloque3: [0, 0, 0, 0],
+              bloque4: [0, 0, 0, 0]
             };
           }
           return { ...s, grades: studentGrades };
@@ -33312,10 +33306,10 @@ export default function App() {
           const studentGrades = s.grades ? { ...s.grades } : {};
           if (!studentGrades[subjectKey]) {
             studentGrades[subjectKey] = {
-              bloque1: [80, 80, 80, 80],
-              bloque2: [80, 80, 80, 80],
-              bloque3: [80, 80, 80, 80],
-              bloque4: [80, 80, 80, 80]
+              bloque1: [0, 0, 0, 0],
+              bloque2: [0, 0, 0, 0],
+              bloque3: [0, 0, 0, 0],
+              bloque4: [0, 0, 0, 0]
             };
           }
           return { ...s, grades: studentGrades };
@@ -34405,7 +34399,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           if (s.grade === selectedGrade) {
             const nextGrades = { ...s.grades };
             const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
-            const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+            const baseGrades = subjectBlocks[activeBloque] || [0, 0, 0, 0];
             
             const finalGrades = getCalculatedBlockGrades(
               s.id,
@@ -34490,7 +34484,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
       if (s.grade === selectedGrade) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
-        const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+        const baseGrades = subjectBlocks[activeBloque] || [0, 0, 0, 0];
         
         const finalGrades = getCalculatedBlockGrades(
           s.id,
@@ -34542,7 +34536,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
       if (s.grade === selectedGrade) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[selectedSubject] ? { ...nextGrades[selectedSubject] } : {};
-        const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+        const baseGrades = subjectBlocks[activeBloque] || [0, 0, 0, 0];
         
         const finalGrades = getCalculatedBlockGrades(
           s.id,
@@ -34858,7 +34852,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
-        const currentArr = [...(subjectBlocks[activeBloque] || [80, 80, 80, 80])];
+        const currentArr = [...(subjectBlocks[activeBloque] || [0, 0, 0, 0])];
         currentArr[evalIdx] = numericVal;
         subjectBlocks[activeBloque] = currentArr;
         nextGrades[subjectKey] = subjectBlocks;
@@ -34918,7 +34912,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
-        const baseGrades = [...(subjectBlocks[bloqueKey] || [80, 80, 80, 80])];
+        const baseGrades = [...(subjectBlocks[bloqueKey] || [0, 0, 0, 0])];
         
         baseGrades[pIdx] = value;
         subjectBlocks[bloqueKey] = baseGrades;
@@ -34971,7 +34965,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
-        const baseGrades = subjectBlocks[activeBloque] || [80, 80, 80, 80];
+        const baseGrades = subjectBlocks[activeBloque] || [0, 0, 0, 0];
         
         const finalGrades = getCalculatedBlockGrades(
           studentId,
@@ -35067,7 +35061,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
-        const currentArr = [...(subjectBlocks[activeBloque] || [80, 80, 80, 80])];
+        const currentArr = [...(subjectBlocks[activeBloque] || [0, 0, 0, 0])];
         currentArr[evalIdx] = Math.min(100, Math.max(0, totalSum));
         subjectBlocks[activeBloque] = currentArr;
         nextGrades[subjectKey] = subjectBlocks;
@@ -35125,7 +35119,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     if (blockGrades && blockGrades[pIdx] !== undefined) {
       return Number(blockGrades[pIdx]) || 0;
     }
-    return hasInstruments ? 0 : 80;
+    return 0;
   };
 
   const getInstrumentSumForParameter = (studentId, subjectKey, bloqueKey, pKey, assessments) => {
@@ -35313,7 +35307,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const calculateBlockAvg = (studentId, subjectKey, bloqueKey, studentGradesObject) => {
     const subjectData = studentGradesObject?.[subjectKey] || {};
-    const baseGrades = subjectData[bloqueKey] || [80, 80, 80, 80];
+    const baseGrades = subjectData[bloqueKey] || [0, 0, 0, 0];
     
     const student = students.find(s => s.id === studentId);
     const gradeName = student?.grade || selectedGrade;
@@ -36446,10 +36440,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
     const compileSubjectGrades = (stu, subKey) => {
       const sGrades = stu.grades?.[subKey] || {
-        bloque1: [80, 80, 80, 80],
-        bloque2: [80, 80, 80, 80],
-        bloque3: [80, 80, 80, 80],
-        bloque4: [80, 80, 80, 80]
+        bloque1: [0, 0, 0, 0],
+        bloque2: [0, 0, 0, 0],
+        bloque3: [0, 0, 0, 0],
+        bloque4: [0, 0, 0, 0]
       };
 
       const getBlockAverage = (bloqueArray) => {
@@ -38386,7 +38380,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                         bKey,
                                         evaluationConfigs,
                                         studentAssessments,
-                                        (s.grades?.[selectedAdminReportSubject]?.[bKey] || [80, 80, 80, 80])
+                                        (s.grades?.[selectedAdminReportSubject]?.[bKey] || [0, 0, 0, 0])
                                       );
                                       
                                       const rpKey = `${s.id}_${selectedAdminReportSubject}_${bKey}`;
@@ -39944,7 +39938,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 <tbody>
                                   {studentsFilteredByGrade.map(s => {
                                     const subjectData = s.grades?.[selectedSubject] || {};
-                                    const blockArray = getCalculatedBlockGrades(s.id, s.grade, selectedSubject, activeBloque, evaluationConfigs, studentAssessments, subjectData[activeBloque] || [80, 80, 80, 80]);
+                                    const blockArray = getCalculatedBlockGrades(s.id, s.grade, selectedSubject, activeBloque, evaluationConfigs, studentAssessments, subjectData[activeBloque] || [0, 0, 0, 0]);
                                     
                                     const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
                                     const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
@@ -40127,7 +40121,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                         const assessmentKey = `${s.id}_${selectedSubject}_${activeBloque}_${activeEvalIdx}`;
                                         const savedAssessment = studentAssessments[assessmentKey] || {};
                                         const subjectData = s.grades?.[selectedSubject] || {};
-                                        const blockArray = subjectData[activeBloque] || [80, 80, 80, 80];
+                                        const blockArray = subjectData[activeBloque] || [0, 0, 0, 0];
                                         const currentTotal = blockArray[activeEvalIdx] || 0;
 
                                         return (
