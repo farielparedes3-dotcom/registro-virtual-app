@@ -87214,27 +87214,15 @@ export default function App() {
     const savedList = Array.isArray(savedArray) ? savedArray : [];
     const defaultList = Array.isArray(defaultArray) ? defaultArray : [];
 
-    const findSavedStudent = (defStu) => {
-      const normDefName = (defStu.name || '').trim().toLowerCase();
-      return savedList.find(savedStu => {
-        if (savedStu.id === defStu.id) return true;
-        if (savedStu.email && defStu.email && savedStu.email.toLowerCase() === defStu.email.toLowerCase()) return true;
-        const normSavedName = (savedStu.name || '').trim().toLowerCase();
-        return normSavedName === normDefName || normSavedName.includes(normDefName) || normDefName.includes(normSavedName);
-      });
-    };
-
-    const mergedList = defaultList.map((defStu) => {
-      const existingSaved = findSavedStudent(defStu);
-      if (existingSaved) {
+    // Map strictly by default student ID (s_1 .. s_291) or exact name
+    return defaultList.map((defStu) => {
+      const savedMatch = savedList.find(s => s.id === defStu.id || (s.name && s.name.trim().toLowerCase() === defStu.name.trim().toLowerCase()));
+      if (savedMatch) {
         return {
           ...defStu,
-          id: existingSaved.id || defStu.id,
-          name: existingSaved.name || defStu.name,
-          email: existingSaved.email || defStu.email,
-          grades: normalizeStudentGrades(existingSaved.grades || defStu.grades),
-          attendance: existingSaved.attendance || defStu.attendance,
-          comments: existingSaved.comments || defStu.comments
+          grades: normalizeStudentGrades(savedMatch.grades || defStu.grades),
+          attendance: savedMatch.attendance || defStu.attendance,
+          comments: savedMatch.comments || defStu.comments
         };
       }
       return {
@@ -87242,18 +87230,6 @@ export default function App() {
         grades: normalizeStudentGrades(defStu.grades)
       };
     });
-
-    savedList.forEach(savedStu => {
-      const isInMerged = mergedList.some(m => m.id === savedStu.id || (m.name && savedStu.name && m.name.toLowerCase() === savedStu.name.toLowerCase()));
-      if (!isInMerged) {
-        mergedList.push({
-          ...savedStu,
-          grades: normalizeStudentGrades(savedStu.grades)
-        });
-      }
-    });
-
-    return mergedList;
   };
 
   const [students, setStudents] = useState(() => {
