@@ -87924,11 +87924,12 @@ export default function App() {
     });
 
     const unsubStudents = dbService.subscribeStudents((data) => {
-      if (data && data.length > 0) {
-        setStudents(data);
-      } else {
-        setStudents(DEFAULT_STUDENTS);
-      }
+      const merged = mergeStudentsPreservingData(data, DEFAULT_STUDENTS);
+      setStudents(merged);
+      try {
+        localStorage.setItem('s_students', JSON.stringify(merged));
+      } catch(e) {}
+      dbService.saveStudents(merged);
     });
 
     const unsubEvents = dbService.subscribeEvents((data) => {
@@ -90659,7 +90660,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
     const subjectName = subjects[targetSubject]?.name || targetSubject;
     const monthsList = ['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
-    const studentsList = students.filter(s => s.grade === targetGrade);
+    const studentsList = students.filter(s => s.grade === targetGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
     const teacherObj = getAssignedTeacher(users, subjects, targetGrade, targetSubject);
     const teacherName = teacherObj ? teacherObj.name : '';
@@ -91031,7 +91032,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     : [];
 
   const studentsFilteredByGrade = selectedGrade
-    ? students.filter(s => s.grade === selectedGrade)
+    ? students.filter(s => s.grade === selectedGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999))
     : students;
 
   const toggleUserActive = (id) => {
@@ -93590,7 +93591,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     (() => {
                       const theme = getGradeThemeInfo(selectedAdminReportGrade);
                       const subName = subjects[selectedAdminReportSubject]?.name || selectedAdminReportSubject;
-                      const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade);
+                      const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
                       const compCodes = getCompetencyCodesForSubject(selectedAdminReportSubject);
 
                       return (
@@ -94197,7 +94198,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       const sub = subjects[subKey];
                       const teacher = getAssignedTeacher(users, subjects, selectedAdminAttendanceGrade, subKey);
                       const isExpanded = expandedAdminAttendanceSubjects[subKey];
-                      const gradeStudents = students.filter(s => s.grade === selectedAdminAttendanceGrade);
+                      const gradeStudents = students.filter(s => s.grade === selectedAdminAttendanceGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
                       return (
                         <div 
@@ -94521,7 +94522,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           disabled={!adminBulletinGrade}
                         >
                           <option value="">-- Seleccionar Estudiante --</option>
-                          {students.filter(s => s.grade === adminBulletinGrade).map(s => (
+                          {students.filter(s => s.grade === adminBulletinGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999)).map(s => (
                             <option key={s.id} value={s.id}>{s.name}</option>
                           ))}
                         </select>
@@ -96689,7 +96690,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div>
                 {(() => {
                   const targetGrade = currentUser?.classroomGrade || selectedGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
-                  const availableStudents = students.filter(s => s.grade === targetGrade);
+                  const availableStudents = students.filter(s => s.grade === targetGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
                   return (
                     <div>
