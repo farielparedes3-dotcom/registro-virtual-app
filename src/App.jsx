@@ -87209,26 +87209,67 @@ export default function App() {
     }
   });
 
+  // Smart Merger: Merges saved browser data with official PDF 291 list preserving all teacher-entered grades/attendance
+  const mergeStudentsPreservingData = (savedArray, defaultArray) => {
+    const savedList = Array.isArray(savedArray) ? savedArray : [];
+    const defaultList = Array.isArray(defaultArray) ? defaultArray : [];
+
+    const findSavedStudent = (defStu) => {
+      const normDefName = (defStu.name || '').trim().toLowerCase();
+      return savedList.find(savedStu => {
+        if (savedStu.id === defStu.id) return true;
+        if (savedStu.email && defStu.email && savedStu.email.toLowerCase() === defStu.email.toLowerCase()) return true;
+        const normSavedName = (savedStu.name || '').trim().toLowerCase();
+        return normSavedName === normDefName || normSavedName.includes(normDefName) || normDefName.includes(normSavedName);
+      });
+    };
+
+    const mergedList = defaultList.map((defStu) => {
+      const existingSaved = findSavedStudent(defStu);
+      if (existingSaved) {
+        return {
+          ...defStu,
+          id: existingSaved.id || defStu.id,
+          name: existingSaved.name || defStu.name,
+          email: existingSaved.email || defStu.email,
+          grades: normalizeStudentGrades(existingSaved.grades || defStu.grades),
+          attendance: existingSaved.attendance || defStu.attendance,
+          comments: existingSaved.comments || defStu.comments
+        };
+      }
+      return {
+        ...defStu,
+        grades: normalizeStudentGrades(defStu.grades)
+      };
+    });
+
+    savedList.forEach(savedStu => {
+      const isInMerged = mergedList.some(m => m.id === savedStu.id || (m.name && savedStu.name && m.name.toLowerCase() === savedStu.name.toLowerCase()));
+      if (!isInMerged) {
+        mergedList.push({
+          ...savedStu,
+          grades: normalizeStudentGrades(savedStu.grades)
+        });
+      }
+    });
+
+    return mergedList;
+  };
+
   const [students, setStudents] = useState(() => {
     try {
       const saved = localStorage.getItem('s_students');
-      // Always prioritize official DEFAULT_STUDENTS array from official PDF when loaded
-      let list = DEFAULT_STUDENTS;
+      let savedParsed = null;
       if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 50) {
-            list = parsed;
-          }
-        } catch(e) {}
+        try { savedParsed = JSON.parse(saved); } catch(e) {}
       }
-      return list.map(s => ({
-        ...s,
-        grades: normalizeStudentGrades(s.grades)
-      }));
+      const merged = mergeStudentsPreservingData(savedParsed, DEFAULT_STUDENTS);
+      localStorage.setItem('s_students', JSON.stringify(merged));
+      return merged;
     } catch (e) {
-      localStorage.removeItem('s_students');
-      return DEFAULT_STUDENTS.map(s => ({ ...s, grades: normalizeStudentGrades(s.grades) }));
+      const fallback = DEFAULT_STUDENTS.map(s => ({ ...s, grades: normalizeStudentGrades(s.grades) }));
+      localStorage.setItem('s_students', JSON.stringify(fallback));
+      return fallback;
     }
   });
 
