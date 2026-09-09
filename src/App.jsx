@@ -20,7 +20,7 @@ const DEFAULT_SUBJECTS = {
   formacion_religiosa: { name: 'Formación Integral Humana y Religiosa', color: 'hsl(200, 70%, 40%)', bg: 'rgba(13, 202, 240, 0.08)' }
 };
 
-const DEFAULT_GRADES = ['1ro A', '2do A', '3ro A', '4to A', '5to A', '6to A'];
+const DEFAULT_GRADES = ['1ro A', '1ro B', '2do A', '2do B', '3ro A', '3ro B', '3ro C', '4AM', '4AH', '4BH', '5AM', '5AN', '6AM', '6AH'];
 
 const MOTIVATIONAL_QUOTES = [
   "La educación es el pasaporte hacia el futuro, el mañana pertenece a quienes se preparan para él hoy. — Malcolm X",
@@ -255,10 +255,10 @@ const DEFAULT_USERS = [
     email: 'lohany.mateo@docente.edu.do',
     password: 'lohany123',
     role: 'teacher',
-    classroomGrade: '4to A',
+    classroomGrade: '4AM',
     assignments: [
-      { grade: '4to A', subject: 'matematica' },
-      { grade: '4to A', subject: 'lengua_espanola' }
+      { grade: '4AM', subject: 'matematica' },
+      { grade: '4AM', subject: 'lengua_espanola' }
     ],
     active: true
   },
@@ -268,10 +268,10 @@ const DEFAULT_USERS = [
     email: 'teresita.mercedes@docente.edu.do',
     password: 'teresita123',
     role: 'teacher',
-    classroomGrade: '4to A',
+    classroomGrade: '4AH',
     assignments: [
-      { grade: '4to A', subject: 'ciencias_naturaleza' },
-      { grade: '4to A', subject: 'ciencias_sociales' }
+      { grade: '4AH', subject: 'ciencias_naturaleza' },
+      { grade: '4AH', subject: 'ciencias_sociales' }
     ],
     active: true
   },
@@ -281,10 +281,10 @@ const DEFAULT_USERS = [
     email: 'kareem.moreno@docente.edu.do',
     password: 'kareem123',
     role: 'teacher',
-    classroomGrade: '4to B',
+    classroomGrade: '4BH',
     assignments: [
-      { grade: '4to B', subject: 'matematica' },
-      { grade: '4to B', subject: 'lengua_espanola' }
+      { grade: '4BH', subject: 'matematica' },
+      { grade: '4BH', subject: 'lengua_espanola' }
     ],
     active: true
   },
@@ -294,10 +294,10 @@ const DEFAULT_USERS = [
     email: 'diomedes.nunez@docente.edu.do',
     password: 'diomedes123',
     role: 'teacher',
-    classroomGrade: '5to A',
+    classroomGrade: '5AM',
     assignments: [
-      { grade: '5to A', subject: 'matematica' },
-      { grade: '5to A', subject: 'lengua_espanola' }
+      { grade: '5AM', subject: 'matematica' },
+      { grade: '5AM', subject: 'lengua_espanola' }
     ],
     active: true
   },
@@ -307,10 +307,10 @@ const DEFAULT_USERS = [
     email: 'jose.robles@docente.edu.do',
     password: 'robles123',
     role: 'teacher',
-    classroomGrade: '5to B',
+    classroomGrade: '5AN',
     assignments: [
-      { grade: '5to B', subject: 'matematica' },
-      { grade: '5to B', subject: 'lengua_espanola' }
+      { grade: '5AN', subject: 'matematica' },
+      { grade: '5AN', subject: 'lengua_espanola' }
     ],
     active: true
   },
@@ -320,10 +320,12 @@ const DEFAULT_USERS = [
     email: 'matias.benavide@docente.edu.do',
     password: 'matias123',
     role: 'teacher',
-    classroomGrade: '6to A',
+    classroomGrade: '6AM',
     assignments: [
-      { grade: '6to A', subject: 'matematica' },
-      { grade: '6to A', subject: 'lengua_espanola' }
+      { grade: '6AM', subject: 'matematica' },
+      { grade: '6AM', subject: 'lengua_espanola' },
+      { grade: '6AH', subject: 'matematica' },
+      { grade: '6AH', subject: 'lengua_espanola' }
     ],
     active: true
   }
@@ -339,12 +341,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -362,23 +359,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -390,34 +377,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -445,12 +417,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -468,23 +435,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -496,34 +453,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -551,12 +493,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -574,23 +511,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -602,34 +529,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -657,12 +569,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -680,23 +587,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -708,34 +605,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -763,12 +645,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -786,23 +663,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -814,34 +681,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -869,12 +721,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -892,23 +739,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -920,34 +757,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -975,12 +797,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -998,23 +815,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1026,34 +833,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1081,12 +873,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1104,23 +891,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1132,34 +909,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1187,12 +949,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1210,23 +967,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1238,34 +985,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1293,12 +1025,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1316,23 +1043,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1344,34 +1061,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1399,12 +1101,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1422,23 +1119,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1450,34 +1137,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1505,12 +1177,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1528,23 +1195,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1556,34 +1213,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1611,12 +1253,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1634,23 +1271,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1662,34 +1289,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1717,12 +1329,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1740,23 +1347,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1768,34 +1365,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1823,12 +1405,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1846,23 +1423,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1874,34 +1441,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1929,12 +1481,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1952,23 +1499,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -1980,34 +1517,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2035,12 +1557,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2058,23 +1575,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2086,34 +1593,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2141,12 +1633,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2164,23 +1651,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2192,34 +1669,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2247,12 +1709,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2270,23 +1727,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2298,34 +1745,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2353,12 +1785,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2376,23 +1803,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2404,34 +1821,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2459,12 +1861,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2482,23 +1879,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2510,34 +1897,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2565,12 +1937,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2588,23 +1955,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2616,34 +1973,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2671,12 +2013,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2694,23 +2031,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2722,34 +2049,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2777,12 +2089,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2800,23 +2107,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2828,34 +2125,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2883,12 +2165,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2906,23 +2183,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2934,34 +2201,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -2989,12 +2241,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3012,23 +2259,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3040,34 +2277,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3095,12 +2317,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3118,23 +2335,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3146,34 +2353,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3201,12 +2393,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3224,23 +2411,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3252,34 +2429,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3307,12 +2469,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3330,23 +2487,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3358,34 +2505,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3413,12 +2545,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3436,23 +2563,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3464,34 +2581,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3519,12 +2621,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3542,23 +2639,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3570,34 +2657,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3625,12 +2697,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3648,23 +2715,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3676,34 +2733,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3731,12 +2773,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3754,23 +2791,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3782,34 +2809,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3837,12 +2849,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3860,23 +2867,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3888,34 +2885,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3943,12 +2925,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3966,23 +2943,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -3994,34 +2961,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4049,12 +3001,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4072,23 +3019,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4100,34 +3037,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4155,12 +3077,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4178,23 +3095,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4206,34 +3113,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4261,12 +3153,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4284,23 +3171,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4312,34 +3189,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4367,12 +3229,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4390,23 +3247,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4418,34 +3265,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4473,12 +3305,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4496,23 +3323,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4524,34 +3341,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4579,12 +3381,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4602,23 +3399,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4630,34 +3417,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4685,12 +3457,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4708,23 +3475,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4736,34 +3493,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4791,12 +3533,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4814,23 +3551,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4842,34 +3569,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4897,12 +3609,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4920,23 +3627,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -4948,34 +3645,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5003,12 +3685,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5026,23 +3703,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5054,34 +3721,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5109,12 +3761,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5132,23 +3779,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5160,34 +3797,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5215,12 +3837,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5238,23 +3855,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5266,34 +3873,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5321,12 +3913,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5344,23 +3931,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5372,34 +3949,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5427,12 +3989,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5450,23 +4007,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5478,34 +4025,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5533,12 +4065,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5556,23 +4083,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5584,34 +4101,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5639,12 +4141,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5662,23 +4159,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5690,34 +4177,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5745,12 +4217,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5768,23 +4235,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5796,34 +4253,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5851,12 +4293,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5874,23 +4311,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5902,34 +4329,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5957,12 +4369,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -5980,23 +4387,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6008,34 +4405,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6063,12 +4445,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6086,23 +4463,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6114,34 +4481,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6169,12 +4521,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6192,23 +4539,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6220,34 +4557,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6275,12 +4597,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6298,23 +4615,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6326,34 +4633,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6381,12 +4673,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6404,23 +4691,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6432,34 +4709,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6487,12 +4749,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6510,23 +4767,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6538,34 +4785,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6593,12 +4825,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6616,23 +4843,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6644,34 +4861,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6699,12 +4901,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6722,23 +4919,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6750,34 +4937,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6805,12 +4977,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6828,23 +4995,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6856,34 +5013,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6911,12 +5053,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6934,23 +5071,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -6962,34 +5089,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7017,12 +5129,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7040,23 +5147,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7068,34 +5165,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7123,12 +5205,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7146,23 +5223,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7174,34 +5241,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7229,12 +5281,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7252,23 +5299,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7280,34 +5317,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7335,12 +5357,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7358,23 +5375,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7386,34 +5393,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7441,12 +5433,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7464,23 +5451,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7492,34 +5469,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7547,12 +5509,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7570,23 +5527,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7598,34 +5545,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7653,12 +5585,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7676,23 +5603,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7704,34 +5621,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7759,12 +5661,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7782,23 +5679,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7810,34 +5697,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7865,12 +5737,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7888,23 +5755,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7916,34 +5773,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7971,12 +5813,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -7994,23 +5831,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8022,34 +5849,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8077,12 +5889,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8100,23 +5907,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8128,34 +5925,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8183,12 +5965,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8206,23 +5983,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8234,34 +6001,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8289,12 +6041,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8312,23 +6059,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8340,34 +6077,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8395,12 +6117,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8418,23 +6135,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8446,34 +6153,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8501,12 +6193,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8524,23 +6211,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8552,34 +6229,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8607,12 +6269,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8630,23 +6287,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8658,34 +6305,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8713,12 +6345,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8736,23 +6363,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8764,34 +6381,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8819,12 +6421,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8842,23 +6439,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8870,34 +6457,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8925,12 +6497,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8948,23 +6515,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -8976,34 +6533,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9031,12 +6573,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9054,23 +6591,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9082,34 +6609,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9137,12 +6649,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9160,23 +6667,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9188,34 +6685,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9243,12 +6725,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9266,23 +6743,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9294,34 +6761,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9349,12 +6801,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9372,23 +6819,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9400,34 +6837,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9455,12 +6877,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9478,23 +6895,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9506,34 +6913,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9561,12 +6953,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9584,23 +6971,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9612,34 +6989,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9667,12 +7029,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9690,23 +7047,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9718,34 +7065,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9773,12 +7105,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9796,23 +7123,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9824,34 +7141,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9879,12 +7181,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9902,23 +7199,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9930,34 +7217,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -9985,12 +7257,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10008,23 +7275,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10036,34 +7293,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10091,12 +7333,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10114,23 +7351,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10142,34 +7369,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10197,12 +7409,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10220,23 +7427,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10248,34 +7445,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10303,12 +7485,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10326,23 +7503,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10354,34 +7521,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10409,12 +7561,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10432,23 +7579,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10460,34 +7597,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10515,12 +7637,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10538,23 +7655,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10566,34 +7673,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10621,12 +7713,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10644,23 +7731,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10672,34 +7749,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10727,12 +7789,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10750,23 +7807,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10778,34 +7825,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10833,12 +7865,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10856,23 +7883,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10884,34 +7901,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10939,12 +7941,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10962,23 +7959,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -10990,34 +7977,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11045,12 +8017,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11068,23 +8035,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11096,34 +8053,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11151,12 +8093,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11174,23 +8111,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11202,34 +8129,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11257,12 +8169,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11280,23 +8187,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11308,34 +8205,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11363,12 +8245,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11386,23 +8263,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11414,34 +8281,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11469,12 +8321,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11492,23 +8339,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11520,34 +8357,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11575,12 +8397,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11598,23 +8415,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11626,34 +8433,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11681,12 +8473,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11704,23 +8491,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11732,34 +8509,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11787,12 +8549,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11810,23 +8567,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11838,34 +8585,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11893,12 +8625,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11916,23 +8643,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11944,34 +8661,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -11999,12 +8701,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12022,23 +8719,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12050,34 +8737,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12105,12 +8777,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12128,23 +8795,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12156,34 +8813,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12211,12 +8853,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12234,23 +8871,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12262,34 +8889,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12317,12 +8929,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12340,23 +8947,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12368,34 +8965,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12423,12 +9005,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12446,23 +9023,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12474,34 +9041,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12529,12 +9081,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12552,23 +9099,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12580,34 +9117,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12635,12 +9157,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12658,23 +9175,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12686,34 +9193,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12741,12 +9233,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12764,23 +9251,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12792,34 +9269,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12847,12 +9309,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12870,23 +9327,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12898,34 +9345,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12953,12 +9385,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -12976,23 +9403,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13004,34 +9421,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13059,12 +9461,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13082,23 +9479,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13110,34 +9497,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13165,12 +9537,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13188,23 +9555,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13216,34 +9573,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13271,12 +9613,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13294,23 +9631,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13322,34 +9649,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13377,12 +9689,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13400,23 +9707,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13428,34 +9725,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13483,12 +9765,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13506,23 +9783,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13534,34 +9801,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13589,12 +9841,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13612,23 +9859,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13640,34 +9877,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13695,12 +9917,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13718,23 +9935,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13746,34 +9953,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13801,12 +9993,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13824,23 +10011,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13852,34 +10029,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13907,12 +10069,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13930,23 +10087,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -13958,34 +10105,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14013,12 +10145,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14036,23 +10163,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14064,34 +10181,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14119,12 +10221,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14142,23 +10239,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14170,34 +10257,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14225,12 +10297,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14248,23 +10315,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14276,34 +10333,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14331,12 +10373,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14354,23 +10391,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14382,34 +10409,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14437,12 +10449,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14460,23 +10467,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14488,34 +10485,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14543,12 +10525,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14566,23 +10543,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14594,34 +10561,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14649,12 +10601,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14672,23 +10619,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14700,34 +10637,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14755,12 +10677,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14778,23 +10695,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14806,34 +10713,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14861,12 +10753,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14884,23 +10771,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14912,34 +10789,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14967,12 +10829,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -14990,23 +10847,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15018,34 +10865,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15073,12 +10905,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15096,23 +10923,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15124,34 +10941,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15179,12 +10981,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15202,23 +10999,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15230,34 +11017,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15285,12 +11057,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15308,23 +11075,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15336,34 +11093,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15391,12 +11133,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15414,23 +11151,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15442,34 +11169,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15497,12 +11209,7 @@ const DEFAULT_STUDENTS = [
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15520,23 +11227,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15548,34 +11245,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15603,12 +11285,7 @@ const DEFAULT_STUDENTS = [
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15626,23 +11303,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15654,34 +11321,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15704,17 +11356,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_146",
     "name": "Ashley Nahioni Ciprián Kelly",
     "email": "ashley.nahioni.cipri.n.kelly@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 1,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15732,23 +11379,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15760,34 +11397,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15810,17 +11432,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_147",
     "name": "Engel Estrella Núñez",
     "email": "engel.estrella.n..ez@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 2,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15838,23 +11455,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15866,34 +11473,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15916,17 +11508,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_148",
     "name": "Carlos Loriel Estrella Peña",
     "email": "carlos.loriel.estrella.pe.a@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 3,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15944,23 +11531,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -15972,34 +11549,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16022,17 +11584,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_149",
     "name": "Ana Vianny Feliz Reyes",
     "email": "ana.vianny.feliz.reyes@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 4,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16050,23 +11607,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16078,34 +11625,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16128,17 +11660,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_150",
     "name": "Joeli Fermín De La Mota",
     "email": "joeli.ferm.n.de.la.mota@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 5,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16156,23 +11683,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16184,34 +11701,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16234,17 +11736,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_151",
     "name": "Elisabeth Jorgensen García",
     "email": "elisabeth.jorgensen.garc.a@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 6,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16262,23 +11759,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16290,34 +11777,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16340,17 +11812,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_152",
     "name": "Franyelina Paula Toribio",
     "email": "franyelina.paula.toribio@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 7,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16368,23 +11835,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16396,34 +11853,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16446,17 +11888,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_153",
     "name": "Jelen Gabriela Payano Núñez",
     "email": "jelen.gabriela.payano.n..ez@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16474,23 +11911,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16502,34 +11929,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16552,17 +11964,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_154",
     "name": "Luis Eduardo Perdomo Del Rosario",
     "email": "luis.eduardo.perdomo.del.rosario@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 9,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16580,23 +11987,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16608,34 +12005,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16658,17 +12040,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_155",
     "name": "Racheli Porquín Robles",
     "email": "racheli.porqu.n.robles@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 10,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16686,23 +12063,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16714,34 +12081,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16764,17 +12116,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_156",
     "name": "Yurkely Quiroz Ureña",
     "email": "yurkely.quiroz.ure.a@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16792,23 +12139,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16820,34 +12157,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16870,17 +12192,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_157",
     "name": "Darkeli Rodríguez Amparo",
     "email": "darkeli.rodr.guez.amparo@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 12,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16898,23 +12215,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16926,34 +12233,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -16976,17 +12268,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_158",
     "name": "Esmerlin Rodríguez Cortorreal",
     "email": "esmerlin.rodr.guez.cortorreal@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 13,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17004,23 +12291,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17032,34 +12309,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17082,17 +12344,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_159",
     "name": "Alfredo Adrián Sirven Raposo",
     "email": "alfredo.adri.n.sirven.raposo@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 14,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17110,23 +12367,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17138,34 +12385,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17188,17 +12420,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_160",
     "name": "Yeuris Ureña Carela",
     "email": "yeuris.ure.a.carela@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 15,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17216,23 +12443,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17244,34 +12461,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17294,17 +12496,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_161",
     "name": "Alberson Cabrera Faña",
     "email": "alberson.cabrera.fa.a@estudiante.edu.do",
-    "grade": "4to A",
+    "grade": "4AM",
     "orderNumber": 16,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17322,23 +12519,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17350,34 +12537,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17400,17 +12572,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_162",
     "name": "Darlyn Alvarado Núñez",
     "email": "darlyn.alvarado.n..ez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 1,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17428,23 +12595,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17456,34 +12613,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17506,17 +12648,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_163",
     "name": "Franchely Báez Sarante",
     "email": "franchely.b.ez.sarante@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 2,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17534,23 +12671,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17562,34 +12689,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17612,17 +12724,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_164",
     "name": "Anneris Batista Jiménez",
     "email": "anneris.batista.jim.nez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 3,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17640,23 +12747,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17668,34 +12765,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17718,17 +12800,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_165",
     "name": "Freddy Manuel Caraballo Sánchez",
     "email": "freddy.manuel.caraballo.s.nchez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 4,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17746,23 +12823,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17774,34 +12841,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17824,17 +12876,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_166",
     "name": "Darleny Caraballo Vásquez",
     "email": "darleny.caraballo.v.squez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 5,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17852,23 +12899,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17880,34 +12917,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17930,17 +12952,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_167",
     "name": "Nelson Luis Concepción Gómez",
     "email": "nelson.luis.concepci.n.g.mez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 6,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17958,23 +12975,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -17986,34 +12993,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18036,17 +13028,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_168",
     "name": "Fernando Correa Merejildo",
     "email": "fernando.correa.merejildo@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 7,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18064,23 +13051,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18092,34 +13069,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18142,17 +13104,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_169",
     "name": "Lorena De Jesús Florimón",
     "email": "lorena.de.jes.s.florim.n@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18170,23 +13127,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18198,34 +13145,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18248,17 +13180,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_170",
     "name": "Esmerlin Domínguez Medina",
     "email": "esmerlin.dom.nguez.medina@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 9,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18276,23 +13203,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18304,34 +13221,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18354,17 +13256,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_171",
     "name": "Raysmeri Gerardo Hidalgo",
     "email": "raysmeri.gerardo.hidalgo@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 10,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18382,23 +13279,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18410,34 +13297,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18460,17 +13332,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_172",
     "name": "Dilanny Gómez Andisin",
     "email": "dilanny.g.mez.andisin@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18488,23 +13355,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18516,34 +13373,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18566,17 +13408,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_173",
     "name": "Jean Marcos González Mata",
     "email": "jean.marcos.gonz.lez.mata@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 12,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18594,23 +13431,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18622,34 +13449,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18672,17 +13484,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_174",
     "name": "Dariel Hilario Serrano",
     "email": "dariel.hilario.serrano@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 13,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18700,23 +13507,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18728,34 +13525,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18778,17 +13560,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_175",
     "name": "Eddy Luis Jiménez Hidalgo",
     "email": "eddy.luis.jim.nez.hidalgo@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 14,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18806,23 +13583,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18834,34 +13601,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18884,17 +13636,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_176",
     "name": "Jennifer López Lantigua",
     "email": "jennifer.l.pez.lantigua@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 15,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18912,23 +13659,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18940,34 +13677,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -18990,17 +13712,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_177",
     "name": "Kenderson López Paulino",
     "email": "kenderson.l.pez.paulino@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 16,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19018,23 +13735,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19046,34 +13753,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19096,17 +13788,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_178",
     "name": "Laulenny Martínez Hernández",
     "email": "laulenny.mart.nez.hern.ndez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 17,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19124,23 +13811,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19152,34 +13829,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19202,17 +13864,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_179",
     "name": "Carolain Méndez Rodríguez",
     "email": "carolain.m.ndez.rodr.guez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 18,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19230,23 +13887,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19258,34 +13905,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19308,17 +13940,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_180",
     "name": "Alejandro Minaya Hernández",
     "email": "alejandro.minaya.hern.ndez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 19,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19336,23 +13963,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19364,34 +13981,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19414,17 +14016,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_181",
     "name": "Marianny Mota Meregildo",
     "email": "marianny.mota.meregildo@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 20,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19442,23 +14039,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19470,34 +14057,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19520,17 +14092,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_182",
     "name": "Luis José Peña Cruz",
     "email": "luis.jos..pe.a.cruz@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 21,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19548,23 +14115,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19576,34 +14133,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19626,17 +14168,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_183",
     "name": "Abril Esteysi Polanco Polanco",
     "email": "abril.esteysi.polanco.polanco@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 22,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19654,23 +14191,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19682,34 +14209,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19732,17 +14244,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_184",
     "name": "Racheli Porquín Robles",
     "email": "racheli.porqu.n.robles@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 23,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19760,23 +14267,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19788,34 +14285,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19838,17 +14320,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_185",
     "name": "Dislenny Jazmín Reynoso Cabrera",
     "email": "dislenny.jazm.n.reynoso.cabrera@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 24,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19866,23 +14343,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19894,34 +14361,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19944,17 +14396,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_186",
     "name": "Darkeli Rodríguez Amparo",
     "email": "darkeli.rodr.guez.amparo@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 25,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -19972,23 +14419,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20000,34 +14437,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20050,17 +14472,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_187",
     "name": "Quilvio Daniel Rodríguez Báez",
     "email": "quilvio.daniel.rodr.guez.b.ez@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 26,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20078,23 +14495,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20106,34 +14513,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20156,17 +14548,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_188",
     "name": "Wildania Santos Marte",
     "email": "wildania.santos.marte@estudiante.edu.do",
-    "grade": "4to B",
+    "grade": "4AH",
     "orderNumber": 27,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20184,23 +14571,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20212,34 +14589,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20262,17 +14624,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_189",
     "name": "Arbert Starling Arias Alvarado",
     "email": "arbert.starling.arias.alvarado@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 1,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20290,23 +14647,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20318,34 +14665,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20368,17 +14700,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_190",
     "name": "Anderson David Bautista Valdez",
     "email": "anderson.david.bautista.valdez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 2,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20396,23 +14723,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20424,34 +14741,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20474,17 +14776,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_191",
     "name": "Samir José Cabral Gervacio",
     "email": "samir.jos..cabral.gervacio@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 3,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20502,23 +14799,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20530,34 +14817,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20580,17 +14852,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_192",
     "name": "Daniel Calcaño Jiménez",
     "email": "daniel.calca.o.jim.nez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 4,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20608,23 +14875,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20636,34 +14893,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20686,17 +14928,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_193",
     "name": "Enmanuel Casiano Cepeda",
     "email": "enmanuel.casiano.cepeda@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 5,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20714,23 +14951,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20742,34 +14969,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20792,17 +15004,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_194",
     "name": "Gabriaily Antonio David",
     "email": "gabriaily.antonio.david@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 6,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20820,23 +15027,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20848,34 +15045,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20898,17 +15080,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_195",
     "name": "Crismerli David Paredez",
     "email": "crismerli.david.paredez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 7,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20926,23 +15103,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -20954,34 +15121,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21004,17 +15156,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_196",
     "name": "Yulianny Duarte Acevedo",
     "email": "yulianny.duarte.acevedo@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21032,23 +15179,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21060,34 +15197,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21110,17 +15232,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_197",
     "name": "Erianny García Bidó",
     "email": "erianny.garc.a.bid.@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 9,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21138,23 +15255,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21166,34 +15273,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21216,17 +15308,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_198",
     "name": "Ada Luz García González",
     "email": "ada.luz.garc.a.gonz.lez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 10,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21244,23 +15331,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21272,34 +15349,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21322,17 +15384,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_199",
     "name": "Luis Mario Gil Rodríguez",
     "email": "luis.mario.gil.rodr.guez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 11,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21350,23 +15407,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21378,34 +15425,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21428,17 +15460,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_200",
     "name": "Franyeli Esther González Polanco",
     "email": "franyeli.esther.gonz.lez.polanco@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 12,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21456,23 +15483,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21484,34 +15501,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21534,17 +15536,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_201",
     "name": "Adrián Hilario Acevedo",
     "email": "adri.n.hilario.acevedo@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 13,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21562,23 +15559,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21590,34 +15577,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21640,17 +15612,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_202",
     "name": "Carolin Hilario Hidalgo",
     "email": "carolin.hilario.hidalgo@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 14,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21668,23 +15635,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21696,34 +15653,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21746,17 +15688,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_203",
     "name": "Carlison Lizardo Martínez",
     "email": "carlison.lizardo.mart.nez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 15,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21774,23 +15711,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21802,34 +15729,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21852,17 +15764,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_204",
     "name": "Alam Lorenzo Rodríguez",
     "email": "alam.lorenzo.rodr.guez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 16,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21880,23 +15787,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21908,34 +15805,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21958,17 +15840,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_205",
     "name": "Albeyro Santos Del Orbe",
     "email": "albeyro.santos.del.orbe@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 17,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -21986,23 +15863,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22014,34 +15881,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22064,17 +15916,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_206",
     "name": "Rosauri Vargas Medina",
     "email": "rosauri.vargas.medina@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 18,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22092,23 +15939,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22120,34 +15957,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22170,17 +15992,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_207",
     "name": "Hansel Zabala Valdez",
     "email": "hansel.zabala.valdez@estudiante.edu.do",
-    "grade": "4to C",
+    "grade": "4BH",
     "orderNumber": 19,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22198,23 +16015,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22226,34 +16033,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22276,17 +16068,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_208",
     "name": "Luis Ariel Brito Faña",
     "email": "luis.ariel.brito.fa.a@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 1,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22304,23 +16091,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22332,34 +16109,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22382,17 +16144,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_209",
     "name": "Massiel Castillo Santana",
     "email": "massiel.castillo.santana@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 2,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22410,23 +16167,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22438,34 +16185,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22488,17 +16220,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_210",
     "name": "Mariel Custodio Meléndez",
     "email": "mariel.custodio.mel.ndez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 3,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22516,23 +16243,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22544,34 +16261,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22594,17 +16296,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_211",
     "name": "Melani De La Cruz Gómez",
     "email": "melani.de.la.cruz.g.mez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 4,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22622,23 +16319,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22650,34 +16337,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22700,17 +16372,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_212",
     "name": "Arianny Edili De León Hernández",
     "email": "arianny.edili.de.le.n.hern.ndez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 5,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22728,23 +16395,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22756,34 +16413,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22806,17 +16448,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_213",
     "name": "Awilda Díaz",
     "email": "awilda.d.az@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 6,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22834,23 +16471,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22862,34 +16489,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22912,17 +16524,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_214",
     "name": "Walter Jesús Fernández Hernández",
     "email": "walter.jes.s.fern.ndez.hern.ndez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 7,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22940,23 +16547,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -22968,34 +16565,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23018,17 +16600,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_215",
     "name": "Ashly Fernández Lora",
     "email": "ashly.fern.ndez.lora@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23046,23 +16623,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23074,34 +16641,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23124,17 +16676,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_216",
     "name": "Marleny García García",
     "email": "marleny.garc.a.garc.a@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 9,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23152,23 +16699,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23180,34 +16717,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23230,17 +16752,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_217",
     "name": "Jael Adolfo García Sánchez",
     "email": "jael.adolfo.garc.a.s.nchez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 10,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23258,23 +16775,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23286,34 +16793,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23336,17 +16828,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_218",
     "name": "Franyeli Guzmán",
     "email": "franyeli.guzm.n@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23364,23 +16851,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23392,34 +16869,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23442,17 +16904,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_219",
     "name": "Jaqui Jean Pie",
     "email": "jaqui.jean.pie@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 12,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23470,23 +16927,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23498,34 +16945,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23548,17 +16980,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_220",
     "name": "Dariel Marte Ventura",
     "email": "dariel.marte.ventura@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 13,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23576,23 +17003,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23604,34 +17021,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23654,17 +17056,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_221",
     "name": "José Alejandro Mota Meregildo",
     "email": "jos..alejandro.mota.meregildo@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 14,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23682,23 +17079,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23710,34 +17097,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23760,17 +17132,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_222",
     "name": "Dioni Junior Paredes Gil",
     "email": "dioni.junior.paredes.gil@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 15,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23788,23 +17155,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23816,34 +17173,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23866,17 +17208,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_223",
     "name": "Yuliana Pichardo Brito",
     "email": "yuliana.pichardo.brito@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 16,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23894,23 +17231,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23922,34 +17249,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -23972,17 +17284,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_224",
     "name": "María Valentina Rodríguez Almonte",
     "email": "mar.a.valentina.rodr.guez.almonte@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 17,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24000,23 +17307,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24028,34 +17325,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24078,17 +17360,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_225",
     "name": "Edileisi Rogelis Sánchez",
     "email": "edileisi.rogelis.s.nchez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 18,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24106,23 +17383,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24134,34 +17401,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24184,17 +17436,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_226",
     "name": "Rosanna Sotero Sánchez",
     "email": "rosanna.sotero.s.nchez@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 19,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24212,23 +17459,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24240,34 +17477,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24290,17 +17512,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_227",
     "name": "José Yandel Taveras Marte",
     "email": "jos..yandel.taveras.marte@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 20,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24318,23 +17535,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24346,34 +17553,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24396,17 +17588,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_228",
     "name": "Franyeli Ventura Polanco",
     "email": "franyeli.ventura.polanco@estudiante.edu.do",
-    "grade": "5to A",
+    "grade": "5AM",
     "orderNumber": 21,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24424,23 +17611,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24452,34 +17629,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24502,17 +17664,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_229",
     "name": "Yanet Amparo Holguín",
     "email": "yanet.amparo.holgu.n@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 1,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24530,23 +17687,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24558,34 +17705,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24608,17 +17740,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_230",
     "name": "Joan Manuel Amparo Lora",
     "email": "joan.manuel.amparo.lora@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 2,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24636,23 +17763,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24664,34 +17781,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24714,17 +17816,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_231",
     "name": "Berkianis Amparo Núñez",
     "email": "berkianis.amparo.n..ez@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 3,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24742,23 +17839,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24770,34 +17857,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24820,17 +17892,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_232",
     "name": "Lauris Mariel Bidó Moreno",
     "email": "lauris.mariel.bid..moreno@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 4,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24848,23 +17915,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24876,34 +17933,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24926,17 +17968,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_233",
     "name": "Anderson Caraballo Vásquez",
     "email": "anderson.caraballo.v.squez@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 5,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24954,23 +17991,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -24982,34 +18009,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25032,17 +18044,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_234",
     "name": "Franklyn Bernard Castillo Paredes",
     "email": "franklyn.bernard.castillo.paredes@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 6,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25060,23 +18067,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25088,34 +18085,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25138,17 +18120,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_235",
     "name": "Yomaris De Jesús",
     "email": "yomaris.de.jes.s@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 7,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25166,23 +18143,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25194,34 +18161,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25244,17 +18196,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_236",
     "name": "Analía Díaz Basora",
     "email": "anal.a.d.az.basora@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25272,23 +18219,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25300,34 +18237,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25350,17 +18272,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_237",
     "name": "Jesús Manuel Duarte Ortiz",
     "email": "jes.s.manuel.duarte.ortiz@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 9,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25378,23 +18295,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25406,34 +18313,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25456,17 +18348,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_238",
     "name": "Kinberlyn Espinal Severino",
     "email": "kinberlyn.espinal.severino@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 10,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25484,23 +18371,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25512,34 +18389,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25562,17 +18424,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_239",
     "name": "Rasieli Frías Rodríguez",
     "email": "rasieli.fr.as.rodr.guez@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25590,23 +18447,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25618,34 +18465,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25668,17 +18500,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_240",
     "name": "Kenileni Hernández Acosta",
     "email": "kenileni.hern.ndez.acosta@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 12,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25696,23 +18523,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25724,34 +18541,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25774,17 +18576,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_241",
     "name": "Johanna Mariel Hernández García",
     "email": "johanna.mariel.hern.ndez.garc.a@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 13,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25802,23 +18599,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25830,34 +18617,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25880,17 +18652,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_242",
     "name": "Diosmerlin Hernández Hidalgo",
     "email": "diosmerlin.hern.ndez.hidalgo@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 14,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25908,23 +18675,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25936,34 +18693,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -25986,17 +18728,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_243",
     "name": "Heidi Mariel Hernández Luna",
     "email": "heidi.mariel.hern.ndez.luna@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 15,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26014,23 +18751,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26042,34 +18769,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26092,17 +18804,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_244",
     "name": "Heisi Mabel Hernández Luna",
     "email": "heisi.mabel.hern.ndez.luna@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 16,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26120,23 +18827,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26148,34 +18845,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26198,17 +18880,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_245",
     "name": "Julianny Hernández Marte",
     "email": "julianny.hern.ndez.marte@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 17,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26226,23 +18903,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26254,34 +18921,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26304,17 +18956,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_246",
     "name": "Lovena Joseph Aphael",
     "email": "lovena.joseph.aphael@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 18,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26332,23 +18979,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26360,34 +18997,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26410,17 +19032,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_247",
     "name": "Ander Francisco Lora Minaya",
     "email": "ander.francisco.lora.minaya@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 19,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26438,23 +19055,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26466,34 +19073,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26516,17 +19108,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_248",
     "name": "Brismailin Méndez Paula",
     "email": "brismailin.m.ndez.paula@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 20,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26544,23 +19131,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26572,34 +19149,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26622,17 +19184,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_249",
     "name": "Ángel Luis Ortiz Ortegas",
     "email": ".ngel.luis.ortiz.ortegas@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 21,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26650,23 +19207,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26678,34 +19225,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26728,17 +19260,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_250",
     "name": "Geraldina Paula Mercedes",
     "email": "geraldina.paula.mercedes@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 22,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26756,23 +19283,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26784,34 +19301,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26834,17 +19336,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_251",
     "name": "Nanderli Peralta Tejada",
     "email": "nanderli.peralta.tejada@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 23,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26862,23 +19359,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26890,34 +19377,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26940,17 +19412,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_252",
     "name": "Nawilka Polanco",
     "email": "nawilka.polanco@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 24,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26968,23 +19435,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -26996,34 +19453,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27046,17 +19488,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_253",
     "name": "Yosleydi Josefina Reyes Victoriano",
     "email": "yosleydi.josefina.reyes.victoriano@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 25,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27074,23 +19511,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27102,34 +19529,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27152,17 +19564,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_254",
     "name": "Angely Dawilda Reynoso Castillo",
     "email": "angely.dawilda.reynoso.castillo@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 26,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27180,23 +19587,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27208,34 +19605,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27258,17 +19640,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_255",
     "name": "Jasneydi Smith Taveras",
     "email": "jasneydi.smith.taveras@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 27,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27286,23 +19663,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27314,34 +19681,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27364,17 +19716,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_256",
     "name": "Huberlina Solano Marte",
     "email": "huberlina.solano.marte@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 28,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27392,23 +19739,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27420,34 +19757,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27470,17 +19792,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_257",
     "name": "Yacoby Alberto Suero Araujo",
     "email": "yacoby.alberto.suero.araujo@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 29,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27498,23 +19815,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27526,34 +19833,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27576,17 +19868,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_258",
     "name": "Yerselis Taveras Paulino",
     "email": "yerselis.taveras.paulino@estudiante.edu.do",
-    "grade": "5to B",
+    "grade": "5AN",
     "orderNumber": 30,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27604,23 +19891,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27632,34 +19909,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27682,17 +19944,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_259",
     "name": "Arlin Almonte Santos",
     "email": "arlin.almonte.santos@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 1,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27710,23 +19967,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27738,34 +19985,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27788,17 +20020,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_260",
     "name": "Yulianny Alvarado Vargas",
     "email": "yulianny.alvarado.vargas@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 2,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27816,23 +20043,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27844,34 +20061,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27894,17 +20096,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_261",
     "name": "Esmeralda Aquino",
     "email": "esmeralda.aquino@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 3,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27922,23 +20119,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -27950,34 +20137,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28000,17 +20172,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_262",
     "name": "Anelis Batista Jiménez",
     "email": "anelis.batista.jim.nez@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 4,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28028,23 +20195,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28056,34 +20213,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28106,17 +20248,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_263",
     "name": "Germayely Bidó Paulino",
     "email": "germayely.bid..paulino@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 5,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28134,23 +20271,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28162,34 +20289,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28212,17 +20324,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_264",
     "name": "Yan Melvin Bonilla Marte",
     "email": "yan.melvin.bonilla.marte@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 6,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28240,23 +20347,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28268,34 +20365,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28318,17 +20400,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_265",
     "name": "Amada María Crucet Paredes",
     "email": "amada.mar.a.crucet.paredes@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 7,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28346,23 +20423,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28374,34 +20441,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28424,17 +20476,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_266",
     "name": "Yan Carlos Hernández Concepción",
     "email": "yan.carlos.hern.ndez.concepci.n@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 8,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28452,23 +20499,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28480,34 +20517,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28530,17 +20552,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_267",
     "name": "Álvaro Luis Jiménez Jiménez",
     "email": ".lvaro.luis.jim.nez.jim.nez@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 9,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28558,23 +20575,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28586,34 +20593,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28636,17 +20628,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_268",
     "name": "Ismayri Rachel Jiménez Paula",
     "email": "ismayri.rachel.jim.nez.paula@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 10,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28664,23 +20651,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28692,34 +20669,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28742,17 +20704,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_269",
     "name": "Joelisa Leta",
     "email": "joelisa.leta@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28770,23 +20727,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28798,34 +20745,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28848,17 +20780,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_270",
     "name": "Ismael López Casiano",
     "email": "ismael.l.pez.casiano@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 12,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28876,23 +20803,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28904,34 +20821,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28954,17 +20856,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_271",
     "name": "Israel López Casiano",
     "email": "israel.l.pez.casiano@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 13,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -28982,23 +20879,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29010,34 +20897,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29060,17 +20932,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_272",
     "name": "Valeria Marte Hidalgo",
     "email": "valeria.marte.hidalgo@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 14,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29088,23 +20955,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29116,34 +20973,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29166,17 +21008,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_273",
     "name": "Brahian Manuel Melende Faña",
     "email": "brahian.manuel.melende.fa.a@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 15,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29194,23 +21031,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29222,34 +21049,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29272,17 +21084,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_274",
     "name": "Esther Remigio Serrano",
     "email": "esther.remigio.serrano@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 16,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29300,23 +21107,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29328,34 +21125,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29378,17 +21160,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_275",
     "name": "Lismeiry Alejandra Taveras Valdez",
     "email": "lismeiry.alejandra.taveras.valdez@estudiante.edu.do",
-    "grade": "6to A",
+    "grade": "6AM",
     "orderNumber": 17,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29406,23 +21183,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29434,34 +21201,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29484,17 +21236,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_276",
     "name": "Danielis Alexandra Aguasvivas Pimentel",
     "email": "danielis.alexandra.aguasvivas.pimentel@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 1,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29512,23 +21259,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29540,34 +21277,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29590,17 +21312,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_277",
     "name": "Yafreisy Báez Zapata",
     "email": "yafreisy.b.ez.zapata@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 2,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29618,23 +21335,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29646,34 +21353,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29696,17 +21388,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_278",
     "name": "Keyla Luz Benavides Raposo",
     "email": "keyla.luz.benavides.raposo@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 3,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29724,23 +21411,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29752,34 +21429,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29802,17 +21464,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_279",
     "name": "Amy Mariel De Jesús",
     "email": "amy.mariel.de.jes.s@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 4,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29830,23 +21487,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29858,34 +21505,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29908,17 +21540,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_280",
     "name": "Aida Celeste García Benavides",
     "email": "aida.celeste.garc.a.benavides@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 5,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29936,23 +21563,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -29964,34 +21581,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30014,17 +21616,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_281",
     "name": "Anyelina Hernández Bonilla",
     "email": "anyelina.hern.ndez.bonilla@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 6,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30042,23 +21639,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30070,34 +21657,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30120,17 +21692,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_282",
     "name": "Estarlin Johnson Vargas",
     "email": "estarlin.johnson.vargas@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 7,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30148,23 +21715,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30176,34 +21733,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30226,17 +21768,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_283",
     "name": "María Antonia López Gil",
     "email": "mar.a.antonia.l.pez.gil@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30254,23 +21791,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30282,34 +21809,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30332,17 +21844,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_284",
     "name": "Solanyi Martínez Duarte",
     "email": "solanyi.mart.nez.duarte@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 9,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30360,23 +21867,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30388,34 +21885,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30438,17 +21920,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_285",
     "name": "Doud Jie Moisé",
     "email": "doud.jie.mois.@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 10,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30466,23 +21943,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30494,34 +21961,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30544,17 +21996,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_286",
     "name": "Nicauri Paredes Gil",
     "email": "nicauri.paredes.gil@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30572,23 +22019,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30600,34 +22037,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30650,17 +22072,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_287",
     "name": "Nicol Paredes Gil",
     "email": "nicol.paredes.gil@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 12,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30678,23 +22095,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30706,34 +22113,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30756,17 +22148,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_288",
     "name": "Melissa María Polanco Polanco",
     "email": "melissa.mar.a.polanco.polanco@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 13,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30784,23 +22171,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30812,34 +22189,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30862,17 +22224,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_289",
     "name": "Nicole Ramón De La Cruz",
     "email": "nicole.ram.n.de.la.cruz@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 14,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30890,23 +22247,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30918,34 +22265,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30968,17 +22300,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_290",
     "name": "Marelin Paredes Gómez",
     "email": "marelin.paredes.g.mez@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 15,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -30996,23 +22323,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -31024,34 +22341,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -31074,17 +22376,12 @@ const DEFAULT_STUDENTS = [
     "id": "s_291",
     "name": "Shandy Masiel Bertre Cortorreal",
     "email": "shandy.masiel.bertre.cortorreal@estudiante.edu.do",
-    "grade": "6to B",
+    "grade": "6AH",
     "orderNumber": 16,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
-        "bloque1": [
-          85,
-          88,
-          90,
-          86
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -31102,23 +22399,13 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "matematica": {
-        "bloque1": [
-          88,
-          90,
-          85,
-          89
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "ciencias_sociales": {
-        "bloque1": [
-          90,
-          88,
-          92,
-          87
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -31130,34 +22417,19 @@ const DEFAULT_STUDENTS = [
         "bloque4": []
       },
       "artistica": {
-        "bloque1": [
-          90,
-          92,
-          95,
-          90
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "educacion_fisica": {
-        "bloque1": [
-          95,
-          95,
-          92,
-          94
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
       },
       "formacion_religiosa": {
-        "bloque1": [
-          90,
-          92,
-          90,
-          91
-        ],
+        "bloque1": [],
         "bloque2": [],
         "bloque3": [],
         "bloque4": []
@@ -31588,7 +22860,8 @@ const sortGrades = (gradesList) => {
 
 const renderGradeHeaderBanner = (gradeName, extraText = '') => {
   const theme = getGradeThemeInfo(gradeName);
-  const section = gradeName.replace(/^\d+([a-zA-Záéíóúñ\s°º]*)/, '').trim();
+  const sectionMatch = gradeName.match(/^(\d+(?:ro|do|er|to|°|º)?)\s*(.*)$/i);
+  const section = sectionMatch ? sectionMatch[2].trim() : '';
 
   return (
     <div 
@@ -31861,10 +23134,10 @@ export default function App() {
         email: 'mario.paredes@docente.edu.do',
         password: 'mario123',
         role: 'teacher',
-        classroomGrade: '4to A',
+        classroomGrade: '4AM',
         assignments: [
-          { grade: '4to A', subject: 'matematica' },
-          { grade: '4to A', subject: 'ciencias_naturaleza' }
+          { grade: '4AM', subject: 'matematica' },
+          { grade: '4AM', subject: 'ciencias_naturaleza' }
         ],
         active: true
       });
@@ -31930,14 +23203,19 @@ export default function App() {
       if (savedMatch) {
         return {
           ...defStu,
-          grades: normalizeStudentGrades(savedMatch.grades || defStu.grades),
+          // Keep student grade to official defStu.grade (4AM, 6AM, 6AH, etc.)
+          grade: defStu.grade,
+          orderNumber: defStu.orderNumber,
+          // Completely clean grades for fresh start - zero dummy scores
+          grades: normalizeStudentGrades({}),
+          // PRESERVE attendance and comments 100%
           attendance: savedMatch.attendance || defStu.attendance,
           comments: savedMatch.comments || defStu.comments
         };
       }
       return {
         ...defStu,
-        grades: normalizeStudentGrades(defStu.grades)
+        grades: normalizeStudentGrades({})
       };
     });
   };
@@ -32657,7 +23935,7 @@ export default function App() {
           }
         }
         if (data.grades) {
-          const needsMigration = data.grades.includes('10° A') || data.grades.length === 0;
+          const needsMigration = data.grades.includes('10° A') || data.grades.length === 0 || !data.grades.includes('6AH') || !data.grades.includes('6AM') || !data.grades.includes('4AM');
           if (needsMigration) {
             const sortedDefaults = sortGrades(DEFAULT_GRADES);
             setGrades(sortedDefaults);
@@ -39888,25 +31166,25 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     /* Existing Block view */
                     (() => {
                       const showRP1 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[0] ?? 80;
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[0] ?? 0;
                         const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
                         const rpVal = studentRpGrades[rpKey]?.[0];
                         return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
                       });
                       const showRP2 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[1] ?? 80;
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[1] ?? 0;
                         const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
                         const rpVal = studentRpGrades[rpKey]?.[1];
                         return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
                       });
                       const showRP3 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[2] ?? 80;
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[2] ?? 0;
                         const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
                         const rpVal = studentRpGrades[rpKey]?.[2];
                         return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
                       });
                       const showRP4 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[3] ?? 80;
+                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[3] ?? 0;
                         const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
                         const rpVal = studentRpGrades[rpKey]?.[3];
                         return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
