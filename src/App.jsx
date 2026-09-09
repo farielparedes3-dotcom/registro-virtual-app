@@ -23308,12 +23308,54 @@ const getGradeThemeInfo = (gradeName) => {
   };
 };
 
+// Core standard subjects taught in all grades of Dominican Secondary Education
+const CORE_SUBJECTS = [
+  'lengua_espanola',
+  'ingles',
+  'frances',
+  'matematica',
+  'ciencias_sociales',
+  'ciencias_naturaleza',
+  'artistica',
+  'educacion_fisica',
+  'formacion_religiosa'
+];
+
+const normalizeGradeString = (g) => {
+  if (!g) return '';
+  const s = String(g).trim();
+  const legacyMap = {
+    '1ro. A': '1ro A', '1ERO. A': '1ro A', '1ero A': '1ro A', '1ero. A': '1ro A',
+    '2do. A': '2do A', '2DO. A': '2do A',
+    '2do. B': '2do B', '2DO. B': '2do B',
+    '3ro. A': '3ro A', '3RO. A': '3ro A',
+    '3ro. B': '3ro B', '3RO. B': '3ro B',
+    '3ro. C': '3ro C', '3RO. C': '3ro C',
+    '4to A': '4AM', '4to. A': '4AM', '4TO. A': '4AM', '4to AM': '4AM',
+    '4to B': '4AH', '4to. B': '4AH', '4TO. B': '4AH', '4to AH': '4AH',
+    '4to C': '4BH', '4to. C': '4BH', '4TO. C': '4BH', '4to BH': '4BH',
+    '5to A': '5AM', '5to. A': '5AM', '5TO. A': '5AM', '5to AM': '5AM',
+    '5to B': '5AN', '5to. B': '5AN', '5TO. B': '5AN', '5to AN': '5AN',
+    '6to A': '6AM', '6to. A': '6AM', '6TO. A': '6AM', '6to AM': '6AM',
+    '6to B': '6AH', '6to. B': '6AH', '6TO. B': '6AH', '6to AH': '6AH'
+  };
+  return legacyMap[s] || s;
+};
+
+const matchGrade = (g1, g2) => {
+  if (!g1 || !g2) return false;
+  const n1 = normalizeGradeString(g1);
+  const n2 = normalizeGradeString(g2);
+  if (n1 === n2) return true;
+  return n1.replace(/\s+/g, '').toLowerCase() === n2.replace(/\s+/g, '').toLowerCase();
+};
+
 const getSubjectsForGrade = (subjectsList, gradeName) => {
   const result = {};
-  if (!subjectsList || !gradeName) return result;
+  if (!subjectsList) return result;
   Object.keys(subjectsList).forEach(key => {
     const sub = subjectsList[key];
-    if (!sub.grades || sub.grades.includes(gradeName)) {
+    if (CORE_SUBJECTS.includes(key) || !sub.grades || sub.grades.length === 0 || sub.grades.some(g => matchGrade(g, gradeName))) {
       result[key] = sub;
     }
   });
@@ -23330,11 +23372,12 @@ const getAssignedTeacher = (usersList, subjectsList, gradeName, subjectKey) => {
     if (!u.assignments || !Array.isArray(u.assignments)) return false;
     return u.assignments.some(a => {
       if (!a || !a.grade || !a.subject) return false;
-      const gMatch = a.grade.trim().toLowerCase() === gradeName.trim().toLowerCase();
+      const gMatch = matchGrade(a.grade, gradeName);
       const sMatch = 
         a.subject === subjectKey || 
         a.subject.toLowerCase() === subjectKey.toLowerCase() ||
         a.subject.toLowerCase() === subName.toLowerCase();
+      return gMatch && sMatch;
     });
   });
 };
@@ -23632,12 +23675,18 @@ export default function App() {
       }
     });
     
-    // Ensure all existing teachers have classroomGrade
+    // Ensure all existing teachers have normalized classroomGrade and assignments
     list = list.map(u => {
-      if (u.role === 'teacher' && u.classroomGrade === undefined) {
-        let cg = '';
-        if (u.id === 'u2' || u.email === 'profesor.mate@school.edu') cg = '1ro A';
-        return { ...u, classroomGrade: cg };
+      if (u.role === 'teacher') {
+        const normAssignments = (u.assignments || []).map(a => ({
+          ...a,
+          grade: normalizeGradeString(a.grade)
+        }));
+        return {
+          ...u,
+          classroomGrade: normalizeGradeString(u.classroomGrade || ''),
+          assignments: normAssignments
+        };
       }
       return u;
     });
@@ -24982,9 +25031,8 @@ export default function App() {
 
   const handleAddAssignment = (userId, targetGrade, targetSubject) => {
     if (currentUser.role !== 'admin') return;
-    const gradeVal = targetGrade || (grades[0] || '');
-    const gradeSubs = getSubjectsForGrade(subjects, gradeVal);
-    const subjectVal = targetSubject || (Object.keys(gradeSubs)[0] || '');
+    const gradeVal = normalizeGradeString(targetGrade || (grades[0] || ''));
+    const subjectVal = targetSubject || (Object.keys(subjects)[0] || 'matematica');
 
     if (!gradeVal || !subjectVal) {
       alert('Por favor selecciona un grado y asignatura válidos.');
@@ -24995,10 +25043,10 @@ export default function App() {
       if (u.id === userId) {
         const assignmentsList = u.assignments || [];
         const exists = assignmentsList.some(
-          a => a.grade === gradeVal && a.subject === subjectVal
+          a => matchGrade(a.grade, gradeVal) && a.subject === subjectVal
         );
         if (exists) {
-          alert('Asignación duplicada.');
+          alert('Esta asignación ya existe para este docente.');
           return u;
         }
         return { ...u, assignments: [...assignmentsList, { grade: gradeVal, subject: subjectVal }] };
@@ -27518,11 +27566,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     : [];
 
   const teacherGradeSubjects = currentUser && currentUser.role === 'teacher' && selectedGrade
-    ? (currentUser.assignments || []).filter(a => a.grade === selectedGrade).map(a => a.subject)
+    ? (currentUser.assignments || []).filter(a => matchGrade(a.grade, selectedGrade)).map(a => a.subject)
     : [];
 
   const studentsFilteredByGrade = selectedGrade
-    ? students.filter(s => s.grade === selectedGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999))
+    ? students.filter(s => matchGrade(s.grade, selectedGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999))
     : students;
 
   const toggleUserActive = (id) => {
@@ -29070,25 +29118,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       {/* Assignment creator inside the row */}
                                       {(() => {
                                         const defaultG = grades[0] || '1ro A';
-                                        const defaultSubs = Object.keys(getSubjectsForGrade(subjects, defaultG));
-                                        const defaultS = defaultSubs[0] || 'matematica';
+                                        const allSubKeys = Object.keys(subjects);
+                                        const defaultS = allSubKeys[0] || 'matematica';
                                         const rowForm = rowAssignmentForms[u.id] || { grade: defaultG, subject: defaultS };
-                                        const rowSubs = Object.keys(getSubjectsForGrade(subjects, rowForm.grade));
 
                                         return (
-                                          <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                                          <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
                                             <select 
                                               className="form-select-compact" 
-                                              style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '85px' }}
+                                              style={{ padding: '0.25rem 0.4rem', fontSize: '0.75rem', minWidth: '90px' }}
                                               value={rowForm.grade}
                                               onChange={(e) => {
                                                 const selectedG = e.target.value;
-                                                const availSubs = Object.keys(getSubjectsForGrade(subjects, selectedG));
                                                 setRowAssignmentForms(prev => ({
                                                   ...prev,
                                                   [u.id]: {
-                                                    grade: selectedG,
-                                                    subject: availSubs[0] || 'matematica'
+                                                    ...rowForm,
+                                                    grade: selectedG
                                                   }
                                                 }));
                                               }}
@@ -29099,7 +29145,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                             </select>
                                             <select 
                                               className="form-select-compact" 
-                                              style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '95px' }}
+                                              style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', minWidth: '160px' }}
                                               value={rowForm.subject}
                                               onChange={(e) => {
                                                 const selectedS = e.target.value;
@@ -29112,13 +29158,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                 }));
                                               }}
                                             >
-                                              {rowSubs.map(subKey => (
+                                              {allSubKeys.map(subKey => (
                                                 <option key={subKey} value={subKey}>{subjects[subKey]?.name || subKey}</option>
                                               ))}
                                             </select>
                                             <button 
                                               className="btn-primary" 
-                                              style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px' }} 
+                                              style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', borderRadius: '4px', fontWeight: 'bold' }} 
                                               onClick={() => handleAddAssignment(u.id, rowForm.grade, rowForm.subject)}
                                             >
                                               ＋ Asignar
