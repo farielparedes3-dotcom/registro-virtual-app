@@ -942,11 +942,11 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_9",
-    "name": "Miguel José García Frías",
-    "email": "miguel.jos..garc.a.fr.as@estudiante.edu.do",
+    "name": "Yiraini García García",
+    "email": "yiraini.garc.a.garc.a@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 9,
-    "sex": "M",
+    "sex": "F",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -1018,86 +1018,10 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_10",
-    "name": "Yiraini García García",
-    "email": "yiraini.garc.a.garc.a@estudiante.edu.do",
-    "grade": "1ro A",
-    "orderNumber": 10,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_11",
     "name": "José Stherlyn Girardo Marmolejos",
     "email": "jos..stherlyn.girardo.marmolejos@estudiante.edu.do",
     "grade": "1ro A",
-    "orderNumber": 11,
+    "orderNumber": 10,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
@@ -1169,11 +1093,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_12",
+    "id": "s_11",
     "name": "Melany Danileisi Guillen",
     "email": "melany.danileisi.guillen@estudiante.edu.do",
     "grade": "1ro A",
-    "orderNumber": 12,
+    "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -1245,9 +1169,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_13",
+    "id": "s_12",
     "name": "Enger Hilario",
     "email": "enger.hilario@estudiante.edu.do",
+    "grade": "1ro A",
+    "orderNumber": 12,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_13",
+    "name": "Jowell Jiménez Hernández",
+    "email": "jowell.jim.nez.hern.ndez@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 13,
     "sex": "M",
@@ -1322,86 +1322,10 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_14",
-    "name": "Jowell Jiménez Hernández",
-    "email": "jowell.jim.nez.hern.ndez@estudiante.edu.do",
-    "grade": "1ro A",
-    "orderNumber": 14,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_15",
     "name": "Yomailyn Lantigua De Jesús",
     "email": "yomailyn.lantigua.de.jes.s@estudiante.edu.do",
     "grade": "1ro A",
-    "orderNumber": 15,
+    "orderNumber": 14,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -1473,9 +1397,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_16",
+    "id": "s_15",
     "name": "Sandiel Martínez Benavides",
     "email": "sandiel.mart.nez.benavides@estudiante.edu.do",
+    "grade": "1ro A",
+    "orderNumber": 15,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_16",
+    "name": "Víctor Luis Miguel Balbuena",
+    "email": "v.ctor.luis.miguel.balbuena@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 16,
     "sex": "M",
@@ -1550,8 +1550,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_17",
-    "name": "Víctor Luis Miguel Balbuena",
-    "email": "v.ctor.luis.miguel.balbuena@estudiante.edu.do",
+    "name": "José Armando Paredes Medina",
+    "email": "jos..armando.paredes.medina@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 17,
     "sex": "M",
@@ -1626,8 +1626,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_18",
-    "name": "José Armando Paredes Medina",
-    "email": "jos..armando.paredes.medina@estudiante.edu.do",
+    "name": "Alan Eduarlin Reyes Reyes",
+    "email": "alan.eduarlin.reyes.reyes@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 18,
     "sex": "M",
@@ -1702,8 +1702,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_19",
-    "name": "Alan Eduarlin Reyes Reyes",
-    "email": "alan.eduarlin.reyes.reyes@estudiante.edu.do",
+    "name": "Joseph Enmanuel Salsuela Polanco",
+    "email": "joseph.enmanuel.salsuela.polanco@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 19,
     "sex": "M",
@@ -1778,8 +1778,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_20",
-    "name": "Joseph Enmanuel Salsuela Polanco",
-    "email": "joseph.enmanuel.salsuela.polanco@estudiante.edu.do",
+    "name": "Luis Enmanuel Serrano Martínez",
+    "email": "luis.enmanuel.serrano.mart.nez@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 20,
     "sex": "M",
@@ -1854,8 +1854,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_21",
-    "name": "Luis Enmanuel Serrano Martínez",
-    "email": "luis.enmanuel.serrano.mart.nez@estudiante.edu.do",
+    "name": "Derlin Alexander Sotero Aponte",
+    "email": "derlin.alexander.sotero.aponte@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 21,
     "sex": "M",
@@ -1930,8 +1930,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_22",
-    "name": "Derlin Alexander Sotero Aponte",
-    "email": "derlin.alexander.sotero.aponte@estudiante.edu.do",
+    "name": "Fabielis Taveras Bidó",
+    "email": "fabielis.taveras.bid.@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 22,
     "sex": "M",
@@ -2006,86 +2006,10 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_23",
-    "name": "Fabielis Taveras Bidó",
-    "email": "fabielis.taveras.bid.@estudiante.edu.do",
-    "grade": "1ro A",
-    "orderNumber": 23,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_24",
     "name": "Luisanny Torres",
     "email": "luisanny.torres@estudiante.edu.do",
     "grade": "1ro A",
-    "orderNumber": 24,
+    "orderNumber": 23,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -2157,9 +2081,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_25",
+    "id": "s_24",
     "name": "Dariel Ulloa González",
     "email": "dariel.ulloa.gonz.lez@estudiante.edu.do",
+    "grade": "1ro A",
+    "orderNumber": 24,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_25",
+    "name": "Alggendry Vargas Rodríguez",
+    "email": "alggendry.vargas.rodr.guez@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 25,
     "sex": "M",
@@ -2234,8 +2234,8 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_26",
-    "name": "Alggendry Vargas Rodríguez",
-    "email": "alggendry.vargas.rodr.guez@estudiante.edu.do",
+    "name": "Massimo Miranda De La Cruz",
+    "email": "massimo.miranda.de.la.cruz@estudiante.edu.do",
     "grade": "1ro A",
     "orderNumber": 26,
     "sex": "M",
@@ -2310,6 +2310,158 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_27",
+    "name": "Olga Marie Ben",
+    "email": "olga.marie.ben@estudiante.edu.do",
+    "grade": "1ro A",
+    "orderNumber": 27,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_28",
+    "name": "Windy Mayrelis Gerónimo Paulino",
+    "email": "windy.mayrelis.ger.nimo.paulino@estudiante.edu.do",
+    "grade": "1ro A",
+    "orderNumber": 28,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_29",
     "name": "José Anniel Cisnero Medina",
     "email": "jos..anniel.cisnero.medina@estudiante.edu.do",
     "grade": "2do A",
@@ -2385,7 +2537,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_28",
+    "id": "s_30",
     "name": "Emilianny De Jesús Rodríguez",
     "email": "emilianny.de.jes.s.rodr.guez@estudiante.edu.do",
     "grade": "2do A",
@@ -2461,7 +2613,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_29",
+    "id": "s_31",
     "name": "Daiana De La Rosa Marte",
     "email": "daiana.de.la.rosa.marte@estudiante.edu.do",
     "grade": "2do A",
@@ -2537,7 +2689,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_30",
+    "id": "s_32",
     "name": "Smill Antonio Fernández Rosa",
     "email": "smill.antonio.fern.ndez.rosa@estudiante.edu.do",
     "grade": "2do A",
@@ -2613,7 +2765,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_31",
+    "id": "s_33",
     "name": "Santo García De La Rosa",
     "email": "santo.garc.a.de.la.rosa@estudiante.edu.do",
     "grade": "2do A",
@@ -2689,7 +2841,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_32",
+    "id": "s_34",
     "name": "Massuel Gerardo Robles",
     "email": "massuel.gerardo.robles@estudiante.edu.do",
     "grade": "2do A",
@@ -2765,7 +2917,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_33",
+    "id": "s_35",
     "name": "Mariano Girardo Marmolejos",
     "email": "mariano.girardo.marmolejos@estudiante.edu.do",
     "grade": "2do A",
@@ -2841,7 +2993,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_34",
+    "id": "s_36",
     "name": "Israel Guzmán González",
     "email": "israel.guzm.n.gonz.lez@estudiante.edu.do",
     "grade": "2do A",
@@ -2917,7 +3069,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_35",
+    "id": "s_37",
     "name": "Yariel Hidalgo Minaya",
     "email": "yariel.hidalgo.minaya@estudiante.edu.do",
     "grade": "2do A",
@@ -2993,7 +3145,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_36",
+    "id": "s_38",
     "name": "Raylin José Lebrón Marte",
     "email": "raylin.jos..lebr.n.marte@estudiante.edu.do",
     "grade": "2do A",
@@ -3069,7 +3221,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_37",
+    "id": "s_39",
     "name": "Emanuel López Lantigua",
     "email": "emanuel.l.pez.lantigua@estudiante.edu.do",
     "grade": "2do A",
@@ -3145,7 +3297,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_38",
+    "id": "s_40",
     "name": "Esmerlin Marte",
     "email": "esmerlin.marte@estudiante.edu.do",
     "grade": "2do A",
@@ -3221,7 +3373,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_39",
+    "id": "s_41",
     "name": "Ángel Manuel Martínez",
     "email": ".ngel.manuel.mart.nez@estudiante.edu.do",
     "grade": "2do A",
@@ -3297,7 +3449,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_40",
+    "id": "s_42",
     "name": "Jesús Miguel Martínez Marte",
     "email": "jes.s.miguel.mart.nez.marte@estudiante.edu.do",
     "grade": "2do A",
@@ -3373,7 +3525,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_41",
+    "id": "s_43",
     "name": "Jhonni Yeran Mercedes Florimón",
     "email": "jhonni.yeran.mercedes.florim.n@estudiante.edu.do",
     "grade": "2do A",
@@ -3449,7 +3601,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_42",
+    "id": "s_44",
     "name": "Omar Núñez Núñez",
     "email": "omar.n..ez.n..ez@estudiante.edu.do",
     "grade": "2do A",
@@ -3525,7 +3677,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_43",
+    "id": "s_45",
     "name": "Ariel Francisco Peña Sánchez",
     "email": "ariel.francisco.pe.a.s.nchez@estudiante.edu.do",
     "grade": "2do A",
@@ -3601,7 +3753,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_44",
+    "id": "s_46",
     "name": "Katalella Elizabeth Pérez Encarnación",
     "email": "katalella.elizabeth.p.rez.encarnaci.n@estudiante.edu.do",
     "grade": "2do A",
@@ -3677,7 +3829,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_45",
+    "id": "s_47",
     "name": "Mairemi Polanco",
     "email": "mairemi.polanco@estudiante.edu.do",
     "grade": "2do A",
@@ -3753,7 +3905,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_46",
+    "id": "s_48",
     "name": "Perla María Polanco",
     "email": "perla.mar.a.polanco@estudiante.edu.do",
     "grade": "2do A",
@@ -3829,7 +3981,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_47",
+    "id": "s_49",
     "name": "Luis Miguel Rojas De Jesús",
     "email": "luis.miguel.rojas.de.jes.s@estudiante.edu.do",
     "grade": "2do A",
@@ -3905,7 +4057,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_48",
+    "id": "s_50",
     "name": "Ana Gabriela Segundo Alvarado",
     "email": "ana.gabriela.segundo.alvarado@estudiante.edu.do",
     "grade": "2do A",
@@ -3981,7 +4133,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_49",
+    "id": "s_51",
     "name": "Luis Manuel Ventura Domínguez",
     "email": "luis.manuel.ventura.dom.nguez@estudiante.edu.do",
     "grade": "2do A",
@@ -4057,7 +4209,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_50",
+    "id": "s_52",
     "name": "Yasmeiry Ventura Segundo",
     "email": "yasmeiry.ventura.segundo@estudiante.edu.do",
     "grade": "2do A",
@@ -4133,7 +4285,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_51",
+    "id": "s_53",
     "name": "Sebastián Amaro",
     "email": "sebasti.n.amaro@estudiante.edu.do",
     "grade": "2do B",
@@ -4209,7 +4361,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_52",
+    "id": "s_54",
     "name": "Saúl Andújar Rojas",
     "email": "sa.l.and.jar.rojas@estudiante.edu.do",
     "grade": "2do B",
@@ -4285,7 +4437,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_53",
+    "id": "s_55",
     "name": "Sulianny Yahir De La Rosa Marte",
     "email": "sulianny.yahir.de.la.rosa.marte@estudiante.edu.do",
     "grade": "2do B",
@@ -4361,7 +4513,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_54",
+    "id": "s_56",
     "name": "Ashlin Tifany Díaz Jiménez",
     "email": "ashlin.tifany.d.az.jim.nez@estudiante.edu.do",
     "grade": "2do B",
@@ -4437,7 +4589,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_55",
+    "id": "s_57",
     "name": "Justin Enmanuel Gervacio Martínez",
     "email": "justin.enmanuel.gervacio.mart.nez@estudiante.edu.do",
     "grade": "2do B",
@@ -4513,7 +4665,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_56",
+    "id": "s_58",
     "name": "Heriberto José González Medina",
     "email": "heriberto.jos..gonz.lez.medina@estudiante.edu.do",
     "grade": "2do B",
@@ -4589,9 +4741,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_57",
-    "name": "Luis Enrique González Polanco",
-    "email": "luis.enrique.gonz.lez.polanco@estudiante.edu.do",
+    "id": "s_59",
+    "name": "Yuriel Javier Pichardo",
+    "email": "yuriel.javier.pichardo@estudiante.edu.do",
     "grade": "2do B",
     "orderNumber": 7,
     "sex": "M",
@@ -4665,87 +4817,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_58",
-    "name": "Yuriel Javier Pichardo",
-    "email": "yuriel.javier.pichardo@estudiante.edu.do",
-    "grade": "2do B",
-    "orderNumber": 8,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_59",
+    "id": "s_60",
     "name": "Valerdi Marte Hidalgo",
     "email": "valerdi.marte.hidalgo@estudiante.edu.do",
     "grade": "2do B",
-    "orderNumber": 9,
+    "orderNumber": 8,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -4817,9 +4893,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_60",
+    "id": "s_61",
     "name": "Ángel Mateo Martínez",
     "email": ".ngel.mateo.mart.nez@estudiante.edu.do",
+    "grade": "2do B",
+    "orderNumber": 9,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_62",
+    "name": "Yadriel José Mercedes Burgos",
+    "email": "yadriel.jos..mercedes.burgos@estudiante.edu.do",
     "grade": "2do B",
     "orderNumber": 10,
     "sex": "M",
@@ -4893,87 +5045,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_61",
-    "name": "Yadriel José Mercedes Burgos",
-    "email": "yadriel.jos..mercedes.burgos@estudiante.edu.do",
-    "grade": "2do B",
-    "orderNumber": 11,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_62",
+    "id": "s_63",
     "name": "Yoreily Mercedes García",
     "email": "yoreily.mercedes.garc.a@estudiante.edu.do",
     "grade": "2do B",
-    "orderNumber": 12,
+    "orderNumber": 11,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -5045,9 +5121,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_63",
+    "id": "s_64",
     "name": "Darwin José Molina De Los Santos",
     "email": "darwin.jos..molina.de.los.santos@estudiante.edu.do",
+    "grade": "2do B",
+    "orderNumber": 12,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_65",
+    "name": "Bladimir Pérez Sánchez",
+    "email": "bladimir.p.rez.s.nchez@estudiante.edu.do",
     "grade": "2do B",
     "orderNumber": 13,
     "sex": "M",
@@ -5121,87 +5273,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_64",
-    "name": "Bladimir Pérez Sánchez",
-    "email": "bladimir.p.rez.s.nchez@estudiante.edu.do",
-    "grade": "2do B",
-    "orderNumber": 14,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_65",
+    "id": "s_66",
     "name": "Yanayna Anyelina Quiroz Acosta",
     "email": "yanayna.anyelina.quiroz.acosta@estudiante.edu.do",
     "grade": "2do B",
-    "orderNumber": 15,
+    "orderNumber": 14,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -5273,9 +5349,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_66",
+    "id": "s_67",
     "name": "José Manuel Rosario Manzueta",
     "email": "jos..manuel.rosario.manzueta@estudiante.edu.do",
+    "grade": "2do B",
+    "orderNumber": 15,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_68",
+    "name": "Leonardo Shuler De La Cruz",
+    "email": "leonardo.shuler.de.la.cruz@estudiante.edu.do",
     "grade": "2do B",
     "orderNumber": 16,
     "sex": "M",
@@ -5349,7 +5501,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_67",
+    "id": "s_69",
     "name": "Enmanuel Vásquez Rodríguez",
     "email": "enmanuel.v.squez.rodr.guez@estudiante.edu.do",
     "grade": "2do B",
@@ -5425,7 +5577,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_68",
+    "id": "s_70",
     "name": "Michael Ventura Polanco",
     "email": "michael.ventura.polanco@estudiante.edu.do",
     "grade": "2do B",
@@ -5501,7 +5653,159 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_69",
+    "id": "s_71",
+    "name": "Luis Enrique González Polanco",
+    "email": "luis.enrique.gonz.lez.polanco@estudiante.edu.do",
+    "grade": "2do B",
+    "orderNumber": 19,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_72",
+    "name": "Francisco Chadiel Báez Mercedes",
+    "email": "francisco.chadiel.b.ez.mercedes@estudiante.edu.do",
+    "grade": "2do B",
+    "orderNumber": 20,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_73",
     "name": "Anabel Alcequiez Polanco",
     "email": "anabel.alcequiez.polanco@estudiante.edu.do",
     "grade": "3ro A",
@@ -5577,7 +5881,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_70",
+    "id": "s_74",
     "name": "Reyna Crismerlin Bastado Sánchez",
     "email": "reyna.crismerlin.bastado.s.nchez@estudiante.edu.do",
     "grade": "3ro A",
@@ -5653,7 +5957,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_71",
+    "id": "s_75",
     "name": "Luz Esther Benavides Raposo",
     "email": "luz.esther.benavides.raposo@estudiante.edu.do",
     "grade": "3ro A",
@@ -5729,7 +6033,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_72",
+    "id": "s_76",
     "name": "Luz Shanel Brito Mendoza",
     "email": "luz.shanel.brito.mendoza@estudiante.edu.do",
     "grade": "3ro A",
@@ -5805,7 +6109,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_73",
+    "id": "s_77",
     "name": "Edwin Estarlin Colón Peña",
     "email": "edwin.estarlin.col.n.pe.a@estudiante.edu.do",
     "grade": "3ro A",
@@ -5881,7 +6185,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_74",
+    "id": "s_78",
     "name": "Nashla Camila Cortorreal Hilario",
     "email": "nashla.camila.cortorreal.hilario@estudiante.edu.do",
     "grade": "3ro A",
@@ -5957,7 +6261,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_75",
+    "id": "s_79",
     "name": "Idelsa De Jesús Marte",
     "email": "idelsa.de.jes.s.marte@estudiante.edu.do",
     "grade": "3ro A",
@@ -6033,7 +6337,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_76",
+    "id": "s_80",
     "name": "Yeslianny De Jesús Paredes",
     "email": "yeslianny.de.jes.s.paredes@estudiante.edu.do",
     "grade": "3ro A",
@@ -6109,7 +6413,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_77",
+    "id": "s_81",
     "name": "Edwar Rafael Feliz Reyes",
     "email": "edwar.rafael.feliz.reyes@estudiante.edu.do",
     "grade": "3ro A",
@@ -6185,7 +6489,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_78",
+    "id": "s_82",
     "name": "Shantal Sophia Finol Lugo",
     "email": "shantal.sophia.finol.lugo@estudiante.edu.do",
     "grade": "3ro A",
@@ -6261,7 +6565,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_79",
+    "id": "s_83",
     "name": "Elián Flaex Polanco",
     "email": "eli.n.flaex.polanco@estudiante.edu.do",
     "grade": "3ro A",
@@ -6337,7 +6641,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_80",
+    "id": "s_84",
     "name": "Shantal García",
     "email": "shantal.garc.a@estudiante.edu.do",
     "grade": "3ro A",
@@ -6413,7 +6717,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_81",
+    "id": "s_85",
     "name": "Fannielis Gelabert Hernández",
     "email": "fannielis.gelabert.hern.ndez@estudiante.edu.do",
     "grade": "3ro A",
@@ -6489,7 +6793,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_82",
+    "id": "s_86",
     "name": "Ana Paula Gil Bastardo",
     "email": "ana.paula.gil.bastardo@estudiante.edu.do",
     "grade": "3ro A",
@@ -6565,7 +6869,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_83",
+    "id": "s_87",
     "name": "Mireli Heredia Oquisten",
     "email": "mireli.heredia.oquisten@estudiante.edu.do",
     "grade": "3ro A",
@@ -6641,7 +6945,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_84",
+    "id": "s_88",
     "name": "Wilkandry Hernández",
     "email": "wilkandry.hern.ndez@estudiante.edu.do",
     "grade": "3ro A",
@@ -6717,7 +7021,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_85",
+    "id": "s_89",
     "name": "Oscar Manuel Hernández Abreu",
     "email": "oscar.manuel.hern.ndez.abreu@estudiante.edu.do",
     "grade": "3ro A",
@@ -6793,7 +7097,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_86",
+    "id": "s_90",
     "name": "Jostin Abiel Hernández Almánzar",
     "email": "jostin.abiel.hern.ndez.alm.nzar@estudiante.edu.do",
     "grade": "3ro A",
@@ -6869,7 +7173,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_87",
+    "id": "s_91",
     "name": "Asael Hernández Lora",
     "email": "asael.hern.ndez.lora@estudiante.edu.do",
     "grade": "3ro A",
@@ -6945,7 +7249,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_88",
+    "id": "s_92",
     "name": "Ismael Hernández Peña",
     "email": "ismael.hern.ndez.pe.a@estudiante.edu.do",
     "grade": "3ro A",
@@ -7021,7 +7325,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_89",
+    "id": "s_93",
     "name": "Adiell José Hernández Sanz",
     "email": "adiell.jos..hern.ndez.sanz@estudiante.edu.do",
     "grade": "3ro A",
@@ -7097,7 +7401,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_90",
+    "id": "s_94",
     "name": "Ian Rafael Hernández Sanz",
     "email": "ian.rafael.hern.ndez.sanz@estudiante.edu.do",
     "grade": "3ro A",
@@ -7173,316 +7477,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_91",
-    "name": "Adiell José Hernández Sanz II",
-    "email": "adiell.jos..hern.ndez.sanz.ii@estudiante.edu.do",
-    "grade": "3ro A",
-    "orderNumber": 23,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_92",
+    "id": "s_95",
     "name": "María José Holguín Beltrán",
     "email": "mar.a.jos..holgu.n.beltr.n@estudiante.edu.do",
     "grade": "3ro A",
-    "orderNumber": 24,
+    "orderNumber": 23,
     "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_93",
-    "name": "Ismael Junior Jiménez Paula",
-    "email": "ismael.junior.jim.nez.paula@estudiante.edu.do",
-    "grade": "3ro A",
-    "orderNumber": 25,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_94",
-    "name": "Heisy Malena Polanco",
-    "email": "heisy.malena.polanco@estudiante.edu.do",
-    "grade": "3ro A",
-    "orderNumber": 26,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_95",
-    "name": "Carlos Marrero Polanco",
-    "email": "carlos.marrero.polanco@estudiante.edu.do",
-    "grade": "3ro A",
-    "orderNumber": 27,
-    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -7554,8 +7554,312 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_96",
+    "name": "Ismael Junior Jiménez Paula",
+    "email": "ismael.junior.jim.nez.paula@estudiante.edu.do",
+    "grade": "3ro A",
+    "orderNumber": 24,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_97",
+    "name": "Heisy Malena Polanco",
+    "email": "heisy.malena.polanco@estudiante.edu.do",
+    "grade": "3ro A",
+    "orderNumber": 25,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_98",
+    "name": "Carlos Marrero Polanco",
+    "email": "carlos.marrero.polanco@estudiante.edu.do",
+    "grade": "3ro A",
+    "orderNumber": 26,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_99",
     "name": "Yismery Rosario Batardo",
     "email": "yismery.rosario.batardo@estudiante.edu.do",
+    "grade": "3ro A",
+    "orderNumber": 27,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_100",
+    "name": "Junelgris Taveras Minaya",
+    "email": "junelgris.taveras.minaya@estudiante.edu.do",
     "grade": "3ro A",
     "orderNumber": 28,
     "sex": "F",
@@ -7629,87 +7933,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_97",
-    "name": "Junelgris Taveras Minaya",
-    "email": "junelgris.taveras.minaya@estudiante.edu.do",
+    "id": "s_101",
+    "name": "Jederson Nicolás Turbides Sotero",
+    "email": "jederson.nicol.s.turbides.sotero@estudiante.edu.do",
     "grade": "3ro A",
     "orderNumber": 29,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_98",
-    "name": "Jenderson Nicolás Turbides Sotero",
-    "email": "jenderson.nicol.s.turbides.sotero@estudiante.edu.do",
-    "grade": "3ro A",
-    "orderNumber": 30,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
@@ -7781,7 +8009,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_99",
+    "id": "s_102",
     "name": "Fiaslin Asiático Faña",
     "email": "fiaslin.asi.tico.fa.a@estudiante.edu.do",
     "grade": "3ro B",
@@ -7857,7 +8085,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_100",
+    "id": "s_103",
     "name": "Friuslene Francisca Auguste Pierre",
     "email": "friuslene.francisca.auguste.pierre@estudiante.edu.do",
     "grade": "3ro B",
@@ -7933,7 +8161,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_101",
+    "id": "s_104",
     "name": "Pedro Miguel Báez Zapata",
     "email": "pedro.miguel.b.ez.zapata@estudiante.edu.do",
     "grade": "3ro B",
@@ -8009,12 +8237,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_102",
-    "name": "Marianny Michel Bautista",
-    "email": "marianny.michel.bautista@estudiante.edu.do",
+    "id": "s_105",
+    "name": "Yulián Brito Faña",
+    "email": "yuli.n.brito.fa.a@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 4,
-    "sex": "F",
+    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -8085,9 +8313,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_103",
-    "name": "Yulián Brito Faña",
-    "email": "yuli.n.brito.fa.a@estudiante.edu.do",
+    "id": "s_106",
+    "name": "Edwin Brito Molina",
+    "email": "edwin.brito.molina@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 5,
     "sex": "M",
@@ -8161,87 +8389,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_104",
-    "name": "Edwin Brito Molina",
-    "email": "edwin.brito.molina@estudiante.edu.do",
-    "grade": "3ro B",
-    "orderNumber": 6,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_105",
+    "id": "s_107",
     "name": "Yarileidy Capellán Durán",
     "email": "yarileidy.capell.n.dur.n@estudiante.edu.do",
     "grade": "3ro B",
-    "orderNumber": 7,
+    "orderNumber": 6,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -8313,9 +8465,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_106",
+    "id": "s_108",
     "name": "Kelvin Anderson Cuevas Bidó",
     "email": "kelvin.anderson.cuevas.bid.@estudiante.edu.do",
+    "grade": "3ro B",
+    "orderNumber": 7,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_109",
+    "name": "Braylin De Jesús",
+    "email": "braylin.de.jes.s@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 8,
     "sex": "M",
@@ -8389,9 +8617,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_107",
-    "name": "Braylin De Jesús",
-    "email": "braylin.de.jes.s@estudiante.edu.do",
+    "id": "s_110",
+    "name": "Albensky Etienne Francois",
+    "email": "albensky.etienne.francois@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 9,
     "sex": "M",
@@ -8465,12 +8693,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_108",
-    "name": "Albensky Etienne Francois",
-    "email": "albensky.etienne.francois@estudiante.edu.do",
+    "id": "s_111",
+    "name": "Adarlin Eusebio",
+    "email": "adarlin.eusebio@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 10,
-    "sex": "M",
+    "sex": "F",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -8541,9 +8769,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_109",
-    "name": "Adarlin Eusebio",
-    "email": "adarlin.eusebio@estudiante.edu.do",
+    "id": "s_112",
+    "name": "Fanny Luz Fernández Lora",
+    "email": "fanny.luz.fern.ndez.lora@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 11,
     "sex": "F",
@@ -8617,9 +8845,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_110",
-    "name": "Fanny Luz Fernández Lora",
-    "email": "fanny.luz.fern.ndez.lora@estudiante.edu.do",
+    "id": "s_113",
+    "name": "Mayelin Florimón Alvarado",
+    "email": "mayelin.florim.n.alvarado@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 12,
     "sex": "F",
@@ -8693,87 +8921,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_111",
-    "name": "Mayelin Florimón Alvarado",
-    "email": "mayelin.florim.n.alvarado@estudiante.edu.do",
-    "grade": "3ro B",
-    "orderNumber": 13,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_112",
+    "id": "s_114",
     "name": "Yohan Yoriel Grullón López",
     "email": "yohan.yoriel.grull.n.l.pez@estudiante.edu.do",
     "grade": "3ro B",
-    "orderNumber": 14,
+    "orderNumber": 13,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
@@ -8845,9 +8997,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_113",
+    "id": "s_115",
     "name": "Crismeilin Hernández",
     "email": "crismeilin.hern.ndez@estudiante.edu.do",
+    "grade": "3ro B",
+    "orderNumber": 14,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_116",
+    "name": "Yojadanny Marte Ventura",
+    "email": "yojadanny.marte.ventura@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 15,
     "sex": "F",
@@ -8921,12 +9149,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_114",
-    "name": "Yojadanny Marte Ventura",
-    "email": "yojadanny.marte.ventura@estudiante.edu.do",
+    "id": "s_117",
+    "name": "Juan Carlos Martínez Marte",
+    "email": "juan.carlos.mart.nez.marte@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 16,
-    "sex": "F",
+    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -8997,9 +9225,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_115",
-    "name": "Juan Carlos Martínez Marte",
-    "email": "juan.carlos.mart.nez.marte@estudiante.edu.do",
+    "id": "s_118",
+    "name": "Alexander Mejía Santana",
+    "email": "alexander.mej.a.santana@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 17,
     "sex": "M",
@@ -9073,9 +9301,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_116",
-    "name": "Alexander Mejía Santana",
-    "email": "alexander.mej.a.santana@estudiante.edu.do",
+    "id": "s_119",
+    "name": "Josué Molina Polanco",
+    "email": "josu..molina.polanco@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 18,
     "sex": "M",
@@ -9149,239 +9377,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_117",
-    "name": "Josué Molina Polanco",
-    "email": "josu..molina.polanco@estudiante.edu.do",
-    "grade": "3ro B",
-    "orderNumber": 19,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_118",
+    "id": "s_120",
     "name": "Julianny Esther Núñez Ortega",
     "email": "julianny.esther.n..ez.ortega@estudiante.edu.do",
     "grade": "3ro B",
-    "orderNumber": 20,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_119",
-    "name": "Rafelix Paula Vásquez",
-    "email": "rafelix.paula.v.squez@estudiante.edu.do",
-    "grade": "3ro B",
-    "orderNumber": 21,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_120",
-    "name": "Marelin Rodríguez Turbides",
-    "email": "marelin.rodr.guez.turbides@estudiante.edu.do",
-    "grade": "3ro B",
-    "orderNumber": 22,
+    "orderNumber": 19,
     "sex": "F",
     "grades": {
       "lengua_espanola": {
@@ -9454,8 +9454,236 @@ const DEFAULT_STUDENTS = [
   },
   {
     "id": "s_121",
+    "name": "Rafelix Paula Vásquez",
+    "email": "rafelix.paula.v.squez@estudiante.edu.do",
+    "grade": "3ro B",
+    "orderNumber": 20,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_122",
+    "name": "Marelin Rodríguez Turbides",
+    "email": "marelin.rodr.guez.turbides@estudiante.edu.do",
+    "grade": "3ro B",
+    "orderNumber": 21,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_123",
     "name": "Ostyn Javier Rosario Martínez",
     "email": "ostyn.javier.rosario.mart.nez@estudiante.edu.do",
+    "grade": "3ro B",
+    "orderNumber": 22,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_124",
+    "name": "Frederick Javier Suero Araujo",
+    "email": "frederick.javier.suero.araujo@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 23,
     "sex": "M",
@@ -9529,12 +9757,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_122",
-    "name": "Frederick Javier Suero Araujo",
-    "email": "frederick.javier.suero.araujo@estudiante.edu.do",
+    "id": "s_125",
+    "name": "Ada Esteysy Suero Victorino",
+    "email": "ada.esteysy.suero.victorino@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 24,
-    "sex": "M",
+    "sex": "F",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -9605,9 +9833,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_123",
-    "name": "Ada Esteysy Suero Victorino",
-    "email": "ada.esteysy.suero.victorino@estudiante.edu.do",
+    "id": "s_126",
+    "name": "Melissa Taveras",
+    "email": "melissa.taveras@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 25,
     "sex": "F",
@@ -9681,9 +9909,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_124",
-    "name": "Melissa Taveras",
-    "email": "melissa.taveras@estudiante.edu.do",
+    "id": "s_127",
+    "name": "Llulianny Valentín Rojas",
+    "email": "llulianny.valent.n.rojas@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 26,
     "sex": "F",
@@ -9757,9 +9985,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_125",
-    "name": "Llulianny Valentín Rojas",
-    "email": "llulianny.valent.n.rojas@estudiante.edu.do",
+    "id": "s_128",
+    "name": "Elián Yudith Ureña",
+    "email": "eli.n.yudith.ure.a@estudiante.edu.do",
     "grade": "3ro B",
     "orderNumber": 27,
     "sex": "F",
@@ -9833,7 +10061,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_126",
+    "id": "s_129",
     "name": "Josué Almonte Polanco",
     "email": "josu..almonte.polanco@estudiante.edu.do",
     "grade": "3ro C",
@@ -9909,7 +10137,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_127",
+    "id": "s_130",
     "name": "Orianny Michel Bautista",
     "email": "orianny.michel.bautista@estudiante.edu.do",
     "grade": "3ro C",
@@ -9985,7 +10213,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_128",
+    "id": "s_131",
     "name": "Yadira Fernanda Escolástico Morales",
     "email": "yadira.fernanda.escol.stico.morales@estudiante.edu.do",
     "grade": "3ro C",
@@ -10061,7 +10289,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_129",
+    "id": "s_132",
     "name": "Ángel García",
     "email": ".ngel.garc.a@estudiante.edu.do",
     "grade": "3ro C",
@@ -10137,7 +10365,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_130",
+    "id": "s_133",
     "name": "Darianny Jiménez Polanco",
     "email": "darianny.jim.nez.polanco@estudiante.edu.do",
     "grade": "3ro C",
@@ -10213,7 +10441,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_131",
+    "id": "s_134",
     "name": "Justin Gabriel López Núñez",
     "email": "justin.gabriel.l.pez.n..ez@estudiante.edu.do",
     "grade": "3ro C",
@@ -10289,7 +10517,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_132",
+    "id": "s_135",
     "name": "Marcos Mapello Tirado",
     "email": "marcos.mapello.tirado@estudiante.edu.do",
     "grade": "3ro C",
@@ -10365,7 +10593,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_133",
+    "id": "s_136",
     "name": "Darieli Marte Ventura",
     "email": "darieli.marte.ventura@estudiante.edu.do",
     "grade": "3ro C",
@@ -10441,7 +10669,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_134",
+    "id": "s_137",
     "name": "Yokeiry Mercedes Marte",
     "email": "yokeiry.mercedes.marte@estudiante.edu.do",
     "grade": "3ro C",
@@ -10517,7 +10745,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_135",
+    "id": "s_138",
     "name": "Lisbely Minaya Hernández",
     "email": "lisbely.minaya.hern.ndez@estudiante.edu.do",
     "grade": "3ro C",
@@ -10593,7 +10821,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_136",
+    "id": "s_139",
     "name": "Albeyro Minaya Hernández",
     "email": "albeyro.minaya.hern.ndez@estudiante.edu.do",
     "grade": "3ro C",
@@ -10669,7 +10897,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_137",
+    "id": "s_140",
     "name": "Jandel Núñez Martínez",
     "email": "jandel.n..ez.mart.nez@estudiante.edu.do",
     "grade": "3ro C",
@@ -10745,7 +10973,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_138",
+    "id": "s_141",
     "name": "Fraylin César Pérez De La Cruz",
     "email": "fraylin.c.sar.p.rez.de.la.cruz@estudiante.edu.do",
     "grade": "3ro C",
@@ -10821,7 +11049,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_139",
+    "id": "s_142",
     "name": "Dilan Pérez Gerardo",
     "email": "dilan.p.rez.gerardo@estudiante.edu.do",
     "grade": "3ro C",
@@ -10897,7 +11125,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_140",
+    "id": "s_143",
     "name": "Yuniel Polanco",
     "email": "yuniel.polanco@estudiante.edu.do",
     "grade": "3ro C",
@@ -10973,7 +11201,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_141",
+    "id": "s_144",
     "name": "Yovanny Tavera Montero",
     "email": "yovanny.tavera.montero@estudiante.edu.do",
     "grade": "3ro C",
@@ -11049,12 +11277,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_142",
-    "name": "Elián Yudith Ureña",
-    "email": "eli.n.yudith.ure.a@estudiante.edu.do",
+    "id": "s_145",
+    "name": "Isaac Valentín Santana",
+    "email": "isaac.valent.n.santana@estudiante.edu.do",
     "grade": "3ro C",
     "orderNumber": 17,
-    "sex": "F",
+    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -11125,9 +11353,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_143",
-    "name": "Isaac Valentín Santana",
-    "email": "isaac.valent.n.santana@estudiante.edu.do",
+    "id": "s_146",
+    "name": "Edward Miguel Percy López",
+    "email": "edward.miguel.percy.l.pez@estudiante.edu.do",
     "grade": "3ro C",
     "orderNumber": 18,
     "sex": "M",
@@ -11201,9 +11429,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_144",
-    "name": "Franyelina Ventura Polanco",
-    "email": "franyelina.ventura.polanco@estudiante.edu.do",
+    "id": "s_147",
+    "name": "Elisabeth Jorgensen García",
+    "email": "elisabeth.jorgensen.garc.a@estudiante.edu.do",
     "grade": "3ro C",
     "orderNumber": 19,
     "sex": "F",
@@ -11277,11 +11505,87 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_145",
-    "name": "Edward Miguel Percy López",
-    "email": "edward.miguel.percy.l.pez@estudiante.edu.do",
+    "id": "s_148",
+    "name": "Marianny Michel Bautista",
+    "email": "marianny.michel.bautista@estudiante.edu.do",
     "grade": "3ro C",
     "orderNumber": 20,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_149",
+    "name": "Raylin Paula Polanco",
+    "email": "raylin.paula.polanco@estudiante.edu.do",
+    "grade": "3ro C",
+    "orderNumber": 21,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
@@ -11353,7 +11657,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_146",
+    "id": "s_150",
     "name": "Ashley Nahioni Ciprián Kelly",
     "email": "ashley.nahioni.cipri.n.kelly@estudiante.edu.do",
     "grade": "4AM",
@@ -11429,7 +11733,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_147",
+    "id": "s_151",
     "name": "Engel Estrella Núñez",
     "email": "engel.estrella.n..ez@estudiante.edu.do",
     "grade": "4AM",
@@ -11505,7 +11809,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_148",
+    "id": "s_152",
     "name": "Carlos Loriel Estrella Peña",
     "email": "carlos.loriel.estrella.pe.a@estudiante.edu.do",
     "grade": "4AM",
@@ -11581,7 +11885,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_149",
+    "id": "s_153",
     "name": "Ana Vianny Feliz Reyes",
     "email": "ana.vianny.feliz.reyes@estudiante.edu.do",
     "grade": "4AM",
@@ -11657,7 +11961,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_150",
+    "id": "s_154",
     "name": "Joeli Fermín De La Mota",
     "email": "joeli.ferm.n.de.la.mota@estudiante.edu.do",
     "grade": "4AM",
@@ -11733,9 +12037,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_151",
-    "name": "Elisabeth Jorgensen García",
-    "email": "elisabeth.jorgensen.garc.a@estudiante.edu.do",
+    "id": "s_155",
+    "name": "Franyelina Paula Toribio",
+    "email": "franyelina.paula.toribio@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 6,
     "sex": "F",
@@ -11809,9 +12113,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_152",
-    "name": "Franyelina Paula Toribio",
-    "email": "franyelina.paula.toribio@estudiante.edu.do",
+    "id": "s_156",
+    "name": "Jelen Gabriela Payano Núñez",
+    "email": "jelen.gabriela.payano.n..ez@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 7,
     "sex": "F",
@@ -11885,87 +12189,11 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_153",
-    "name": "Jelen Gabriela Payano Núñez",
-    "email": "jelen.gabriela.payano.n..ez@estudiante.edu.do",
-    "grade": "4AM",
-    "orderNumber": 8,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_154",
+    "id": "s_157",
     "name": "Luis Eduardo Perdomo Del Rosario",
     "email": "luis.eduardo.perdomo.del.rosario@estudiante.edu.do",
     "grade": "4AM",
-    "orderNumber": 9,
+    "orderNumber": 8,
     "sex": "M",
     "grades": {
       "lengua_espanola": {
@@ -12037,9 +12265,85 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_155",
+    "id": "s_158",
     "name": "Racheli Porquín Robles",
     "email": "racheli.porqu.n.robles@estudiante.edu.do",
+    "grade": "4AM",
+    "orderNumber": 9,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_159",
+    "name": "Yurkely Quiroz Ureña",
+    "email": "yurkely.quiroz.ure.a@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 10,
     "sex": "F",
@@ -12113,9 +12417,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_156",
-    "name": "Yurkely Quiroz Ureña",
-    "email": "yurkely.quiroz.ure.a@estudiante.edu.do",
+    "id": "s_160",
+    "name": "Darkeli Rodríguez Amparo",
+    "email": "darkeli.rodr.guez.amparo@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 11,
     "sex": "F",
@@ -12189,9 +12493,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_157",
-    "name": "Darkeli Rodríguez Amparo",
-    "email": "darkeli.rodr.guez.amparo@estudiante.edu.do",
+    "id": "s_161",
+    "name": "Esmerlin Rodríguez Cortorreal",
+    "email": "esmerlin.rodr.guez.cortorreal@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 12,
     "sex": "F",
@@ -12265,12 +12569,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_158",
-    "name": "Esmerlin Rodríguez Cortorreal",
-    "email": "esmerlin.rodr.guez.cortorreal@estudiante.edu.do",
+    "id": "s_162",
+    "name": "Alfredo Adrián Sirven Raposo",
+    "email": "alfredo.adri.n.sirven.raposo@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 13,
-    "sex": "F",
+    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -12341,9 +12645,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_159",
-    "name": "Alfredo Adrián Sirven Raposo",
-    "email": "alfredo.adri.n.sirven.raposo@estudiante.edu.do",
+    "id": "s_163",
+    "name": "Yeuris Ureña Carela",
+    "email": "yeuris.ure.a.carela@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 14,
     "sex": "M",
@@ -12417,9 +12721,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_160",
-    "name": "Yeuris Ureña Carela",
-    "email": "yeuris.ure.a.carela@estudiante.edu.do",
+    "id": "s_164",
+    "name": "Alberson Cabrera Faña",
+    "email": "alberson.cabrera.fa.a@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 15,
     "sex": "M",
@@ -12493,12 +12797,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_161",
-    "name": "Alberson Cabrera Faña",
-    "email": "alberson.cabrera.fa.a@estudiante.edu.do",
+    "id": "s_165",
+    "name": "Yahindy Váldez",
+    "email": "yahindy.v.ldez@estudiante.edu.do",
     "grade": "4AM",
     "orderNumber": 16,
-    "sex": "M",
+    "sex": "F",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -12569,7 +12873,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_162",
+    "id": "s_166",
     "name": "Darlyn Alvarado Núñez",
     "email": "darlyn.alvarado.n..ez@estudiante.edu.do",
     "grade": "4AH",
@@ -12645,7 +12949,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_163",
+    "id": "s_167",
     "name": "Franchely Báez Sarante",
     "email": "franchely.b.ez.sarante@estudiante.edu.do",
     "grade": "4AH",
@@ -12721,7 +13025,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_164",
+    "id": "s_168",
     "name": "Anneris Batista Jiménez",
     "email": "anneris.batista.jim.nez@estudiante.edu.do",
     "grade": "4AH",
@@ -12797,7 +13101,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_165",
+    "id": "s_169",
     "name": "Freddy Manuel Caraballo Sánchez",
     "email": "freddy.manuel.caraballo.s.nchez@estudiante.edu.do",
     "grade": "4AH",
@@ -12873,7 +13177,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_166",
+    "id": "s_170",
     "name": "Darleny Caraballo Vásquez",
     "email": "darleny.caraballo.v.squez@estudiante.edu.do",
     "grade": "4AH",
@@ -12949,7 +13253,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_167",
+    "id": "s_171",
     "name": "Nelson Luis Concepción Gómez",
     "email": "nelson.luis.concepci.n.g.mez@estudiante.edu.do",
     "grade": "4AH",
@@ -13025,7 +13329,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_168",
+    "id": "s_172",
     "name": "Fernando Correa Merejildo",
     "email": "fernando.correa.merejildo@estudiante.edu.do",
     "grade": "4AH",
@@ -13101,7 +13405,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_169",
+    "id": "s_173",
     "name": "Lorena De Jesús Florimón",
     "email": "lorena.de.jes.s.florim.n@estudiante.edu.do",
     "grade": "4AH",
@@ -13177,7 +13481,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_170",
+    "id": "s_174",
     "name": "Esmerlin Domínguez Medina",
     "email": "esmerlin.dom.nguez.medina@estudiante.edu.do",
     "grade": "4AH",
@@ -13253,7 +13557,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_171",
+    "id": "s_175",
     "name": "Raysmeri Gerardo Hidalgo",
     "email": "raysmeri.gerardo.hidalgo@estudiante.edu.do",
     "grade": "4AH",
@@ -13329,7 +13633,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_172",
+    "id": "s_176",
     "name": "Dilanny Gómez Andisin",
     "email": "dilanny.g.mez.andisin@estudiante.edu.do",
     "grade": "4AH",
@@ -13405,7 +13709,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_173",
+    "id": "s_177",
     "name": "Jean Marcos González Mata",
     "email": "jean.marcos.gonz.lez.mata@estudiante.edu.do",
     "grade": "4AH",
@@ -13481,7 +13785,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_174",
+    "id": "s_178",
     "name": "Dariel Hilario Serrano",
     "email": "dariel.hilario.serrano@estudiante.edu.do",
     "grade": "4AH",
@@ -13557,7 +13861,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_175",
+    "id": "s_179",
     "name": "Eddy Luis Jiménez Hidalgo",
     "email": "eddy.luis.jim.nez.hidalgo@estudiante.edu.do",
     "grade": "4AH",
@@ -13633,7 +13937,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_176",
+    "id": "s_180",
     "name": "Jennifer López Lantigua",
     "email": "jennifer.l.pez.lantigua@estudiante.edu.do",
     "grade": "4AH",
@@ -13709,7 +14013,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_177",
+    "id": "s_181",
     "name": "Kenderson López Paulino",
     "email": "kenderson.l.pez.paulino@estudiante.edu.do",
     "grade": "4AH",
@@ -13785,7 +14089,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_178",
+    "id": "s_182",
     "name": "Laulenny Martínez Hernández",
     "email": "laulenny.mart.nez.hern.ndez@estudiante.edu.do",
     "grade": "4AH",
@@ -13861,7 +14165,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_179",
+    "id": "s_183",
     "name": "Carolain Méndez Rodríguez",
     "email": "carolain.m.ndez.rodr.guez@estudiante.edu.do",
     "grade": "4AH",
@@ -13937,7 +14241,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_180",
+    "id": "s_184",
     "name": "Alejandro Minaya Hernández",
     "email": "alejandro.minaya.hern.ndez@estudiante.edu.do",
     "grade": "4AH",
@@ -14013,7 +14317,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_181",
+    "id": "s_185",
     "name": "Marianny Mota Meregildo",
     "email": "marianny.mota.meregildo@estudiante.edu.do",
     "grade": "4AH",
@@ -14089,7 +14393,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_182",
+    "id": "s_186",
     "name": "Luis José Peña Cruz",
     "email": "luis.jos..pe.a.cruz@estudiante.edu.do",
     "grade": "4AH",
@@ -14165,7 +14469,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_183",
+    "id": "s_187",
     "name": "Abril Esteysi Polanco Polanco",
     "email": "abril.esteysi.polanco.polanco@estudiante.edu.do",
     "grade": "4AH",
@@ -14241,9 +14545,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_184",
-    "name": "Racheli Porquín Robles",
-    "email": "racheli.porqu.n.robles@estudiante.edu.do",
+    "id": "s_188",
+    "name": "Dislenny Jazmín Reynoso Cabrera",
+    "email": "dislenny.jazm.n.reynoso.cabrera@estudiante.edu.do",
     "grade": "4AH",
     "orderNumber": 23,
     "sex": "F",
@@ -14317,12 +14621,12 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_185",
-    "name": "Dislenny Jazmín Reynoso Cabrera",
-    "email": "dislenny.jazm.n.reynoso.cabrera@estudiante.edu.do",
+    "id": "s_189",
+    "name": "Quilvio Daniel Rodríguez Báez",
+    "email": "quilvio.daniel.rodr.guez.b.ez@estudiante.edu.do",
     "grade": "4AH",
     "orderNumber": 24,
-    "sex": "F",
+    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -14393,9 +14697,9 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_186",
-    "name": "Darkeli Rodríguez Amparo",
-    "email": "darkeli.rodr.guez.amparo@estudiante.edu.do",
+    "id": "s_190",
+    "name": "Wildania Santos Marte",
+    "email": "wildania.santos.marte@estudiante.edu.do",
     "grade": "4AH",
     "orderNumber": 25,
     "sex": "F",
@@ -14469,159 +14773,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_187",
-    "name": "Quilvio Daniel Rodríguez Báez",
-    "email": "quilvio.daniel.rodr.guez.b.ez@estudiante.edu.do",
-    "grade": "4AH",
-    "orderNumber": 26,
-    "sex": "M",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_188",
-    "name": "Wildania Santos Marte",
-    "email": "wildania.santos.marte@estudiante.edu.do",
-    "grade": "4AH",
-    "orderNumber": 27,
-    "sex": "F",
-    "grades": {
-      "lengua_espanola": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ingles": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "frances": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "matematica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_sociales": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "ciencias_naturaleza": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "artistica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "educacion_fisica": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "formacion_religiosa": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida1": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      },
-      "salida2": {
-        "bloque1": [],
-        "bloque2": [],
-        "bloque3": [],
-        "bloque4": []
-      }
-    }
-  },
-  {
-    "id": "s_189",
+    "id": "s_191",
     "name": "Arbert Starling Arias Alvarado",
     "email": "arbert.starling.arias.alvarado@estudiante.edu.do",
     "grade": "4BH",
@@ -14697,7 +14849,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_190",
+    "id": "s_192",
     "name": "Anderson David Bautista Valdez",
     "email": "anderson.david.bautista.valdez@estudiante.edu.do",
     "grade": "4BH",
@@ -14773,7 +14925,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_191",
+    "id": "s_193",
     "name": "Samir José Cabral Gervacio",
     "email": "samir.jos..cabral.gervacio@estudiante.edu.do",
     "grade": "4BH",
@@ -14849,7 +15001,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_192",
+    "id": "s_194",
     "name": "Daniel Calcaño Jiménez",
     "email": "daniel.calca.o.jim.nez@estudiante.edu.do",
     "grade": "4BH",
@@ -14925,7 +15077,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_193",
+    "id": "s_195",
     "name": "Enmanuel Casiano Cepeda",
     "email": "enmanuel.casiano.cepeda@estudiante.edu.do",
     "grade": "4BH",
@@ -15001,7 +15153,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_194",
+    "id": "s_196",
     "name": "Gabriaily Antonio David",
     "email": "gabriaily.antonio.david@estudiante.edu.do",
     "grade": "4BH",
@@ -15077,7 +15229,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_195",
+    "id": "s_197",
     "name": "Crismerli David Paredez",
     "email": "crismerli.david.paredez@estudiante.edu.do",
     "grade": "4BH",
@@ -15153,7 +15305,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_196",
+    "id": "s_198",
     "name": "Yulianny Duarte Acevedo",
     "email": "yulianny.duarte.acevedo@estudiante.edu.do",
     "grade": "4BH",
@@ -15229,7 +15381,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_197",
+    "id": "s_199",
     "name": "Erianny García Bidó",
     "email": "erianny.garc.a.bid.@estudiante.edu.do",
     "grade": "4BH",
@@ -15305,7 +15457,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_198",
+    "id": "s_200",
     "name": "Ada Luz García González",
     "email": "ada.luz.garc.a.gonz.lez@estudiante.edu.do",
     "grade": "4BH",
@@ -15381,7 +15533,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_199",
+    "id": "s_201",
     "name": "Luis Mario Gil Rodríguez",
     "email": "luis.mario.gil.rodr.guez@estudiante.edu.do",
     "grade": "4BH",
@@ -15457,7 +15609,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_200",
+    "id": "s_202",
     "name": "Franyeli Esther González Polanco",
     "email": "franyeli.esther.gonz.lez.polanco@estudiante.edu.do",
     "grade": "4BH",
@@ -15533,7 +15685,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_201",
+    "id": "s_203",
     "name": "Adrián Hilario Acevedo",
     "email": "adri.n.hilario.acevedo@estudiante.edu.do",
     "grade": "4BH",
@@ -15609,7 +15761,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_202",
+    "id": "s_204",
     "name": "Carolin Hilario Hidalgo",
     "email": "carolin.hilario.hidalgo@estudiante.edu.do",
     "grade": "4BH",
@@ -15685,7 +15837,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_203",
+    "id": "s_205",
     "name": "Carlison Lizardo Martínez",
     "email": "carlison.lizardo.mart.nez@estudiante.edu.do",
     "grade": "4BH",
@@ -15761,7 +15913,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_204",
+    "id": "s_206",
     "name": "Alam Lorenzo Rodríguez",
     "email": "alam.lorenzo.rodr.guez@estudiante.edu.do",
     "grade": "4BH",
@@ -15837,7 +15989,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_205",
+    "id": "s_207",
     "name": "Albeyro Santos Del Orbe",
     "email": "albeyro.santos.del.orbe@estudiante.edu.do",
     "grade": "4BH",
@@ -15913,7 +16065,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_206",
+    "id": "s_208",
     "name": "Rosauri Vargas Medina",
     "email": "rosauri.vargas.medina@estudiante.edu.do",
     "grade": "4BH",
@@ -15989,7 +16141,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_207",
+    "id": "s_209",
     "name": "Hansel Zabala Valdez",
     "email": "hansel.zabala.valdez@estudiante.edu.do",
     "grade": "4BH",
@@ -16065,7 +16217,159 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_208",
+    "id": "s_210",
+    "name": "Franyelina Ventura Polanco",
+    "email": "franyelina.ventura.polanco@estudiante.edu.do",
+    "grade": "4BH",
+    "orderNumber": 20,
+    "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_211",
+    "name": "Juan Carlos Vásquez",
+    "email": "juan.carlos.v.squez@estudiante.edu.do",
+    "grade": "4BH",
+    "orderNumber": 21,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_212",
     "name": "Luis Ariel Brito Faña",
     "email": "luis.ariel.brito.fa.a@estudiante.edu.do",
     "grade": "5AM",
@@ -16141,7 +16445,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_209",
+    "id": "s_213",
     "name": "Massiel Castillo Santana",
     "email": "massiel.castillo.santana@estudiante.edu.do",
     "grade": "5AM",
@@ -16217,7 +16521,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_210",
+    "id": "s_214",
     "name": "Mariel Custodio Meléndez",
     "email": "mariel.custodio.mel.ndez@estudiante.edu.do",
     "grade": "5AM",
@@ -16293,7 +16597,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_211",
+    "id": "s_215",
     "name": "Melani De La Cruz Gómez",
     "email": "melani.de.la.cruz.g.mez@estudiante.edu.do",
     "grade": "5AM",
@@ -16369,7 +16673,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_212",
+    "id": "s_216",
     "name": "Arianny Edili De León Hernández",
     "email": "arianny.edili.de.le.n.hern.ndez@estudiante.edu.do",
     "grade": "5AM",
@@ -16445,7 +16749,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_213",
+    "id": "s_217",
     "name": "Awilda Díaz",
     "email": "awilda.d.az@estudiante.edu.do",
     "grade": "5AM",
@@ -16521,7 +16825,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_214",
+    "id": "s_218",
     "name": "Walter Jesús Fernández Hernández",
     "email": "walter.jes.s.fern.ndez.hern.ndez@estudiante.edu.do",
     "grade": "5AM",
@@ -16597,7 +16901,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_215",
+    "id": "s_219",
     "name": "Ashly Fernández Lora",
     "email": "ashly.fern.ndez.lora@estudiante.edu.do",
     "grade": "5AM",
@@ -16673,7 +16977,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_216",
+    "id": "s_220",
     "name": "Marleny García García",
     "email": "marleny.garc.a.garc.a@estudiante.edu.do",
     "grade": "5AM",
@@ -16749,7 +17053,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_217",
+    "id": "s_221",
     "name": "Jael Adolfo García Sánchez",
     "email": "jael.adolfo.garc.a.s.nchez@estudiante.edu.do",
     "grade": "5AM",
@@ -16825,7 +17129,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_218",
+    "id": "s_222",
     "name": "Franyeli Guzmán",
     "email": "franyeli.guzm.n@estudiante.edu.do",
     "grade": "5AM",
@@ -16901,7 +17205,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_219",
+    "id": "s_223",
     "name": "Jaqui Jean Pie",
     "email": "jaqui.jean.pie@estudiante.edu.do",
     "grade": "5AM",
@@ -16977,7 +17281,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_220",
+    "id": "s_224",
     "name": "Dariel Marte Ventura",
     "email": "dariel.marte.ventura@estudiante.edu.do",
     "grade": "5AM",
@@ -17053,7 +17357,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_221",
+    "id": "s_225",
     "name": "José Alejandro Mota Meregildo",
     "email": "jos..alejandro.mota.meregildo@estudiante.edu.do",
     "grade": "5AM",
@@ -17129,7 +17433,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_222",
+    "id": "s_226",
     "name": "Dioni Junior Paredes Gil",
     "email": "dioni.junior.paredes.gil@estudiante.edu.do",
     "grade": "5AM",
@@ -17205,7 +17509,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_223",
+    "id": "s_227",
     "name": "Yuliana Pichardo Brito",
     "email": "yuliana.pichardo.brito@estudiante.edu.do",
     "grade": "5AM",
@@ -17281,7 +17585,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_224",
+    "id": "s_228",
     "name": "María Valentina Rodríguez Almonte",
     "email": "mar.a.valentina.rodr.guez.almonte@estudiante.edu.do",
     "grade": "5AM",
@@ -17357,7 +17661,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_225",
+    "id": "s_229",
     "name": "Edileisi Rogelis Sánchez",
     "email": "edileisi.rogelis.s.nchez@estudiante.edu.do",
     "grade": "5AM",
@@ -17433,7 +17737,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_226",
+    "id": "s_230",
     "name": "Rosanna Sotero Sánchez",
     "email": "rosanna.sotero.s.nchez@estudiante.edu.do",
     "grade": "5AM",
@@ -17509,7 +17813,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_227",
+    "id": "s_231",
     "name": "José Yandel Taveras Marte",
     "email": "jos..yandel.taveras.marte@estudiante.edu.do",
     "grade": "5AM",
@@ -17585,7 +17889,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_228",
+    "id": "s_232",
     "name": "Franyeli Ventura Polanco",
     "email": "franyeli.ventura.polanco@estudiante.edu.do",
     "grade": "5AM",
@@ -17661,7 +17965,83 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_229",
+    "id": "s_233",
+    "name": "Adelin Reyes Polanco",
+    "email": "adelin.reyes.polanco@estudiante.edu.do",
+    "grade": "5AM",
+    "orderNumber": 22,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_234",
     "name": "Yanet Amparo Holguín",
     "email": "yanet.amparo.holgu.n@estudiante.edu.do",
     "grade": "5AN",
@@ -17737,7 +18117,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_230",
+    "id": "s_235",
     "name": "Joan Manuel Amparo Lora",
     "email": "joan.manuel.amparo.lora@estudiante.edu.do",
     "grade": "5AN",
@@ -17813,7 +18193,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_231",
+    "id": "s_236",
     "name": "Berkianis Amparo Núñez",
     "email": "berkianis.amparo.n..ez@estudiante.edu.do",
     "grade": "5AN",
@@ -17889,7 +18269,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_232",
+    "id": "s_237",
     "name": "Lauris Mariel Bidó Moreno",
     "email": "lauris.mariel.bid..moreno@estudiante.edu.do",
     "grade": "5AN",
@@ -17965,7 +18345,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_233",
+    "id": "s_238",
     "name": "Anderson Caraballo Vásquez",
     "email": "anderson.caraballo.v.squez@estudiante.edu.do",
     "grade": "5AN",
@@ -18041,7 +18421,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_234",
+    "id": "s_239",
     "name": "Franklyn Bernard Castillo Paredes",
     "email": "franklyn.bernard.castillo.paredes@estudiante.edu.do",
     "grade": "5AN",
@@ -18117,7 +18497,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_235",
+    "id": "s_240",
     "name": "Yomaris De Jesús",
     "email": "yomaris.de.jes.s@estudiante.edu.do",
     "grade": "5AN",
@@ -18193,7 +18573,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_236",
+    "id": "s_241",
     "name": "Analía Díaz Basora",
     "email": "anal.a.d.az.basora@estudiante.edu.do",
     "grade": "5AN",
@@ -18269,7 +18649,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_237",
+    "id": "s_242",
     "name": "Jesús Manuel Duarte Ortiz",
     "email": "jes.s.manuel.duarte.ortiz@estudiante.edu.do",
     "grade": "5AN",
@@ -18345,7 +18725,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_238",
+    "id": "s_243",
     "name": "Kinberlyn Espinal Severino",
     "email": "kinberlyn.espinal.severino@estudiante.edu.do",
     "grade": "5AN",
@@ -18421,7 +18801,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_239",
+    "id": "s_244",
     "name": "Rasieli Frías Rodríguez",
     "email": "rasieli.fr.as.rodr.guez@estudiante.edu.do",
     "grade": "5AN",
@@ -18497,7 +18877,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_240",
+    "id": "s_245",
     "name": "Kenileni Hernández Acosta",
     "email": "kenileni.hern.ndez.acosta@estudiante.edu.do",
     "grade": "5AN",
@@ -18573,7 +18953,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_241",
+    "id": "s_246",
     "name": "Johanna Mariel Hernández García",
     "email": "johanna.mariel.hern.ndez.garc.a@estudiante.edu.do",
     "grade": "5AN",
@@ -18649,7 +19029,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_242",
+    "id": "s_247",
     "name": "Diosmerlin Hernández Hidalgo",
     "email": "diosmerlin.hern.ndez.hidalgo@estudiante.edu.do",
     "grade": "5AN",
@@ -18725,7 +19105,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_243",
+    "id": "s_248",
     "name": "Heidi Mariel Hernández Luna",
     "email": "heidi.mariel.hern.ndez.luna@estudiante.edu.do",
     "grade": "5AN",
@@ -18801,7 +19181,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_244",
+    "id": "s_249",
     "name": "Heisi Mabel Hernández Luna",
     "email": "heisi.mabel.hern.ndez.luna@estudiante.edu.do",
     "grade": "5AN",
@@ -18877,7 +19257,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_245",
+    "id": "s_250",
     "name": "Julianny Hernández Marte",
     "email": "julianny.hern.ndez.marte@estudiante.edu.do",
     "grade": "5AN",
@@ -18953,7 +19333,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_246",
+    "id": "s_251",
     "name": "Lovena Joseph Aphael",
     "email": "lovena.joseph.aphael@estudiante.edu.do",
     "grade": "5AN",
@@ -19029,7 +19409,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_247",
+    "id": "s_252",
     "name": "Ander Francisco Lora Minaya",
     "email": "ander.francisco.lora.minaya@estudiante.edu.do",
     "grade": "5AN",
@@ -19105,7 +19485,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_248",
+    "id": "s_253",
     "name": "Brismailin Méndez Paula",
     "email": "brismailin.m.ndez.paula@estudiante.edu.do",
     "grade": "5AN",
@@ -19181,7 +19561,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_249",
+    "id": "s_254",
     "name": "Ángel Luis Ortiz Ortegas",
     "email": ".ngel.luis.ortiz.ortegas@estudiante.edu.do",
     "grade": "5AN",
@@ -19257,7 +19637,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_250",
+    "id": "s_255",
     "name": "Geraldina Paula Mercedes",
     "email": "geraldina.paula.mercedes@estudiante.edu.do",
     "grade": "5AN",
@@ -19333,7 +19713,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_251",
+    "id": "s_256",
     "name": "Nanderli Peralta Tejada",
     "email": "nanderli.peralta.tejada@estudiante.edu.do",
     "grade": "5AN",
@@ -19409,7 +19789,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_252",
+    "id": "s_257",
     "name": "Nawilka Polanco",
     "email": "nawilka.polanco@estudiante.edu.do",
     "grade": "5AN",
@@ -19485,7 +19865,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_253",
+    "id": "s_258",
     "name": "Yosleydi Josefina Reyes Victoriano",
     "email": "yosleydi.josefina.reyes.victoriano@estudiante.edu.do",
     "grade": "5AN",
@@ -19561,7 +19941,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_254",
+    "id": "s_259",
     "name": "Angely Dawilda Reynoso Castillo",
     "email": "angely.dawilda.reynoso.castillo@estudiante.edu.do",
     "grade": "5AN",
@@ -19637,7 +20017,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_255",
+    "id": "s_260",
     "name": "Jasneydi Smith Taveras",
     "email": "jasneydi.smith.taveras@estudiante.edu.do",
     "grade": "5AN",
@@ -19713,7 +20093,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_256",
+    "id": "s_261",
     "name": "Huberlina Solano Marte",
     "email": "huberlina.solano.marte@estudiante.edu.do",
     "grade": "5AN",
@@ -19789,7 +20169,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_257",
+    "id": "s_262",
     "name": "Yacoby Alberto Suero Araujo",
     "email": "yacoby.alberto.suero.araujo@estudiante.edu.do",
     "grade": "5AN",
@@ -19865,7 +20245,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_258",
+    "id": "s_263",
     "name": "Yerselis Taveras Paulino",
     "email": "yerselis.taveras.paulino@estudiante.edu.do",
     "grade": "5AN",
@@ -19941,7 +20321,83 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_259",
+    "id": "s_264",
+    "name": "Ángel Manuel Capellán Durán",
+    "email": ".ngel.manuel.capell.n.dur.n@estudiante.edu.do",
+    "grade": "5AN",
+    "orderNumber": 31,
+    "sex": "M",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_265",
     "name": "Arlin Almonte Santos",
     "email": "arlin.almonte.santos@estudiante.edu.do",
     "grade": "6AM",
@@ -20017,7 +20473,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_260",
+    "id": "s_266",
     "name": "Yulianny Alvarado Vargas",
     "email": "yulianny.alvarado.vargas@estudiante.edu.do",
     "grade": "6AM",
@@ -20093,7 +20549,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_261",
+    "id": "s_267",
     "name": "Esmeralda Aquino",
     "email": "esmeralda.aquino@estudiante.edu.do",
     "grade": "6AM",
@@ -20169,7 +20625,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_262",
+    "id": "s_268",
     "name": "Anelis Batista Jiménez",
     "email": "anelis.batista.jim.nez@estudiante.edu.do",
     "grade": "6AM",
@@ -20245,7 +20701,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_263",
+    "id": "s_269",
     "name": "Germayely Bidó Paulino",
     "email": "germayely.bid..paulino@estudiante.edu.do",
     "grade": "6AM",
@@ -20321,7 +20777,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_264",
+    "id": "s_270",
     "name": "Yan Melvin Bonilla Marte",
     "email": "yan.melvin.bonilla.marte@estudiante.edu.do",
     "grade": "6AM",
@@ -20397,7 +20853,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_265",
+    "id": "s_271",
     "name": "Amada María Crucet Paredes",
     "email": "amada.mar.a.crucet.paredes@estudiante.edu.do",
     "grade": "6AM",
@@ -20473,7 +20929,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_266",
+    "id": "s_272",
     "name": "Yan Carlos Hernández Concepción",
     "email": "yan.carlos.hern.ndez.concepci.n@estudiante.edu.do",
     "grade": "6AM",
@@ -20549,7 +21005,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_267",
+    "id": "s_273",
     "name": "Álvaro Luis Jiménez Jiménez",
     "email": ".lvaro.luis.jim.nez.jim.nez@estudiante.edu.do",
     "grade": "6AM",
@@ -20625,7 +21081,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_268",
+    "id": "s_274",
     "name": "Ismayri Rachel Jiménez Paula",
     "email": "ismayri.rachel.jim.nez.paula@estudiante.edu.do",
     "grade": "6AM",
@@ -20701,7 +21157,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_269",
+    "id": "s_275",
     "name": "Joelisa Leta",
     "email": "joelisa.leta@estudiante.edu.do",
     "grade": "6AM",
@@ -20777,7 +21233,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_270",
+    "id": "s_276",
     "name": "Ismael López Casiano",
     "email": "ismael.l.pez.casiano@estudiante.edu.do",
     "grade": "6AM",
@@ -20853,7 +21309,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_271",
+    "id": "s_277",
     "name": "Israel López Casiano",
     "email": "israel.l.pez.casiano@estudiante.edu.do",
     "grade": "6AM",
@@ -20929,7 +21385,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_272",
+    "id": "s_278",
     "name": "Valeria Marte Hidalgo",
     "email": "valeria.marte.hidalgo@estudiante.edu.do",
     "grade": "6AM",
@@ -21005,7 +21461,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_273",
+    "id": "s_279",
     "name": "Brahian Manuel Melende Faña",
     "email": "brahian.manuel.melende.fa.a@estudiante.edu.do",
     "grade": "6AM",
@@ -21081,7 +21537,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_274",
+    "id": "s_280",
     "name": "Esther Remigio Serrano",
     "email": "esther.remigio.serrano@estudiante.edu.do",
     "grade": "6AM",
@@ -21157,7 +21613,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_275",
+    "id": "s_281",
     "name": "Lismeiry Alejandra Taveras Valdez",
     "email": "lismeiry.alejandra.taveras.valdez@estudiante.edu.do",
     "grade": "6AM",
@@ -21233,7 +21689,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_276",
+    "id": "s_282",
     "name": "Danielis Alexandra Aguasvivas Pimentel",
     "email": "danielis.alexandra.aguasvivas.pimentel@estudiante.edu.do",
     "grade": "6AH",
@@ -21309,7 +21765,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_277",
+    "id": "s_283",
     "name": "Yafreisy Báez Zapata",
     "email": "yafreisy.b.ez.zapata@estudiante.edu.do",
     "grade": "6AH",
@@ -21385,7 +21841,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_278",
+    "id": "s_284",
     "name": "Keyla Luz Benavides Raposo",
     "email": "keyla.luz.benavides.raposo@estudiante.edu.do",
     "grade": "6AH",
@@ -21461,7 +21917,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_279",
+    "id": "s_285",
     "name": "Amy Mariel De Jesús",
     "email": "amy.mariel.de.jes.s@estudiante.edu.do",
     "grade": "6AH",
@@ -21537,7 +21993,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_280",
+    "id": "s_286",
     "name": "Aida Celeste García Benavides",
     "email": "aida.celeste.garc.a.benavides@estudiante.edu.do",
     "grade": "6AH",
@@ -21613,7 +22069,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_281",
+    "id": "s_287",
     "name": "Anyelina Hernández Bonilla",
     "email": "anyelina.hern.ndez.bonilla@estudiante.edu.do",
     "grade": "6AH",
@@ -21689,7 +22145,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_282",
+    "id": "s_288",
     "name": "Estarlin Johnson Vargas",
     "email": "estarlin.johnson.vargas@estudiante.edu.do",
     "grade": "6AH",
@@ -21765,7 +22221,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_283",
+    "id": "s_289",
     "name": "María Antonia López Gil",
     "email": "mar.a.antonia.l.pez.gil@estudiante.edu.do",
     "grade": "6AH",
@@ -21841,7 +22297,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_284",
+    "id": "s_290",
     "name": "Solanyi Martínez Duarte",
     "email": "solanyi.mart.nez.duarte@estudiante.edu.do",
     "grade": "6AH",
@@ -21917,7 +22373,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_285",
+    "id": "s_291",
     "name": "Doud Jie Moisé",
     "email": "doud.jie.mois.@estudiante.edu.do",
     "grade": "6AH",
@@ -21993,7 +22449,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_286",
+    "id": "s_292",
     "name": "Nicauri Paredes Gil",
     "email": "nicauri.paredes.gil@estudiante.edu.do",
     "grade": "6AH",
@@ -22069,7 +22525,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_287",
+    "id": "s_293",
     "name": "Nicol Paredes Gil",
     "email": "nicol.paredes.gil@estudiante.edu.do",
     "grade": "6AH",
@@ -22145,7 +22601,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_288",
+    "id": "s_294",
     "name": "Melissa María Polanco Polanco",
     "email": "melissa.mar.a.polanco.polanco@estudiante.edu.do",
     "grade": "6AH",
@@ -22221,7 +22677,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_289",
+    "id": "s_295",
     "name": "Nicole Ramón De La Cruz",
     "email": "nicole.ram.n.de.la.cruz@estudiante.edu.do",
     "grade": "6AH",
@@ -22297,7 +22753,7 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_290",
+    "id": "s_296",
     "name": "Marelin Paredes Gómez",
     "email": "marelin.paredes.g.mez@estudiante.edu.do",
     "grade": "6AH",
@@ -22373,12 +22829,88 @@ const DEFAULT_STUDENTS = [
     }
   },
   {
-    "id": "s_291",
+    "id": "s_297",
     "name": "Shandy Masiel Bertre Cortorreal",
     "email": "shandy.masiel.bertre.cortorreal@estudiante.edu.do",
     "grade": "6AH",
     "orderNumber": 16,
     "sex": "F",
+    "grades": {
+      "lengua_espanola": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ingles": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "frances": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "matematica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_sociales": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "ciencias_naturaleza": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "artistica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "educacion_fisica": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "formacion_religiosa": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida1": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      },
+      "salida2": {
+        "bloque1": [],
+        "bloque2": [],
+        "bloque3": [],
+        "bloque4": []
+      }
+    }
+  },
+  {
+    "id": "s_298",
+    "name": "Willy Dariel Gerardo Faña",
+    "email": "willy.dariel.gerardo.fa.a@estudiante.edu.do",
+    "grade": "6AH",
+    "orderNumber": 17,
+    "sex": "M",
     "grades": {
       "lengua_espanola": {
         "bloque1": [],
@@ -23197,16 +23729,16 @@ export default function App() {
     const savedList = Array.isArray(savedArray) ? savedArray : [];
     const defaultList = Array.isArray(defaultArray) ? defaultArray : [];
 
-    // Map strictly by default student ID (s_1 .. s_291) or exact name
     return defaultList.map((defStu) => {
-      const savedMatch = savedList.find(s => s.id === defStu.id || (s.name && s.name.trim().toLowerCase() === defStu.name.trim().toLowerCase()));
+      // Find matching saved student by name or id to preserve attendance
+      const savedMatch = savedList.find(s => 
+        s.id === defStu.id || 
+        (s.name && s.name.trim().toLowerCase() === defStu.name.trim().toLowerCase())
+      );
       if (savedMatch) {
         return {
           ...defStu,
-          // Keep student grade to official defStu.grade (4AM, 6AM, 6AH, etc.)
-          grade: defStu.grade,
-          orderNumber: defStu.orderNumber,
-          // Completely clean grades for fresh start - zero dummy scores
+          // ALWAYS enforce clean empty grades - zero dummy scores
           grades: normalizeStudentGrades({}),
           // PRESERVE attendance and comments 100%
           attendance: savedMatch.attendance || defStu.attendance,
@@ -23228,13 +23760,8 @@ export default function App() {
         try { savedParsed = JSON.parse(saved); } catch(e) {}
       }
       const merged = mergeStudentsPreservingData(savedParsed, DEFAULT_STUDENTS);
-      // Clean grades for fresh start if requested
-      const cleanMerged = merged.map(s => ({
-        ...s,
-        grades: normalizeStudentGrades({})
-      }));
-      localStorage.setItem('s_students', JSON.stringify(cleanMerged));
-      return cleanMerged;
+      localStorage.setItem('s_students', JSON.stringify(merged));
+      return merged;
     } catch (e) {
       const fallback = DEFAULT_STUDENTS.map(s => ({ ...s, grades: normalizeStudentGrades({}) }));
       localStorage.setItem('s_students', JSON.stringify(fallback));
