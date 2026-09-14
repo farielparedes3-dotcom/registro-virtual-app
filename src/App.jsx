@@ -242,10 +242,22 @@ const DEFAULT_USERS = [
     email: 'ramon.lopez@docente.edu.do',
     password: 'ramon123',
     role: 'teacher',
-    classroomGrade: '3ro B',
+    classroomGrade: '5AM',
     assignments: [
-      { grade: '3ro B', subject: 'ciencias_naturaleza' },
-      { grade: '3ro B', subject: 'ciencias_sociales' }
+      { grade: '5AM', subject: 'educacion_fisica' },
+      { grade: '5AN', subject: 'educacion_fisica' },
+      { grade: '4AM', subject: 'educacion_fisica' },
+      { grade: '4AH', subject: 'educacion_fisica' },
+      { grade: '4BH', subject: 'educacion_fisica' },
+      { grade: '6AM', subject: 'educacion_fisica' },
+      { grade: '6AH', subject: 'educacion_fisica' },
+      { grade: '1ro A', subject: 'educacion_fisica' },
+      { grade: '1ro B', subject: 'educacion_fisica' },
+      { grade: '2do A', subject: 'educacion_fisica' },
+      { grade: '2do B', subject: 'educacion_fisica' },
+      { grade: '3ro A', subject: 'educacion_fisica' },
+      { grade: '3ro B', subject: 'educacion_fisica' },
+      { grade: '3ro C', subject: 'educacion_fisica' }
     ],
     active: true
   },
@@ -309,8 +321,20 @@ const DEFAULT_USERS = [
     role: 'teacher',
     classroomGrade: '5AN',
     assignments: [
-      { grade: '5AN', subject: 'matematica' },
-      { grade: '5AN', subject: 'lengua_espanola' }
+      { grade: '5AM', subject: 'ingles' },
+      { grade: '5AN', subject: 'ingles' },
+      { grade: '4AM', subject: 'ingles' },
+      { grade: '4AH', subject: 'ingles' },
+      { grade: '4BH', subject: 'ingles' },
+      { grade: '6AM', subject: 'ingles' },
+      { grade: '6AH', subject: 'ingles' },
+      { grade: '1ro A', subject: 'ingles' },
+      { grade: '1ro B', subject: 'ingles' },
+      { grade: '2do A', subject: 'ingles' },
+      { grade: '2do B', subject: 'ingles' },
+      { grade: '3ro A', subject: 'ingles' },
+      { grade: '3ro B', subject: 'ingles' },
+      { grade: '3ro C', subject: 'ingles' }
     ],
     active: true
   },
@@ -23421,7 +23445,8 @@ const getRpInputStyle = (rpVal, originalP) => {
 
 const sortGrades = (gradesList) => {
   if (!gradesList || !Array.isArray(gradesList)) return [];
-  return [...gradesList].sort((a, b) => {
+  const normalized = gradesList.map(g => normalizeGradeString(g));
+  return [...new Set(normalized)].sort((a, b) => {
     const numA = parseInt(a) || 0;
     const numB = parseInt(b) || 0;
     if (numA !== numB) {
@@ -23678,10 +23703,31 @@ export default function App() {
     // Ensure all existing teachers have normalized classroomGrade and assignments
     list = list.map(u => {
       if (u.role === 'teacher') {
-        const normAssignments = (u.assignments || []).map(a => ({
+        let normAssignments = (u.assignments || []).map(a => ({
           ...a,
           grade: normalizeGradeString(a.grade)
         }));
+
+        // Guarantee Ramón López has educacion_fisica across all secondary grades
+        if (u.id === 't12' || (u.email && u.email.toLowerCase().includes('ramon.lopez'))) {
+          const allG = ['5AM', '5AN', '4AM', '4AH', '4BH', '6AM', '6AH', '1ro A', '1ro B', '2do A', '2do B', '3ro A', '3ro B', '3ro C'];
+          allG.forEach(g => {
+            if (!normAssignments.some(a => matchGrade(a.grade, g) && a.subject === 'educacion_fisica')) {
+              normAssignments.push({ grade: g, subject: 'educacion_fisica' });
+            }
+          });
+        }
+
+        // Guarantee José Robles has ingles across all secondary grades
+        if (u.id === 't17' || (u.email && u.email.toLowerCase().includes('jose.robles'))) {
+          const allG = ['5AM', '5AN', '4AM', '4AH', '4BH', '6AM', '6AH', '1ro A', '1ro B', '2do A', '2do B', '3ro A', '3ro B', '3ro C'];
+          allG.forEach(g => {
+            if (!normAssignments.some(a => matchGrade(a.grade, g) && a.subject === 'ingles')) {
+              normAssignments.push({ grade: g, subject: 'ingles' });
+            }
+          });
+        }
+
         return {
           ...u,
           classroomGrade: normalizeGradeString(u.classroomGrade || ''),
@@ -23887,10 +23933,20 @@ export default function App() {
 
   const [grades, setGrades] = useState(() => {
     try {
-    const saved = localStorage.getItem('s_grades');
-    const raw = saved ? JSON.parse(saved) : DEFAULT_GRADES;
-    return sortGrades(raw);
-    } catch (e) { localStorage.removeItem('s_grades'); return sortGrades(DEFAULT_GRADES); }
+      const saved = localStorage.getItem('s_grades');
+      let raw = saved ? JSON.parse(saved) : DEFAULT_GRADES;
+      if (!Array.isArray(raw)) raw = DEFAULT_GRADES;
+      const merged = [...raw.map(g => normalizeGradeString(g))];
+      DEFAULT_GRADES.forEach(dg => {
+        if (!merged.some(g => matchGrade(g, dg))) merged.push(dg);
+      });
+      const sorted = sortGrades(merged);
+      localStorage.setItem('s_grades', JSON.stringify(sorted));
+      return sorted;
+    } catch (e) {
+      localStorage.removeItem('s_grades');
+      return sortGrades(DEFAULT_GRADES);
+    }
   });
 
   const [expandedSections, setExpandedSections] = useState({
@@ -24577,12 +24633,35 @@ export default function App() {
     }
   }, [currentUser]);
 
+  // Sync currentUser with users list
+  useEffect(() => {
+    if (currentUser && users && users.length > 0) {
+      const fresh = users.find(u => u.id === currentUser.id || (u.email && u.email.toLowerCase() === (currentUser.email || '').toLowerCase()));
+      if (fresh) {
+        const freshAssignments = JSON.stringify(fresh.assignments || []);
+        const currAssignments = JSON.stringify(currentUser.assignments || []);
+        if (freshAssignments !== currAssignments || fresh.classroomGrade !== currentUser.classroomGrade) {
+          const updated = {
+            ...currentUser,
+            ...fresh,
+            classroomGrade: fresh.classroomGrade,
+            assignments: fresh.assignments || []
+          };
+          setCurrentUser(updated);
+          try { localStorage.setItem('s_current_user', JSON.stringify(updated)); } catch(e) {}
+        }
+      }
+    }
+  }, [users]);
+
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher') {
-      const uniqueGrades = [...new Set((currentUser.assignments || []).map(a => a.grade))];
+      const uniqueGrades = [...new Set((currentUser.assignments || []).map(a => normalizeGradeString(a.grade)))];
       if (uniqueGrades.length > 0) {
-        setSelectedGrade(uniqueGrades[0]);
+        if (!selectedGrade || !uniqueGrades.some(g => matchGrade(g, selectedGrade))) {
+          setSelectedGrade(uniqueGrades[0]);
+        }
       }
     }
   }, [currentUser]);
@@ -24591,10 +24670,12 @@ export default function App() {
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher' && selectedGrade) {
       const gradeSubjects = (currentUser.assignments || [])
-        .filter(a => a.grade === selectedGrade)
+        .filter(a => matchGrade(a.grade, selectedGrade))
         .map(a => a.subject);
       if (gradeSubjects.length > 0) {
-        setSelectedSubject(gradeSubjects[0]);
+        if (!selectedSubject || !gradeSubjects.includes(selectedSubject)) {
+          setSelectedSubject(gradeSubjects[0]);
+        }
       }
       setSelectedBulletinStudentId('');
     }
@@ -25115,7 +25196,7 @@ export default function App() {
 
     setStudentsAndSave(prev => {
       return prev.map(s => {
-        if (s.grade === selectedConfigSubjectGrade) {
+        if (matchGrade(s.grade, selectedConfigSubjectGrade)) {
           const studentGrades = s.grades ? { ...s.grades } : {};
           if (!studentGrades[key]) {
             studentGrades[key] = {
@@ -25193,7 +25274,7 @@ export default function App() {
         if (u.role === 'teacher') {
           return {
             ...u,
-            assignments: u.assignments.filter(a => !(a.grade === gradeName && a.subject === subjectKey))
+            assignments: u.assignments.filter(a => !(matchGrade(a.grade, gradeName) && a.subject === subjectKey))
           };
         }
         return u;
@@ -25337,13 +25418,13 @@ export default function App() {
     if (window.confirm(`¿Estás seguro de renombrar el grado "${editingGradeName}" a "${newName}"? Esto actualizará todos los alumnos, asignaturas y asignaciones docentes correspondientes.`)) {
       setGrades(prev => sortGrades(prev.map(g => g === editingGradeName ? newName : g)));
 
-      setStudentsAndSave(prev => prev.map(s => s.grade === editingGradeName ? { ...s, grade: newName } : s));
+      setStudentsAndSave(prev => prev.map(s => matchGrade(s.grade, editingGradeName) ? { ...s, grade: newName } : s));
 
       setUsersAndSave(prev => prev.map(u => {
         if (u.role === 'teacher') {
           return {
             ...u,
-            assignments: u.assignments.map(a => a.grade === editingGradeName ? { ...a, grade: newName } : a)
+            assignments: u.assignments.map(a => matchGrade(a.grade, editingGradeName) ? { ...a, grade: newName } : a)
           };
         }
          return u;
@@ -25852,7 +25933,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           {folderExplorerLevel === 'root' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem', marginTop: '0.5rem' }}>
               {visibleGradesForExplorer.map(g => {
-                const reportCount = filteredAlertLogs.filter(log => log.grade === g).length;
+                const reportCount = filteredAlertLogs.filter(log => matchGrade(log.grade, g)).length;
                 return (
                   <div 
                     key={g} 
@@ -25882,7 +25963,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                   { key: 'P3', label: 'Período 3 (P3)' },
                   { key: 'P4', label: 'Período 4 (P4)' }
                 ].map(p => {
-                  const periodLogsCount = filteredAlertLogs.filter(log => log.grade === folderExplorerGrade && (log.period === p.key || (!log.period && p.key === 'P1'))).length;
+                  const periodLogsCount = filteredAlertLogs.filter(log => matchGrade(log.grade, folderExplorerGrade) && (log.period === p.key || (!log.period && p.key === 'P1'))).length;
                   return (
                     <div 
                       key={p.key} 
@@ -27198,7 +27279,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
     const subjectName = subjects[targetSubject]?.name || targetSubject;
     const monthsList = ['Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
-    const studentsList = students.filter(s => s.grade === targetGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+    const studentsList = students.filter(s => matchGrade(s.grade, targetGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
     const teacherObj = getAssignedTeacher(users, subjects, targetGrade, targetSubject);
     const teacherName = teacherObj ? teacherObj.name : '';
@@ -27562,7 +27643,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
 
   const teacherUniqueGrades = currentUser && currentUser.role === 'teacher'
-    ? [...new Set((currentUser.assignments || []).map(a => a.grade))]
+    ? [...new Set((currentUser.assignments || []).map(a => normalizeGradeString(a.grade)))]
     : [];
 
   const teacherGradeSubjects = currentUser && currentUser.role === 'teacher' && selectedGrade
@@ -28905,7 +28986,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         {grades.map((g, idx) => {
                           const theme = getGradeThemeInfo(g);
                           const bannerBg = `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary || theme.color} 100%)`;
-                          const gradeStudents = students.filter(s => s.grade === g);
+                          const gradeStudents = students.filter(s => matchGrade(s.grade, g));
 
                           return (
                             <div key={g} className="classroom-card animate-fade-in" onClick={() => setClassroomGrade(g)}>
@@ -29758,7 +29839,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             </thead>
                             <tbody>
                               {grades.map(g => {
-                                const studentsCount = students.filter(s => s.grade === g).length;
+                                const studentsCount = students.filter(s => matchGrade(s.grade, g)).length;
                                 return (
                                   <tr key={g}>
                                     <td style={{ fontWeight: 700 }}>{g}</td>
@@ -29882,7 +29963,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       className="btn-primary"
                       style={{ fontSize: '0.82rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 'bold' }}
                       onClick={() => {
-                        const currentGradeStudents = [...students.filter(x => x.grade === activeAdminGrade)].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+                        const currentGradeStudents = [...students.filter(x => matchGrade(x.grade, activeAdminGrade))].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
                         setStudentsAndSave(prev => {
                           const updated = [...prev];
                           currentGradeStudents.forEach((st, idx) => {
@@ -30127,7 +30208,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     (() => {
                       const theme = getGradeThemeInfo(selectedAdminReportGrade);
                       const subName = subjects[selectedAdminReportSubject]?.name || selectedAdminReportSubject;
-                      const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+                      const gradeStudents = students.filter(s => matchGrade(s.grade, selectedAdminReportGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
                       const compCodes = getCompetencyCodesForSubject(selectedAdminReportSubject);
 
                       return (
@@ -30500,7 +30581,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       const sub = subjects[subKey];
                       const teacher = getAssignedTeacher(users, subjects, selectedAdminReportGrade, subKey);
                       const isExpanded = expandedReportSubjects[subKey];
-                      const gradeStudents = students.filter(s => s.grade === selectedAdminReportGrade);
+                      const gradeStudents = students.filter(s => matchGrade(s.grade, selectedAdminReportGrade));
 
                       return (
                         <div 
@@ -30734,7 +30815,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       const sub = subjects[subKey];
                       const teacher = getAssignedTeacher(users, subjects, selectedAdminAttendanceGrade, subKey);
                       const isExpanded = expandedAdminAttendanceSubjects[subKey];
-                      const gradeStudents = students.filter(s => s.grade === selectedAdminAttendanceGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+                      const gradeStudents = students.filter(s => matchGrade(s.grade, selectedAdminAttendanceGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
                       return (
                         <div 
@@ -31058,7 +31139,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           disabled={!adminBulletinGrade}
                         >
                           <option value="">-- Seleccionar Estudiante --</option>
-                          {students.filter(s => s.grade === adminBulletinGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999)).map(s => (
+                          {students.filter(s => matchGrade(s.grade, adminBulletinGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999)).map(s => (
                             <option key={s.id} value={s.id}>{s.name}</option>
                           ))}
                         </select>
@@ -32092,6 +32173,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                   Haz clic en el círculo correspondiente a cada día laborable para alternar entre: **P** (Presente), **A** (Ausente), **T** (Tardanza), **E** (Excusa) o **R** (Retirado). Las celdas vacías no suman ni restan al total.
                 </p>
+
+                {/* Teacher Subject Tabs in Attendance */}
+                {selectedGrade && teacherGradeSubjects.length > 0 && (
+                  <div className="subject-tabs-container" style={{ marginBottom: '1.25rem', borderBottom: 'none' }}>
+                    {teacherGradeSubjects.map(subKey => (
+                      <button 
+                        key={subKey} 
+                        className={`subject-tab ${selectedSubject === subKey ? 'active' : ''}`} 
+                        onClick={() => setSelectedSubject(subKey)}
+                      >
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: subjects[subKey]?.color || 'var(--text-muted)' }}></span>
+                        {subjects[subKey]?.name || subKey}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                   <div className="attendance-month-tabs" style={{ marginBottom: 0 }}>
@@ -33225,8 +33322,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'bulletin' && (
               <div>
                 {(() => {
-                  const targetGrade = currentUser?.classroomGrade || selectedGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
-                  const availableStudents = students.filter(s => s.grade === targetGrade).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+                  const targetGrade = selectedGrade || currentUser?.classroomGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
+                  const availableStudents = students.filter(s => matchGrade(s.grade, targetGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
                   return (
                     <div>
