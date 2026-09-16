@@ -17,7 +17,12 @@ const DEFAULT_SUBJECTS = {
   ciencias_naturaleza: { name: 'Ciencias de la Naturaleza - Ciencias de la Tierra y del Universo', color: 'hsl(175, 75%, 35%)', bg: 'rgba(20, 184, 166, 0.08)' },
   artistica: { name: 'Educación Artística', color: 'hsl(45, 85%, 40%)', bg: 'rgba(255, 193, 7, 0.08)' },
   educacion_fisica: { name: 'Educación Física', color: 'hsl(10, 75%, 45%)', bg: 'rgba(220, 53, 69, 0.08)' },
-  formacion_religiosa: { name: 'Formación Integral Humana y Religiosa', color: 'hsl(200, 70%, 40%)', bg: 'rgba(13, 202, 240, 0.08)' }
+  formacion_religiosa: { name: 'Formación Integral Humana y Religiosa', color: 'hsl(200, 70%, 40%)', bg: 'rgba(13, 202, 240, 0.08)' },
+  matematica_financiera: { name: 'Matemática Financiera', color: 'hsl(155, 75%, 38%)', bg: 'rgba(5, 150, 105, 0.08)' },
+  analisis_textos_cientificos: { name: 'Análisis y Producción de Textos Científicos y Profesionales', color: 'hsl(199, 85%, 42%)', bg: 'rgba(2, 132, 199, 0.08)' },
+  apreciacion_produccion_literaria: { name: 'Apreciación y Producción Literaria', color: 'hsl(265, 70%, 50%)', bg: 'rgba(124, 58, 237, 0.08)' },
+  filosofia_pensamiento_dominicano: { name: 'Filosofía Social y Pensamiento Dominicano', color: 'hsl(35, 85%, 45%)', bg: 'rgba(217, 119, 6, 0.08)' },
+  estadistica_probabilidad_tecnologia: { name: 'Estadística Probabilidad y Tecnología', color: 'hsl(178, 75%, 36%)', bg: 'rgba(13, 148, 136, 0.08)' }
 };
 
 const DEFAULT_GRADES = ['1ro A', '1ro B', '2do A', '2do B', '3ro A', '3ro B', '3ro C', '4AM', '4AH', '4BH', '5AM', '5AN', '6AM', '6AH'];
@@ -23342,7 +23347,12 @@ const CORE_SUBJECTS = [
   'ciencias_naturaleza',
   'artistica',
   'educacion_fisica',
-  'formacion_religiosa'
+  'formacion_religiosa',
+  'matematica_financiera',
+  'analisis_textos_cientificos',
+  'apreciacion_produccion_literaria',
+  'filosofia_pensamiento_dominicano',
+  'estadistica_probabilidad_tecnologia'
 ];
 
 const normalizeGradeString = (g) => {
@@ -23926,9 +23936,20 @@ export default function App() {
 
   const [subjects, setSubjects] = useState(() => {
     try {
-    const saved = localStorage.getItem('s_subjects');
-    return saved ? JSON.parse(saved) : DEFAULT_SUBJECTS;
-    } catch (e) { localStorage.removeItem('s_subjects'); return DEFAULT_SUBJECTS; }
+      const saved = localStorage.getItem('s_subjects');
+      const parsed = saved ? JSON.parse(saved) : {};
+      const merged = { ...DEFAULT_SUBJECTS, ...(typeof parsed === 'object' && parsed !== null ? parsed : {}) };
+      Object.keys(DEFAULT_SUBJECTS).forEach(key => {
+        if (!merged[key]) {
+          merged[key] = DEFAULT_SUBJECTS[key];
+        }
+      });
+      localStorage.setItem('s_subjects', JSON.stringify(merged));
+      return merged;
+    } catch (e) {
+      localStorage.removeItem('s_subjects');
+      return DEFAULT_SUBJECTS;
+    }
   });
 
   const [grades, setGrades] = useState(() => {
@@ -24558,12 +24579,13 @@ export default function App() {
     const unsubConfig = dbService.subscribeConfig((data) => {
       if (data) {
         if (data.subjects) {
-          const needsMigration = !Object.keys(data.subjects).includes('lengua_espanola');
-          if (needsMigration) {
-            setSubjects(DEFAULT_SUBJECTS);
-            dbService.saveSubjects(DEFAULT_SUBJECTS);
-          } else {
-            setSubjects(data.subjects);
+          const mergedSubs = { ...DEFAULT_SUBJECTS, ...data.subjects };
+          Object.keys(DEFAULT_SUBJECTS).forEach(k => {
+            if (!mergedSubs[k]) mergedSubs[k] = DEFAULT_SUBJECTS[k];
+          });
+          setSubjects(mergedSubs);
+          if (Object.keys(mergedSubs).length !== Object.keys(data.subjects).length) {
+            dbService.saveSubjects(mergedSubs);
           }
         }
         if (data.grades) {
@@ -27111,6 +27133,46 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         c4: 'CE-CN4'
       };
     }
+    if (key === 'matematica_financiera' || key.includes('financiera')) {
+      return {
+        c1: 'CE-MF1',
+        c2: 'CE-MF2',
+        c3: 'CE-MF3',
+        c4: 'CE-MF4'
+      };
+    }
+    if (key === 'analisis_textos_cientificos' || key.includes('textos_cientificos')) {
+      return {
+        c1: 'CE-AT1',
+        c2: 'CE-AT2',
+        c3: 'CE-AT3',
+        c4: 'CE-AT4'
+      };
+    }
+    if (key === 'apreciacion_produccion_literaria' || key.includes('literaria')) {
+      return {
+        c1: 'CE-AP1',
+        c2: 'CE-AP2',
+        c3: 'CE-AP3',
+        c4: 'CE-AP4'
+      };
+    }
+    if (key === 'filosofia_pensamiento_dominicano' || key.includes('filosofia')) {
+      return {
+        c1: 'CE-FP1',
+        c2: 'CE-FP2',
+        c3: 'CE-FP3',
+        c4: 'CE-FP4'
+      };
+    }
+    if (key === 'estadistica_probabilidad_tecnologia' || key.includes('estadistica')) {
+      return {
+        c1: 'CE-ET1',
+        c2: 'CE-ET2',
+        c3: 'CE-ET3',
+        c4: 'CE-ET4'
+      };
+    }
     // Generic prefix
     const prefix = key ? key.slice(0, 3).toUpperCase() : 'CE';
     return {
@@ -29107,6 +29169,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     {expandedSections.teachers && (
                       <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
+                        {/* Recuadro con catálogo completo de asignaturas disponibles para asignación */}
+                        <div style={{ gridColumn: 'span 2', backgroundColor: 'var(--bg-primary)', padding: '1rem 1.25rem', borderRadius: '10px', border: '1.5px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span>📚</span> Catálogo de Asignaturas Disponibles para Asignar ({Object.keys(subjects).length}):
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                              Todas disponibles en el recuadro selector de cada docente
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+                            {Object.keys(subjects).map(subKey => {
+                              const sub = subjects[subKey];
+                              return (
+                                <span 
+                                  key={subKey} 
+                                  style={{ 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    gap: '0.4rem', 
+                                    padding: '0.25rem 0.65rem', 
+                                    borderRadius: '20px', 
+                                    backgroundColor: sub.bg || 'rgba(0,0,0,0.04)', 
+                                    border: `1.5px solid ${sub.color}40`, 
+                                    fontSize: '0.78rem', 
+                                    fontWeight: 700,
+                                    color: 'var(--text-primary)'
+                                  }}
+                                >
+                                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: sub.color }}></span>
+                                  {sub.name}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+
                         {/* Left Side: Table of Teachers */}
                         <div className="custom-table-container" style={{ margin: 0 }}>
                           <table className="custom-table">
