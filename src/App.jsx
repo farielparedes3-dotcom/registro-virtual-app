@@ -23357,23 +23357,41 @@ const CORE_SUBJECTS = [
 
 const normalizeGradeString = (g) => {
   if (!g) return '';
-  const s = String(g).trim();
-  const legacyMap = {
-    '1ro. A': '1ro A', '1ERO. A': '1ro A', '1ero A': '1ro A', '1ero. A': '1ro A',
-    '2do. A': '2do A', '2DO. A': '2do A',
-    '2do. B': '2do B', '2DO. B': '2do B',
-    '3ro. A': '3ro A', '3RO. A': '3ro A',
-    '3ro. B': '3ro B', '3RO. B': '3ro B',
-    '3ro. C': '3ro C', '3RO. C': '3ro C',
-    '4to A': '4AM', '4to. A': '4AM', '4TO. A': '4AM', '4to AM': '4AM',
-    '4to B': '4AH', '4to. B': '4AH', '4TO. B': '4AH', '4to AH': '4AH',
-    '4to C': '4BH', '4to. C': '4BH', '4TO. C': '4BH', '4to BH': '4BH',
-    '5to A': '5AM', '5to. A': '5AM', '5TO. A': '5AM', '5to AM': '5AM',
-    '5to B': '5AN', '5to. B': '5AN', '5TO. B': '5AN', '5to AN': '5AN',
-    '6to A': '6AM', '6to. A': '6AM', '6TO. A': '6AM', '6to AM': '6AM',
-    '6to B': '6AH', '6to. B': '6AH', '6TO. B': '6AH', '6to AH': '6AH'
+  const s = String(g).trim().replace(/\.+/g, '');
+  const clean = s.replace(/\s+/g, ' ').toUpperCase();
+
+  const map = {
+    '1RO A': '1ro A', '1ERO A': '1ro A', '1RO. A': '1ro A', '1 A': '1ro A',
+    '1RO B': '1ro B', '1ERO B': '1ro B', '1RO. B': '1ro B', '1 B': '1ro B',
+    '2DO A': '2do A', '2DO. A': '2do A', '2 A': '2do A',
+    '2DO B': '2do B', '2DO. B': '2do B', '2 B': '2do B',
+    '3RO A': '3ro A', '3RO. A': '3ro A', '3 A': '3ro A',
+    '3RO B': '3ro B', '3RO. B': '3ro B', '3 B': '3ro B',
+    '3RO C': '3ro C', '3RO. C': '3ro C', '3 C': '3ro C',
+    // 4th Grade
+    '4AM': '4AM', '4TO A': '4AM', '4TO AM': '4AM', '4TO A M': '4AM', '4TO M': '4AM', '4M': '4AM', '4 A': '4AM', '4 AM': '4AM',
+    '4AH': '4AH', '4TO B': '4AH', '4TO AH': '4AH', '4TO A H': '4AH', '4TO H': '4AH', '4H': '4AH', '4 B': '4AH', '4 AH': '4AH',
+    '4BH': '4BH', '4TO C': '4BH', '4TO BH': '4BH', '4TO B H': '4BH', '4 C': '4BH', '4 BH': '4BH',
+    // 5th Grade
+    '5AM': '5AM', '5TO A': '5AM', '5TO AM': '5AM', '5TO A M': '5AM', '5TO M': '5AM', '5M': '5AM', '5 A': '5AM', '5 AM': '5AM',
+    '5AN': '5AN', '5TO B': '5AN', '5TO AN': '5AN', '5TO A N': '5AN', '5TO N': '5AN', '5N': '5AN', '5 B': '5AN', '5 AN': '5AN',
+    // 6th Grade
+    '6AM': '6AM', '6TO A': '6AM', '6TO AM': '6AM', '6TO A M': '6AM', '6TO M': '6AM', '6M': '6AM', '6 A': '6AM', '6 AM': '6AM',
+    '6AH': '6AH', '6TO B': '6AH', '6TO AH': '6AH', '6TO A H': '6AH', '6TO H': '6AH', '6H': '6AH', '6 B': '6AH', '6 AH': '6AH'
   };
-  return legacyMap[s] || s;
+
+  if (map[clean]) return map[clean];
+
+  // Regex fallbacks for any unexpected spacing or prefix variations
+  if (/^4(?:TO)?\s*(?:A\s*M|M|A)$/i.test(clean)) return '4AM';
+  if (/^4(?:TO)?\s*(?:A\s*H|B)$/i.test(clean)) return '4AH';
+  if (/^4(?:TO)?\s*(?:B\s*H|C)$/i.test(clean)) return '4BH';
+  if (/^5(?:TO)?\s*(?:A\s*M|M|A)$/i.test(clean)) return '5AM';
+  if (/^5(?:TO)?\s*(?:A\s*N|N|B)$/i.test(clean)) return '5AN';
+  if (/^6(?:TO)?\s*(?:A\s*M|M|A)$/i.test(clean)) return '6AM';
+  if (/^6(?:TO)?\s*(?:A\s*H|H|B)$/i.test(clean)) return '6AH';
+
+  return String(g).trim();
 };
 
 const matchGrade = (g1, g2) => {
@@ -24529,10 +24547,29 @@ export default function App() {
     }
 
     const unsubUsers = dbService.subscribeUsers((data) => {
-      if (data && data.length > 0) {
-        setUsers(data);
-      } else {
-        setUsers(DEFAULT_USERS);
+      let rawList = (data && data.length > 0) ? data : DEFAULT_USERS;
+      let hasChanges = false;
+      const normalizedList = rawList.map(u => {
+        if (u.role === 'teacher') {
+          const normClassroom = normalizeGradeString(u.classroomGrade || '');
+          const normAssignments = (u.assignments || []).map(a => {
+            const normG = normalizeGradeString(a.grade);
+            if (normG !== a.grade) hasChanges = true;
+            return { ...a, grade: normG };
+          });
+          if (normClassroom !== (u.classroomGrade || '')) hasChanges = true;
+          return {
+            ...u,
+            classroomGrade: normClassroom,
+            assignments: normAssignments
+          };
+        }
+        return u;
+      });
+      setUsers(normalizedList);
+      try { localStorage.setItem('s_users', JSON.stringify(normalizedList)); } catch(e) {}
+      if (hasChanges) {
+        dbService.saveUsers(normalizedList);
       }
     });
 
@@ -25840,18 +25877,31 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
       ? currentUser.assignedGrades
       : grades;
 
+    // For teachers: include ALL grades they teach + their classroomGrade
+    const teacherAllowedGrades = currentUser?.role === 'teacher'
+      ? [
+          ...new Set([
+            ...(currentUser?.classroomGrade ? [normalizeGradeString(currentUser.classroomGrade)] : []),
+            ...(teacherUniqueGrades || [])
+          ])
+        ].filter(Boolean)
+      : [];
+
     const visibleGradesForExplorer = currentUser?.role === 'admin' 
       ? grades 
-      : (currentUser?.role === 'counselor' ? counselorAssignedGrades : (currentUser?.classroomGrade ? [currentUser.classroomGrade] : teacherUniqueGrades));
+      : (currentUser?.role === 'counselor' ? counselorAssignedGrades : teacherAllowedGrades);
 
     const filteredAlertLogs = alertLogs.filter(log => {
       if (currentUser?.role === 'admin') return true;
-      return visibleGradesForExplorer.includes(log.grade);
+      return visibleGradesForExplorer.some(vg => matchGrade(vg, log.grade));
     });
 
     const visibleStudents = students.filter(s => {
       if (currentUser?.role === 'admin') return true;
-      return visibleGradesForExplorer.includes(s.grade);
+      return visibleGradesForExplorer.some(vg => matchGrade(vg, s.grade));
+    }).sort((a, b) => {
+      if (a.grade !== b.grade) return a.grade.localeCompare(b.grade);
+      return (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999);
     });
 
     return (
@@ -25870,7 +25920,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           <h4 style={{ margin: 0, color: 'var(--primary)' }}>⚡ Emitir Nuevo Reporte Manual</h4>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'end', flexWrap: 'wrap' }}>
             <div className="form-group-compact" style={{ marginBottom: 0, flex: 1, minWidth: '240px' }}>
-              <label>Seleccionar Estudiante</label>
+              <label>Seleccionar Estudiante ({visibleStudents.length} disponibles)</label>
               <select 
                 className="form-select"
                 value={selectedManualReportStudentId}
@@ -25879,7 +25929,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
               >
                 <option value="">-- Buscar alumno --</option>
                 {visibleStudents.map(s => (
-                  <option key={s.id} value={s.id}>{s.name} ({s.grade})</option>
+                  <option key={s.id} value={s.id}>{s.name} ({s.grade} - #{s.orderNumber})</option>
                 ))}
               </select>
             </div>
@@ -26009,7 +26059,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           {/* Level 3 (period): Students as subfolders */}
           {folderExplorerLevel === 'period' && (() => {
             const periodLogs = filteredAlertLogs.filter(log => 
-              log.grade === folderExplorerGrade && 
+              matchGrade(log.grade, folderExplorerGrade) && 
               (log.period === folderExplorerPeriod || (!log.period && folderExplorerPeriod === 'P1'))
             );
             const studentsInPeriod = Array.from(new Set(periodLogs.map(log => log.studentName))).sort();
@@ -26034,9 +26084,9 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
                             setFolderExplorerStudentName(sName);
                             setFolderExplorerLevel('student');
                           }}
-                          style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.25s ease', boxShadow: 'var(--shadow-sm)' }}
+                          style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.25rem 0.75rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.25s ease', boxShadow: 'var(--shadow-sm)' }}
                         >
-                          <div style={{ fontSize: '3rem', marginBottom: '0.5rem', lineHeight: 1 }}>📂</div>
+                          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>👤</div>
                           <span style={{ fontWeight: 'bold', fontSize: '0.82rem', textAlign: 'center', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{sName}</span>
                           <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{studentReportsCount} archivo(s)</span>
                         </div>
@@ -26051,7 +26101,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           {/* Level 4 (student): Individual reports with dates and titles */}
           {folderExplorerLevel === 'student' && (() => {
             const studentLogs = filteredAlertLogs.filter(log => 
-              log.grade === folderExplorerGrade && 
+              matchGrade(log.grade, folderExplorerGrade) && 
               (log.period === folderExplorerPeriod || (!log.period && folderExplorerPeriod === 'P1')) &&
               log.studentName === folderExplorerStudentName
             );
@@ -27705,7 +27755,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
 
   const teacherUniqueGrades = currentUser && currentUser.role === 'teacher'
-    ? [...new Set((currentUser.assignments || []).map(a => normalizeGradeString(a.grade)))]
+    ? [
+        ...new Set([
+          ...(currentUser.classroomGrade ? [normalizeGradeString(currentUser.classroomGrade)] : []),
+          ...(currentUser.assignments || []).map(a => normalizeGradeString(a.grade))
+        ])
+      ].filter(Boolean)
     : [];
 
   const teacherGradeSubjects = currentUser && currentUser.role === 'teacher' && selectedGrade
@@ -32242,8 +32297,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     })()
                   )
                 ) : (
-                  <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
-                    Por favor selecciona un Grado y Asignatura.
+                  <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem 1.5rem', margin: '2rem auto', maxWidth: '600px' }}>
+                    <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📚</div>
+                    <h3 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>
+                      {selectedGrade ? `Sin asignaturas asignadas en ${selectedGrade}` : 'Sin Grado Seleccionado'}
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                      {selectedGrade 
+                        ? 'No tienes asignaturas académicas registradas en este grado. Si impartes docencia aquí, el Administrador puede agregarte fácilmente desde "Gestión de Docentes y Asignaciones".'
+                        : 'Por favor selecciona un grado y asignatura en la barra lateral para ver la planilla de calificaciones.'
+                      }
+                    </p>
                   </div>
                 )}
               </div>
@@ -32620,7 +32684,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   Define las competencias, indicadores y criterios específicos para el parámetro seleccionado. Modifica los textos directamente en la cuadrícula de la rúbrica.
                 </p>
 
-{selectedGrade && selectedSubject ? (
+                {/* Teacher Subject Tabs in Instruments */}
+                {selectedGrade && teacherGradeSubjects.length > 0 && (
+                  <div className="subject-tabs-container" style={{ marginBottom: '1.25rem', borderBottom: 'none' }}>
+                    {teacherGradeSubjects.map(subKey => (
+                      <button 
+                        key={subKey} 
+                        className={`subject-tab ${selectedSubject === subKey ? 'active' : ''}`} 
+                        onClick={() => setSelectedSubject(subKey)}
+                      >
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: subjects[subKey]?.color || 'var(--text-muted)' }}></span>
+                        {subjects[subKey]?.name || subKey}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedGrade && selectedSubject ? (
                   <div>
                     {/* Horizontal Parameter Selectors (P1 - P4) */}
                     <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
@@ -33421,18 +33501,35 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'bulletin' && (
               <div>
                 {(() => {
-                  const targetGrade = selectedGrade || currentUser?.classroomGrade || (teacherUniqueGrades && teacherUniqueGrades[0]) || '1ro A';
+                  const teacherClassroom = normalizeGradeString(currentUser?.classroomGrade || '');
+                  if (!teacherClassroom) {
+                    return (
+                      <div className="glass-panel" style={{ padding: '2.5rem 1.5rem', textAlign: 'center', maxWidth: '600px', margin: '2rem auto' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+                        <h3 style={{ color: 'var(--primary)', marginBottom: '0.75rem' }}>Boletín Reservado para Docente Encargado(a)</h3>
+                        <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.92rem' }}>
+                          No tienes un aula asignada como <strong>Docente Encargado(a) / Tutor(a)</strong>. 
+                          De acuerdo con la normativa del centro escolar, solo el maestro encargado de cada curso tiene la potestad de emitir y descargar los boletines oficiales de calificaciones de su sección.
+                        </p>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '1rem' }}>
+                          Si eres tutor de alguna sección, solicita a la Dirección Escolar que te configure como Docente Encargado en el panel administrativo.
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  const targetGrade = teacherClassroom;
                   const availableStudents = students.filter(s => matchGrade(s.grade, targetGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
 
                   return (
                     <div>
                       {/* Controls - Hide when printing */}
                       <div className="glass-panel no-print-element" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                           <div>
                             <h2 style={{ margin: 0, color: 'var(--primary)', fontWeight: 800 }}>📄 Boletín Oficial de Calificaciones</h2>
                             <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                              Generación y descarga de boletines académicos a doble cara para el grado: <strong>{targetGrade}</strong>.
+                              Generación y descarga de boletines oficiales de calificaciones para tu aula encargada: <strong style={{ color: 'var(--primary)' }}>{targetGrade}</strong>.
                             </p>
                           </div>
                           {selectedBulletinStudentId && (
@@ -33447,25 +33544,16 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
-                          {/* Grade selector if teacher has multiple grades */}
-                          {teacherUniqueGrades.length > 1 && (
-                            <div className="form-group" style={{ margin: 0 }}>
-                              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Grado</label>
-                              <select 
-                                className="form-select" 
-                                value={selectedGrade} 
-                                onChange={(e) => { setSelectedGrade(e.target.value); setSelectedBulletinStudentId(''); }}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
-                              >
-                                {teacherUniqueGrades.map(g => (
-                                  <option key={g} value={g}>{g}</option>
-                                ))}
-                              </select>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Aula / Sección Encargada</label>
+                            <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '6px', border: '1px solid var(--border-color)', fontWeight: 'bold', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                              <span>🏫</span>
+                              <span>{targetGrade} (Tutoría Oficial)</span>
                             </div>
-                          )}
+                          </div>
 
                           <div className="form-group" style={{ margin: 0 }}>
-                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Estudiante</label>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Seleccionar Estudiante ({availableStudents.length} matriculados)</label>
                             <select 
                               className="form-select" 
                               value={selectedBulletinStudentId} 
@@ -33474,13 +33562,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             >
                               <option value="">-- Seleccionar Estudiante --</option>
                               {availableStudents.map(s => (
-                                <option key={s.id} value={s.id}>{s.name}</option>
+                                <option key={s.id} value={s.id}>{s.name} (#{s.orderNumber})</option>
                               ))}
                             </select>
                           </div>
 
                           {/* Custom Salidas - Only for 4th, 5th, 6th Grade */}
-                          {['4to A', '5to A', '6to A'].includes(targetGrade) && (
+                          {['4AM', '4AH', '4BH', '5AM', '5AN', '6AM', '6AH'].some(g => matchGrade(g, targetGrade)) && (
                             <>
                               <div className="form-group" style={{ margin: 0 }}>
                                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Asignatura Salida Optativa 1</label>
