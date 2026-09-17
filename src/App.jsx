@@ -23649,7 +23649,7 @@ const renderGradeHeaderBanner = (gradeName, extraText = '') => {
             gap: '0.2rem' 
           }}
         >
-          <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 'bold' }}>Parámetro / Materia</span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 'bold' }}>Período / Materia</span>
           <span 
             style={{ 
               fontSize: '1rem', 
@@ -24883,7 +24883,7 @@ export default function App() {
           competence: activeConf.competence || '',
           indicator: activeConf.indicator || '',
           type: activeConf.type || 'rubrica',
-          weight: activeConf.weight || 100,
+          weight: activeConf.weight !== undefined && activeConf.weight !== null ? activeConf.weight : 25,
           criteria: activeConf.criteria ? normalizeCriteria(activeConf.criteria, activeConf.type) : []
         });
         if (activeConf.id !== activeInstrumentId) {
@@ -24896,7 +24896,7 @@ export default function App() {
           competence: '',
           indicator: '',
           type: 'rubrica',
-          weight: 100,
+          weight: 25,
           criteria: []
         });
         if (activeInstrumentId !== '') {
@@ -26376,7 +26376,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           competence: nextState.competence,
           indicator: nextState.indicator,
           type: nextState.type,
-          weight: nextState.weight !== undefined ? (Number(nextState.weight) || 0) : 100,
+          weight: nextState.weight !== undefined ? (Number(nextState.weight) || 0) : 25,
           criteria: nextState.criteria
         };
         
@@ -26572,8 +26572,10 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
     const blockConfig = migrateConfig(evaluationConfigs[configKey]);
     const currentList = blockConfig[pKey] || [];
 
-    const existingSum = currentList.reduce((acc, inst) => acc + (inst.weight || 0), 0);
+    const existingSum = currentList.reduce((acc, inst) => acc + (inst.weight !== undefined ? Number(inst.weight) : 25), 0);
     const remainingWeight = Math.max(0, 100 - existingSum);
+    // Flexible initial weight: defaults to 25 pts (or remaining if less than 25), fully editable by the teacher
+    const initialWeight = remainingWeight > 0 && remainingWeight < 25 ? remainingWeight : 25;
 
     const newInstId = `inst_${Date.now()}`;
     const newInstrument = {
@@ -26583,7 +26585,7 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
       competence: '',
       indicator: '',
       type: 'rubrica',
-      weight: remainingWeight > 0 ? remainingWeight : 20,
+      weight: initialWeight,
       criteria: [
         {
           name: "Criterio General",
@@ -26903,17 +26905,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const handleParameterGradeChange = (studentId, subjectKey, bloqueKey, pIdx, valueString) => {
     let value = valueString === '' ? 0 : Number(valueString);
-    
-    // Check if total (value + instrument sum) exceeds 100
-    const pKeys = ['p1', 'p2', 'p3', 'p4'];
-    const pKey = pKeys[pIdx];
-    const instSum = getInstrumentSumForParameter(studentId, subjectKey, bloqueKey, pKey, studentAssessments);
-    const totalScore = value + instSum;
-    if (totalScore > 100) {
-      alert(`⚠️ ¡Alerta! La calificación total ingresada (${totalScore}) supera los 100 puntos (Base manual: ${value}, Instrumentos: ${instSum}).`);
+    if (value > 100) {
+      alert("⚠️ ¡Alerta! La calificación del período no puede superar los 100 puntos.");
+      value = 100;
     }
+    if (value < 0) value = 0;
     
-    // Update the student's base grades (originalGrades) in s.grades
+    // Update the student's base grades (originalGrades) in s.grades and s.manualGrades
     setStudentsAndSave(prev => prev.map(s => {
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
@@ -26923,8 +26921,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         baseGrades[pIdx] = value;
         subjectBlocks[bloqueKey] = baseGrades;
         nextGrades[subjectKey] = subjectBlocks;
+
+        const nextManual = s.manualGrades ? { ...s.manualGrades } : {};
+        const manualSubject = nextManual[subjectKey] ? { ...nextManual[subjectKey] } : {};
+        const manualBlock = [...(manualSubject[bloqueKey] || [0, 0, 0, 0])];
+        manualBlock[pIdx] = value;
+        manualSubject[bloqueKey] = manualBlock;
+        nextManual[subjectKey] = manualSubject;
         
-        return { ...s, grades: nextGrades };
+        return { ...s, grades: nextGrades, manualGrades: nextManual };
       }
       return s;
     }));
@@ -26954,14 +26959,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       [assessmentKey]: nextAssessment
     };
 
-    // Calculate total score to trigger alert if it exceeds 100
-    const student = students.find(s => s.id === studentId);
-    const pIdx = ['p1', 'p2', 'p3', 'p4'].indexOf(pKey);
-    const baseGrade = getManualBaseGrade(student, subjectKey, activeBloque, pIdx, true);
+    // Calculate total score for this period from instruments
     const newSum = getInstrumentSumForParameter(studentId, subjectKey, activeBloque, pKey, nextAssessmentsObject);
-    const totalScore = baseGrade + newSum;
-    if (totalScore > 100) {
-      alert(`⚠️ ¡Alerta! La calificación total en este parámetro (${totalScore}) supera los 100 puntos (Base manual: ${baseGrade}, Instrumentos: ${newSum}).`);
+    if (newSum > 100) {
+      alert(`⚠️ ¡Alerta! La calificación total acumulada en este período (${newSum} pts) supera los 100 puntos.`);
     }
 
     setStudentAssessmentsAndSave(nextAssessmentsObject);
@@ -27120,6 +27121,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   const getManualBaseGrade = (student, subjectKey, bloqueKey, pIdx, hasInstruments) => {
+    if (hasInstruments) return 0;
+    const manualData = student?.manualGrades?.[subjectKey]?.[bloqueKey];
+    if (manualData && manualData[pIdx] !== undefined) {
+      return Number(manualData[pIdx]) || 0;
+    }
     const subjectData = student?.grades?.[subjectKey] || {};
     const blockGrades = subjectData[bloqueKey];
     if (blockGrades && blockGrades[pIdx] !== undefined) {
@@ -27141,12 +27147,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       const aKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
       const savedAssessment = assessments[aKey] || {};
       
-      criteriaList.forEach(c => {
-        const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
-        sum += score;
-      });
+      let instScore = 0;
+      if (criteriaList.length > 0) {
+        criteriaList.forEach(c => {
+          const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
+          instScore += score;
+        });
+      } else if (savedAssessment.__total !== undefined) {
+        instScore = Number(savedAssessment.__total) || 0;
+      }
+      const instWeight = inst.weight !== undefined ? Number(inst.weight) : 25;
+      sum += Math.min(instWeight, instScore);
     });
-    return sum;
+    return Math.min(100, sum);
   };
 
   const getCompetencyCodesForSubject = (subjectKey) => {
@@ -27327,25 +27340,31 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     pKeys.forEach((pKey, pIdx) => {
       const list = blockConfig[pKey] || [];
       const hasInstruments = list.length > 0;
-      const baseGrade = getManualBaseGrade(student, subjectKey, bloqueKey, pIdx, hasInstruments);
       
-      let sum = 0;
       if (hasInstruments) {
+        let sum = 0;
         list.forEach(inst => {
           const criteriaList = normalizeCriteria(inst.criteria, inst.type);
           const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
           const savedAssessment = currentAssessments[assessmentKey] || {};
           
-          let instSum = 0;
-          criteriaList.forEach(c => {
-            const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
-            instSum += score;
-          });
-          sum += instSum;
+          let instScore = 0;
+          if (criteriaList.length > 0) {
+            criteriaList.forEach(c => {
+              const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
+              instScore += score;
+            });
+          } else if (savedAssessment.__total !== undefined) {
+            instScore = Number(savedAssessment.__total) || 0;
+          }
+          const instWeight = inst.weight !== undefined ? Number(inst.weight) : 25;
+          sum += Math.min(instWeight, instScore);
         });
+        finalGrades[pIdx] = Math.min(100, Math.max(0, sum));
+      } else {
+        const baseGrade = getManualBaseGrade(student, subjectKey, bloqueKey, pIdx, false);
+        finalGrades[pIdx] = Math.min(100, Math.max(0, baseGrade));
       }
-      
-      finalGrades[pIdx] = Math.min(100, Math.max(0, baseGrade + sum));
     });
     
     return finalGrades;
@@ -32681,7 +32700,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <h2>Instrumentos de Evaluación Ponderada</h2>
                 )}
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  Define las competencias, indicadores y criterios específicos para el parámetro seleccionado. Modifica los textos directamente en la cuadrícula de la rúbrica.
+                  Define las competencias, indicadores y criterios específicos para el período seleccionado. Modifica los textos directamente en la cuadrícula de la rúbrica.
                 </p>
 
                 {/* Teacher Subject Tabs in Instruments */}
@@ -32702,7 +32721,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                 {selectedGrade && selectedSubject ? (
                   <div>
-                    {/* Horizontal Parameter Selectors (P1 - P4) */}
+                    {/* Horizontal Period Selectors (P1 - P4) */}
                     <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                       {['p1', 'p2', 'p3', 'p4'].map((pKey, pIdx) => {
                         const isSel = activePKey === pKey;
@@ -32720,7 +32739,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               if (list.length > 0) {
                                 setActiveInstrumentId(list[0].id);
                               } else {
-                                // Try to find any instrument in other blocks for this parameter
+                                // Try to find any instrument in other blocks for this period
                                 let found = false;
                                 const blocks = ['bloque1', 'bloque2', 'bloque3', 'bloque4'];
                                 for (const b of blocks) {
@@ -32754,7 +32773,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               cursor: 'pointer'
                             }}
                           >
-                            Parámetro P{pIdx + 1}
+                            Período P{pIdx + 1}
                           </button>
                         );
                       })}
@@ -32864,7 +32883,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           {inst.activity || 'Actividad Sin Nombre'}
                                         </div>
                                         <div style={{ fontSize: '0.66rem', color: isSel ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary)', marginTop: '0.1rem' }}>
-                                          Puntos: <strong>{inst.weight || 100}</strong> pts
+                                          Puntos: <strong>{inst.weight !== undefined ? inst.weight : 25}</strong> pts
                                         </div>
                                       </button>
                                     );
@@ -32884,7 +32903,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                       
-
 
                       {/* SIDE-BY-SIDE PANELS (Rúbrica Matrix on Left, Students spreadsheet on Right) */}
                       <div className="instruments-stacked-panels" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '1rem', width: '100%' }}>
@@ -32912,19 +32930,40 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           const configKey = `${selectedGrade}_${selectedSubject}_${activeBloque}`;
                           const blockConfig = migrateConfig(evaluationConfigs[configKey]);
                           const currentList = blockConfig[activePKey] || [];
-                          const currentWeightSum = currentList.reduce((acc, inst) => acc + (inst.weight || 0), 0);
+                          const currentWeightSum = currentList.reduce((acc, inst) => acc + (inst.weight !== undefined ? Number(inst.weight) : 25), 0);
                           
-                          if (currentWeightSum !== 100 && currentList.length > 0) {
+                          if (currentList.length === 0) return null;
+
+                          if (currentWeightSum > 100) {
                             return (
-                              <div style={{ backgroundColor: 'rgba(245, 124, 0, 0.08)', border: '1px solid var(--warning)', color: 'var(--warning)', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <span>⚠️</span>
                                 <div>
-                                  La suma de las ponderaciones de los instrumentos de <strong>{activePKey.toUpperCase()}</strong> es actualmente de <strong>{currentWeightSum} / 100</strong> puntos. Para un cálculo exacto de la nota de la planilla general, asegúrese de que el total de instrumentos sume 100 puntos.
+                                  <strong>¡Atención!</strong> La suma de los instrumentos de <strong>{activePKey.toUpperCase()}</strong> es de <strong>{currentWeightSum} / 100 puntos</strong>, superando el límite máximo de 100 puntos. Por favor reduzca el valor de los instrumentos.
                                 </div>
                               </div>
                             );
                           }
-                          return null;
+
+                          return (
+                            <div style={{ backgroundColor: currentWeightSum === 100 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(0, 56, 118, 0.05)', border: `1px solid ${currentWeightSum === 100 ? 'var(--success)' : 'rgba(0, 56, 118, 0.2)'}`, color: currentWeightSum === 100 ? 'var(--success)' : 'var(--primary)', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span>{currentWeightSum === 100 ? '✅' : 'ℹ️'}</span>
+                                <div>
+                                  Puntos configurados en <strong>{activePKey.toUpperCase()}</strong>: <strong>{currentWeightSum} / 100 pts</strong>
+                                  {currentWeightSum < 100 && (
+                                    <span> (Disponibles para agregar otros instrumentos: <strong>{100 - currentWeightSum} pts</strong>)</span>
+                                  )}
+                                  {currentWeightSum === 100 && (
+                                    <span> (Total completo de 100 puntos asignado)</span>
+                                  )}
+                                </div>
+                              </div>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.85 }}>
+                                {currentList.length} instrumento{currentList.length > 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          );
                         })()}
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.2fr 1.2fr 0.6fr', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -32970,16 +33009,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             />
                           </div>
                           <div className="form-group">
-                            <label>Puntos (Máx 100)</label>
+                            <label>Puntos (pts)</label>
                             <input 
                               type="number" 
                               className="form-input"
                               min="1"
                               max="100"
-                              value={instrumentEditState.weight || 100}
-                              onChange={(e) => updateActiveInstrumentConfig({ weight: Number(e.target.value) || 0 })}
+                              value={instrumentEditState.weight !== undefined ? instrumentEditState.weight : 25}
+                              onChange={(e) => {
+                                const val = e.target.value === '' ? '' : Number(e.target.value);
+                                updateActiveInstrumentConfig({ weight: val === '' ? 0 : Math.min(100, Math.max(0, val)) });
+                              }}
+                              placeholder="Ej: 25"
                               required
                             />
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                              A voluntad del maestro
+                            </span>
                           </div>
                         </div>
 
@@ -33128,15 +33174,16 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           if (!config) {
                             return (
                               <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-                                No hay ningún instrumento configurado para este parámetro. Haz clic en "＋ Agregar" arriba a la izquierda para crear uno.
+                                No hay ningún instrumento configurado para este período. Haz clic en "＋ Agregar" arriba a la izquierda para crear uno.
                               </div>
                             );
                           }
 
                           const criteriaList = normalizeCriteria(config.criteria, config.type);
+                          const instWeight = config.weight !== undefined ? Number(config.weight) : 25;
                           
                           // Divide instrument weight proportional to number of criteria
-                          const maxCritScore = criteriaList.length > 0 ? Math.floor((config.weight || 100) / criteriaList.length) : (config.weight || 100);
+                          const maxCritScore = criteriaList.length > 0 ? Math.ceil(instWeight / criteriaList.length) : instWeight;
 
                           return (
                             <>
@@ -33144,7 +33191,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 Planilla de Calificación: {config.activity || 'Actividad Académica'}
                               </h3>
                               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                                Evalúa a los estudiantes seleccionando el nivel de logro para cada criterio o digitando el puntaje directamente. Las notas se sumarán con otros instrumentos del parámetro para dar el total sobre 100 de {activePKey.toUpperCase()} en la planilla general.
+                                Evalúa a los estudiantes seleccionando el nivel de logro para cada criterio o digitando el puntaje directamente. Las notas se sumarán con otros instrumentos del período para dar el total sobre 100 de {activePKey.toUpperCase()} en la planilla general.
                               </p>
 
                               <div className="custom-table-container">
@@ -33155,17 +33202,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       <th>Estudiante</th>
                                       
                                       {/* Criteria column headers */}
-                                      {criteriaList.map((crit, idx) => (
-                                        <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
-                                          {crit.name}
+                                      {criteriaList.length > 0 ? (
+                                        criteriaList.map((crit, idx) => (
+                                          <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
+                                            {crit.name}
+                                            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                                              (Máx: {maxCritScore} pts)
+                                            </div>
+                                          </th>
+                                        ))
+                                      ) : (
+                                        <th style={{ textAlign: 'center', minWidth: '140px' }}>
+                                          Calificación Directa
                                           <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-                                            (Máx: {maxCritScore} pts)
+                                            (Máx: {instWeight} pts)
                                           </div>
                                         </th>
-                                      ))}
+                                      )}
                                       
-                                      <th style={{ textAlign: 'center', width: '100px', backgroundColor: 'var(--success-bg)', color: 'var(--success)', fontWeight: 'bold' }}>
-                                        Total ({config.weight || 100})
+                                      <th style={{ textAlign: 'center', width: '110px', backgroundColor: 'var(--success-bg)', color: 'var(--success)', fontWeight: 'bold' }}>
+                                        Total ({instWeight} pts)
                                       </th>
                                     </tr>
                                   </thead>
@@ -33175,7 +33231,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       const savedAssessment = studentAssessments[assessmentKey] || {};
                                       
                                       // Calculate total points for this student in this specific instrument
-                                      const instTotal = criteriaList.reduce((acc, c) => acc + (savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0), 0);
+                                      const instTotal = criteriaList.length > 0
+                                        ? criteriaList.reduce((acc, c) => acc + (savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0), 0)
+                                        : (savedAssessment.__total !== undefined ? Number(savedAssessment.__total) : 0);
 
                                       return (
                                         <tr key={s.id}>
@@ -33183,73 +33241,88 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           <td style={{ fontWeight: 600 }}>{s.name}</td>
                                           
                                           {/* Criteria values input */}
-                                          {criteriaList.map((crit, critIdx) => {
-                                            const score = savedAssessment[crit.name] !== undefined ? Number(savedAssessment[crit.name]) : 0;
-                                            return (
-                                              <td key={critIdx} style={{ padding: 0 }}>
-                                                
-                                                {/* Dropdown helper select in cell for Tobon level scoring */}
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                  <input 
-                                                    type="number" 
-                                                    className="criteria-grade-input"
-                                                    value={savedAssessment[crit.name] !== undefined ? score : ''}
-                                                    min="0"
-                                                    max={maxCritScore}
-                                                    placeholder="-"
-                                                    onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, e.target.value)}
-                                                  />
+                                          {criteriaList.length > 0 ? (
+                                            criteriaList.map((crit, critIdx) => {
+                                              const score = savedAssessment[crit.name] !== undefined ? Number(savedAssessment[crit.name]) : 0;
+                                              return (
+                                                <td key={critIdx} style={{ padding: 0 }}>
                                                   
-                                                  {/* Simple quick selector */}
-                                                  {config.type !== 'lista' ? (
-                                                    <select 
-                                                      style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                      value={
-                                                        score >= maxCritScore ? 'estrategico' :
-                                                        score >= Math.floor(maxCritScore * 0.85) ? 'autonomo' :
-                                                        score >= Math.floor(maxCritScore * 0.75) ? 'resolutivo' :
-                                                        score > 0 ? 'receptivo' : ''
-                                                      }
-                                                      onChange={(e) => {
-                                                        const targetLevel = e.target.value;
-                                                        let val = 0;
-                                                        if (targetLevel === 'receptivo') val = Math.floor(maxCritScore * 0.65);
-                                                        else if (targetLevel === 'resolutivo') val = Math.floor(maxCritScore * 0.75);
-                                                        else if (targetLevel === 'autonomo') val = Math.floor(maxCritScore * 0.88);
-                                                        else if (targetLevel === 'estrategico') val = maxCritScore;
-                                                        
-                                                        handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
-                                                      }}
-                                                    >
-                                                      <option value="">-- Nivel --</option>
-                                                      <option value="receptivo">Receptivo (65%)</option>
-                                                      <option value="resolutivo">Resolutivo (75%)</option>
-                                                      <option value="autonomo">Autónomo (88%)</option>
-                                                      <option value="estrategico">Estratégico (100%)</option>
-                                                    </select>
-                                                  ) : (
-                                                    <select 
-                                                      style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                      value={savedAssessment[crit.name] !== undefined ? (score >= maxCritScore ? 'si' : 'no') : ''}
-                                                      onChange={(e) => {
-                                                        const val = e.target.value === 'si' ? maxCritScore : Math.floor(maxCritScore * 0.5);
-                                                        handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
-                                                      }}
-                                                    >
-                                                      <option value="">-- Sí/No --</option>
-                                                      <option value="si">Sí (100%)</option>
-                                                      <option value="no">No (50%)</option>
-                                                    </select>
-                                                  )}
-                                                </div>
+                                                  {/* Dropdown helper select in cell for Tobon level scoring */}
+                                                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <input 
+                                                      type="number" 
+                                                      className="criteria-grade-input"
+                                                      value={savedAssessment[crit.name] !== undefined ? score : ''}
+                                                      min="0"
+                                                      max={maxCritScore}
+                                                      placeholder="-"
+                                                      onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, e.target.value)}
+                                                    />
+                                                    
+                                                    {/* Simple quick selector */}
+                                                    {config.type !== 'lista' ? (
+                                                      <select 
+                                                        style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
+                                                        value={
+                                                          score >= maxCritScore ? 'estrategico' :
+                                                          score >= Math.round(maxCritScore * 0.85) ? 'autonomo' :
+                                                          score >= Math.round(maxCritScore * 0.75) ? 'resolutivo' :
+                                                          score > 0 ? 'receptivo' : ''
+                                                        }
+                                                        onChange={(e) => {
+                                                          const targetLevel = e.target.value;
+                                                          let val = 0;
+                                                          if (targetLevel === 'receptivo') val = Math.round(maxCritScore * 0.65);
+                                                          else if (targetLevel === 'resolutivo') val = Math.round(maxCritScore * 0.75);
+                                                          else if (targetLevel === 'autonomo') val = Math.round(maxCritScore * 0.88);
+                                                          else if (targetLevel === 'estrategico') val = maxCritScore;
+                                                          
+                                                          handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
+                                                        }}
+                                                      >
+                                                        <option value="">-- Nivel --</option>
+                                                        <option value="receptivo">Receptivo ({Math.round(maxCritScore * 0.65)} pts)</option>
+                                                        <option value="resolutivo">Resolutivo ({Math.round(maxCritScore * 0.75)} pts)</option>
+                                                        <option value="autonomo">Autónomo ({Math.round(maxCritScore * 0.88)} pts)</option>
+                                                        <option value="estrategico">Estratégico ({maxCritScore} pts)</option>
+                                                      </select>
+                                                    ) : (
+                                                      <select 
+                                                        style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
+                                                        value={savedAssessment[crit.name] !== undefined ? (score >= maxCritScore ? 'si' : 'no') : ''}
+                                                        onChange={(e) => {
+                                                          const val = e.target.value === 'si' ? maxCritScore : Math.round(maxCritScore * 0.5);
+                                                          handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
+                                                        }}
+                                                      >
+                                                        <option value="">-- Sí/No --</option>
+                                                        <option value="si">Sí ({maxCritScore} pts)</option>
+                                                        <option value="no">No ({Math.round(maxCritScore * 0.5)} pts)</option>
+                                                      </select>
+                                                    )}
+                                                  </div>
 
-                                              </td>
-                                            );
-                                          })}
+                                                </td>
+                                              );
+                                            })
+                                          ) : (
+                                            <td style={{ padding: '0.35rem', textAlign: 'center' }}>
+                                              <input 
+                                                type="number" 
+                                                className="criteria-grade-input"
+                                                style={{ width: '80px', textAlign: 'center', margin: '0 auto' }}
+                                                value={savedAssessment.__total !== undefined ? savedAssessment.__total : ''}
+                                                min="0"
+                                                max={instWeight}
+                                                placeholder="0"
+                                                onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, '__total', e.target.value)}
+                                              />
+                                            </td>
+                                          )}
                                           
                                           {/* Total sum column */}
                                           <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 'bold', backgroundColor: 'var(--bg-secondary)', color: 'var(--primary)' }}>
-                                            {instTotal}
+                                            {Math.min(instWeight, instTotal)} / {instWeight}
                                           </td>
                                         </tr>
                                       );
@@ -33490,7 +33563,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     <div className="instruction-step-num">3</div>
                     <div>
                       <strong>Evaluación por Criterios Integrada</strong>
-                      <p style={{ fontSize: '0.85rem' }}>Califica directamente al final de la pestaña "Instrumentos de Evaluación" seleccionando el nivel de logro para cada criterio de la actividad. Las calificaciones de todos los instrumentos asociados a un parámetro (ej: P1) se sumarán automáticamente y se verán reflejadas en la Planilla de Calificaciones general.</p>
+                      <p style={{ fontSize: '0.85rem' }}>Califica directamente al final de la pestaña "Instrumentos de Evaluación" seleccionando el nivel de logro para cada criterio de la actividad. Las calificaciones de todos los instrumentos asociados a un período (ej: P1) se sumarán automáticamente y se verán reflejadas en la Planilla de Calificaciones general.</p>
                     </div>
                   </div>
                 </div>
