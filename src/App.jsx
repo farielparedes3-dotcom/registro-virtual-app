@@ -23907,6 +23907,15 @@ export default function App() {
     } catch (e) { localStorage.removeItem('s_student_attendance_detail'); return {}; }
   });
 
+  const [studentAttendanceComments, setStudentAttendanceComments] = useState(() => {
+    try {
+      const saved = localStorage.getItem('s_attendance_comments');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) { localStorage.removeItem('s_attendance_comments'); return {}; }
+  });
+
+  const [attendanceCommentModal, setAttendanceCommentModal] = useState(null);
+
   const [monthlyWorkedDays, setMonthlyWorkedDays] = useState(() => {
     try {
     const saved = localStorage.getItem('s_monthly_worked_days');
@@ -24431,11 +24440,29 @@ export default function App() {
   const setStudentAttendanceDetailAndSave = (updater) => {
     setStudentAttendanceDetail(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_student_attendance_detail', JSON.stringify(next)); } catch (e) {}
       setTimeout(async () => {
         try {
           await dbService.saveStudentAttendance(next);
         } catch (e) {
           console.error("Error saving student attendance to Firestore:", e);
+        }
+      }, 0);
+      return next;
+    });
+  };
+
+  const setStudentAttendanceCommentsAndSave = (updater) => {
+    setStudentAttendanceComments(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_attendance_comments', JSON.stringify(next)); } catch (e) {}
+      setTimeout(async () => {
+        try {
+          if (dbService && dbService.saveAttendanceComments) {
+            await dbService.saveAttendanceComments(next);
+          }
+        } catch (e) {
+          console.error("Error saving attendance comments to Firestore:", e);
         }
       }, 0);
       return next;
@@ -24608,6 +24635,10 @@ export default function App() {
       setStudentAttendanceDetail(data || {});
     });
 
+    const unsubAttendanceComments = dbService.subscribeAttendanceComments ? dbService.subscribeAttendanceComments((data) => {
+      setStudentAttendanceComments(data || {});
+    }) : () => {};
+
     const unsubPromotionGrades = dbService.subscribePromotionGrades((data) => {
       // Fresh start for grades
       setPromotionGrades({});
@@ -24650,6 +24681,7 @@ export default function App() {
       unsubStudentAssessments();
       unsubStudentRpGrades();
       unsubStudentAttendance();
+      unsubAttendanceComments();
       unsubPromotionGrades();
       unsubConfig();
     };
@@ -31084,6 +31116,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 </div>
                               </div>
 
+                              {/* Legend & Tip Banner */}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
+                                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(46, 125, 50, 0.15)', border: '1.5px solid var(--success)', display: 'inline-block' }}></span>
+                                    P (Presente)
+                                  </span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(200, 16, 46, 0.15)', border: '1.5px solid var(--danger)', display: 'inline-block' }}></span>
+                                    A (Ausente)
+                                  </span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(245, 124, 0, 0.15)', border: '1.5px solid var(--warning)', display: 'inline-block' }}></span>
+                                    T (Tardanza)
+                                  </span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(33, 150, 243, 0.15)', border: '1.5px solid #2196f3', display: 'inline-block' }}></span>
+                                    E (Excusa)
+                                  </span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(93, 103, 112, 0.15)', border: '1.5px solid #5d6770', display: 'inline-block' }}></span>
+                                    R (Retirado)
+                                  </span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <span style={{ width: 12, height: 12, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(46, 125, 50, 0.3) 0%, rgba(139, 92, 246, 0.4) 100%)', border: '1.5px solid #8b5cf6', boxShadow: '0 0 0 1.5px #8b5cf6', display: 'inline-block' }}></span>
+                                    <strong style={{ color: '#6d28d9' }}>💬 Con Comentario (Clic derecho)</strong>
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div style={{ backgroundColor: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px', padding: '0.55rem 0.9rem', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#5b21b6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ fontSize: '1.1rem' }}>💬</span>
+                                <span>
+                                  <strong>Comentarios de Asistencia:</strong> Haz <strong>clic derecho</strong> en cualquier casilla para escribir o ver una observación sobre el estudiante. La condición quedará sombreada con un aro y distintivo púrpura.
+                                </span>
+                              </div>
+
                               {(() => {
                                 const activeColumns = [];
                                 Array.from({ length: 21 }).forEach((_, idx) => {
@@ -31195,6 +31264,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               {Array.from({ length: 21 }).map((_, idx) => {
                                                 const attendanceKey = `${s.id}_${subKey}_${selectedAttendanceMonth}_col_${idx}`;
                                                 const status = studentAttendanceDetail[attendanceKey] || '';
+                                                const comment = studentAttendanceComments[attendanceKey] || '';
+                                                const dateKey = `${selectedAdminAttendanceGrade}_${subKey}_${selectedAttendanceMonth}_day_${idx}`;
+                                                const dateVal = attendanceDayDates[dateKey] || '';
+
                                                 return (
                                                   <td key={idx} style={{ textAlign: 'center', padding: '0.3rem 0.1rem' }}>
                                                     <button 
@@ -31204,7 +31277,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                         status === 'T' ? 'tardy' : 
                                                         status === 'E' ? 'excuse' : 
                                                         status === 'R' ? 'retired' : ''
-                                                      }`}
+                                                      } ${comment ? 'has-comment' : ''}`}
+                                                      title={comment ? `💬 Comentario: "${comment}"\n(Clic derecho para ver o editar)` : 'Clic izquierdo: cambiar estado (P, A, T, E, R)\nClic derecho: agregar comentario'}
+                                                      onContextMenu={(e) => {
+                                                        e.preventDefault();
+                                                        setAttendanceCommentModal({
+                                                          studentId: s.id,
+                                                          studentName: s.name,
+                                                          subjectKey: subKey,
+                                                          month: selectedAttendanceMonth,
+                                                          colIdx: idx,
+                                                          dateVal: dateVal.trim() ? dateVal : `Día ${idx + 1}`,
+                                                          status: status,
+                                                          attendanceKey: attendanceKey,
+                                                          comment: comment
+                                                        });
+                                                      }}
                                                       onClick={() => {
                                                         let nextStatus = '';
                                                         if (status === '') nextStatus = 'P';
@@ -32484,7 +32572,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'rgba(93, 103, 112, 0.15)', border: '1.5px solid #5d6770', display: 'inline-block' }}></span>
                               R (Retirado)
                             </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ width: 12, height: 12, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(46, 125, 50, 0.3) 0%, rgba(139, 92, 246, 0.4) 100%)', border: '1.5px solid #8b5cf6', boxShadow: '0 0 0 1.5px #8b5cf6', display: 'inline-block' }}></span>
+                              <strong style={{ color: '#6d28d9' }}>💬 Con Comentario (Clic derecho)</strong>
+                            </span>
                           </div>
+                        </div>
+
+                        {/* Attendance Comment Tip Banner */}
+                        <div style={{ backgroundColor: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px', padding: '0.55rem 0.9rem', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#5b21b6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '1.1rem' }}>💬</span>
+                          <span>
+                            <strong>Comentarios de Asistencia:</strong> Haz <strong>clic derecho</strong> en cualquier casilla para escribir o ver una observación sobre el estudiante. La condición quedará sombreada con un aro y distintivo púrpura.
+                          </span>
                         </div>
 
                         {/* Grid Table */}
@@ -32621,6 +32721,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                     {Array.from({ length: 21 }).map((_, idx) => {
                                       const attendanceKey = `${s.id}_${selectedSubject}_${selectedAttendanceMonth}_col_${idx}`;
                                       const status = studentAttendanceDetail[attendanceKey] || '';
+                                      const comment = studentAttendanceComments[attendanceKey] || '';
+                                      const dateKey = `${selectedGrade}_${selectedSubject}_${selectedAttendanceMonth}_day_${idx}`;
+                                      const dateVal = attendanceDayDates[dateKey] || '';
 
                                       return (
                                         <td key={idx} style={{ textAlign: 'center', padding: '0.3rem 0.1rem' }}>
@@ -32631,7 +32734,22 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               status === 'T' ? 'tardy' : 
                                               status === 'E' ? 'excuse' : 
                                               status === 'R' ? 'retired' : ''
-                                            }`}
+                                            } ${comment ? 'has-comment' : ''}`}
+                                            title={comment ? `💬 Comentario: "${comment}"\n(Clic derecho para ver o editar)` : 'Clic izquierdo: cambiar estado (P, A, T, E, R)\nClic derecho: agregar comentario'}
+                                            onContextMenu={(e) => {
+                                              e.preventDefault();
+                                              setAttendanceCommentModal({
+                                                studentId: s.id,
+                                                studentName: s.name,
+                                                subjectKey: selectedSubject,
+                                                month: selectedAttendanceMonth,
+                                                colIdx: idx,
+                                                dateVal: dateVal.trim() ? dateVal : `Día ${idx + 1}`,
+                                                status: status,
+                                                attendanceKey: attendanceKey,
+                                                comment: comment
+                                              });
+                                            }}
                                             onClick={() => {
                                               let nextStatus = '';
                                               if (status === '') nextStatus = 'P';
@@ -34195,6 +34313,183 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
         )}
 
+        {/* Modal for Attendance Comments (Triggered via Right-Click) */}
+        {attendanceCommentModal && (
+          <div 
+            className="modal-backdrop" 
+            style={{ zIndex: 1300, backgroundColor: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)' }} 
+            onClick={() => setAttendanceCommentModal(null)}
+          >
+            <div 
+              className="modal-card animate-fade-in" 
+              style={{ maxWidth: '520px', width: '92%', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.25)', border: '1px solid var(--border-color)', background: 'var(--bg-primary)' }} 
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div style={{ padding: '1.25rem 1.5rem', background: 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <span style={{ fontSize: '1.25rem' }}>💬</span>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 'bold', color: '#ffffff' }}>Comentario de Asistencia</h3>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.82rem', opacity: 0.9 }}>
+                    Observación puntual para el registro de control de asistencia
+                  </p>
+                </div>
+                <button 
+                  style={{ border: 'none', background: 'rgba(255,255,255,0.2)', color: '#ffffff', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', transition: 'background 0.2s' }} 
+                  onClick={() => setAttendanceCommentModal(null)}
+                  title="Cerrar"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Body */}
+              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Details Banner */}
+                <div style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                      {attendanceCommentModal.studentName}
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                      📅 {attendanceCommentModal.dateVal} • Mes: {attendanceCommentModal.month} • {attendanceCommentModal.subjectKey}
+                    </div>
+                  </div>
+                  <div>
+                    {attendanceCommentModal.status ? (
+                      <span className={`attendance-cell-btn ${
+                        attendanceCommentModal.status === 'P' ? 'present' :
+                        attendanceCommentModal.status === 'A' ? 'absent' :
+                        attendanceCommentModal.status === 'T' ? 'tardy' :
+                        attendanceCommentModal.status === 'E' ? 'excuse' :
+                        attendanceCommentModal.status === 'R' ? 'retired' : ''
+                      }`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'default' }}>
+                        {attendanceCommentModal.status}
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic', padding: '0.2rem 0.5rem', background: 'var(--bg-primary)', borderRadius: '4px', border: '1px dashed var(--border-color)' }}>
+                        Sin marcar
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Textarea */}
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.85rem', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>
+                    Observación / Justificación:
+                  </label>
+                  <textarea 
+                    autoFocus
+                    rows={4}
+                    className="form-input"
+                    value={attendanceCommentModal.comment}
+                    onChange={(e) => setAttendanceCommentModal({ ...attendanceCommentModal, comment: e.target.value })}
+                    placeholder="Escribe aquí el motivo de la falta, tardanza, permiso especial o nota relevante..."
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', lineHeight: '1.4', resize: 'vertical' }}
+                  />
+                </div>
+
+                {/* Quick Helper Chips */}
+                <div>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
+                    Sugerencias rápidas:
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    {[
+                      'Justificativo médico presentado',
+                      'Permiso previo de los padres',
+                      'Llegada tarde por transporte escolar',
+                      'Participación en actividad institucional',
+                      'Atendido en enfermería escolar',
+                      'Ausencia sin justificar'
+                    ].map((chipText, cIdx) => (
+                      <button 
+                        key={cIdx}
+                        type="button"
+                        onClick={() => {
+                          const current = (attendanceCommentModal.comment || '').trim();
+                          const newText = current ? `${current}. ${chipText}` : chipText;
+                          setAttendanceCommentModal({ ...attendanceCommentModal, comment: newText });
+                        }}
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.25rem 0.6rem',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(139, 92, 246, 0.3)',
+                          backgroundColor: 'rgba(139, 92, 246, 0.08)',
+                          color: '#6d28d9',
+                          cursor: 'pointer',
+                          fontWeight: '500',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(139, 92, 246, 0.18)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(139, 92, 246, 0.08)';
+                        }}
+                      >
+                        + {chipText}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div style={{ padding: '1rem 1.5rem', backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  {studentAttendanceComments[attendanceCommentModal.attendanceKey] && (
+                    <button 
+                      type="button" 
+                      className="btn btn-outline-danger" 
+                      style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}
+                      onClick={() => {
+                        const updated = { ...studentAttendanceComments };
+                        delete updated[attendanceCommentModal.attendanceKey];
+                        setStudentAttendanceCommentsAndSave(updated);
+                        setAttendanceCommentModal(null);
+                      }}
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  )}
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
+                    onClick={() => setAttendanceCommentModal(null)}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    style={{ padding: '0.45rem 1.25rem', fontSize: '0.85rem', background: 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)', border: 'none', color: '#ffffff', fontWeight: 'bold' }}
+                    onClick={() => {
+                      const updated = { ...studentAttendanceComments };
+                      const trimmed = (attendanceCommentModal.comment || '').trim();
+                      if (trimmed) {
+                        updated[attendanceCommentModal.attendanceKey] = trimmed;
+                      } else {
+                        delete updated[attendanceCommentModal.attendanceKey];
+                      }
+                      setStudentAttendanceCommentsAndSave(updated);
+                      setAttendanceCommentModal(null);
+                    }}
+                  >
+                    💾 Guardar Comentario
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       <SignatureModal
         isOpen={isSignatureModalOpen}

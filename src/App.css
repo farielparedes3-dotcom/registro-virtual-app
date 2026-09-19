@@ -1216,6 +1216,62 @@
   color: #5d6770;
 }
 
+/* Attendance button with comment (shaded with distinct purple-violet glow and dot) */
+.attendance-cell-btn.has-comment {
+  position: relative;
+  box-shadow: 0 0 0 2.5px #8b5cf6, 0 2px 10px rgba(139, 92, 246, 0.45) !important;
+  font-weight: 900;
+}
+
+.attendance-cell-btn.has-comment::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(139, 92, 246, 0.6);
+}
+
+.attendance-cell-btn.present.has-comment {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%) !important;
+  border-color: #8b5cf6 !important;
+  color: #5b21b6 !important;
+}
+
+.attendance-cell-btn.absent.has-comment {
+  background: linear-gradient(135deg, rgba(200, 16, 46, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%) !important;
+  border-color: #8b5cf6 !important;
+  color: #7c2d12 !important;
+}
+
+.attendance-cell-btn.tardy.has-comment {
+  background: linear-gradient(135deg, rgba(245, 124, 0, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%) !important;
+  border-color: #8b5cf6 !important;
+  color: #7c2d12 !important;
+}
+
+.attendance-cell-btn.excuse.has-comment {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%) !important;
+  border-color: #8b5cf6 !important;
+  color: #1e40af !important;
+}
+
+.attendance-cell-btn.retired.has-comment {
+  background: linear-gradient(135deg, rgba(93, 103, 112, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%) !important;
+  border-color: #8b5cf6 !important;
+  color: #374151 !important;
+}
+
+.attendance-cell-btn:empty.has-comment {
+  background: rgba(139, 92, 246, 0.2) !important;
+  border-color: #8b5cf6 !important;
+  border-style: solid !important;
+}
+
 .th-vertical-header {
   height: 90px;
   min-width: 32px;

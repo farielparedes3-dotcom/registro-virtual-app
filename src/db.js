@@ -512,6 +512,42 @@ export const dbService = {
     }
   },
 
+  // --- 9.1 ATTENDANCE COMMENTS ---
+  subscribeAttendanceComments(callback) {
+    if (!isFirebaseEnabled) {
+      if (!fallbackSubscribers['attendance_comments']) fallbackSubscribers['attendance_comments'] = [];
+      fallbackSubscribers['attendance_comments'].push(callback);
+      const saved = localStorage.getItem('s_attendance_comments');
+      if (saved) callback(JSON.parse(saved));
+      return () => {};
+    }
+    return onSnapshot(collection(firestore, 'attendance_comments'), (snapshot) => {
+      const comments = {};
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        if (docItem.id === 'store') {
+          Object.assign(comments, data.comments || {});
+        } else if (data && data.comments !== undefined) {
+          comments[docItem.id] = data.comments;
+        }
+      });
+      remoteCache['attendance_comments'] = JSON.stringify(comments);
+      localStorage.setItem('s_attendance_comments', JSON.stringify(comments));
+      callback(comments);
+    });
+  },
+  async saveAttendanceComments(commentsObject) {
+    if (!hasChanged('attendance_comments', commentsObject)) return;
+    localStorage.setItem('s_attendance_comments', JSON.stringify(commentsObject));
+    triggerFallbackUpdate('attendance_comments', commentsObject);
+    if (!isFirebaseEnabled) return;
+    try {
+      await setDoc(doc(firestore, 'attendance_comments', 'store'), { comments: commentsObject });
+    } catch (err) {
+      console.error('Error saving attendance comments to Firestore:', err);
+    }
+  },
+
   // --- 10. PROMOTION GRADES ---
   subscribePromotionGrades(callback) {
     if (!isFirebaseEnabled) {
