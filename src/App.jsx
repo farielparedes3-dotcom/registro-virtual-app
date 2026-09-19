@@ -27564,21 +27564,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         });
       }
 
-      if (hasInstruments && hasEvaluatedAssessment) {
+      const manualVal = student?.manualGrades?.[subjectKey]?.[bloqueKey]?.[pIdx];
+      if (manualVal !== '' && manualVal !== null && manualVal !== undefined) {
+        finalGrades[pIdx] = (manualVal === 0 || manualVal === '0') ? 0 : Number(manualVal);
+      } else if (hasInstruments && hasEvaluatedAssessment) {
         finalGrades[pIdx] = Math.min(100, Math.max(0, totalInstrumentSum));
       } else {
-        const manualVal = getManualBaseGrade(student, subjectKey, bloqueKey, pIdx);
-        if (manualVal !== '' && manualVal !== null && manualVal !== undefined) {
-          finalGrades[pIdx] = (manualVal === 0 || manualVal === '0') ? 0 : Number(manualVal);
+        const orig = originalGrades ? originalGrades[pIdx] : '';
+        if (orig === 0 || orig === '0') {
+          finalGrades[pIdx] = 0;
+        } else if (orig !== undefined && orig !== null && orig !== '') {
+          finalGrades[pIdx] = Number(orig);
         } else {
-          const orig = originalGrades ? originalGrades[pIdx] : '';
-          if (orig === 0 || orig === '0') {
-            finalGrades[pIdx] = 0;
-          } else if (orig !== undefined && orig !== null && orig !== '') {
-            finalGrades[pIdx] = Number(orig);
-          } else {
-            finalGrades[pIdx] = '';
-          }
+          finalGrades[pIdx] = '';
         }
       }
     });
