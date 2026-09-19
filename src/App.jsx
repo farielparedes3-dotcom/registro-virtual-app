@@ -24092,9 +24092,186 @@ export default function App() {
   const [folderExplorerStudentName, setFolderExplorerStudentName] = useState('');
   const [selectedManualReportStudentId, setSelectedManualReportStudentId] = useState('');
   const [counselorForm, setCounselorForm] = useState({ name: '', email: '', password: '' });
-  const [viewingReportLog, setViewingReportLog] = useState(null);
-
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  // --- Planning Module States (Adecuación Curricular 2023) ---
+  const [planningSubTab, setPlanningSubTab] = useState('create_plan');
+
+  const [uploadedPlans, setUploadedPlans] = useState(() => {
+    try {
+      const saved = localStorage.getItem('s_uploaded_plans');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [createdPlans, setCreatedPlans] = useState(() => {
+    try {
+      const saved = localStorage.getItem('s_created_plans');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [dailyClassLogs, setDailyClassLogs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('s_daily_class_logs');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const setUploadedPlansAndSave = (updater) => {
+    setUploadedPlans(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_uploaded_plans', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+  };
+
+  const setCreatedPlansAndSave = (updater) => {
+    setCreatedPlans(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_created_plans', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+  };
+
+  const setDailyClassLogsAndSave = (updater) => {
+    setDailyClassLogs(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_daily_class_logs', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+  };
+
+  const [planningForm, setPlanningForm] = useState({
+    level: 'Secundario - Primer Ciclo',
+    grade: '1ro A',
+    subject: 'ciencias_naturaleza',
+    unitTitle: 'Estructura y Función Celular',
+    estimatedTime: '3 Semanas (15 horas)',
+    transversalAxis: 'Educación de la Salud y Medio Ambiente',
+    fundamentalCompetencies: 'Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica',
+    specificCompetencias: 'Comprende la estructura de la célula, sus organelos y funciones vitales en los organismos vivos.',
+    conceptualContents: 'La célula: procariotas y eucariotas. Organelos celulares (núcleo, mitocondria, cloroplastos). Membrana celular y transporte.',
+    proceduralContents: 'Observación y descripción de células en muestras preparadas al microscopio. Esqueletización y comparación entre célula animal y vegetal.',
+    attitudinalContents: 'Curiosidad científica, trabajo en equipo colaborativo y cuidado de la salud corporal a nivel celular.',
+    teachingStrategies: 'Aprendizaje Basado en Indagación, Descubrimiento Guiado y Experimentos Prácticos de Laboratorio.',
+    sequenceInicio: 'Motivación con video interactivo sobre la vida microscópica. Exploración de saberes previos con lluvia de ideas.',
+    sequenceDesarrollo: 'Lectura comentada del texto escolar, observación interactiva de organelos celulares y elaboración de una maqueta 3D.',
+    sequenceCierre: 'Síntesis en mapa mental comparativo entre célula animal y vegetal. Evaluación formativa mediante metacognición.',
+    achievementIndicators: 'Diferencia con claridad la célula animal de la vegetal y explica la función de los organelos principales.',
+    evaluationInstruments: 'Rúbrica de evaluación de maqueta y Lista de Cotejo para reporte de laboratorio.'
+  });
+
+  const [dailyLogForm, setDailyLogForm] = useState({
+    date: new Date().toISOString().split('T')[0],
+    grade: '1ro A',
+    subject: 'ciencias_naturaleza',
+    topic: 'Identificación de organelos en la célula vegetal',
+    activity: 'Observación al microscopio de epidermas de cebolla y dibujo de estructuras vistas.',
+    status: 'Impartida',
+    notes: 'Los estudiantes mostraron alto entusiasmo al identificar los cloroplastos.'
+  });
+
+  const handleAiGeneratePlan = () => {
+    const subName = subjects[planningForm.subject]?.name || 'Ciencias de la Naturaleza';
+    const currentGrade = planningForm.grade || '1ro A';
+
+    setPlanningForm({
+      level: currentGrade.startsWith('1') || currentGrade.startsWith('2') || currentGrade.startsWith('3') ? 'Secundario - Primer Ciclo' : 'Secundario - Segundo Ciclo',
+      grade: currentGrade,
+      subject: planningForm.subject,
+      unitTitle: `Unidad Didáctica de ${subName}: Fundamentos e Indagación Científica`,
+      estimatedTime: '4 Semanas (20 Horas de Clase)',
+      transversalAxis: 'Educación Ambiental, Salud y Ciudadanía Crítica',
+      fundamentalCompetencies: 'Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica',
+      specificCompetencias: `Aplica los conceptos estructurantes de ${subName} en la solución de situaciones del contexto social y natural, demostrando dominio de procesos de indagación sistemática según la Adecuación Curricular 2023 del Nivel Secundario.`,
+      conceptualContents: `1. Principios esenciales de ${subName}.\n2. Leyes, conceptos clave y teorías articuladoras.\n3. Modelos explicativos y aplicaciones en la vida cotidiana.`,
+      proceduralContents: `1. Formulación de hipótesis y diseño de experimentos simples.\n2. Recolección y análisis de datos en tablas y gráficos.\n3. Elaboración de informes sintéticos de hallazgos.`,
+      attitudinalContents: `1. Actitud crítica frente a hallazgos empíricos.\n2. Valoración de la ética en la investigación pedagógica.\n3. Compromiso con el bienestar colectivo e interdisciplinario.`,
+      teachingStrategies: 'Aprendizaje Basado en Proyectos (ABP), Indagación Guiada, Experimentos de Campo y Aprendizaje Colaborativo.',
+      sequenceInicio: 'Exploración de conocimientos previos mediante lluvia de ideas. Presentación de situación problemática del contexto y proyección de video disparador.',
+      sequenceDesarrollo: 'Formación de equipos de trabajo, análisis de fuentes bibliográficas oficiales MINERD 2023, ejecución de guía práctica y construcción del producto de aprendizaje.',
+      sequenceCierre: 'Exposición de conclusiones por equipos, debate reflexivo metacognitivo ("¿Qué aprendimos y cómo lo aplicamos?") y síntesis docente.',
+      achievementIndicators: `Explica con solvencia los modelos clave de ${subName}, argumenta sus hipótesis con evidencias y colabora responsablemente en tareas de indagación.`,
+      evaluationInstruments: 'Rúbrica Analítica de Producto, Lista de Cotejo de Desempeño y Registro Anecdótico.'
+    });
+
+    alert('✨ ¡Planificación curricular autocompletada exitosamente con el Asistente de IA (Adecuación Curricular 2023)!');
+  };
+
+  const handleSaveCreatedPlan = (e) => {
+    e.preventDefault();
+    const newPlan = {
+      id: 'plan_' + Date.now(),
+      ...planningForm,
+      createdAt: new Date().toLocaleDateString('es-DO')
+    };
+
+    setCreatedPlansAndSave(prev => [newPlan, ...prev]);
+    alert('✅ Planificación Curricular 2023 guardada exitosamente.');
+    setPlanningSubTab('my_plans');
+  };
+
+  const handleDeleteCreatedPlan = (planId) => {
+    if (!window.confirm('¿Seguro que deseas eliminar esta planificación?')) return;
+    setCreatedPlansAndSave(prev => prev.filter(p => p.id !== planId));
+  };
+
+  const handleSaveDailyLog = (e) => {
+    e.preventDefault();
+    const newLog = {
+      id: 'log_' + Date.now(),
+      ...dailyLogForm
+    };
+
+    setDailyClassLogsAndSave(prev => [newLog, ...prev]);
+    alert('✅ Clase diaria registrada exitosamente en el seguimiento por grado.');
+    setDailyLogForm(prev => ({
+      ...prev,
+      topic: '',
+      activity: '',
+      notes: ''
+    }));
+  };
+
+  const handleDeleteDailyLog = (logId) => {
+    if (!window.confirm('¿Deseas eliminar este registro de clase diaria?')) return;
+    setDailyClassLogsAndSave(prev => prev.filter(l => l.id !== logId));
+  };
+
+  const handlePlanFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Data = event.target.result;
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      const newUpload = {
+        id: 'up_' + Date.now(),
+        fileName: file.name,
+        fileSize: sizeMb,
+        fileData: base64Data,
+        uploadDate: new Date().toLocaleDateString('es-DO')
+      };
+
+      setUploadedPlansAndSave(prev => [newUpload, ...prev]);
+      alert(`✅ Archivo "${file.name}" subido y guardado exitosamente.`);
+      setPlanningSubTab('my_plans');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDeleteUploadedPlan = (upId) => {
+    if (!window.confirm('¿Deseas eliminar este archivo de planificación?')) return;
+    setUploadedPlansAndSave(prev => prev.filter(u => u.id !== upId));
+  };
   const [selectedBulletinStudentId, setSelectedBulletinStudentId] = useState('');
   const [adminBulletinGrade, setAdminBulletinGrade] = useState('');
   const [salida1Name, setSalida1Name] = useState(() => {
@@ -29161,6 +29338,560 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   // --- VIEW: Admin Dashboard ---
+  const renderPlanningTabContent = () => {
+    return (
+      <div className="card" style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem' }}>
+        {/* Header Banner */}
+        <div style={{
+          background: 'linear-gradient(135deg, #003876 0%, #1a569c 100%)',
+          color: '#ffffff',
+          padding: '1.25rem 1.5rem',
+          borderRadius: '12px',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#ffffff' }}>
+              📚 Módulo de Planificación Curricular (Adecuación 2023 - Secundaria)
+            </h2>
+            <p style={{ margin: '0.3rem 0 0 0', opacity: 0.9, fontSize: '0.88rem' }}>
+              Diseña, genera con Inteligencia Artificial, gestiona documentos y realiza el seguimiento diario de tus clases por grado.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn-primary"
+            style={{ backgroundColor: '#f59e0b', color: '#000000', fontWeight: 'bold', border: 'none', padding: '0.6rem 1.25rem' }}
+            onClick={handleAiGeneratePlan}
+          >
+            ✨ Autocompletar Plan con IA
+          </button>
+        </div>
+
+        {/* Sub-Tabs Bar */}
+        <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--border-color)', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+          <button
+            type="button"
+            className={`btn ${planningSubTab === 'create_plan' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPlanningSubTab('create_plan')}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem' }}
+          >
+            📝 Elaborar Planificación Curricular 2023
+          </button>
+          <button
+            type="button"
+            className={`btn ${planningSubTab === 'daily_logs' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPlanningSubTab('daily_logs')}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem' }}
+          >
+            📅 Seguimiento Diario de Clases por Grado
+          </button>
+          <button
+            type="button"
+            className={`btn ${planningSubTab === 'my_plans' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPlanningSubTab('my_plans')}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem' }}
+          >
+            📁 Mis Planificaciones & Archivos Subidos ({createdPlans.length + uploadedPlans.length})
+          </button>
+        </div>
+
+        {/* SUBTAB 1: CREATE PLAN (ADECUACION CURRICULAR 2023) */}
+        {planningSubTab === 'create_plan' && (
+          <div>
+            <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1.25rem', borderLeft: '4px solid var(--primary)' }}>
+              <h4 style={{ margin: 0, color: 'var(--primary)', fontSize: '0.95rem' }}>
+                📋 Estructura Oficial Adaptada a la Adecuación Curricular 2023 - Nivel Secundario (MINERD)
+              </h4>
+              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                Completa cada uno de los elementos normativos o haz clic en **"✨ Autocompletar Plan con IA"** para redactar de forma automatizada una unidad didáctica completa.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveCreatedPlan}>
+              {/* Row 1: Level, Grade, Subject */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Nivel Educativo / Ciclo</label>
+                  <select
+                    className="form-select"
+                    value={planningForm.level}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, level: e.target.value }))}
+                  >
+                    <option value="Secundario - Primer Ciclo">Secundario - Primer Ciclo (1ro, 2do, 3ro)</option>
+                    <option value="Secundario - Segundo Ciclo">Secundario - Segundo Ciclo (4to, 5to, 6to)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Grado y Sección</label>
+                  <select
+                    className="form-select"
+                    value={planningForm.grade}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, grade: e.target.value }))}
+                  >
+                    {grades.map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Asignatura / Área Curricular</label>
+                  <select
+                    className="form-select"
+                    value={planningForm.subject}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, subject: e.target.value }))}
+                  >
+                    {Object.keys(subjects).map(sKey => (
+                      <option key={sKey} value={sKey}>{subjects[sKey].name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 2: Unit Title & Estimated Time */}
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Título de la Unidad / Eje Temático</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={planningForm.unitTitle}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, unitTitle: e.target.value }))}
+                    placeholder="Ej: La Célula y su Funcionamiento Organelar"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Tiempo Estimado</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={planningForm.estimatedTime}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, estimatedTime: e.target.value }))}
+                    placeholder="Ej: 3 Semanas (15 horas)"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Transversal Axis & Fundamental Competencies */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Eje Transversal Articulador</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={planningForm.transversalAxis}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, transversalAxis: e.target.value }))}
+                    placeholder="Ej: Salud, Medio Ambiente y Ciudadanía"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Competencias Fundamentales Abordadas</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={planningForm.fundamentalCompetencies}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, fundamentalCompetencies: e.target.value }))}
+                    placeholder="Ej: Pensamiento Lógico, Científica y Tecnológica"
+                  />
+                </div>
+              </div>
+
+              {/* Specific Competencies */}
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="form-label">Competencias Específicas del Grado (Adecuación 2023)</label>
+                <textarea
+                  className="form-input"
+                  rows={3}
+                  value={planningForm.specificCompetencias}
+                  onChange={(e) => setPlanningForm(p => ({ ...p, specificCompetencias: e.target.value }))}
+                  placeholder="Redacte las competencias específicas articuladas..."
+                />
+              </div>
+
+              {/* Triada de Contenidos */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Contenidos Conceptuales</label>
+                  <textarea
+                    className="form-input"
+                    rows={4}
+                    value={planningForm.conceptualContents}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, conceptualContents: e.target.value }))}
+                    placeholder="Conceptos, leyes, teorías..."
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Contenidos Procedimentales</label>
+                  <textarea
+                    className="form-input"
+                    rows={4}
+                    value={planningForm.proceduralContents}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, proceduralContents: e.target.value }))}
+                    placeholder="Procedimientos, experimentos, técnicas..."
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Contenidos Actitudinales y Valores</label>
+                  <textarea
+                    className="form-input"
+                    rows={4}
+                    value={planningForm.attitudinalContents}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, attitudinalContents: e.target.value }))}
+                    placeholder="Actitudes, valores pedagógicos..."
+                  />
+                </div>
+              </div>
+
+              {/* Estrategias de Enseñanza */}
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="form-label">Estrategias de Enseñanza y Aprendizaje</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={planningForm.teachingStrategies}
+                  onChange={(e) => setPlanningForm(p => ({ ...p, teachingStrategies: e.target.value }))}
+                  placeholder="Ej: Aprendizaje Basado en Indagación, Descubrimiento Guiado, Exposición..."
+                />
+              </div>
+
+              {/* Secuencia Didáctica */}
+              <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem', backgroundColor: '#fafafa' }}>
+                <h5 style={{ margin: '0 0 0.8rem 0', color: 'var(--primary)' }}>🎯 Secuencia Didáctica (Actividades Pedagógicas)</h5>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                  <div>
+                    <label className="form-label" style={{ color: '#0d9488' }}>Actividades de Inicio</label>
+                    <textarea
+                      className="form-input"
+                      rows={3}
+                      value={planningForm.sequenceInicio}
+                      onChange={(e) => setPlanningForm(p => ({ ...p, sequenceInicio: e.target.value }))}
+                      placeholder="Recuperación de saberes previos, motivación..."
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label" style={{ color: '#0284c7' }}>Actividades de Desarrollo</label>
+                    <textarea
+                      className="form-input"
+                      rows={3}
+                      value={planningForm.sequenceDesarrollo}
+                      onChange={(e) => setPlanningForm(p => ({ ...p, sequenceDesarrollo: e.target.value }))}
+                      placeholder="Construcción del conocimiento, profundización..."
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label" style={{ color: '#7c3aed' }}>Actividades de Cierre</label>
+                    <textarea
+                      className="form-input"
+                      rows={3}
+                      value={planningForm.sequenceCierre}
+                      onChange={(e) => setPlanningForm(p => ({ ...p, sequenceCierre: e.target.value }))}
+                      placeholder="Metacognición, evaluación formativa..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Indicadores de Logro & Instrumentos */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Indicadores de Logro</label>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    value={planningForm.achievementIndicators}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, achievementIndicators: e.target.value }))}
+                    placeholder="Criterios e indicadores de avance del estudiante..."
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Recursos y Técnicas/Instrumentos de Evaluación</label>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    value={planningForm.evaluationInstruments}
+                    onChange={(e) => setPlanningForm(p => ({ ...p, evaluationInstruments: e.target.value }))}
+                    placeholder="Rúbricas, listas de cotejo, proyector, maquetas..."
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={handleAiGeneratePlan}
+                  style={{ backgroundColor: '#fffbe6', borderColor: '#ffe58f', color: '#d48806', fontWeight: 'bold' }}
+                >
+                  ✨ Regenerar con IA
+                </button>
+                <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1.5rem', fontWeight: 'bold' }}>
+                  💾 Guardar Planificación Curricular
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* SUBTAB 2: DAILY CLASS LOGS BY GRADE */}
+        {planningSubTab === 'daily_logs' && (
+          <div>
+            <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1.25rem' }}>
+              <h4 style={{ margin: 0, color: 'var(--primary)', fontSize: '0.95rem' }}>
+                📅 Seguimiento Diario de Clases por Grado (Diario Reflexivo del Docente)
+              </h4>
+              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                Registra día a día la clase que impartirás o has impartido en cada grado, asegurando un control sistemático de tu avance curricular.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveDailyLog} style={{ border: '1px solid var(--border-color)', padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem', backgroundColor: '#fafafa' }}>
+              <h5 style={{ margin: '0 0 1rem 0', color: 'var(--primary)' }}>➕ Registrar Nueva Clase / Lección Diaria</h5>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Fecha de la Clase</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={dailyLogForm.date}
+                    onChange={(e) => setDailyLogForm(d => ({ ...d, date: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Grado y Sección</label>
+                  <select
+                    className="form-select"
+                    value={dailyLogForm.grade}
+                    onChange={(e) => setDailyLogForm(d => ({ ...d, grade: e.target.value }))}
+                  >
+                    {grades.map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Asignatura</label>
+                  <select
+                    className="form-select"
+                    value={dailyLogForm.subject}
+                    onChange={(e) => setDailyLogForm(d => ({ ...d, subject: e.target.value }))}
+                  >
+                    {Object.keys(subjects).map(sKey => (
+                      <option key={sKey} value={sKey}>{subjects[sKey].name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Estado de la Clase</label>
+                  <select
+                    className="form-select"
+                    value={dailyLogForm.status}
+                    onChange={(e) => setDailyLogForm(d => ({ ...d, status: e.target.value }))}
+                  >
+                    <option value="Impartida">✅ Impartida</option>
+                    <option value="Pendiente">⏳ Pendiente</option>
+                    <option value="Reprogramada">🔄 Reprogramada</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Tema / Contenido del Día</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={dailyLogForm.topic}
+                    onChange={(e) => setDailyLogForm(d => ({ ...d, topic: e.target.value }))}
+                    placeholder="Ej: Estructura del ADN y replicación"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Actividad Realizada</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={dailyLogForm.activity}
+                    onChange={(e) => setDailyLogForm(d => ({ ...d, activity: e.target.value }))}
+                    placeholder="Ej: Exposición grupal y resolución de guía pedagógica"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="form-label">Observaciones / Reflexión Pedagógica</label>
+                <textarea
+                  className="form-input"
+                  rows={2}
+                  value={dailyLogForm.notes}
+                  onChange={(e) => setDailyLogForm(d => ({ ...d, notes: e.target.value }))}
+                  placeholder="Logros alcanzados, incidencias o aspectos a reforzar..."
+                />
+              </div>
+
+              <div style={{ textAlign: 'right', marginTop: '1rem' }}>
+                <button type="submit" className="btn-primary">
+                  ➕ Agregar Registro Diario
+                </button>
+              </div>
+            </form>
+
+            {/* Table of Daily Logs */}
+            <h5 style={{ margin: '0 0 0.75rem 0', color: 'var(--primary)' }}>📋 Historial de Clases Impartidas por Grado</h5>
+            {dailyClassLogs.length === 0 ? (
+              <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '1.5rem' }}>
+                No hay clases registradas aún en la bitácora diaria.
+              </p>
+            ) : (
+              <div className="table-responsive">
+                <table className="table" style={{ fontSize: '0.88rem' }}>
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Grado</th>
+                      <th>Asignatura</th>
+                      <th>Tema / Contenido</th>
+                      <th>Actividad</th>
+                      <th>Estado</th>
+                      <th>Observaciones</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dailyClassLogs.map((log) => (
+                      <tr key={log.id}>
+                        <td style={{ fontWeight: 'bold' }}>{log.date}</td>
+                        <td><span className="badge badge-info">{log.grade}</span></td>
+                        <td>{subjects[log.subject]?.name || log.subject}</td>
+                        <td style={{ fontWeight: 600 }}>{log.topic}</td>
+                        <td>{log.activity || '-'}</td>
+                        <td>
+                          <span className={`badge ${log.status === 'Impartida' ? 'badge-success' : (log.status === 'Pendiente' ? 'badge-warning' : 'badge-danger')}`}>
+                            {log.status}
+                          </span>
+                        </td>
+                        <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{log.notes || '-'}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn-danger"
+                            style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                            onClick={() => handleDeleteDailyLog(log.id)}
+                          >
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* SUBTAB 3: MY PLANS & FILE UPLOADS */}
+        {planningSubTab === 'my_plans' && (
+          <div>
+            {/* File Upload Box */}
+            <div style={{ border: '2px dashed var(--primary)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', backgroundColor: 'rgba(0, 56, 118, 0.02)', marginBottom: '2rem' }}>
+              <span style={{ fontSize: '2.5rem' }}>📤</span>
+              <h4 style={{ margin: '0.5rem 0 0.2rem 0', color: 'var(--primary)' }}>Subir Planificación en PDF / Word / Imagen</h4>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                Adjunta archivos digitalizados de tus unidades didácticas o esquemas pedagógicos.
+              </p>
+
+              <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <input
+                  type="file"
+                  id="planFileInput"
+                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                  style={{ display: 'none' }}
+                  onChange={handlePlanFileUpload}
+                />
+                <label htmlFor="planFileInput" className="btn-primary" style={{ cursor: 'pointer', padding: '0.5rem 1.25rem' }}>
+                  📁 Seleccionar Archivo para Subir
+                </label>
+              </div>
+            </div>
+
+            {/* List of Created Plans */}
+            <h4 style={{ margin: '1.5rem 0 0.75rem 0', color: 'var(--primary)' }}>📝 Planificaciones Elaboradas en Sistema (Adecuación 2023)</h4>
+            {createdPlans.length === 0 ? (
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>No has creado planificaciones digitales aún.</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                {createdPlans.map(plan => (
+                  <div key={plan.id} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', backgroundColor: '#ffffff', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <h5 style={{ margin: 0, color: 'var(--primary)', fontSize: '1rem' }}>{plan.unitTitle}</h5>
+                      <span className="badge badge-info">{plan.grade}</span>
+                    </div>
+                    <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                      <strong>Área:</strong> {subjects[plan.subject]?.name || plan.subject} | <strong>Duración:</strong> {plan.estimatedTime}
+                    </p>
+                    <p style={{ margin: 0, fontSize: '0.8rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <strong>Competencias:</strong> {plan.specificCompetencias}
+                    </p>
+                    <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.5rem', borderTop: '1px solid #f0f0f0' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#888' }}>{plan.createdAt}</span>
+                      <button type="button" className="btn-danger" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleDeleteCreatedPlan(plan.id)}>
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* List of Uploaded File Plans */}
+            <h4 style={{ margin: '1.5rem 0 0.75rem 0', color: 'var(--primary)' }}>📎 Documentos de Planificación Subidos</h4>
+            {uploadedPlans.length === 0 ? (
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>No hay archivos adjuntos subidos.</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                {uploadedPlans.map(up => (
+                  <div key={up.id} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', backgroundColor: '#ffffff' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span style={{ fontSize: '2rem' }}>📄</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h5 style={{ margin: 0, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{up.fileName}</h5>
+                        <p style={{ margin: '0.1rem 0 0 0', fontSize: '0.75rem', color: '#666' }}>{up.fileSize} • Subido el {up.uploadDate}</p>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                      <a href={up.fileData} download={up.fileName} className="btn-secondary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem', textDecoration: 'none' }}>
+                        ⬇️ Descargar
+                      </a>
+                      <button type="button" className="btn-danger" style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem' }} onClick={() => handleDeleteUploadedPlan(up.id)}>
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (currentUser.role === 'admin') {
     const totalStudents = students ? students.length : 0;
     const globalAverage = totalStudents > 0
@@ -29332,6 +30063,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
                 <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
                   <span style={{ fontSize: '1.1rem' }}>📖</span> Manual / Instructivo
+                </div>
+                <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
+                  <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
                 </div>
               </div>
             </aside>
@@ -31725,6 +32459,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
               )}
 
+              {activeTab === 'planificacion' && renderPlanningTabContent()}
               {activeTab === 'profile' && renderProfileTabContent()}
             </section>
           </div>
@@ -31896,6 +32631,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
               <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
                 <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
+              </div>
+              <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
+                <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
               </div>
             </div>
           </aside>
@@ -34085,6 +34823,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
             )}
 
+            {activeTab === 'planificacion' && renderPlanningTabContent()}
             {activeTab === 'profile' && renderProfileTabContent()}
           </section>
         </div>
