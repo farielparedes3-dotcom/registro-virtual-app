@@ -24280,33 +24280,46 @@ export default function App() {
       return;
     }
 
+    const newEmail = profileForm.email.trim();
+    const oldEmail = currentUser?.email || '';
+
     const updatedUser = {
       ...currentUser,
       name: profileForm.name.trim(),
-      username: profileForm.username.trim() || profileForm.email.split('@')[0],
-      email: profileForm.email.trim(),
+      username: profileForm.username.trim() || newEmail.split('@')[0],
+      email: newEmail,
       password: profileForm.password,
       avatar: profileForm.avatar,
       teacherSignature: profileForm.teacherSignature,
-      microsoftEmail: profileForm.microsoftEmail.trim()
+      microsoftEmail: (profileForm.microsoftEmail || '').trim()
     };
 
-    // Save updated current user
+    // Save updated current user immediately in state and localStorage
     setCurrentUser(updatedUser);
-    localStorage.setItem('s_current_user', JSON.stringify(updatedUser));
+    try {
+      localStorage.setItem('s_current_user', JSON.stringify(updatedUser));
+    } catch(err) {}
 
-    // Save updated user permanently in users array and IndexedDB
+    // Save updated user permanently in users array, s_users localStorage AND Firestore
     setUsersAndSave(prevUsers => {
-      const exists = prevUsers.some(u => u.id === updatedUser.id || u.email === updatedUser.email);
+      const exists = prevUsers.some(u => 
+        u.id === updatedUser.id || 
+        (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) ||
+        (oldEmail && u.email && u.email.toLowerCase() === oldEmail.toLowerCase())
+      );
       if (exists) {
-        return prevUsers.map(u => (u.id === updatedUser.id || u.email === updatedUser.email) ? updatedUser : u);
+        return prevUsers.map(u => 
+          (u.id === updatedUser.id || (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) || (oldEmail && u.email && u.email.toLowerCase() === oldEmail.toLowerCase())) 
+          ? updatedUser 
+          : u
+        );
       } else {
         return [...prevUsers, updatedUser];
       }
     });
 
-    setProfileSuccessMsg('¡Perfil actualizado correctamente!');
-    setTimeout(() => setProfileSuccessMsg(''), 4000);
+    setProfileSuccessMsg('¡Perfil actualizado con éxito! La información ha sido guardada de forma permanente.');
+    setTimeout(() => setProfileSuccessMsg(''), 6000);
   };
 
   // --- Filtering States ---
@@ -24398,6 +24411,11 @@ export default function App() {
   const setUsersAndSave = (updater) => {
     setUsers(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
+      try {
+        localStorage.setItem('s_users', JSON.stringify(next));
+      } catch (e) {
+        console.error("Error saving s_users to localStorage:", e);
+      }
       setTimeout(async () => {
         try {
           await dbService.saveUsers(next);
@@ -24575,24 +24593,50 @@ export default function App() {
 
     const unsubUsers = dbService.subscribeUsers((data) => {
       let rawList = (data && data.length > 0) ? data : DEFAULT_USERS;
+      let localUsers = [];
+      try {
+        const saved = localStorage.getItem('s_users');
+        if (saved) localUsers = JSON.parse(saved);
+      } catch(e) {}
+
       let hasChanges = false;
-      const normalizedList = rawList.map(u => {
-        if (u.role === 'teacher') {
-          const normClassroom = normalizeGradeString(u.classroomGrade || '');
-          const normAssignments = (u.assignments || []).map(a => {
+      const normalizedList = rawList.map(remoteUser => {
+        const localMatch = localUsers.find(l => 
+          l.id === remoteUser.id || 
+          (l.email && remoteUser.email && l.email.toLowerCase() === remoteUser.email.toLowerCase())
+        );
+
+        let userToUse = remoteUser;
+        if (localMatch) {
+          userToUse = {
+            ...remoteUser,
+            name: localMatch.name || remoteUser.name,
+            username: localMatch.username || remoteUser.username,
+            email: localMatch.email || remoteUser.email,
+            password: localMatch.password || remoteUser.password,
+            avatar: localMatch.avatar !== undefined ? localMatch.avatar : remoteUser.avatar,
+            teacherSignature: localMatch.teacherSignature !== undefined ? localMatch.teacherSignature : remoteUser.teacherSignature,
+            microsoftEmail: localMatch.microsoftEmail !== undefined ? localMatch.microsoftEmail : remoteUser.microsoftEmail
+          };
+        }
+
+        if (userToUse.role === 'teacher') {
+          const normClassroom = normalizeGradeString(userToUse.classroomGrade || '');
+          const normAssignments = (userToUse.assignments || []).map(a => {
             const normG = normalizeGradeString(a.grade);
             if (normG !== a.grade) hasChanges = true;
             return { ...a, grade: normG };
           });
-          if (normClassroom !== (u.classroomGrade || '')) hasChanges = true;
+          if (normClassroom !== (userToUse.classroomGrade || '')) hasChanges = true;
           return {
-            ...u,
+            ...userToUse,
             classroomGrade: normClassroom,
             assignments: normAssignments
           };
         }
-        return u;
+        return userToUse;
       });
+
       setUsers(normalizedList);
       try { localStorage.setItem('s_users', JSON.stringify(normalizedList)); } catch(e) {}
       if (hasChanges) {
@@ -24729,9 +24773,30 @@ export default function App() {
     if (currentUser && users && users.length > 0) {
       const fresh = users.find(u => u.id === currentUser.id || (u.email && u.email.toLowerCase() === (currentUser.email || '').toLowerCase()));
       if (fresh) {
-        const freshAssignments = JSON.stringify(fresh.assignments || []);
-        const currAssignments = JSON.stringify(currentUser.assignments || []);
-        if (freshAssignments !== currAssignments || fresh.classroomGrade !== currentUser.classroomGrade) {
+        const freshJson = JSON.stringify({
+          name: fresh.name,
+          username: fresh.username,
+          email: fresh.email,
+          password: fresh.password,
+          avatar: fresh.avatar,
+          teacherSignature: fresh.teacherSignature,
+          microsoftEmail: fresh.microsoftEmail,
+          classroomGrade: fresh.classroomGrade,
+          assignments: fresh.assignments
+        });
+        const currJson = JSON.stringify({
+          name: currentUser.name,
+          username: currentUser.username,
+          email: currentUser.email,
+          password: currentUser.password,
+          avatar: currentUser.avatar,
+          teacherSignature: currentUser.teacherSignature,
+          microsoftEmail: currentUser.microsoftEmail,
+          classroomGrade: currentUser.classroomGrade,
+          assignments: currentUser.assignments
+        });
+
+        if (freshJson !== currJson) {
           const updated = {
             ...currentUser,
             ...fresh,
@@ -28306,8 +28371,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
 
           {profileSuccessMsg && (
-            <div className="alert alert-success animate-fade-in" style={{ margin: '0.5rem 0 0 0', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem' }}>
-              <span>✅</span> <strong>{profileSuccessMsg}</strong>
+            <div className="animate-fade-in" style={{ margin: '0.75rem 0 0 0', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.9rem 1.2rem', backgroundColor: 'rgba(46, 125, 50, 0.12)', border: '1.5px solid #2e7d32', borderRadius: '10px', color: '#1b5e20', boxShadow: '0 4px 12px rgba(46, 125, 50, 0.15)' }}>
+              <span style={{ fontSize: '1.4rem' }}>✅</span>
+              <div>
+                <strong style={{ fontSize: '0.95rem', display: 'block' }}>{profileSuccessMsg}</strong>
+                <span style={{ fontSize: '0.8rem', opacity: 0.9 }}>Tus cambios han sido guardados permanentemente en la base de datos y tu sesión local.</span>
+              </div>
             </div>
           )}
         </div>
@@ -28518,12 +28587,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </span>
             </div>
 
-            {/* Submit Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+            {/* Submit Button & Notification Banner */}
+            {profileSuccessMsg && (
+              <div className="animate-fade-in" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.85rem 1.1rem', backgroundColor: 'rgba(46, 125, 50, 0.12)', border: '1.5px solid #2e7d32', borderRadius: '10px', color: '#1b5e20', boxShadow: '0 4px 12px rgba(46, 125, 50, 0.15)' }}>
+                <span style={{ fontSize: '1.3rem' }}>✅</span>
+                <strong style={{ fontSize: '0.9rem' }}>{profileSuccessMsg}</strong>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
               <button 
                 type="submit" 
                 className="btn-primary" 
-                style={{ padding: '0.75rem 2rem', fontSize: '0.95rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                style={{ padding: '0.85rem 2.25rem', fontSize: '0.98rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#003876', border: 'none', borderRadius: '10px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0, 56, 118, 0.3)', transition: 'all 0.2s ease' }}
               >
                 💾 Guardar Cambios en Mi Perfil
               </button>

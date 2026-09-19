@@ -73,7 +73,7 @@ export const dbService = {
     if (!isFirebaseEnabled) {
       if (!fallbackSubscribers['users']) fallbackSubscribers['users'] = [];
       fallbackSubscribers['users'].push(callback);
-      const saved = localStorage.getItem('users');
+      const saved = localStorage.getItem('s_users');
       if (saved) callback(JSON.parse(saved));
       return () => {};
     }
@@ -83,13 +83,13 @@ export const dbService = {
         usersList.push({ id: docItem.id, ...docItem.data() });
       });
       remoteCache['users'] = JSON.stringify(usersList);
-      localStorage.setItem('users', JSON.stringify(usersList));
+      localStorage.setItem('s_users', JSON.stringify(usersList));
       callback(usersList);
     });
   },
   async saveUsers(usersList) {
     if (!hasChanged('users', usersList)) return;
-    localStorage.setItem('users', JSON.stringify(usersList));
+    localStorage.setItem('s_users', JSON.stringify(usersList));
     triggerFallbackUpdate('users', usersList);
     if (!isFirebaseEnabled) return;
 
@@ -128,7 +128,7 @@ export const dbService = {
     if (!isFirebaseEnabled) {
       if (!fallbackSubscribers['students']) fallbackSubscribers['students'] = [];
       fallbackSubscribers['students'].push(callback);
-      const saved = localStorage.getItem('students');
+      const saved = localStorage.getItem('s_students');
       if (saved) callback(JSON.parse(saved));
       return () => {};
     }
@@ -138,13 +138,14 @@ export const dbService = {
         studentsList.push({ id: docItem.id, ...docItem.data() });
       });
       remoteCache['students'] = JSON.stringify(studentsList);
-      localStorage.setItem('students', JSON.stringify(studentsList));
+      localStorage.setItem('s_students', JSON.stringify(studentsList));
       callback(studentsList);
     });
   },
   async saveStudents(studentsList) {
     if (!hasChanged('students', studentsList)) return;
-    localStorage.setItem('students', JSON.stringify(studentsList));
+    localStorage.setItem('s_students', JSON.stringify(studentsList));
+    triggerFallbackUpdate('students', studentsList);
     triggerFallbackUpdate('students', studentsList);
     if (!isFirebaseEnabled) return;
 
