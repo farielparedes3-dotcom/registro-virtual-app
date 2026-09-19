@@ -27055,12 +27055,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const handleParameterGradeChange = (studentId, subjectKey, bloqueKey, pIdx, valueString) => {
     let value = valueString === '' ? '' : Number(valueString);
-    if (typeof value === 'number') {
-      if (isNaN(value)) value = '';
-      else if (value > 100) {
+    if (typeof value === 'number' && !isNaN(value)) {
+      if (value > 100) {
         alert("⚠️ ¡Alerta! La calificación del período no puede superar los 100 puntos.");
         value = 100;
       } else if (value < 0) value = 0;
+    } else {
+      value = '';
     }
     
     // Update the student's base grades (originalGrades) in s.grades and s.manualGrades
@@ -27068,7 +27069,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       if (s.id === studentId) {
         const nextGrades = { ...s.grades };
         const subjectBlocks = nextGrades[subjectKey] ? { ...nextGrades[subjectKey] } : {};
-        const baseGrades = [...(subjectBlocks[bloqueKey] || [0, 0, 0, 0])];
+        const baseGrades = [...(subjectBlocks[bloqueKey] || ['', '', '', ''])];
         
         baseGrades[pIdx] = value;
         subjectBlocks[bloqueKey] = baseGrades;
@@ -27076,7 +27077,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
         const nextManual = s.manualGrades ? { ...s.manualGrades } : {};
         const manualSubject = nextManual[subjectKey] ? { ...nextManual[subjectKey] } : {};
-        const manualBlock = [...(manualSubject[bloqueKey] || [0, 0, 0, 0])];
+        const manualBlock = [...(manualSubject[bloqueKey] || ['', '', '', ''])];
         manualBlock[pIdx] = value;
         manualSubject[bloqueKey] = manualBlock;
         nextManual[subjectKey] = manualSubject;
@@ -27269,27 +27270,30 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   const totalStudents = students.length;
 
   const getEffectiveGrade = (studentId, subjectKey, bloqueKey, evalIdx, originalGrade) => {
+    if (originalGrade === '' || originalGrade === null || originalGrade === undefined) {
+      return '';
+    }
+    const numOrig = Number(originalGrade);
     const rpKey = `${studentId}_${subjectKey}_${bloqueKey}`;
     const rpArray = studentRpGrades[rpKey] || [null, null, null, null];
     const rpVal = rpArray[evalIdx];
-    if (originalGrade < 70 && rpVal !== null && rpVal !== undefined && rpVal !== '') {
-      return Math.max(originalGrade, Number(rpVal));
+    if (numOrig < 70 && rpVal !== null && rpVal !== undefined && rpVal !== '') {
+      return Math.max(numOrig, Number(rpVal));
     }
-    return originalGrade;
+    return numOrig;
   };
 
-  const getManualBaseGrade = (student, subjectKey, bloqueKey, pIdx, hasInstruments) => {
-    if (hasInstruments) return 0;
+  const getManualBaseGrade = (student, subjectKey, bloqueKey, pIdx) => {
     const manualData = student?.manualGrades?.[subjectKey]?.[bloqueKey];
-    if (manualData && manualData[pIdx] !== undefined) {
-      return Number(manualData[pIdx]) || 0;
+    if (manualData && manualData[pIdx] !== undefined && manualData[pIdx] !== null && manualData[pIdx] !== '') {
+      return manualData[pIdx];
     }
     const subjectData = student?.grades?.[subjectKey] || {};
     const blockGrades = subjectData[bloqueKey];
-    if (blockGrades && blockGrades[pIdx] !== undefined) {
-      return Number(blockGrades[pIdx]) || 0;
+    if (blockGrades && blockGrades[pIdx] !== undefined && blockGrades[pIdx] !== null && blockGrades[pIdx] !== '') {
+      return blockGrades[pIdx];
     }
-    return 0;
+    return '';
   };
 
   const getInstrumentSumForParameter = (studentId, subjectKey, bloqueKey, pKey, assessments) => {
@@ -27308,10 +27312,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       let instScore = 0;
       if (criteriaList.length > 0) {
         criteriaList.forEach(c => {
-          const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
+          const score = savedAssessment[c.name] !== undefined && savedAssessment[c.name] !== null && savedAssessment[c.name] !== '' ? Number(savedAssessment[c.name]) : 0;
           instScore += score;
         });
-      } else if (savedAssessment.__total !== undefined) {
+      } else if (savedAssessment.__total !== undefined && savedAssessment.__total !== null && savedAssessment.__total !== '') {
         instScore = Number(savedAssessment.__total) || 0;
       }
       const instWeight = inst.weight !== undefined ? Number(inst.weight) : 25;
@@ -27492,36 +27496,67 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const blockConfig = migrateConfig(currentConfigs[configKey]);
     const student = students.find(s => s.id === studentId);
     
-    const finalGrades = [...originalGrades];
+    const finalGrades = Array.isArray(originalGrades) 
+      ? originalGrades.map(g => (g === 0 || g === '0' ? 0 : (g || '')))
+      : ['', '', '', ''];
+
     const pKeys = ['p1', 'p2', 'p3', 'p4'];
     
     pKeys.forEach((pKey, pIdx) => {
       const list = blockConfig[pKey] || [];
       const hasInstruments = list.length > 0;
       
+      let hasEvaluatedAssessment = false;
+      let totalInstrumentSum = 0;
+      
       if (hasInstruments) {
-        let sum = 0;
         list.forEach(inst => {
           const criteriaList = normalizeCriteria(inst.criteria, inst.type);
           const assessmentKey = `${studentId}_${subjectKey}_${bloqueKey}_${pKey}_${inst.id}`;
-          const savedAssessment = currentAssessments[assessmentKey] || {};
+          const savedAssessment = currentAssessments[assessmentKey];
           
-          let instScore = 0;
-          if (criteriaList.length > 0) {
-            criteriaList.forEach(c => {
-              const score = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : 0;
-              instScore += score;
-            });
-          } else if (savedAssessment.__total !== undefined) {
-            instScore = Number(savedAssessment.__total) || 0;
+          if (savedAssessment && Object.keys(savedAssessment).length > 0) {
+            let instScore = 0;
+            let instHasEntry = false;
+            
+            if (criteriaList.length > 0) {
+              criteriaList.forEach(c => {
+                const score = savedAssessment[c.name];
+                if (score !== undefined && score !== null && score !== '') {
+                  instScore += Number(score);
+                  instHasEntry = true;
+                }
+              });
+            } else if (savedAssessment.__total !== undefined && savedAssessment.__total !== null && savedAssessment.__total !== '') {
+              instScore = Number(savedAssessment.__total);
+              instHasEntry = true;
+            }
+
+            if (instHasEntry) {
+              hasEvaluatedAssessment = true;
+              const instWeight = inst.weight !== undefined ? Number(inst.weight) : 25;
+              totalInstrumentSum += Math.min(instWeight, instScore);
+            }
           }
-          const instWeight = inst.weight !== undefined ? Number(inst.weight) : 25;
-          sum += Math.min(instWeight, instScore);
         });
-        finalGrades[pIdx] = Math.min(100, Math.max(0, sum));
+      }
+
+      if (hasInstruments && hasEvaluatedAssessment) {
+        finalGrades[pIdx] = Math.min(100, Math.max(0, totalInstrumentSum));
       } else {
-        const baseGrade = getManualBaseGrade(student, subjectKey, bloqueKey, pIdx, false);
-        finalGrades[pIdx] = Math.min(100, Math.max(0, baseGrade));
+        const manualVal = getManualBaseGrade(student, subjectKey, bloqueKey, pIdx);
+        if (manualVal !== '' && manualVal !== null && manualVal !== undefined) {
+          finalGrades[pIdx] = (manualVal === 0 || manualVal === '0') ? 0 : Number(manualVal);
+        } else {
+          const orig = originalGrades ? originalGrades[pIdx] : '';
+          if (orig === 0 || orig === '0') {
+            finalGrades[pIdx] = 0;
+          } else if (orig !== undefined && orig !== null && orig !== '') {
+            finalGrades[pIdx] = Number(orig);
+          } else {
+            finalGrades[pIdx] = '';
+          }
+        }
       }
     });
     
@@ -27530,7 +27565,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const calculateBlockAvg = (studentId, subjectKey, bloqueKey, studentGradesObject) => {
     const subjectData = studentGradesObject?.[subjectKey] || {};
-    const baseGrades = subjectData[bloqueKey] || [0, 0, 0, 0];
+    const baseGrades = subjectData[bloqueKey] || ['', '', '', ''];
     
     const student = students.find(s => s.id === studentId);
     const gradeName = student?.grade || selectedGrade;
@@ -27546,10 +27581,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     );
 
     let sum = 0;
+    let count = 0;
     blockArray.forEach((g, idx) => {
-      sum += getEffectiveGrade(studentId, subjectKey, bloqueKey, idx, g);
+      const eff = getEffectiveGrade(studentId, subjectKey, bloqueKey, idx, g);
+      if (eff !== '' && eff !== null && eff !== undefined) {
+        sum += Number(eff);
+        count++;
+      }
     });
-    return sum / 4;
+    return count > 0 ? sum / count : 0;
   };
 
   const calculateSubjectAvg = (studentId, subjectKey, studentGradesObject) => {
