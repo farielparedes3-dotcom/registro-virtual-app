@@ -23909,7 +23909,12 @@ export default function App() {
   });
 
   const [promotionGrades, setPromotionGrades] = useState(() => {
-    try { localStorage.removeItem('s_promotion_grades'); return {}; } catch (e) { return {}; }
+    try {
+      const saved = localStorage.getItem('s_promotion_grades');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
   });
 
   const [studentAttendanceDetail, setStudentAttendanceDetail] = useState(() => {
@@ -23970,7 +23975,12 @@ export default function App() {
   });
 
   const [studentAssessments, setStudentAssessments] = useState(() => {
-    try { localStorage.removeItem('s_student_assessments'); return {}; } catch (e) { return {}; }
+    try {
+      const saved = localStorage.getItem('s_student_assessments');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
   });
 
   const [subjects, setSubjects] = useState(() => {
@@ -24562,6 +24572,7 @@ export default function App() {
   const setStudentAssessmentsAndSave = (updater) => {
     setStudentAssessments(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_student_assessments', JSON.stringify(next)); } catch (e) {}
       setTimeout(async () => {
         try {
           await dbService.saveStudentAssessments(next);
@@ -24590,6 +24601,7 @@ export default function App() {
   const setPromotionGradesAndSave = (updater) => {
     setPromotionGrades(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem('s_promotion_grades', JSON.stringify(next)); } catch (e) {}
       setTimeout(async () => {
         try {
           await dbService.savePromotionGrades(next);
@@ -24682,13 +24694,15 @@ export default function App() {
     });
 
     const unsubStudentAssessments = dbService.subscribeStudentAssessments((data) => {
-      // Fresh start for grades
-      setStudentAssessments({});
+      if (data && typeof data === 'object') {
+        setStudentAssessments(data);
+      }
     });
 
     const unsubStudentRpGrades = dbService.subscribeStudentRpGrades((data) => {
-      // Fresh start for grades
-      setStudentRpGrades({});
+      if (data && typeof data === 'object') {
+        setStudentRpGrades(data);
+      }
     });
 
     const unsubStudentAttendance = dbService.subscribeStudentAttendance((data) => {
@@ -24700,8 +24714,9 @@ export default function App() {
     }) : () => {};
 
     const unsubPromotionGrades = dbService.subscribePromotionGrades((data) => {
-      // Fresh start for grades
-      setPromotionGrades({});
+      if (data && typeof data === 'object') {
+        setPromotionGrades(data);
+      }
     });
 
     const unsubConfig = dbService.subscribeConfig((data) => {
