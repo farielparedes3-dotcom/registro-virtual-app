@@ -24162,6 +24162,7 @@ export default function App() {
   const [showProfilePassword, setShowProfilePassword] = useState(false);
   const [profileSuccessMsg, setProfileSuccessMsg] = useState('');
   const profileFileInputRef = useRef(null);
+  const teacherSignatureFileInputRef = useRef(null);
 
   // Digital Signature Modal States
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
@@ -28519,28 +28520,60 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 )}
               </label>
 
+              <input 
+                type="file" 
+                ref={teacherSignatureFileInputRef} 
+                accept="image/*" 
+                style={{ display: 'none' }} 
+                onChange={(e) => {
+                  const file = e.target.files && e.target.files[0];
+                  if (!file) return;
+                  if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen seleccionada supera los 5MB. Por favor elige una imagen más pequeña.');
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onload = (uploadEvt) => {
+                    setProfileForm(prev => ({ ...prev, teacherSignature: uploadEvt.target.result }));
+                  };
+                  reader.readAsDataURL(file);
+                }} 
+              />
+
               <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ width: '200px', height: '70px', border: '1px dashed var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <div style={{ width: '220px', height: '80px', border: '1px dashed var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '0.25rem' }}>
                   {profileForm.teacherSignature ? (
-                    <img src={profileForm.teacherSignature} alt="Firma Docente" style={{ maxHeight: '60px', maxWidth: '180px', objectFit: 'contain' }} />
+                    <img src={profileForm.teacherSignature} alt="Firma Docente" style={{ maxHeight: '70px', maxWidth: '200px', objectFit: 'contain' }} />
                   ) : (
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin firma registrada</span>
                   )}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => {
-                      setSignatureModalRole('Docente');
-                      setSignatureModalTarget('profile');
-                      setIsSignatureModalOpen(true);
-                    }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}
-                  >
-                    🖊️ Dibujar / Actualizar Firma Digital
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => {
+                        setSignatureModalRole('Docente');
+                        setSignatureModalTarget('profile');
+                        setIsSignatureModalOpen(true);
+                      }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}
+                    >
+                      🖊️ Dibujar en Pantalla
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => teacherSignatureFileInputRef.current && teacherSignatureFileInputRef.current.click()}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 'bold', color: '#0078d4' }}
+                    >
+                      📁 Subir Foto de Firma
+                    </button>
+                  </div>
+
                   {profileForm.teacherSignature && (
                     <button
                       type="button"
@@ -28554,7 +28587,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
               </div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Esta firma se estampará de forma oficial en cada reporte pedagógico, escala estimativa y alerta generada.
+                Puedes subir una foto o escaneo de tu firma física o dibujarla en pantalla. La firma que guardes sustituye la predeterminada del sistema y se estampará en todos los reportes oficiales.
               </span>
             </div>
 
