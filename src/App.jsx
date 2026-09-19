@@ -23900,7 +23900,12 @@ export default function App() {
   });
 
   const [studentRpGrades, setStudentRpGrades] = useState(() => {
-    try { localStorage.removeItem('s_student_rp_grades'); return {}; } catch (e) { return {}; }
+    try {
+      const saved = localStorage.getItem('s_student_rp_grades');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
   });
 
   const [promotionGrades, setPromotionGrades] = useState(() => {
@@ -24452,6 +24457,9 @@ export default function App() {
   const setStudentRpGradesAndSave = (updater) => {
     setStudentRpGrades(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
+      try {
+        localStorage.setItem('s_student_rp_grades', JSON.stringify(next));
+      } catch (e) {}
       setTimeout(async () => {
         try {
           await dbService.saveStudentRpGrades(next);
@@ -32289,30 +32297,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   ) : (
                     /* Existing Block view */
                     (() => {
-                      const showRP1 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[0] ?? 0;
-                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
-                        const rpVal = studentRpGrades[rpKey]?.[0];
-                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
-                      });
-                      const showRP2 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[1] ?? 0;
-                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
-                        const rpVal = studentRpGrades[rpKey]?.[1];
-                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
-                      });
-                      const showRP3 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[2] ?? 0;
-                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
-                        const rpVal = studentRpGrades[rpKey]?.[2];
-                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
-                      });
-                      const showRP4 = studentsFilteredByGrade.some(s => {
-                        const pVal = s.grades?.[selectedSubject]?.[activeBloque]?.[3] ?? 0;
-                        const rpKey = `${s.id}_${selectedSubject}_${activeBloque}`;
-                        const rpVal = studentRpGrades[rpKey]?.[3];
-                        return pVal < 70 || (rpVal !== null && rpVal !== undefined && rpVal !== '');
-                      });
+                      const showRP1 = true;
+                      const showRP2 = true;
+                      const showRP3 = true;
+                      const showRP4 = true;
 
                       return (
                         <div className="custom-table-container">
