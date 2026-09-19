@@ -27054,12 +27054,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   };
 
   const handleParameterGradeChange = (studentId, subjectKey, bloqueKey, pIdx, valueString) => {
-    let value = valueString === '' ? 0 : Number(valueString);
-    if (value > 100) {
-      alert("⚠️ ¡Alerta! La calificación del período no puede superar los 100 puntos.");
-      value = 100;
+    let value = valueString === '' ? '' : Number(valueString);
+    if (typeof value === 'number') {
+      if (isNaN(value)) value = '';
+      else if (value > 100) {
+        alert("⚠️ ¡Alerta! La calificación del período no puede superar los 100 puntos.");
+        value = 100;
+      } else if (value < 0) value = 0;
     }
-    if (value < 0) value = 0;
     
     // Update the student's base grades (originalGrades) in s.grades and s.manualGrades
     setStudentsAndSave(prev => prev.map(s => {
@@ -27102,7 +27104,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     // Save detailed score
     const assessmentKey = `${studentId}_${subjectKey}_${activeBloque}_${pKey}_${instrumentId}`;
     const studentAssessment = studentAssessments[assessmentKey] || {};
-    const nextAssessment = { ...studentAssessment, [critName]: Number(scoreValue) || 0 };
+    const scoreVal = scoreValue === '' ? '' : (isNaN(Number(scoreValue)) ? '' : Number(scoreValue));
+    const nextAssessment = { ...studentAssessment, [critName]: scoreVal };
 
     const nextAssessmentsObject = {
       ...studentAssessments,
@@ -32315,8 +32318,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               type="number" 
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={blockArray[0]}
+                                              value={blockArray[0] !== undefined && blockArray[0] !== null ? blockArray[0] : ''}
                                               onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                             />
@@ -32330,6 +32334,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               style={getRpInputStyle(rpArray[0], blockArray[0])}
                                               value={rpArray[0] !== null && rpArray[0] !== undefined ? rpArray[0] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 0, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                               placeholder="-"
@@ -32345,8 +32350,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               type="number" 
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={blockArray[1]}
+                                              value={blockArray[1] !== undefined && blockArray[1] !== null ? blockArray[1] : ''}
                                               onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                             />
@@ -32360,6 +32366,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               style={getRpInputStyle(rpArray[1], blockArray[1])}
                                               value={rpArray[1] !== null && rpArray[1] !== undefined ? rpArray[1] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 1, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                               placeholder="-"
@@ -32375,8 +32382,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               type="number" 
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={blockArray[2]}
+                                              value={blockArray[2] !== undefined && blockArray[2] !== null ? blockArray[2] : ''}
                                               onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                             />
@@ -32390,6 +32398,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               style={getRpInputStyle(rpArray[2], blockArray[2])}
                                               value={rpArray[2] !== null && rpArray[2] !== undefined ? rpArray[2] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 2, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                               placeholder="-"
@@ -32405,8 +32414,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               type="number" 
                                               className="form-input" 
                                               style={{ padding: '0.35rem', width: '55px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}
-                                              value={blockArray[3]}
+                                              value={blockArray[3] !== undefined && blockArray[3] !== null ? blockArray[3] : ''}
                                               onChange={(e) => handleParameterGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                             />
@@ -32420,6 +32430,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               style={getRpInputStyle(rpArray[3], blockArray[3])}
                                               value={rpArray[3] !== null && rpArray[3] !== undefined ? rpArray[3] : ''}
                                               onChange={(e) => handleRpGradeChange(s.id, selectedSubject, activeBloque, 3, e.target.value)}
+                                              onFocus={(e) => e.target.select()}
                                               min="0"
                                               max="100"
                                               placeholder="-"
@@ -32490,7 +32501,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                             
                                             {/* Criterias values */}
                                             {criteriaList.map((crit, critIdx) => {
-                                              const score = savedAssessment[crit.name] !== undefined ? savedAssessment[crit.name] : Math.floor(maxCritScore * 0.75);
+                                              const score = savedAssessment[crit.name] !== undefined && savedAssessment[crit.name] !== null ? savedAssessment[crit.name] : '';
                                               return (
                                                 <td key={critIdx} style={{ padding: 0 }}>
                                                   
@@ -32503,6 +32514,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                       min="0"
                                                       max={maxCritScore}
                                                       onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activeEvalIdx, crit.name, e.target.value)}
+                                                      onFocus={(e) => e.target.select()}
                                                     />
                                                     
                                                     {/* Simple quick selector */}
@@ -33583,7 +33595,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           {criteriaList.length > 0 ? (
                                             criteriaList.map((crit, critIdx) => {
                                               const critMaxScore = crit.weight !== undefined ? Number(crit.weight) : fallbackCritScore;
-                                              const score = savedAssessment[crit.name] !== undefined ? Number(savedAssessment[crit.name]) : 0;
+                                              const rawScore = savedAssessment[crit.name];
+                                              const scoreVal = rawScore !== undefined && rawScore !== null ? rawScore : '';
+                                              const numScore = rawScore !== undefined && rawScore !== null && rawScore !== '' ? Number(rawScore) : 0;
                                               return (
                                                 <td key={critIdx} style={{ padding: 0 }}>
                                                   
@@ -33592,11 +33606,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                     <input 
                                                       type="number" 
                                                       className="criteria-grade-input"
-                                                      value={savedAssessment[crit.name] !== undefined ? score : ''}
+                                                      value={scoreVal}
                                                       min="0"
                                                       max={critMaxScore}
                                                       placeholder="-"
                                                       onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, e.target.value)}
+                                                      onFocus={(e) => e.target.select()}
                                                     />
                                                     
                                                     {/* Simple quick selector */}
@@ -33604,10 +33619,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                       <select 
                                                         style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
                                                         value={
-                                                          score >= critMaxScore ? 'estrategico' :
-                                                          score >= Math.round(critMaxScore * 0.85) ? 'autonomo' :
-                                                          score >= Math.round(critMaxScore * 0.75) ? 'resolutivo' :
-                                                          score > 0 ? 'receptivo' : ''
+                                                          numScore >= critMaxScore ? 'estrategico' :
+                                                          numScore >= Math.round(critMaxScore * 0.85) ? 'autonomo' :
+                                                          numScore >= Math.round(critMaxScore * 0.75) ? 'resolutivo' :
+                                                          numScore > 0 ? 'receptivo' : ''
                                                         }
                                                         onChange={(e) => {
                                                           const targetLevel = e.target.value;
@@ -33629,7 +33644,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                     ) : (
                                                       <select 
                                                         style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                        value={savedAssessment[crit.name] !== undefined ? (score >= critMaxScore ? 'si' : 'no') : ''}
+                                                        value={rawScore !== undefined && rawScore !== null && rawScore !== '' ? (numScore >= critMaxScore ? 'si' : 'no') : ''}
                                                         onChange={(e) => {
                                                           const val = e.target.value === 'si' ? critMaxScore : Math.round(critMaxScore * 0.5);
                                                           handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
