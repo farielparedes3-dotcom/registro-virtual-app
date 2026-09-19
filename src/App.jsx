@@ -23143,13 +23143,15 @@ const DEFAULT_EVALUATION_CONFIGS = {
   }
 };
 
-const normalizeCriteria = (criteriaArray, type = 'rubrica') => {
-  if (!Array.isArray(criteriaArray)) return [];
+const normalizeCriteria = (criteriaArray, type = 'rubrica', totalInstWeight = 100) => {
+  if (!Array.isArray(criteriaArray) || criteriaArray.length === 0) return [];
+  const defaultWeight = Math.max(1, Math.round(Number(totalInstWeight || 100) / criteriaArray.length));
   return criteriaArray.map(crit => {
-    if (!crit) return { name: "Criterio", levels: {} };
+    if (!crit) return { name: "Criterio", weight: defaultWeight, levels: {} };
     if (typeof crit === 'string') {
       return {
         name: crit,
+        weight: defaultWeight,
         levels: type === 'lista' ? { cumple: "Sí cumple de forma clara", nocumple: "No cumple con el criterio" } : {
           estrategico: `Demuestra alta excelencia en el criterio de ${crit.toLowerCase()}.`,
           autonomo: `Desempeña de forma autónoma y lógica el criterio de ${crit.toLowerCase()}.`,
@@ -23159,10 +23161,14 @@ const normalizeCriteria = (criteriaArray, type = 'rubrica') => {
       };
     }
     const name = crit.name || "Criterio";
+    const weight = (crit.weight !== undefined && crit.weight !== null && crit.weight !== '') 
+      ? Number(crit.weight) 
+      : defaultWeight;
     const levels = crit.levels || {};
     if (type === 'lista') {
       return {
         name,
+        weight,
         levels: {
           cumple: levels.cumple || "Sí cumple",
           nocumple: levels.nocumple || "No cumple"
@@ -23171,6 +23177,7 @@ const normalizeCriteria = (criteriaArray, type = 'rubrica') => {
     } else {
       return {
         name,
+        weight,
         levels: {
           estrategico: levels.estrategico || "Desempeño excelente",
           autonomo: levels.autonomo || "Desempeño muy bueno",
@@ -26717,8 +26724,11 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
   const handleAddCriterionRow = () => {
     const criteriaArray = instrumentEditState.criteria || [];
     const isList = instrumentEditState.type === 'lista';
+    const instWeight = instrumentEditState.weight !== undefined ? Number(instrumentEditState.weight) : 25;
+    const defaultWeight = Math.max(1, Math.round(instWeight / (criteriaArray.length + 1)));
     const newCrit = {
       name: `Criterio ${criteriaArray.length + 1}`,
+      weight: defaultWeight,
       levels: isList ? { cumple: "Sí cumple", nocumple: "No cumple" } : {
         estrategico: "Descripción nivel estratégico (Excelente)",
         autonomo: "Descripción nivel autónomo (Muy bueno)",
@@ -26742,6 +26752,26 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
     const criteriaArray = instrumentEditState.criteria || [];
     const nextList = [...criteriaArray];
     nextList[idx] = { ...nextList[idx], name: nameVal };
+    updateActiveInstrumentConfig({ criteria: nextList });
+  };
+
+  const handleEditCriterionWeight = (idx, weightVal) => {
+    const criteriaArray = instrumentEditState.criteria || [];
+    const nextList = [...criteriaArray];
+    const numericVal = weightVal === '' ? 0 : Math.max(0, Number(weightVal));
+    nextList[idx] = { ...nextList[idx], weight: numericVal };
+    updateActiveInstrumentConfig({ criteria: nextList });
+  };
+
+  const handleDistributeCriteriaPointsEqually = () => {
+    const criteriaArray = instrumentEditState.criteria || [];
+    if (criteriaArray.length === 0) return;
+    const instWeight = instrumentEditState.weight !== undefined ? Number(instrumentEditState.weight) : 25;
+    const equalWeight = Math.max(1, Math.round(instWeight / criteriaArray.length));
+    const nextList = criteriaArray.map(c => ({
+      ...c,
+      weight: equalWeight
+    }));
     updateActiveInstrumentConfig({ criteria: nextList });
   };
 
@@ -27108,17 +27138,21 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     const savedAssessment = studentAssessments[assessmentKey] || {};
 
     const initialTemp = {};
-    const normalizedCriteria = normalizeCriteria(config.criteria, config.type);
+    const instWeight = config.weight !== undefined ? Number(config.weight) : 100;
+    const normalizedCriteria = normalizeCriteria(config.criteria, config.type, instWeight);
+    const fallbackMax = normalizedCriteria.length > 0 ? Math.floor(instWeight / normalizedCriteria.length) : instWeight;
+
     normalizedCriteria.forEach(c => {
+      const critMaxScore = c.weight !== undefined ? Number(c.weight) : fallbackMax;
       if (config.type === 'lista') {
-        initialTemp[c.name] = savedAssessment[c.name] === true;
+        initialTemp[c.name] = savedAssessment[c.name] === true || Number(savedAssessment[c.name]) >= critMaxScore;
       } else {
-        // if saved value is a number (e.g. 15), map it back to level label
-        const numeric = Number(savedAssessment[c.name]) || 15;
-        if (numeric >= 18) initialTemp[c.name] = 'estrategico';
-        else if (numeric >= 14) initialTemp[c.name] = 'autonomo';
-        else if (numeric >= 10) initialTemp[c.name] = 'resolutivo';
-        else if (numeric >= 5) initialTemp[c.name] = 'receptivo';
+        // if saved value is a number, map it back to level label using criterion max score
+        const numeric = savedAssessment[c.name] !== undefined ? Number(savedAssessment[c.name]) : Math.round(critMaxScore * 0.75);
+        if (numeric >= Math.round(critMaxScore * 0.95)) initialTemp[c.name] = 'estrategico';
+        else if (numeric >= Math.round(critMaxScore * 0.82)) initialTemp[c.name] = 'autonomo';
+        else if (numeric >= Math.round(critMaxScore * 0.72)) initialTemp[c.name] = 'resolutivo';
+        else if (numeric >= Math.round(critMaxScore * 0.58)) initialTemp[c.name] = 'receptivo';
         else initialTemp[c.name] = 'preformal';
       }
     });
@@ -27132,25 +27166,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     if (!activeAssessment) return;
     const { studentId, subjectKey, evalIdx, config } = activeAssessment;
 
-    const normalizedCriteria = normalizeCriteria(config.criteria, config.type);
-    const criteriaCount = normalizedCriteria.length;
-    const maxCritScore = criteriaCount > 0 ? Math.floor(100 / criteriaCount) : 100;
+    const instWeight = config.weight !== undefined ? Number(config.weight) : 100;
+    const normalizedCriteria = normalizeCriteria(config.criteria, config.type, instWeight);
+    const fallbackMax = normalizedCriteria.length > 0 ? Math.floor(instWeight / normalizedCriteria.length) : instWeight;
 
     const nextAssessmentValues = {};
     let totalSum = 0;
 
     normalizedCriteria.forEach(c => {
       const val = tempCriteriaRatings[c.name];
+      const critMaxScore = c.weight !== undefined ? Number(c.weight) : fallbackMax;
       let score = 0;
       if (config.type === 'rubrica' || config.type === 'escala') {
         // distribute scores out of max score per criterion
-        if (val === 'preformal') score = Math.floor(maxCritScore * 0.55);
-        else if (val === 'receptivo') score = Math.floor(maxCritScore * 0.65);
-        else if (val === 'resolutivo') score = Math.floor(maxCritScore * 0.75);
-        else if (val === 'autonomo') score = Math.floor(maxCritScore * 0.85);
-        else score = maxCritScore; // estrategico gets 100% of criterion weight
+        if (val === 'preformal') score = Math.floor(critMaxScore * 0.55);
+        else if (val === 'receptivo') score = Math.floor(critMaxScore * 0.65);
+        else if (val === 'resolutivo') score = Math.floor(critMaxScore * 0.75);
+        else if (val === 'autonomo') score = Math.floor(critMaxScore * 0.85);
+        else score = critMaxScore; // estrategico gets 100% of criterion weight
       } else if (config.type === 'lista') {
-        score = val === true ? maxCritScore : Math.floor(maxCritScore * 0.5);
+        score = val === true ? critMaxScore : Math.floor(critMaxScore * 0.5);
       }
       nextAssessmentValues[c.name] = score;
       totalSum += score;
@@ -33236,7 +33271,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             />
                           </div>
                           <div className="form-group">
-                            <label>Puntos (pts)</label>
+                            <label>Puntuación Máxima del Instrumento (pts)</label>
                             <input 
                               type="number" 
                               className="form-input"
@@ -33251,10 +33286,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               required
                             />
                             <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                              A voluntad del maestro
+                              Puntuación máxima total del instrumento
                             </span>
                           </div>
                         </div>
+
+                        {/* SUMMARY AND EQUAL DISTRIBUTION BANNER */}
+                        {(() => {
+                          const instWeight = instrumentEditState.weight !== undefined ? Number(instrumentEditState.weight) : 25;
+                          const criteriaList = instrumentEditState.criteria || [];
+                          const sumCriteriaPoints = criteriaList.reduce((acc, c) => acc + (c.weight !== undefined ? Number(c.weight) : Math.max(1, Math.round(instWeight / (criteriaList.length || 1)))), 0);
+                          const isMatch = sumCriteriaPoints === instWeight;
+
+                          return (
+                            <div className="glass-panel" style={{ padding: '0.75rem 1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', backgroundColor: isMatch ? 'rgba(40, 167, 69, 0.08)' : 'rgba(255, 193, 7, 0.12)', border: `1px solid ${isMatch ? 'var(--success)' : '#ffc107'}`, borderRadius: '8px' }}>
+                              <div style={{ fontSize: '0.85rem' }}>
+                                <strong style={{ color: 'var(--text-primary)' }}>Distribución de Puntuación:</strong>{' '}
+                                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold', color: isMatch ? 'var(--success)' : '#d39e00' }}>
+                                  Suma Criterios ({sumCriteriaPoints} pts) / Puntuación Máxima ({instWeight} pts)
+                                </span>
+                                {!isMatch && (
+                                  <div style={{ fontSize: '0.75rem', color: '#b78103', marginTop: '2px' }}>
+                                    ⚠️ La suma de los puntos de los criterios no coincide con la puntuación máxima del instrumento.
+                                  </div>
+                                )}
+                              </div>
+                              <button 
+                                type="button" 
+                                className="btn-secondary" 
+                                style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem', borderRadius: '6px', fontWeight: 'bold', backgroundColor: 'var(--bg-primary)' }}
+                                onClick={handleDistributeCriteriaPointsEqually}
+                                title="Dividir los puntos del instrumento equitativamente entre los criterios"
+                              >
+                                ✨ Distribuir Equitativamente
+                              </button>
+                            </div>
+                          );
+                        })()}
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                           <div className="form-group" style={{ marginBottom: 0, display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -33281,6 +33349,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             <thead>
                               <tr>
                                 <th style={{ width: '180px' }}>Criterio</th>
+                                <th style={{ width: '90px', textAlign: 'center' }}>Puntos (pts)</th>
                                 {instrumentEditState.type === 'lista' ? (
                                   <>
                                     <th>Cumple (Sí)</th>
@@ -33298,18 +33367,37 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               </tr>
                             </thead>
                             <tbody>
-                              {instrumentEditState.criteria.map((crit, critIdx) => (
-                                <tr key={critIdx}>
-                                  {/* Criterion Name input */}
-                                  <td>
-                                    <input 
-                                      type="text" 
-                                      className="rubric-matrix-input-criterion"
-                                      value={crit.name}
-                                      onChange={(e) => handleEditCriterionName(critIdx, e.target.value)}
-                                      placeholder={`Criterio ${critIdx + 1}`}
-                                    />
-                                  </td>
+                              {instrumentEditState.criteria.map((crit, critIdx) => {
+                                const instWeight = instrumentEditState.weight !== undefined ? Number(instrumentEditState.weight) : 25;
+                                const defaultWeight = Math.max(1, Math.round(instWeight / (instrumentEditState.criteria.length || 1)));
+                                const critPoints = crit.weight !== undefined ? crit.weight : defaultWeight;
+
+                                return (
+                                  <tr key={critIdx}>
+                                    {/* Criterion Name input */}
+                                    <td>
+                                      <input 
+                                        type="text" 
+                                        className="rubric-matrix-input-criterion"
+                                        value={crit.name}
+                                        onChange={(e) => handleEditCriterionName(critIdx, e.target.value)}
+                                        placeholder={`Criterio ${critIdx + 1}`}
+                                      />
+                                    </td>
+
+                                    {/* Criterion Points input */}
+                                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                      <input 
+                                        type="number" 
+                                        min="0"
+                                        max="100"
+                                        className="rubric-matrix-input-criterion"
+                                        style={{ width: '70px', textAlign: 'center', margin: '0 auto', fontWeight: 'bold', color: 'var(--primary)' }}
+                                        value={critPoints}
+                                        onChange={(e) => handleEditCriterionWeight(critIdx, e.target.value)}
+                                        title="Puntuación específica asignada a este criterio"
+                                      />
+                                    </td>
                                   
                                   {/* Levels textareas */}
                                   {instrumentEditState.type === 'lista' ? (
@@ -33373,7 +33461,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                     </button>
                                   </td>
                                 </tr>
-                              ))}
+                              );
+                            })}
                               {instrumentEditState.criteria.length === 0 && (
                                 <tr>
                                   <td colSpan={instrumentEditState.type === 'lista' ? 4 : 7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
@@ -33406,11 +33495,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             );
                           }
 
-                          const criteriaList = normalizeCriteria(config.criteria, config.type);
                           const instWeight = config.weight !== undefined ? Number(config.weight) : 25;
-                          
-                          // Divide instrument weight proportional to number of criteria
-                          const maxCritScore = criteriaList.length > 0 ? Math.ceil(instWeight / criteriaList.length) : instWeight;
+                          const criteriaList = normalizeCriteria(config.criteria, config.type, instWeight);
+                          const fallbackCritScore = criteriaList.length > 0 ? Math.ceil(instWeight / criteriaList.length) : instWeight;
 
                           return (
                             <>
@@ -33430,14 +33517,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       
                                       {/* Criteria column headers */}
                                       {criteriaList.length > 0 ? (
-                                        criteriaList.map((crit, idx) => (
-                                          <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
-                                            {crit.name}
-                                            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-                                              (Máx: {maxCritScore} pts)
-                                            </div>
-                                          </th>
-                                        ))
+                                        criteriaList.map((crit, idx) => {
+                                          const critMax = crit.weight !== undefined ? Number(crit.weight) : fallbackCritScore;
+                                          return (
+                                            <th key={idx} style={{ textAlign: 'center', minWidth: '130px' }}>
+                                              {crit.name}
+                                              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                                                (Máx: {critMax} pts)
+                                              </div>
+                                            </th>
+                                          );
+                                        })
                                       ) : (
                                         <th style={{ textAlign: 'center', minWidth: '140px' }}>
                                           Calificación Directa
@@ -33470,6 +33560,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                           {/* Criteria values input */}
                                           {criteriaList.length > 0 ? (
                                             criteriaList.map((crit, critIdx) => {
+                                              const critMaxScore = crit.weight !== undefined ? Number(crit.weight) : fallbackCritScore;
                                               const score = savedAssessment[crit.name] !== undefined ? Number(savedAssessment[crit.name]) : 0;
                                               return (
                                                 <td key={critIdx} style={{ padding: 0 }}>
@@ -33481,7 +33572,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                       className="criteria-grade-input"
                                                       value={savedAssessment[crit.name] !== undefined ? score : ''}
                                                       min="0"
-                                                      max={maxCritScore}
+                                                      max={critMaxScore}
                                                       placeholder="-"
                                                       onChange={(e) => handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, e.target.value)}
                                                     />
@@ -33491,40 +33582,40 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                       <select 
                                                         style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
                                                         value={
-                                                          score >= maxCritScore ? 'estrategico' :
-                                                          score >= Math.round(maxCritScore * 0.85) ? 'autonomo' :
-                                                          score >= Math.round(maxCritScore * 0.75) ? 'resolutivo' :
+                                                          score >= critMaxScore ? 'estrategico' :
+                                                          score >= Math.round(critMaxScore * 0.85) ? 'autonomo' :
+                                                          score >= Math.round(critMaxScore * 0.75) ? 'resolutivo' :
                                                           score > 0 ? 'receptivo' : ''
                                                         }
                                                         onChange={(e) => {
                                                           const targetLevel = e.target.value;
                                                           let val = 0;
-                                                          if (targetLevel === 'receptivo') val = Math.round(maxCritScore * 0.65);
-                                                          else if (targetLevel === 'resolutivo') val = Math.round(maxCritScore * 0.75);
-                                                          else if (targetLevel === 'autonomo') val = Math.round(maxCritScore * 0.88);
-                                                          else if (targetLevel === 'estrategico') val = maxCritScore;
+                                                          if (targetLevel === 'receptivo') val = Math.round(critMaxScore * 0.65);
+                                                          else if (targetLevel === 'resolutivo') val = Math.round(critMaxScore * 0.75);
+                                                          else if (targetLevel === 'autonomo') val = Math.round(critMaxScore * 0.88);
+                                                          else if (targetLevel === 'estrategico') val = critMaxScore;
                                                           
                                                           handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
                                                         }}
                                                       >
                                                         <option value="">-- Nivel --</option>
-                                                        <option value="receptivo">Receptivo ({Math.round(maxCritScore * 0.65)} pts)</option>
-                                                        <option value="resolutivo">Resolutivo ({Math.round(maxCritScore * 0.75)} pts)</option>
-                                                        <option value="autonomo">Autónomo ({Math.round(maxCritScore * 0.88)} pts)</option>
-                                                        <option value="estrategico">Estratégico ({maxCritScore} pts)</option>
+                                                        <option value="receptivo">Receptivo ({Math.round(critMaxScore * 0.65)} pts)</option>
+                                                        <option value="resolutivo">Resolutivo ({Math.round(critMaxScore * 0.75)} pts)</option>
+                                                        <option value="autonomo">Autónomo ({Math.round(critMaxScore * 0.88)} pts)</option>
+                                                        <option value="estrategico">Estratégico ({critMaxScore} pts)</option>
                                                       </select>
                                                     ) : (
                                                       <select 
                                                         style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.7rem', color: 'var(--text-secondary)', paddingRight: '0.25rem' }}
-                                                        value={savedAssessment[crit.name] !== undefined ? (score >= maxCritScore ? 'si' : 'no') : ''}
+                                                        value={savedAssessment[crit.name] !== undefined ? (score >= critMaxScore ? 'si' : 'no') : ''}
                                                         onChange={(e) => {
-                                                          const val = e.target.value === 'si' ? maxCritScore : Math.round(maxCritScore * 0.5);
+                                                          const val = e.target.value === 'si' ? critMaxScore : Math.round(critMaxScore * 0.5);
                                                           handleUpdateStudentCriterionScore(s.id, selectedSubject, activePKey, config.id, crit.name, val);
                                                         }}
                                                       >
                                                         <option value="">-- Sí/No --</option>
-                                                        <option value="si">Sí ({maxCritScore} pts)</option>
-                                                        <option value="no">No ({Math.round(maxCritScore * 0.5)} pts)</option>
+                                                        <option value="si">Sí ({critMaxScore} pts)</option>
+                                                        <option value="no">No ({Math.round(critMaxScore * 0.5)} pts)</option>
                                                       </select>
                                                     )}
                                                   </div>
@@ -33938,6 +34029,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="glass-panel" style={{ padding: '1rem', backgroundColor: 'var(--bg-primary)', fontSize: '0.88rem' }}>
                 <p><strong>Actividad:</strong> {activeAssessment.config.activity}</p>
+                <p><strong>Puntuación Máxima del Instrumento:</strong> {activeAssessment.config.weight !== undefined ? activeAssessment.config.weight : 100} pts</p>
                 <p><strong>Competencia:</strong> {activeAssessment.config.competence}</p>
                 <p><strong>Indicador:</strong> {activeAssessment.config.indicator}</p>
                 <p><strong>Tipo:</strong> {activeAssessment.config.type === 'rubrica' ? 'Rúbrica' : activeAssessment.config.type === 'lista' ? 'Lista de Cotejo' : 'Escala Estimativa'}</p>
@@ -33947,11 +34039,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 {activeAssessment.config.criteria.map((crit, idx) => {
                   const currentVal = tempCriteriaRatings[crit.name];
                   const isList = activeAssessment.config.type === 'lista';
+                  const instWeight = activeAssessment.config.weight !== undefined ? Number(activeAssessment.config.weight) : 100;
+                  const fallbackMax = activeAssessment.config.criteria.length > 0 ? Math.floor(instWeight / activeAssessment.config.criteria.length) : instWeight;
+                  const critMaxScore = crit.weight !== undefined ? Number(crit.weight) : fallbackMax;
 
                   return (
                     <div key={idx} className="criterion-eval-card">
                       <div className="criterion-title">
-                        <span>{idx + 1}. {crit.name}</span>
+                        <span>{idx + 1}. {crit.name} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>(Máx: {critMaxScore} pts)</span></span>
                         <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', color: 'var(--primary)' }}>
                           {isList ? (
                             currentVal === true ? 'Sí Cumple' : 'No Cumple'
