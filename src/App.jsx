@@ -26082,32 +26082,51 @@ export default function App() {
     });
   };
 
+  const formatScoreValue = (val) => {
+    if (val === undefined || val === null || val === '' || val === 'N/A') return 'N/A';
+    const num = Number(val);
+    return isNaN(num) ? String(val) : num.toFixed(0);
+  };
+
+  const formatPeriodName = (periodStr) => {
+    if (!periodStr) return 'General';
+    if (periodStr === 'final') return 'Promedio Final';
+    const clean = String(periodStr).replace('bloque', '');
+    return `Periodo ${clean}`;
+  };
+
   const compileReportText = (modalState) => {
+    if (!modalState || !modalState.student) return '';
     if (modalState.modifiedWithAI && modalState.finalText) {
       return modalState.finalText;
     }
     
-    const situationsStr = modalState.selectedSituations
-      .map(s => s === 'Otro (especificar)' ? modalState.customSituation : s)
+    const situationsList = Array.isArray(modalState.selectedSituations) ? modalState.selectedSituations : [];
+    const situationsStr = situationsList
+      .map(s => s === 'Otro (especificar)' ? (modalState.customSituation || '') : s)
       .filter(Boolean)
       .join(', ');
     
     const antecedentStr = modalState.antecedent === 'Otra (especificar)' 
-      ? modalState.customAntecedent 
-      : modalState.antecedent;
+      ? (modalState.customAntecedent || '')
+      : (modalState.antecedent || '');
     
     const subName = modalState.subjectKey ? (subjects[modalState.subjectKey]?.name || modalState.subjectKey) : '';
-    const periodName = modalState.period ? (modalState.period === 'final' ? 'Fin de Año' : `Periodo ${modalState.period.replace('bloque', '')}`) : '';
+    const periodName = formatPeriodName(modalState.period);
+    const studentName = modalState.student?.name || 'Estudiante';
+    const studentGrade = modalState.student?.grade || '';
+    const reportType = (modalState.type || 'académico').toUpperCase();
     
     let text = `Estimados Coordinador y Orientador Encargados,\n\n`;
-    text += `Por este medio se emite un REPORTE ${modalState.type.toUpperCase()} formal en relación al estudiante ${modalState.student.name} del grado ${modalState.student.grade}.\n\n`;
+    text += `Por este medio se emite un REPORTE ${reportType} formal en relación al estudiante ${studentName} del grado ${studentGrade}.\n\n`;
     
     text += `DETALLE DEL CASO:\n`;
     if (subName) {
       text += `• Asignatura: ${subName}\n`;
     }
-    if (modalState.score) {
-      text += `• Rendimiento/Calificación: ${modalState.score.toFixed(0)}/100 (${periodName})\n`;
+    const scoreFormatted = formatScoreValue(modalState.score);
+    if (scoreFormatted !== 'N/A') {
+      text += `• Rendimiento/Calificación: ${scoreFormatted}/100 (${periodName})\n`;
     }
     if (situationsStr) {
       text += `• Situaciones observadas: ${situationsStr}\n`;
@@ -26189,9 +26208,10 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
           const grade = prev.student?.grade || '';
           const typeStr = prev.type === 'académico' ? 'académico' : 'conductual';
           const subName = prev.subjectKey ? (subjects[prev.subjectKey]?.name || prev.subjectKey) : '';
-          const periodName = prev.period ? (prev.period === 'final' ? 'Promedio Final' : `Periodo ${prev.period.replace('bloque', '')}`) : '';
+          const periodName = formatPeriodName(prev.period);
           
-          const situationsStr = prev.selectedSituations
+          const situationsList = Array.isArray(prev.selectedSituations) ? prev.selectedSituations : [];
+          const situationsStr = situationsList
             .map(s => s === 'Otro (especificar)' ? prev.customSituation : s)
             .filter(Boolean)
             .join(', ');
@@ -26206,8 +26226,9 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
           }
 
           let schoolDetails = '';
-          if (subName && prev.score) {
-            schoolDetails = ` en la asignatura de ${subName}, registrando una calificación de ${prev.score.toFixed(0)}/100 durante el ${periodName}`;
+          const formattedScore = formatScoreValue(prev.score);
+          if (subName && formattedScore !== 'N/A') {
+            schoolDetails = ` en la asignatura de ${subName}, registrando una calificación de ${formattedScore}/100 durante el ${periodName}`;
           } else if (subName) {
             schoolDetails = ` en la asignatura de ${subName}`;
           }
@@ -26222,16 +26243,7 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
             commentDetails = ` Observaciones adicionales del docente: "${prev.comments}".`;
           }
 
-          const optText = `Estimados Coordinador y Orientador Encargados,
-
-Por este medio me dirijo a ustedes para formalizar el reporte pedagógico de tipo ${typeStr.toUpperCase()} del estudiante ${sName.toUpperCase()}, perteneciente al grado ${grade}.
-
-Durante el seguimiento en el aula, ${caseDetails}${schoolDetails}.${persistDetails}${commentDetails}
-
-Recomendamos iniciar un plan de acompañamiento conjunto y convocar a los padres del estudiante para establecer compromisos que apoyen su desarrollo integral.
-
-Atentamente,
-Equipo Docente del Liceo Ana Rosa Castillo`;
+          const optText = `Estimados Coordinador y Orientador Encargados,\n\nPor este medio me dirijo a ustedes para formalizar el reporte pedagógico de tipo ${typeStr.toUpperCase()} del estudiante ${sName.toUpperCase()}, perteneciente al grado ${grade}.\n\nDurante el seguimiento en el aula, ${caseDetails}${schoolDetails}.${persistDetails}${commentDetails}\n\nRecomendamos iniciar un plan de acompañamiento conjunto y convocar a los padres del estudiante para establecer compromisos que apoyen su desarrollo integral.\n\nAtentamente,\nEquipo Docente del Liceo Ana Rosa Castillo`;
 
           return {
             ...prev,
@@ -26246,41 +26258,44 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
   };
 
   const handleRegisterSentReportLog = () => {
-    const contentText = compileReportText(alertFormModal);
+    if (!alertFormModal || !alertFormModal.student) return;
+    const contentText = alertFormModal.finalText || compileReportText(alertFormModal);
     let pVal = alertFormModal.reportPeriod || 'P1';
     if (alertFormModal.period) {
-      if (alertFormModal.period.includes('1')) pVal = 'P1';
-      else if (alertFormModal.period.includes('2')) pVal = 'P2';
-      else if (alertFormModal.period.includes('3')) pVal = 'P3';
-      else if (alertFormModal.period.includes('4')) pVal = 'P4';
+      const pStr = String(alertFormModal.period);
+      if (pStr.includes('1')) pVal = 'P1';
+      else if (pStr.includes('2')) pVal = 'P2';
+      else if (pStr.includes('3')) pVal = 'P3';
+      else if (pStr.includes('4')) pVal = 'P4';
     }
 
     const newLog = {
       id: Date.now().toString(),
-      studentId: alertFormModal.student.id,
-      studentName: alertFormModal.student.name,
-      grade: alertFormModal.student.grade,
+      studentId: alertFormModal.student.id || '',
+      studentName: alertFormModal.student.name || 'Estudiante',
+      grade: alertFormModal.student.grade || '',
       period: pVal,
       subjectName: alertFormModal.subjectKey ? (subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey) : 'Incidencia Directa',
-      periodName: alertFormModal.period ? (alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`) : `Período ${pVal}`,
-      score: alertFormModal.score ? alertFormModal.score.toFixed(0) : 'N/A',
-      coordinator: alertFormModal.coordinatorEmail,
-      counselor: alertFormModal.counselorEmail,
+      periodName: formatPeriodName(alertFormModal.period),
+      score: formatScoreValue(alertFormModal.score),
+      coordinator: alertFormModal.coordinatorEmail || '',
+      counselor: alertFormModal.counselorEmail || '',
       teacherEmail: currentUser ? currentUser.email : '',
-      timestamp: new Date().toLocaleString(),
-      type: alertFormModal.type,
-      selectedSituations: alertFormModal.selectedSituations,
-      customSituation: alertFormModal.customSituation,
-      antecedent: alertFormModal.antecedent,
-      customAntecedent: alertFormModal.customAntecedent,
-      comments: alertFormModal.comments,
-      modifiedWithAI: alertFormModal.modifiedWithAI,
+      timestamp: new Date().toLocaleString('es-DO'),
+      type: alertFormModal.type || 'académico',
+      selectedSituations: alertFormModal.selectedSituations || [],
+      customSituation: alertFormModal.customSituation || '',
+      antecedent: alertFormModal.antecedent || '',
+      customAntecedent: alertFormModal.customAntecedent || '',
+      comments: alertFormModal.comments || '',
+      modifiedWithAI: !!alertFormModal.modifiedWithAI,
       finalText: contentText,
       teacherSignature: currentUser?.teacherSignature || profileForm.teacherSignature || '',
       teacherName: currentUser?.name || 'Docente Emisor'
     };
     
     setAlertLogsAndSave(logs => [newLog, ...logs]);
+    setViewingReportLog(newLog);
     setAlertFormModal(prev => ({ ...prev, isOpen: false }));
   };
 
@@ -26301,29 +26316,30 @@ Equipo Docente del Liceo Ana Rosa Castillo`;
           
           const newLog = {
             id: Date.now().toString(),
-            studentId: prev.student.id,
-            studentName: prev.student.name,
-            grade: prev.student.grade,
+            studentId: prev.student?.id || '',
+            studentName: prev.student?.name || 'Estudiante',
+            grade: prev.student?.grade || '',
             subjectName: prev.subjectKey ? (subjects[prev.subjectKey]?.name || prev.subjectKey) : 'Incidencia Directa',
-            periodName: prev.period ? (prev.period === 'final' ? 'Promedio Final' : `Periodo ${prev.period.replace('bloque', '')}`) : 'N/A',
-            score: prev.score ? prev.score.toFixed(0) : 'N/A',
-            coordinator: prev.coordinatorEmail,
-            counselor: prev.counselorEmail,
-            timestamp: new Date().toLocaleString(),
-            type: prev.type,
-            selectedSituations: prev.selectedSituations,
-            customSituation: prev.customSituation,
-            antecedent: prev.antecedent,
-            customAntecedent: prev.customAntecedent,
-            comments: prev.comments,
-            modifiedWithAI: prev.modifiedWithAI,
+            periodName: formatPeriodName(prev.period),
+            score: formatScoreValue(prev.score),
+            coordinator: prev.coordinatorEmail || '',
+            counselor: prev.counselorEmail || '',
+            timestamp: new Date().toLocaleString('es-DO'),
+            type: prev.type || 'académico',
+            selectedSituations: prev.selectedSituations || [],
+            customSituation: prev.customSituation || '',
+            antecedent: prev.antecedent || '',
+            customAntecedent: prev.customAntecedent || '',
+            comments: prev.comments || '',
+            modifiedWithAI: !!prev.modifiedWithAI,
             finalText: contentText,
             teacherSignature: currentUser?.teacherSignature || profileForm.teacherSignature || '',
             teacherName: currentUser?.name || 'Docente Emisor'
           };
 
           setAlertLogsAndSave(logs => [newLog, ...logs]);
-          alert(`¡Reporte/Alerta generado con éxito!\nTipo: ${prev.type.toUpperCase()}\nEstudiante: ${prev.student.name}\n\nLos correos han sido simulados y guardados en el archivo digital.`);
+          setViewingReportLog(newLog);
+          alert(`¡Reporte/Alerta generado con éxito!\nTipo: ${(prev.type || 'académico').toUpperCase()}\nEstudiante: ${prev.student?.name || ''}\n\nLos correos han sido simulados y guardados en el archivo digital.`);
           
           return { ...prev, isOpen: false, sending: false, progress: 0 };
         }
@@ -35292,10 +35308,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               
               {/* Context Summary */}
               <div className="alert alert-danger" style={{ fontSize: '0.85rem', margin: 0, padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                <div><strong>Estudiante:</strong> {alertFormModal.student.name} ({alertFormModal.student.grade})</div>
+                <div><strong>Estudiante:</strong> {alertFormModal.student?.name || 'Estudiante'} ({alertFormModal.student?.grade || ''})</div>
                 {alertFormModal.subjectKey && (
                   <div>
-                    <strong>Alerta de Rendimiento:</strong> Asignatura: {subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} (Nota: {alertFormModal.score.toFixed(0)}% en {alertFormModal.period === 'final' ? 'Promedio Final' : `Periodo ${alertFormModal.period.replace('bloque', '')}`})
+                    <strong>Alerta de Rendimiento:</strong> Asignatura: {subjects[alertFormModal.subjectKey]?.name || alertFormModal.subjectKey} (Nota: {formatScoreValue(alertFormModal.score)}% en {formatPeriodName(alertFormModal.period)})
                   </div>
                 )}
               </div>
@@ -35355,7 +35371,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                        'Daño voluntario a la propiedad escolar',
                        'Otro (especificar)'
                      ]).map(sit => {
-                       const isChecked = alertFormModal.selectedSituations.includes(sit);
+                       const isChecked = (alertFormModal.selectedSituations || []).includes(sit);
                        return (
                          <label key={sit} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.8rem', cursor: 'pointer', padding: '0.2rem 0' }}>
                            <input 
@@ -35365,9 +35381,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                              onChange={(e) => {
                                const checked = e.target.checked;
                                setAlertFormModal(prev => {
+                                 const currentList = Array.isArray(prev.selectedSituations) ? prev.selectedSituations : [];
                                  const list = checked 
-                                   ? [...prev.selectedSituations, sit] 
-                                   : prev.selectedSituations.filter(x => x !== sit);
+                                   ? [...currentList, sit] 
+                                   : currentList.filter(x => x !== sit);
                                  return { ...prev, selectedSituations: list, modifiedWithAI: false, finalText: '' };
                                });
                              }}
@@ -35380,14 +35397,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                  </div>
  
                  {/* 2.1 Entrada de Situación Personalizada */}
-                 {alertFormModal.selectedSituations.includes('Otro (especificar)') && (
+                 {(alertFormModal.selectedSituations || []).includes('Otro (especificar)') && (
                    <div className="form-group-compact">
                      <label>Especifique la situación:</label>
                      <input 
                        type="text" 
                        className="form-input-compact" 
                        placeholder="Describa el incidente aquí..."
-                       value={alertFormModal.customSituation}
+                       value={alertFormModal.customSituation || ''}
                        onChange={(e) => setAlertFormModal(prev => ({ ...prev, customSituation: e.target.value, modifiedWithAI: false, finalText: '' }))}
                      />
                    </div>
@@ -35399,7 +35416,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                      <label style={{ fontWeight: 'bold' }}>Antecedentes (¿Desde cuándo persiste esta situación?)</label>
                      <select 
                        className="form-select"
-                       value={alertFormModal.antecedent}
+                       value={alertFormModal.antecedent || 'Primera vez (Incidente aislado)'}
                        onChange={(e) => setAlertFormModal(prev => ({ ...prev, antecedent: e.target.value, modifiedWithAI: false, finalText: '' }))}
                        style={{ width: '100%', padding: '0.4rem' }}
                      >
@@ -35419,7 +35436,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         type="text" 
                         className="form-input-compact" 
                         placeholder="Ej. Desde hace 3 meses..."
-                        value={alertFormModal.customAntecedent}
+                        value={alertFormModal.customAntecedent || ''}
                         onChange={(e) => setAlertFormModal(prev => ({ ...prev, customAntecedent: e.target.value, modifiedWithAI: false, finalText: '' }))}
                       />
                     </div>
@@ -35432,7 +35449,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <textarea 
                     className="form-input-compact" 
                     placeholder="Notas internas que servirán como contexto adicional para el reporte..."
-                    value={alertFormModal.comments}
+                    value={alertFormModal.comments || ''}
                     onChange={(e) => setAlertFormModal(prev => ({ ...prev, comments: e.target.value, modifiedWithAI: false, finalText: '' }))}
                     style={{ minHeight: '60px', padding: '0.4rem', fontSize: '0.82rem' }}
                   />
@@ -35446,7 +35463,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       type="email" 
                       className="form-input-compact" 
                       placeholder="coordinador@liceo.edu" 
-                      value={alertFormModal.coordinatorEmail}
+                      value={alertFormModal.coordinatorEmail || ''}
                       onChange={(e) => setAlertFormModal(prev => ({ ...prev, coordinatorEmail: e.target.value }))}
                     />
                   </div>
@@ -35456,7 +35473,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       type="email" 
                       className="form-input-compact" 
                       placeholder="orientador@liceo.edu" 
-                      value={alertFormModal.counselorEmail}
+                      value={alertFormModal.counselorEmail || ''}
                       onChange={(e) => setAlertFormModal(prev => ({ ...prev, counselorEmail: e.target.value }))}
                     />
                   </div>
@@ -35514,11 +35531,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <span>📂</span> <span>Cómo organizar automáticamente en carpetas en tu correo:</span>
                 </div>
                 <p style={{ margin: 0, lineHeight: '1.4', color: 'var(--text-secondary)' }}>
-                  Para que los reportes de <strong>{alertFormModal.student.grade}</strong> de <strong>{alertFormModal.student.name}</strong> se organicen automáticamente al recibirse, solicita al Orientador/Coordinador crear una <strong>Regla/Filtro</strong> en su Outlook/Gmail:
+                  Para que los reportes de <strong>{alertFormModal.student?.grade || ''}</strong> de <strong>{alertFormModal.student?.name || ''}</strong> se organicen automáticamente al recibirse, solicita al Orientador/Coordinador crear una <strong>Regla/Filtro</strong> en su Outlook/Gmail:
                   <br />
-                  • <strong>Condición:</strong> Si el asunto contiene <code>[REPORTE LARC] Grado: {alertFormModal.student.grade} | Alumno: {alertFormModal.student.name}</code>
+                  • <strong>Condición:</strong> Si el asunto contiene <code>[REPORTE LARC] Grado: {alertFormModal.student?.grade || ''} | Alumno: {alertFormModal.student?.name || ''}</code>
                   <br />
-                  • <strong>Acción:</strong> Mover a carpeta: <code>{alertFormModal.student.grade} Reporte / {alertFormModal.student.name}</code>.
+                  • <strong>Acción:</strong> Mover a carpeta: <code>{alertFormModal.student?.grade || ''} Reporte / {alertFormModal.student?.name || ''}</code>.
                 </p>
               </div>
 
@@ -35552,10 +35569,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 className="btn-secondary"
                 style={{ fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: '#ce1126', border: '1px solid #ce1126' }}
                 onClick={() => {
+                  const sName = (alertFormModal.student?.name || 'Estudiante').replace(/\s+/g, '_');
+                  const sGrade = alertFormModal.student?.grade || '';
                   handleRegisterSentReportLog();
                   setTimeout(() => {
-                    handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${alertFormModal.student.name.replace(/\s+/g, '_')}_${alertFormModal.student.grade}.pdf`);
-                  }, 300);
+                    handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${sName}_${sGrade}.pdf`);
+                  }, 350);
                 }}
               >
                 📄 Guardar como PDF
@@ -35576,7 +35595,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
               {(() => {
                 const finalTxt = alertFormModal.finalText || compileReportText(alertFormModal);
-                const subjectStr = `[REPORTE LARC] Grado: ${alertFormModal.student.grade} | Alumno: ${alertFormModal.student.name} | Tipo: ${alertFormModal.type.toUpperCase()}`;
+                const sName = alertFormModal.student?.name || 'Estudiante';
+                const sGrade = alertFormModal.student?.grade || '';
+                const subjectStr = `[REPORTE LARC] Grado: ${sGrade} | Alumno: ${sName} | Tipo: ${(alertFormModal.type || 'ACADÉMICO').toUpperCase()}`;
                 const encodedTo = encodeURIComponent(`${alertFormModal.counselorEmail || 'orientacion.nagua@docente.edu.do'}`);
                 const encodedSubject = encodeURIComponent(subjectStr);
                 const encodedBody = encodeURIComponent(finalTxt);
@@ -35589,10 +35610,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     className="btn-secondary"
                     style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#0078d4', fontWeight: 'bold', border: '1px solid #0078d4' }}
                     onClick={() => {
+                      const cleanName = sName.replace(/\s+/g, '_');
                       handleRegisterSentReportLog();
                       setTimeout(() => {
-                        handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${alertFormModal.student.name.replace(/\s+/g, '_')}_${alertFormModal.student.grade}.pdf`);
-                      }, 300);
+                        handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${cleanName}_${sGrade}.pdf`);
+                      }, 350);
                       alert('📄 Se ha guardado el reporte y descargado el PDF Oficial Firmado. Por favor adjúntalo a tu correo en Outlook.');
                     }}
                     title="Registrar reporte, descargar PDF firmado y abrir correo en Outlook"
