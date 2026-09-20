@@ -1,0 +1,35 @@
+{
+  "nivel": "Secundario",
+  "grado": "1ro A",
+  "area": "matematica",
+  "unidades": [
+    {
+      "id_unidad": "MAT-1SEC-U1",
+      "tema": "Números Enteros (Z), Operaciones Fundamentales y Ecuaciones Lineales",
+      "competencias_alineadas": [
+        {
+          "fundamental": "Pensamiento Lógico, Crítico y Creativo; Resolución de Problemas",
+          "especifica": "Resuelve situaciones problemáticas del contexto aplicando el conjunto de números enteros, sus propiedades y el modelado con ecuaciones de primer grado.",
+          "indicador_logro": "Aplica la regla de los signos y las propiedades operatorias de los enteros para resolver problemas del contexto socioeconómico y ambiental.",
+          "contenidos": {
+            "conceptuales": [
+              "Conjunto de los Números Enteros (Z): Representación en la recta numérica y valor absoluto",
+              "Operaciones en Z: Adición, sustracción, multiplicación, división y potenciación",
+              "Leyes de los signos y orden de las operaciones (PEMDAS)",
+              "Ecuaciones lineales simples de la forma ax + b = c"
+            ],
+            "procedimentales": [
+              "Resolución de problemas de finanzas personales, temperatura y altitud con enteros.",
+              "Despeje de incógnitas en ecuaciones lineales paso a paso argumentando cada propiedad.",
+              "Uso de simuladores digitales e interactivos para la recta numérica."
+            ],
+            "actitudinales": [
+              "Perseverancia y perseveración crítica en la búsqueda de soluciones matemáticas.",
+              "Valoración del pensamiento abstracto y la precisión lógica."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

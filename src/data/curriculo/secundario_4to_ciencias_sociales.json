@@ -1,0 +1,33 @@
+{
+  "nivel": "Secundario",
+  "grado": "4AM",
+  "area": "ciencias_sociales",
+  "unidades": [
+    {
+      "id_unidad": "CS-4SEC-U1",
+      "tema": "La Primera Mitad del Siglo XX en R.D. y la Dictadura de Trujillo (1930-1961)",
+      "competencias_alineadas": [
+        {
+          "fundamental": "Ética y Ciudadana; Pensamiento Lógico, Crítico y Creativo",
+          "especifica": "Analiza críticamente las causas, mecanismos de control social y consecuencias históricas del régimen de Trujillo en la República Dominicana.",
+          "indicador_logro": "Explica la dinámica política, económica y los movimientos de resistencia durante la Era de Trujillo utilizando fuentes históricas documentadas.",
+          "contenidos": {
+            "conceptuales": [
+              "Antecedentes de la ocupación estadounidense (1916-1924) y ascenso de Trujillo",
+              "Monopolización económica y control militar (SIM, Partido Dominicano)",
+              "Movimientos de resistencia interna y exilio (Hermanas Mirabal, Movimiento 14 de Junio)",
+              "La caída del régimen en 1961 y la transición democrática"
+            ],
+            "procedimentales": [
+              "Análisis de testimonios, documentos históricos y prensa de la época.",
+              "Elaboración de líneas del tiempo y ensayos de reflexión ciudadana sobre la memoria histórica."
+            ],
+            "actitudinales": [
+              "Defensa inquebrantable de los derechos humanos y la democracia institucional."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

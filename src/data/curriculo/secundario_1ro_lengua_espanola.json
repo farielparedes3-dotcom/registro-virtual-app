@@ -1,0 +1,60 @@
+{
+  "nivel": "Secundario",
+  "grado": "1ro A",
+  "area": "lengua_espanola",
+  "unidades": [
+    {
+      "id_unidad": "LE-1SEC-U1",
+      "tema": "El Artículo de Opinión: Estructura, Argumentación y Cohesión Textual",
+      "competencias_alineadas": [
+        {
+          "fundamental": "Comunicativa; Pensamiento Lógico, Crítico y Creativo",
+          "especifica": "Produce oralmente y por escrito artículos de opinión sobre temas relevantes de la comunidad, utilizando conectores lógicos y argumentos sólidos.",
+          "indicador_logro": "Redacta artículos de opinión que respetan la estructura (tesis, demostración y conclusión) y emplean recursos argumentativos y marcadores textuales adecuados.",
+          "contenidos": {
+            "conceptuales": [
+              "El Artículo de Opinión: Función, estructura y características",
+              "La Tesis y los Tipos de Argumentos (de autoridad, de ejemplo, causa-efecto)",
+              "Conectores de causa, consecuencia y oposición",
+              "Uso de verbos de opinión y modos verbales (Indicativo y Subjuntivo)"
+            ],
+            "procedimentales": [
+              "Planificación, borrador y edición de un artículo de opinión sobre problemáticas comunitarias.",
+              "Identificación de la tesis y argumentos en editoriales de periódicos nacionales.",
+              "Debate escolar con sustentación de posturas críticas basadas en evidencias."
+            ],
+            "actitudinales": [
+              "Valoración del lenguaje escrito como herramienta de expresión democrática.",
+              "Respeto a las opiniones ajenas y apertura a la confrontación de ideas fundamentadas."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id_unidad": "LE-1SEC-U2",
+      "tema": "El Informe de Investigación: Estructura y Registro Formal",
+      "competencias_alineadas": [
+        {
+          "fundamental": "Comunicativa; Científica y Tecnológica",
+          "especifica": "Comprende y produce informes de investigación utilizando la objetividad, precisión terminológica y citación de fuentes confiables.",
+          "indicador_logro": "Organiza informes escritos con introducción, metodología, resultados y conclusiones coherentes y fundamentadas.",
+          "contenidos": {
+            "conceptuales": [
+              "El Informe de Investigación: Propósito y partes constitutivas",
+              "Estilo expositivo-explicativo y voz pasiva / impersonal",
+              "Técnicas de fichaje, paráfrasis y citado bibliográfico"
+            ],
+            "procedimentales": [
+              "Sintetización de hallazgos mediante fichas temáticas y cuadros resúmenes.",
+              "Redacción de informes académicos utilizando procesadores de texto y conectores explicativos."
+            ],
+            "actitudinales": [
+              "Rigor ético en la acreditación de autorías y honestidad intelectual."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

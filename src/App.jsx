@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
+import { getCurriculumUnits, getUnitById } from './data/curriculo/index.js';
 // Vercel deployment trigger
 
 import { dbService } from './db';
@@ -24247,9 +24248,10 @@ export default function App() {
   const [pedagogicalEngineConfig, setPedagogicalEngineConfig] = useState({
     modalidad: 'Unidad de Aprendizaje', // 'Unidad de Aprendizaje' | 'Proyecto de Aprendizaje (ABP)'
     inputSource: 'malla', // 'malla' | 'pdf'
-    unitTitle: 'Impacto Ambiental y Desarrollo Sostenible en Nagua',
     grade: '1ro A',
     subject: 'ciencias_naturaleza',
+    selectedUnitId: 'CN-1SEC-U1',
+    unitTitle: 'La Célula: Estructura, Clasificación y Funciones Organelares',
     transversalAxis: 'Salud y Bienestar',
     strategyKey: 'descubrimiento',
     startDate: new Date().toISOString().split('T')[0],
@@ -24263,6 +24265,13 @@ export default function App() {
   const [generatedSequenceMatrix, setGeneratedSequenceMatrix] = useState(null);
 
   const handleGeneratePedagogicalSequence = () => {
+    const gradeStr = pedagogicalEngineConfig.grade || '1ro A';
+    const subjectKey = pedagogicalEngineConfig.subject || 'ciencias_naturaleza';
+    
+    // Fetch official curriculum unit data from JSON dataset
+    const availableUnits = getCurriculumUnits(gradeStr, subjectKey);
+    const selectedUnit = getUnitById(gradeStr, subjectKey, pedagogicalEngineConfig.selectedUnitId) || availableUnits[0];
+
     const totalSessions = (Number(pedagogicalEngineConfig.weeks) || 1) * (Number(pedagogicalEngineConfig.sessionsPerWeek) || 1);
     const isABP = pedagogicalEngineConfig.modalidad.includes('ABP') || pedagogicalEngineConfig.modalidad.includes('Proyecto');
     const defaultStratKey = isABP ? 'abp_7fases' : (pedagogicalEngineConfig.strategyKey || 'descubrimiento');
@@ -24270,14 +24279,29 @@ export default function App() {
     const phases = strategy.phases;
     const phasesCount = phases.length;
 
-    const topicTitle = pedagogicalEngineConfig.unitTitle || 'Unidad Didáctica Integrada';
-    const subName = subjects[pedagogicalEngineConfig.subject]?.name || 'Ciencias de la Naturaleza';
-    const gradeStr = pedagogicalEngineConfig.grade || '1ro A';
+    const topicTitle = selectedUnit?.tema || pedagogicalEngineConfig.unitTitle || 'Unidad Didáctica Integrada';
+    const subName = subjects[subjectKey]?.name || 'Ciencias de la Naturaleza';
     const teacherNameStr = currentUser?.name || 'Docente Emisor';
     const axisStr = pedagogicalEngineConfig.transversalAxis || 'Salud y Bienestar';
 
+    // Extract official alignment data
+    const compAlineada = selectedUnit?.competencias_alineadas?.[0] || {
+      fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
+      especifica: `Comprende y aplica los principios estructurantes de ${subName} según el diseño curricular del Nivel Secundario.`,
+      indicador_logro: `Argumenta y explica fenómenos de ${subName} utilizando modelos e hipótesis validadas.`,
+      contenidos: {
+        conceptuales: [`Conceptos estructurantes de ${topicTitle}`],
+        procedimentales: ["Indagación documentada y empírica"],
+        actitudinales: ["Curiosidad científica y ética"]
+      }
+    };
+
+    // System Prompt Directive
+    const systemDirective = "Utiliza estrictamente las competencias, indicadores y contenidos provistos en el contexto curricular. No inventes ni alteres códigos ni redacciones oficiales.";
+
     // Build Parte I: Matriz Curricular Institucional
     const parte1 = {
+      systemDirective,
       header: {
         school: 'Liceo Ana Rosa Castillo (Distrito Escolar 14-01 Nagua)',
         grade: gradeStr,
@@ -24287,7 +24311,8 @@ export default function App() {
         weeks: pedagogicalEngineConfig.weeks,
         sessionsPerWeek: pedagogicalEngineConfig.sessionsPerWeek,
         totalSessions,
-        sessionDuration: '45 Minutos'
+        sessionDuration: '45 Minutos',
+        unitId: selectedUnit?.id_unidad || 'MINERD-CURR-01'
       },
       transversalAxis: axisStr,
       situacionAprendizaje: {
@@ -24299,17 +24324,17 @@ export default function App() {
       },
       coherenceMatrix: {
         fundamentalCompetencies: {
-          g1: 'G1: Competencia Comunicativa — Analiza y expresa conceptos clave utilizando el lenguaje científico/técnico del área.',
-          g2: 'G2: Competencia Pensamiento Lógico, Crítico y Creativo / Resolución de Problemas — Identifica problemáticas contextuales y plantea soluciones fundamentadas.',
-          g3: 'G3: Competencia Científica-Tecnológica / Ambiental y de la Salud — Aplica la indagación empírica y evalúa el impacto del conocimiento en la salud y el entorno.',
-          g4: 'G4: Competencia Ética-Ciudadana / Desarrollo Personal y Espiritual — Fomenta el trabajo en equipo con rigor ético, empatía y compromiso social.'
+          g1: `G1: Competencia Comunicativa — ${compAlineada.fundamental.includes('Comunicativa') ? 'Analiza y expresa conceptos clave utilizando el lenguaje técnico del área.' : 'Interpreta textos y discursos científicos del grado.'}`,
+          g2: `G2: Competencia Pensamiento Lógico, Crítico y Creativo / Resolución de Problemas — ${compAlineada.fundamental.includes('Pensamiento') ? 'Identifica problemáticas contextuales y plantea soluciones fundamentadas.' : 'Formula hipótesis y evalúa juicios críticos.'}`,
+          g3: `G3: Competencia Científica-Tecnológica / Ambiental y de la Salud — ${compAlineada.fundamental.includes('Científica') ? 'Aplica la indagación empírica y evalúa el impacto del conocimiento en la salud y el entorno.' : 'Utiliza modelos empíricos y herramientas tecnológicas.'}`,
+          g4: `G4: Competencia Ética-Ciudadana / Desarrollo Personal y Espiritual — Fomenta el trabajo en equipo con rigor ético, empatía y compromiso social.`
         },
-        specificCompetencies: `Aplica de manera coherente los modelos y principios de ${subName} en la solución de desafíos cotidianos y comunitarios según la Ordenanza 04-2023.`,
-        achievementIndicators: `Explica con claridad los conceptos fundamentales de ${topicTitle}, argumenta sus posturas con evidencias validadas y colabora proactivamente.`,
+        specificCompetencies: compAlineada.especifica,
+        achievementIndicators: compAlineada.indicador_logro,
         contents: {
-          conceptual: `• Conceptos estructurantes de ${topicTitle}.\n• Principios pedagógicos, teorías y leyes articuladoras.\n• Vocabulario técnico y modelos explicativos del MINERD.`,
-          procedural: `• Búsqueda y contrastación de fuentes oficializadas.\n• Ejecución de experimentos, guías o recolección de datos en campo.\n• Redacción de síntesis y construcción del producto final.`,
-          attitudinal: `• Curiosidad constante y actitud de indagación.\n• Responsabilidad en las entregas y trabajo en equipo.\n• Valoración de la ética y el desarrollo sostenible.`
+          conceptual: compAlineada.contenidos.conceptuales.map(c => `• ${c}`).join('\n'),
+          procedural: compAlineada.contenidos.procedimentales.map(p => `• ${p}`).join('\n'),
+          attitudinal: compAlineada.contenidos.actitudinales.map(a => `• ${a}`).join('\n')
         },
         evidences: {
           conocimiento: 'Organizadores gráficos, mapa mental de saberes y prueba escrita diagnóstica/sumativa.',
@@ -24332,16 +24357,37 @@ export default function App() {
       const formattedDate = currentDate.toLocaleDateString('es-DO', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
       let subTopic = `${topicTitle} - Módulo Secuencial ${sessionNum}`;
-      let intencionPedagogica = `Comprender y aplicar los elementos de la ${phaseName} en torno a ${topicTitle}.`;
-      let inicioText = `Inicio (5–10 min): Organización del aula, activación de saberes previos mediante pregunta detonante sobre la Sesión ${sessionNum > 1 ? sessionNum - 1 : 1} y presentación explícita de la intención pedagógica del día.`;
-      let desarrolloText = `Desarrollo (25–30 min): Actividad central enmarcada en la ${phaseName}. Trabajo organizativo (equipos/binas) realizando lectura comprensiva, análisis de datos y aplicación directa de guías.`;
-      let cierreText = `Cierre (5–10 min): Síntesis colectiva de hallazgos, evaluación formativa mediante ticket de salida y Metacognición Holística: ¿Qué aprendimos hoy?, ¿Qué dificultad enfrentamos?, ¿Para qué nos sirve lo trabajado?`;
+      let intencionPedagogica = `Comprender y aplicar los conceptos de ${phaseName} orientados a ${topicTitle}.`;
+
+      // INICIO (5-10 min) with explicit teacher quote
+      let inicioText = `Inicio (5–10 min):\n` +
+        `• Consigna Textual del Docente: "${teacherNameStr}: '¡Buenos días a todos! Hoy en nuestra Sesión ${sessionNum} vamos a responder una gran pregunta sobre ${topicTitle}: ¿Cómo influye este concepto en nuestra vida diaria?'"\n` +
+        `• Actividades de Activación: Organización rápida del aula, recuperación de saberes previos mediante lluvia de ideas sobre la clase anterior y lectura guiada de la intención pedagógica del día en la pizarra.`;
+
+      // DESARROLLO (25-30 min) with explicit group organization, numbered steps, teacher mediation
+      let desarrolloText = `Desarrollo (25–30 min):\n` +
+        `• Organización Grupal: Formación de equipos de trabajo colaborativo (4 estudiantes por grupo).\n` +
+        `• Pasos Numerados Detallados:\n` +
+        `   1. Lectura y Análisis: Los estudiantes leen la guía o fragmento del Libro Abierto MINERD correspondiente a la "${phaseName}".\n` +
+        `   2. Consigna Operativa Real: Cada equipo resuelve la Guía Práctica Nº ${sessionNum}, respondiendo 3 preguntas de debate crítico y completando el esquema de datos.\n` +
+        `   3. Elaboración de Avance: Redacción conjunta de conclusiones en el cuaderno o ficha de trabajo.\n` +
+        `• Rol de Mediación Docente: El profesor circula por los equipos, realiza preguntas socráticas para destrabar dudas y ofrece retroalimentación formativa inmediata.`;
+
+      // CIERRE (5-10 min) with synthesis, metacognition questions, evidence collection
+      let cierreText = `Cierre (5–10 min):\n` +
+        `• Síntesis Colectiva: Un vocero por equipo comparte en 1 minuto su principal hallazgo.\n` +
+        `• Batería de Preguntas de Metacognición Textuales:\n` +
+        `   - ¿Qué aprendimos concretamente en la sesión de hoy?\n` +
+        `   - ¿Qué dificultad enfrentamos al trabajar en equipo y cómo la superamos?\n` +
+        `   - ¿De qué manera podemos aplicar lo aprendido en nuestra comunidad de Nagua?\n` +
+        `• Mecanismo de Recolección de Evidencia: Entrega de la Ficha de Avance o Ticket de Salida al docente antes de sonar el timbre.`;
 
       if (pedagogicalEngineConfig.customInputDoc && pedagogicalEngineConfig.customInputDoc.trim().length > 0) {
-        desarrolloText += ` [Insumo PDF/Docente: ${pedagogicalEngineConfig.customInputDoc.substring(0, 90)}...]`;
+        desarrolloText += `\n• Insumo Adicional PDF/Docente: ${pedagogicalEngineConfig.customInputDoc.substring(0, 100)}...`;
       }
 
       sessions.push({
+        id: 'seq_' + sessionNum,
         sessionNum,
         date: formattedDate,
         rawDate: currentDate.toISOString().split('T')[0],
@@ -24352,13 +24398,13 @@ export default function App() {
         desarrollo: desarrolloText,
         cierre: cierreText,
         evaluation: {
-          conocimiento: `Resumen sintético de ${phaseName}`,
-          desempeno: `Ficha de observación de trabajo en equipo`,
-          producto: `Avance escrito o guía de trabajo nº ${sessionNum}`,
+          conocimiento: `Resumen sintético y respuesta a preguntas de la ${phaseName}`,
+          desempeno: `Trabajo colaborativo en equipos de 4 y participación dialógica`,
+          producto: `Guía Práctica Resuelta Nº ${sessionNum} / Ticket de Salida`,
           momento: 'Formativa',
-          agente: 'Heteroevaluación / Coevaluación',
-          instrumento: 'Rúbrica Socioformativa y Lista de Cotejo',
-          recursos: 'Libro Abierto MINERD, Cuadernos, Pizarra Digital'
+          agente: 'Heteroevaluación y Coevaluación en equipo',
+          instrumento: 'Rúbrica Socioformativa y Lista de Cotejo de Desempeño',
+          recursos: 'Libro Abierto MINERD, Cuaderno de Trabajo, Pizarra Digital, Fichas Impresas'
         }
       });
 
@@ -24380,7 +24426,7 @@ export default function App() {
     };
 
     setGeneratedSequenceMatrix(sequenceResult);
-    alert(`⚡ ¡Planificación Integral Completa generada exitosamente!\n• Carga: ${totalSessions} Clases (45 min c/u)\n• Modalidad: ${pedagogicalEngineConfig.modalidad}\n• Estrategia: ${strategy.name}`);
+    alert(`⚡ ¡Planificación Integral Completa generada exitosamente con el Currículo Oficial MINERD!\n• Unidad: ${topicTitle}\n• Carga: ${totalSessions} Clases (45 min c/u)\n• Modalidad: ${pedagogicalEngineConfig.modalidad}\n• Estrategia: ${strategy.name}`);
   };
 
   const handleSavePedagogicalSequenceToPlans = () => {
@@ -30223,7 +30269,16 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <select
                     className="form-select"
                     value={pedagogicalEngineConfig.grade}
-                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, grade: e.target.value }))}
+                    onChange={(e) => {
+                      const newGrade = e.target.value;
+                      const units = getCurriculumUnits(newGrade, pedagogicalEngineConfig.subject);
+                      setPedagogicalEngineConfig(c => ({
+                        ...c,
+                        grade: newGrade,
+                        selectedUnitId: units[0]?.id_unidad || '',
+                        unitTitle: units[0]?.tema || c.unitTitle
+                      }));
+                    }}
                   >
                     {['1ro A', '1ro B', '2do A', '2do B', '3ro A', '3ro B', '3ro C', '4AM', '4AH', '4BH', '5AM', '5AN', '6AM', '6AH'].map(g => (
                       <option key={g} value={g}>{g}</option>
@@ -30236,10 +30291,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <select
                     className="form-select"
                     value={pedagogicalEngineConfig.subject}
-                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, subject: e.target.value }))}
+                    onChange={(e) => {
+                      const newSubject = e.target.value;
+                      const units = getCurriculumUnits(pedagogicalEngineConfig.grade, newSubject);
+                      setPedagogicalEngineConfig(c => ({
+                        ...c,
+                        subject: newSubject,
+                        selectedUnitId: units[0]?.id_unidad || '',
+                        unitTitle: units[0]?.tema || c.unitTitle
+                      }));
+                    }}
                   >
                     {Object.keys(subjects).map(sKey => (
                       <option key={sKey} value={sKey}>{subjects[sKey].name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">📘 Unidad Curricular Oficial (MINERD JSON)</label>
+                  <select
+                    className="form-select"
+                    value={pedagogicalEngineConfig.selectedUnitId || ''}
+                    onChange={(e) => {
+                      const uId = e.target.value;
+                      const units = getCurriculumUnits(pedagogicalEngineConfig.grade, pedagogicalEngineConfig.subject);
+                      const unitObj = units.find(u => u.id_unidad === uId);
+                      setPedagogicalEngineConfig(c => ({
+                        ...c,
+                        selectedUnitId: uId,
+                        unitTitle: unitObj ? unitObj.tema : c.unitTitle
+                      }));
+                    }}
+                  >
+                    {getCurriculumUnits(pedagogicalEngineConfig.grade, pedagogicalEngineConfig.subject).map(u => (
+                      <option key={u.id_unidad} value={u.id_unidad}>
+                        [{u.id_unidad}] {u.tema}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -30563,10 +30651,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         {/* Momentos de la Clase */}
                         <div style={{ backgroundColor: '#faf5ff', padding: '0.85rem', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #a855f7' }}>
                           <h5 style={{ margin: '0 0 0.5rem 0', color: '#6b21a8', fontSize: '0.88rem' }}>⏱️ Momentos de la Clase (45 Minutos):</h5>
-                          <div style={{ fontSize: '0.83rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                            <div style={{ color: '#0d9488' }}><strong>🚀 {ses.inicio}</strong></div>
-                            <div style={{ color: '#0284c7' }}><strong>⚙️ {ses.desarrollo}</strong></div>
-                            <div style={{ color: '#7c3aed' }}><strong>🎯 {ses.cierre}</strong></div>
+                          <div style={{ fontSize: '0.83rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                            <div style={{ color: '#0d9488', whiteSpace: 'pre-wrap' }}><strong>🚀 {ses.inicio}</strong></div>
+                            <div style={{ color: '#0284c7', whiteSpace: 'pre-wrap' }}><strong>⚙️ {ses.desarrollo}</strong></div>
+                            <div style={{ color: '#7c3aed', whiteSpace: 'pre-wrap' }}><strong>🎯 {ses.cierre}</strong></div>
                           </div>
                         </div>
 

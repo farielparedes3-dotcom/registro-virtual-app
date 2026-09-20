@@ -1,0 +1,64 @@
+{
+  "nivel": "Secundario",
+  "grado": "1ro A",
+  "area": "ciencias_naturaleza",
+  "unidades": [
+    {
+      "id_unidad": "CN-1SEC-U1",
+      "tema": "La Célula: Estructura, Clasificación y Funciones Organelares",
+      "competencias_alineadas": [
+        {
+          "fundamental": "Científica y Tecnológica; Pensamiento Lógico, Crítico y Creativo",
+          "especifica": "Comprende la estructura básica y fisiología celular identificando sus organelos y la diferenciación entre células procariotas y eucariotas (animal y vegetal).",
+          "indicador_logro": "Diferencia con precisión las estructuras de las células procariotas y eucariotas, y explica las funciones de los organelos citoplasmáticos a partir de observaciones y esquemas.",
+          "contenidos": {
+            "conceptuales": [
+              "Teoría Celular: Postulados e historia",
+              "Célula Procariota y Eucariota: Diferencias morfofuncionales",
+              "Organelos Celulares: Membrana, Núcleo, Mitocondria, Cloroplasto, Retículo Endoplasmático y Ribosomas",
+              "Transporte celular activo y pasivo (Ósmosis y Difusión)"
+            ],
+            "procedimentales": [
+              "Observación microscópica de muestras de tejido vegetal (epidermis de cebolla) y animal.",
+              "Elaboración de modelos tridimensionales y diagramas comparativos de células animal y vegetal.",
+              "Experimentación guiada sobre el proceso de ósmosis en membranas semipermeables."
+            ],
+            "actitudinales": [
+              "Curiosidad e interés por la investigación microscópica del mundo vivo.",
+              "Valoración del trabajo colaborativo y la responsabilidad en el laboratorio.",
+              "Respeto y cuidado por los seres vivos microscópicos y macroscópicos."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id_unidad": "CN-1SEC-U2",
+      "tema": "Ecosistemas, Cadenas Tróficas y Biodiversidad Dominicana",
+      "competencias_alineadas": [
+        {
+          "fundamental": "Ambiental y de la Salud; Ética y Ciudadana",
+          "especifica": "Evalúa el impacto de las interacciones ecológicas y la actividad humana sobre los ecosistemas locales y la biodiversidad de la República Dominicana.",
+          "indicador_logro": "Argumenta sobre la importancia de conservar la biodiversidad autóctona e identifica los niveles tróficos en un ecosistema terrestre y acuático dominicano.",
+          "contenidos": {
+            "conceptuales": [
+              "Concepto de Ecosistema: Bióticos y Abióticos",
+              "Flujo de Energía: Cadenas y redes tróficas",
+              "Biodiversidad Endémica de la República Dominicana (Flora y Fauna)",
+              "Amenazas ambientales: Deforestación, contaminación y cambio climático"
+            ],
+            "procedimentales": [
+              "Mapeo y clasificación de la flora y fauna endémica de la región del Cibao y costa norte.",
+              "Construcción de diagramas de redes tróficas locales identificando productores y consumidores.",
+              "Diseño de campañas de concientización comunitaria sobre la separación de residuos."
+            ],
+            "actitudinales": [
+              "Conciencia ecológica y compromiso activo con la preservación del medio ambiente.",
+              "Actitud crítica y ética ante las acciones humanas que degradan los hábitats naturales."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
