@@ -26594,7 +26594,12 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
             );
 
             const folderSummaryText = `📍 EXPEDIENTE DIGITAL COMPLETO - LICEO ANA ROSA CASTILLO\nEstudiante: ${folderExplorerStudentName}\nGrado: ${folderExplorerGrade} | Período: ${folderExplorerPeriod}\nTotal Reportes: ${studentLogs.length}\n\nDETALLE DE REPORTES:\n` + 
-              studentLogs.map((l, idx) => `${idx + 1}. [${l.type?.toUpperCase()}] ${l.timestamp.split(',')[0]} - Asignatura: ${l.subjectName}\nResumen: ${l.finalText || l.comments}\n`).join('\n');
+              studentLogs.map((l, idx) => {
+                const tsStr = l.timestamp ? String(l.timestamp) : '';
+                const datePart = tsStr ? tsStr.split(',')[0] : '';
+                const typeStr = l.type ? String(l.type).toUpperCase() : 'REPORTE';
+                return `${idx + 1}. [${typeStr}] ${datePart} - Asignatura: ${l.subjectName || ''}\nResumen: ${l.finalText || l.comments || ''}\n`;
+              }).join('\n');
 
             const encodedFolderSubject = encodeURIComponent(`[EXPEDIENTE COMPLETO LARC] Alumno: ${folderExplorerStudentName} | Grado: ${folderExplorerGrade}`);
             const encodedFolderBody = encodeURIComponent(folderSummaryText);
@@ -26638,7 +26643,9 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
                 ) : (
                   studentLogs.map(log => {
                     const isBehavioral = log.type === 'conductual';
-                    const reportTitle = `${log.timestamp.split(',')[0].replace(/\//g, '-')} - ${isBehavioral ? 'Conductual' : 'Académico'}`;
+                    const tsStr = log.timestamp ? String(log.timestamp) : '';
+                    const dateClean = tsStr ? tsStr.split(',')[0].replace(/\//g, '-') : 'Fecha N/A';
+                    const reportTitle = `${dateClean} - ${isBehavioral ? 'Conductual' : 'Académico'}`;
                     return (
                       <div 
                         key={log.id} 
@@ -26810,14 +26817,21 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
                 <button 
                   className="btn-primary"
                   style={{ backgroundColor: '#ce1126', borderColor: '#ce1126', color: '#ffffff', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                  onClick={() => handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${viewingReportLog.studentName.replace(/\s+/g, '_')}_${viewingReportLog.grade}.pdf`)}
+                  onClick={() => {
+                    const cleanName = (viewingReportLog.studentName || 'Estudiante').replace(/\s+/g, '_');
+                    const cleanGrade = viewingReportLog.grade || '';
+                    handleExportReportPDF('official-report-pdf-sheet', `Reporte_Oficial_${cleanName}_${cleanGrade}.pdf`);
+                  }}
                   title="Descargar/Guardar documento oficial en formato PDF"
                 >
                   📄 Guardar como PDF
                 </button>
 
                 {(() => {
-                  const subjectStr = `[REPORTE LARC] Grado: ${viewingReportLog.grade} | Alumno: ${viewingReportLog.studentName} | Tipo: ${viewingReportLog.type?.toUpperCase()}`;
+                  const sName = viewingReportLog.studentName || 'Estudiante';
+                  const sGrade = viewingReportLog.grade || '';
+                  const sType = viewingReportLog.type ? String(viewingReportLog.type).toUpperCase() : 'REPORTE';
+                  const subjectStr = `[REPORTE LARC] Grado: ${sGrade} | Alumno: ${sName} | Tipo: ${sType}`;
                   const encodedTo = encodeURIComponent(`${viewingReportLog.counselor || 'orientacion.nagua@docente.edu.do'}`);
                   const encodedSubject = encodeURIComponent(subjectStr);
                   const encodedBody = encodeURIComponent(viewingReportLog.finalText || viewingReportLog.comments || '');
@@ -29243,7 +29257,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <strong>Grado:</strong> {student.grade}
             </div>
             <div>
-              <strong>Código RNE:</strong> <span style={{ fontFamily: 'monospace' }}>{student.id.toUpperCase().replace('S_', 'RNE-')}</span>
+              <strong>Código RNE:</strong> <span style={{ fontFamily: 'monospace' }}>{(student.id ? String(student.id) : '').toUpperCase().replace('S_', 'RNE-')}</span>
             </div>
             <div>
               <strong>Centro Educativo:</strong> Liceo Ana Rosa Castillo

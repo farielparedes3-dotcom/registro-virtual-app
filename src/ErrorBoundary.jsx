@@ -62,7 +62,7 @@ export class ErrorBoundary extends React.Component {
             </p>
             
             {/* Show error details for debugging */}
-            <details style={{ 
+            <details open style={{ 
               textAlign: 'left', 
               marginBottom: '1.5rem', 
               backgroundColor: '#fef2f2', 
