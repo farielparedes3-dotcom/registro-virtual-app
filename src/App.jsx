@@ -24178,6 +24178,150 @@ export default function App() {
     notes: 'Los estudiantes mostraron alto entusiasmo al identificar los cloroplastos.'
   });
 
+  // --- Motor Pedagógico Avanzado: Secuenciación Didáctica (Clase por Clase de 45 min) ---
+  const STRATEGY_CATALOG = {
+    estudio_caso: {
+      name: 'Estudio de Caso',
+      phases: [
+        '1. Recuperación de saberes previos y experiencias',
+        '2. Indagación y análisis del caso',
+        '3. Debate de propuestas y soluciones',
+        '4. Socialización de conclusiones y lecciones aprendidas al interior del aula'
+      ]
+    },
+    abp: {
+      name: 'Aprendizaje Basado en Problemas (ABP)',
+      phases: [
+        '1. Análisis del contexto y delimitación del problema',
+        '2. Interpretación del problema basado en conocimientos previos',
+        '3. Elaboración de propuestas de opciones para resolver el problema',
+        '4. Evaluación de las propuestas y selección de la opción más pertinente'
+      ]
+    },
+    descubrimiento: {
+      name: 'Descubrimiento e Indagación',
+      phases: [
+        '1. Recuperación de saberes previos y experiencias',
+        '2. Proceso de investigación documentada',
+        '3. Proceso de investigación en el entorno / campo',
+        '4. Organización y análisis de los datos recolectados',
+        '5. Comprobación de la teoría y conclusiones',
+        '6. Presentación de los resultados'
+      ]
+    },
+    expositiva: {
+      name: 'Expositiva de Conocimientos Elaborados',
+      phases: [
+        '1. Recuperación de saberes previos y experiencias',
+        '2. Búsqueda y análisis de información documentada',
+        '3. Producción de la exposición / síntesis gráfica',
+        '4. Exposición oral y compartida de los estudiantes',
+        '5. Reflexión metacognitiva',
+        '6. Sistematización de los aprendizajes'
+      ]
+    },
+    juego_roles: {
+      name: 'Juego de Roles',
+      phases: [
+        '1. Recuperación de saberes previos y experiencias',
+        '2. Estudio y profundización del tema y personajes',
+        '3. Desempeño ante el problema desde el rol asignado',
+        '4. Reflexión y evaluación de la experiencia'
+      ]
+    }
+  };
+
+  const [pedagogicalEngineConfig, setPedagogicalEngineConfig] = useState({
+    modalidad: 'Unidad de Aprendizaje',
+    unitTitle: 'La Célula y sus Funciones Organelares',
+    strategyKey: 'descubrimiento',
+    weeks: 3,
+    sessionsPerWeek: 4,
+    sessionDuration: 45,
+    customInputDoc: ''
+  });
+
+  const [generatedSequenceMatrix, setGeneratedSequenceMatrix] = useState(null);
+
+  const handleGeneratePedagogicalSequence = () => {
+    const totalSessions = (Number(pedagogicalEngineConfig.weeks) || 1) * (Number(pedagogicalEngineConfig.sessionsPerWeek) || 1);
+    const strategy = STRATEGY_CATALOG[pedagogicalEngineConfig.strategyKey] || STRATEGY_CATALOG.descubrimiento;
+    const phases = strategy.phases;
+    const phasesCount = phases.length;
+
+    const sessions = [];
+    const topicTitle = pedagogicalEngineConfig.unitTitle || 'Unidad Didáctica';
+
+    for (let i = 0; i < totalSessions; i++) {
+      const sessionNum = i + 1;
+      const phaseIdx = Math.min(phasesCount - 1, Math.floor((i / totalSessions) * phasesCount));
+      const phaseName = phases[phaseIdx];
+
+      let subTopic = `${topicTitle} - Subtema / Módulo ${sessionNum}`;
+      let inicioText = `Inicio (5-10 min): Conexión previa con la Sesión ${sessionNum > 1 ? sessionNum - 1 : 1}. Recuperación de conceptos previos e intención pedagógica del día.`;
+      let desarrolloText = `Desarrollo (25-30 min): Actividad central enmarcada en la fase "${phaseName}". Los estudiantes analizan datos, interactúan en equipo y resuelven la guía de trabajo.`;
+      let cierreText = `Cierre (5-10 min): Síntesis colectiva, evaluación formativa rápida (ticket de salida) y reflexión metacognitiva ("¿Qué aprendí hoy y cómo se conecta con la vida real?").`;
+      let recursoText = `Guía Didáctica Nº ${sessionNum}, Registro Anecdótico, Ficha de Evaluación Formativa`;
+
+      if (pedagogicalEngineConfig.customInputDoc && pedagogicalEngineConfig.customInputDoc.trim().length > 0) {
+        desarrolloText += ` [Integrando documento/insumo del docente: ${pedagogicalEngineConfig.customInputDoc.substring(0, 80)}...]`;
+      }
+
+      sessions.push({
+        sessionNum,
+        phase: phaseName,
+        subTopic,
+        inicio: inicioText,
+        desarrollo: desarrolloText,
+        cierre: cierreText,
+        resource: recursoText
+      });
+    }
+
+    const sequenceResult = {
+      title: topicTitle,
+      modalidad: pedagogicalEngineConfig.modalidad,
+      strategyName: strategy.name,
+      totalSessions,
+      weeks: pedagogicalEngineConfig.weeks,
+      sessionsPerWeek: pedagogicalEngineConfig.sessionsPerWeek,
+      sessionDuration: pedagogicalEngineConfig.sessionDuration,
+      sessions
+    };
+
+    setGeneratedSequenceMatrix(sequenceResult);
+    alert(`⚡ ¡Matriz Secuencial de ${totalSessions} Clases (45 min cada una) generada exitosamente!`);
+  };
+
+  const handleSavePedagogicalSequenceToPlans = () => {
+    if (!generatedSequenceMatrix) return;
+    const newPlan = {
+      id: 'plan_seq_' + Date.now(),
+      level: 'Secundario - Primer Ciclo',
+      grade: '1ro A',
+      subject: 'ciencias_naturaleza',
+      unitTitle: `${generatedSequenceMatrix.title} (${generatedSequenceMatrix.modalidad})`,
+      estimatedTime: `${generatedSequenceMatrix.weeks} Semanas (${generatedSequenceMatrix.totalSessions} Sesiones de 45 min)`,
+      transversalAxis: 'Educación Ambiental y Salud',
+      fundamentalCompetencies: 'Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica',
+      specificCompetencias: `Planificación secuenciada en ${generatedSequenceMatrix.totalSessions} clases de 45 min aplicando la estrategia de ${generatedSequenceMatrix.strategyName}.`,
+      conceptualContents: `Estructura secuencial por sesiones: ` + generatedSequenceMatrix.sessions.map(s => `Sesión ${s.sessionNum}: ${s.phase}`).join('; '),
+      proceduralContents: `Aplicación práctica según las fases de ${generatedSequenceMatrix.strategyName}.`,
+      attitudinalContents: 'Participación activa, curiosidad científica y ética en el trabajo colaborativo.',
+      teachingStrategies: generatedSequenceMatrix.strategyName,
+      sequenceInicio: generatedSequenceMatrix.sessions[0]?.inicio || 'Motivación e intención pedagógica.',
+      sequenceDesarrollo: 'Desarrollo progresivo clase a clase según la matriz secuencial de 45 min.',
+      sequenceCierre: generatedSequenceMatrix.sessions[generatedSequenceMatrix.sessions.length - 1]?.cierre || 'Síntesis y metacognición final.',
+      achievementIndicators: 'Demuestra avance sostenido en los indicadores de logro a lo largo de las sesiones.',
+      evaluationInstruments: 'Evaluación formativa continua, Tickets de salida y Rúbrica de proceso.',
+      createdAt: new Date().toLocaleDateString('es-DO')
+    };
+
+    setCreatedPlansAndSave(prev => [newPlan, ...prev]);
+    alert('✅ ¡Secuencia Didáctica guardada exitosamente en Mis Planificaciones!');
+    setPlanningSubTab('my_plans');
+  };
+
   const handleAiGeneratePlan = () => {
     const subName = subjects[planningForm.subject]?.name || 'Ciencias de la Naturaleza';
     const currentGrade = planningForm.grade || '1ro A';
@@ -29398,6 +29542,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           >
             📁 Mis Planificaciones & Archivos Subidos ({createdPlans.length + uploadedPlans.length})
           </button>
+          <button
+            type="button"
+            className={`btn ${planningSubTab === 'pedagogical_engine' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPlanningSubTab('pedagogical_engine')}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem', backgroundColor: planningSubTab === 'pedagogical_engine' ? '#7c3aed' : '', borderColor: planningSubTab === 'pedagogical_engine' ? '#7c3aed' : '' }}
+          >
+            ⚡ Motor Pedagógico (Clase por Clase 45 min)
+          </button>
         </div>
 
         {/* SUBTAB 1: CREATE PLAN (ADECUACION CURRICULAR 2023) */}
@@ -29884,6 +30036,198 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* SUBTAB 4: MOTOR PEDAGOGICO AVANZADO (SECUENCIACION CLASE POR CLASE 45 MIN) */}
+        {planningSubTab === 'pedagogical_engine' && (
+          <div>
+            <div style={{ backgroundColor: 'rgba(124, 58, 237, 0.08)', padding: '1.25rem', borderRadius: '10px', marginBottom: '1.5rem', borderLeft: '5px solid #7c3aed' }}>
+              <h4 style={{ margin: 0, color: '#7c3aed', fontSize: '1.05rem', fontWeight: 800 }}>
+                ⚡ Motor Pedagógico Avanzado: Secuenciación Didáctica Clase por Clase (45 min)
+              </h4>
+              <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                Arquitecto instruccional automatizado que calcula el total de sesiones de 45 minutos y distribuye secuencialmente las fases pedagógicas oficiales con la estructura exacta: <strong>Inicio (5-10 min)</strong>, <strong>Desarrollo (25-30 min)</strong> y <strong>Cierre (5-10 min)</strong>.
+              </p>
+            </div>
+
+            <div style={{ border: '1px solid var(--border-color)', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#fafafa', marginBottom: '1.5rem' }}>
+              <h5 style={{ margin: '0 0 1rem 0', color: 'var(--primary)', fontSize: '0.95rem' }}>⚙️ Parámetros de Configuración del Motor</h5>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Modalidad de Planificación</label>
+                  <select
+                    className="form-select"
+                    value={pedagogicalEngineConfig.modalidad}
+                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, modalidad: e.target.value }))}
+                  >
+                    <option value="Unidad de Aprendizaje">Planificación por Unidad de Aprendizaje</option>
+                    <option value="Proyecto de Aprendizaje (ABP)">Planificación por Proyecto (ABP)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Tema / Unidad Didáctica</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={pedagogicalEngineConfig.unitTitle}
+                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, unitTitle: e.target.value }))}
+                    placeholder="Ej. La Célula y sus funciones"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Estrategia Didáctica Metodológica</label>
+                  <select
+                    className="form-select"
+                    value={pedagogicalEngineConfig.strategyKey}
+                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, strategyKey: e.target.value }))}
+                  >
+                    <option value="estudio_caso">Estudio de Caso (4 Fases)</option>
+                    <option value="abp">Aprendizaje Basado en Problemas - ABP (4 Fases)</option>
+                    <option value="descubrimiento">Descubrimiento e Indagación (6 Fases)</option>
+                    <option value="expositiva">Expositiva de Conocimientos Elaborados (6 Fases)</option>
+                    <option value="juego_roles">Juego de Roles (4 Fases)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">Duración en Semanas</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="12"
+                    className="form-input"
+                    value={pedagogicalEngineConfig.weeks}
+                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, weeks: parseInt(e.target.value) || 1 }))}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Clases / Sesiones por Semana</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    className="form-input"
+                    value={pedagogicalEngineConfig.sessionsPerWeek}
+                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, sessionsPerWeek: parseInt(e.target.value) || 1 }))}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Duración Estándar por Módulo</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value="45 Minutos (Módulo Estándar)"
+                    disabled
+                  />
+                </div>
+
+                <div style={{ alignSelf: 'end' }}>
+                  <div style={{ padding: '0.5rem', backgroundColor: '#e0e7ff', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold', color: '#3730a3', fontSize: '0.9rem' }}>
+                    Total Sesiones: {(pedagogicalEngineConfig.weeks || 1) * (pedagogicalEngineConfig.sessionsPerWeek || 1)} Clases
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="form-label">Documento o Notas de Insumo Docente (Opcional)</label>
+                <textarea
+                  className="form-input"
+                  rows={2}
+                  value={pedagogicalEngineConfig.customInputDoc}
+                  onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, customInputDoc: e.target.value }))}
+                  placeholder="Pega aquí temas específicos, experimentos o recursos del libro para integrarlos cronológicamente..."
+                />
+              </div>
+
+              <div style={{ textAlign: 'right' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={handleGeneratePedagogicalSequence}
+                  style={{ backgroundColor: '#7c3aed', border: 'none', padding: '0.6rem 1.5rem', fontWeight: 'bold' }}
+                >
+                  ⚡ Generar Secuencia Didáctica Clase por Clase
+                </button>
+              </div>
+            </div>
+
+            {/* GENERATED MATRIX DISPLAY */}
+            {generatedSequenceMatrix && (
+              <div>
+                <div style={{ border: '2px solid #7c3aed', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#ffffff', marginBottom: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div>
+                      <h4 style={{ margin: 0, color: '#7c3aed', fontSize: '1.15rem', fontWeight: 800 }}>
+                        📋 Ficha Técnica: {generatedSequenceMatrix.title}
+                      </h4>
+                      <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <strong>Modalidad:</strong> {generatedSequenceMatrix.modalidad} | <strong>Estrategia:</strong> {generatedSequenceMatrix.strategyName} | <strong>Carga Horaria Calculada:</strong> {generatedSequenceMatrix.totalSessions} Sesiones de 45 min ({generatedSequenceMatrix.weeks} Semanas)
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={handleSavePedagogicalSequenceToPlans}
+                      style={{ backgroundColor: '#059669', border: 'none', fontWeight: 'bold' }}
+                    >
+                      💾 Guardar Secuencia en Mis Planificaciones
+                    </button>
+                  </div>
+
+                  <h5 style={{ margin: '1rem 0 0.5rem 0', color: 'var(--primary)' }}>📊 Matriz Secuencial Didáctica (Clase por Clase)</h5>
+                  <div className="table-responsive">
+                    <table className="table" style={{ fontSize: '0.85rem' }}>
+                      <thead>
+                        <tr style={{ backgroundColor: '#f3e8ff' }}>
+                          <th style={{ width: '100px' }}>Nº Sesión</th>
+                          <th style={{ width: '220px' }}>Fase de la Estrategia</th>
+                          <th>Estructura Interna de la Clase (45 min)</th>
+                          <th style={{ width: '200px' }}>Recursos / Instrumentos</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {generatedSequenceMatrix.sessions.map((ses) => (
+                          <tr key={ses.sessionNum}>
+                            <td style={{ fontWeight: 'bold', textAlign: 'center' }}>
+                              <span className="badge badge-info" style={{ backgroundColor: '#7c3aed', color: '#ffffff' }}>
+                                Sesión {ses.sessionNum} / {generatedSequenceMatrix.totalSessions}
+                              </span>
+                            </td>
+                            <td style={{ fontWeight: 600, color: '#5b21b6' }}>
+                              {ses.phase}
+                            </td>
+                            <td>
+                              <div style={{ marginBottom: '0.36rem', color: '#0d9488' }}>
+                                <strong>🚀 {ses.inicio}</strong>
+                              </div>
+                              <div style={{ marginBottom: '0.36rem', color: '#0284c7' }}>
+                                <strong>⚙️ {ses.desarrollo}</strong>
+                              </div>
+                              <div style={{ color: '#7c3aed' }}>
+                                <strong>🎯 {ses.cierre}</strong>
+                              </div>
+                            </td>
+                            <td style={{ fontSize: '0.8rem', color: '#4b5563' }}>
+                              {ses.resource}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             )}
           </div>
