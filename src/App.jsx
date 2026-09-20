@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
-import { getCurriculumUnits, getUnitById, filterOfficialCompetencies1ro, getOfficial1roSubjectData } from './data/curriculo/index.js';
+import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData } from './data/curriculo/index.js';
 // Vercel deployment trigger
 
 import { dbService } from './db';
@@ -24284,9 +24284,9 @@ export default function App() {
     const teacherNameStr = currentUser?.name || 'Docente Emisor';
     const axisStr = pedagogicalEngineConfig.transversalAxis || 'Salud y Bienestar';
 
-    // Extract official specs from 1ro de Secundaria JSON (Ordenanza 04-2023)
-    const officialSpecs = filterOfficialCompetencies1ro(subjectKey, pedagogicalEngineConfig.selectedFundamental || 'TODAS');
-    const officialSubject = getOfficial1roSubjectData(subjectKey);
+    // Extract official specs from grade-specific JSON (Ordenanza 04-2023)
+    const officialSpecs = filterOfficialCompetencies(gradeStr, subjectKey, pedagogicalEngineConfig.selectedFundamental || 'TODAS');
+    const officialSubject = getOfficialSubjectData(gradeStr, subjectKey);
 
     const ceTextList = officialSpecs.competencies.map(c => `[${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
     const ilTextList = officialSpecs.indicators.map(i => `[${i.codigo}] ${i.texto}`).join('\n');

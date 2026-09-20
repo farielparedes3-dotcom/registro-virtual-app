@@ -1,10 +1,12 @@
 import secundaria1roOfficial from './secundaria_1ro.json';
+import secundaria2doOfficial from './secundaria_2do.json';
 import secundario1roCN from './secundario_1ro_ciencias_naturaleza.json';
 import secundario1roLE from './secundario_1ro_lengua_espanola.json';
 import secundario1roMAT from './secundario_1ro_matematica.json';
 import secundario4toCS from './secundario_4to_ciencias_sociales.json';
 
 export const OFFICIAL_SECUNDARIA_1RO = secundaria1roOfficial;
+export const OFFICIAL_SECUNDARIA_2DO = secundaria2doOfficial;
 
 // Master Curriculum Registry
 export const CURRICULO_DATASETS = [
@@ -15,14 +17,26 @@ export const CURRICULO_DATASETS = [
 ];
 
 /**
- * Get Official Curriculum Specs for 1ro de Secundaria (Ordenanza 04-2023)
+ * Get Official Curriculum Dataset Object by Grade
  */
-export function getOfficial1roSubjectData(subjectKey) {
+export function getOfficialGradeDataset(gradeStr) {
+  if (!gradeStr) return secundaria1roOfficial;
+  const cleanGrade = String(gradeStr).trim().toLowerCase();
+  if (cleanGrade.includes('2do') || cleanGrade.startsWith('2')) {
+    return secundaria2doOfficial;
+  }
+  return secundaria1roOfficial;
+}
+
+/**
+ * Get Official Subject Specs for a specific grade (Ordenanza 04-2023)
+ */
+export function getOfficialSubjectData(gradeStr, subjectKey) {
   if (!subjectKey) return null;
 
-  // Map alternative keys if needed
+  const dataset = getOfficialGradeDataset(gradeStr);
   const normalizedKey = subjectKey.toLowerCase().replace(/[\s-]/g, '_');
-  const areas = OFFICIAL_SECUNDARIA_1RO.areas || {};
+  const areas = dataset.areas || {};
 
   if (areas[normalizedKey]) {
     return areas[normalizedKey];
@@ -33,14 +47,23 @@ export function getOfficial1roSubjectData(subjectKey) {
 
   // Soft fallback matching
   const matchingKey = Object.keys(areas).find(k => k.includes(normalizedKey) || normalizedKey.includes(k));
-  return matchingKey ? areas[matchingKey] : areas['ciencias_naturaleza'];
+  return matchingKey ? areas[matchingKey] : (areas['ciencias_naturaleza'] || Object.values(areas)[0]);
 }
 
 /**
- * Filter CEs and ILs for a given subject and optional fundamental competency filter
+ * Legacy alias for 1ro
  */
-export function filterOfficialCompetencies1ro(subjectKey, selectedFundamental) {
-  const subjectData = getOfficial1roSubjectData(subjectKey);
+export function getOfficial1roSubjectData(subjectKey) {
+  return getOfficialSubjectData('1ro', subjectKey);
+}
+
+/**
+ * Filter CEs and ILs for a given grade, subject and optional fundamental competency filter
+ */
+export function filterOfficialCompetencies(gradeStr, subjectKey, selectedFundamental) {
+  const subjectData = getOfficialSubjectData(gradeStr, subjectKey);
+  const dataset = getOfficialGradeDataset(gradeStr);
+
   if (!subjectData || !Array.isArray(subjectData.competencias_especificas)) {
     return { competencies: [], indicators: [], groups: {} };
   }
@@ -55,13 +78,20 @@ export function filterOfficialCompetencies1ro(subjectKey, selectedFundamental) {
   }
 
   const indicators = comps.flatMap(c => c.indicadores_logro || []);
-  const groups = OFFICIAL_SECUNDARIA_1RO.grupos_calificacion || {};
+  const groups = dataset.grupos_calificacion || {};
 
   return {
     competencies: comps,
     indicators,
     groups
   };
+}
+
+/**
+ * Legacy alias for 1ro
+ */
+export function filterOfficialCompetencies1ro(subjectKey, selectedFundamental) {
+  return filterOfficialCompetencies('1ro', subjectKey, selectedFundamental);
 }
 
 /**
@@ -84,7 +114,7 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
   }
 
   // Fallback dynamic generator if exact JSON file is not pre-packaged for that specific subject/grade
-  const officialData = getOfficial1roSubjectData(subjectKey);
+  const officialData = getOfficialSubjectData(cleanGrade, subjectKey);
   const subName = officialData?.nombre || subjectKey;
 
   const officialComps = officialData?.competencias_especificas || [];
