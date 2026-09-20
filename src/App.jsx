@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
-import { getCurriculumUnits, getUnitById } from './data/curriculo/index.js';
+import { getCurriculumUnits, getUnitById, filterOfficialCompetencies1ro, getOfficial1roSubjectData } from './data/curriculo/index.js';
 // Vercel deployment trigger
 
 import { dbService } from './db';
@@ -24284,11 +24284,27 @@ export default function App() {
     const teacherNameStr = currentUser?.name || 'Docente Emisor';
     const axisStr = pedagogicalEngineConfig.transversalAxis || 'Salud y Bienestar';
 
+    // Extract official specs from 1ro de Secundaria JSON (Ordenanza 04-2023)
+    const officialSpecs = filterOfficialCompetencies1ro(subjectKey, pedagogicalEngineConfig.selectedFundamental || 'TODAS');
+    const officialSubject = getOfficial1roSubjectData(subjectKey);
+
+    const ceTextList = officialSpecs.competencies.map(c => `[${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
+    const ilTextList = officialSpecs.indicators.map(i => `[${i.codigo}] ${i.texto}`).join('\n');
+    const gTextList = `G1: ${officialSpecs.groups.G1?.nombre || 'Comunicativa'}\nG2: ${officialSpecs.groups.G2?.nombre || 'Pensamiento Lógico / Resolución'}\nG3: ${officialSpecs.groups.G3?.nombre || 'Científica-Tecnológica / Ambiental'}\nG4: ${officialSpecs.groups.G4?.nombre || 'Ética / Desarrollo Personal'}`;
+
+    const contextoCurricularInyectado = 
+      `CONTEXTO CURRICULAR INYECTADO:\n` +
+      `Asignatura: ${officialSubject?.nombre || subName}\n` +
+      `Competencias Específicas:\n${ceTextList}\n` +
+      `Indicadores de Logro:\n${ilTextList}\n` +
+      `Grupos de Calificación Ordenanza 04-2023:\n${gTextList}\n` +
+      `REGLA DE ORO: Utiliza estos textos oficiales textualmente. Está prohibido modificar sus códigos o redacción.`;
+
     // Extract official alignment data
     const compAlineada = selectedUnit?.competencias_alineadas?.[0] || {
       fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
-      especifica: `Comprende y aplica los principios estructurantes de ${subName} según el diseño curricular del Nivel Secundario.`,
-      indicador_logro: `Argumenta y explica fenómenos de ${subName} utilizando modelos e hipótesis validadas.`,
+      especifica: officialSpecs.competencies[0]?.descripcion || `Comprende y aplica los principios estructurantes de ${subName} según el diseño curricular del Nivel Secundario.`,
+      indicador_logro: officialSpecs.indicators.map(i => `[${i.codigo}] ${i.texto}`).slice(0, 3).join(' | ') || `Argumenta y explica fenómenos de ${subName} utilizando modelos e hipótesis validadas.`,
       contenidos: {
         conceptuales: [`Conceptos estructurantes de ${topicTitle}`],
         procedimentales: ["Indagación documentada y empírica"],
@@ -24302,10 +24318,11 @@ export default function App() {
     // Build Parte I: Matriz Curricular Institucional
     const parte1 = {
       systemDirective,
+      contextoCurricularInyectado,
       header: {
         school: 'Liceo Ana Rosa Castillo (Distrito Escolar 14-01 Nagua)',
         grade: gradeStr,
-        subject: subName,
+        subject: officialSubject?.nombre || subName,
         teacher: teacherNameStr,
         startDate: pedagogicalEngineConfig.startDate || new Date().toISOString().split('T')[0],
         weeks: pedagogicalEngineConfig.weeks,
@@ -24324,13 +24341,13 @@ export default function App() {
       },
       coherenceMatrix: {
         fundamentalCompetencies: {
-          g1: `G1: Competencia Comunicativa — ${compAlineada.fundamental.includes('Comunicativa') ? 'Analiza y expresa conceptos clave utilizando el lenguaje técnico del área.' : 'Interpreta textos y discursos científicos del grado.'}`,
-          g2: `G2: Competencia Pensamiento Lógico, Crítico y Creativo / Resolución de Problemas — ${compAlineada.fundamental.includes('Pensamiento') ? 'Identifica problemáticas contextuales y plantea soluciones fundamentadas.' : 'Formula hipótesis y evalúa juicios críticos.'}`,
-          g3: `G3: Competencia Científica-Tecnológica / Ambiental y de la Salud — ${compAlineada.fundamental.includes('Científica') ? 'Aplica la indagación empírica y evalúa el impacto del conocimiento en la salud y el entorno.' : 'Utiliza modelos empíricos y herramientas tecnológicas.'}`,
-          g4: `G4: Competencia Ética-Ciudadana / Desarrollo Personal y Espiritual — Fomenta el trabajo en equipo con rigor ético, empatía y compromiso social.`
+          g1: `G1: Competencia Comunicativa — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G1')?.descripcion || compAlineada.especifica}`,
+          g2: `G2: Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G2')?.descripcion || compAlineada.especifica}`,
+          g3: `G3: Científica y Tecnológica / Ambiental y de la Salud — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G3')?.descripcion || compAlineada.especifica}`,
+          g4: `G4: Ética y Ciudadana / Desarrollo Personal y Espiritual — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G4')?.descripcion || compAlineada.especifica}`
         },
-        specificCompetencies: compAlineada.especifica,
-        achievementIndicators: compAlineada.indicador_logro,
+        specificCompetencies: officialSpecs.competencies.map(c => `• [${c.codigo}] ${c.descripcion}`).join('\n') || compAlineada.especifica,
+        achievementIndicators: officialSpecs.indicators.map(i => `• [${i.codigo}] ${i.texto}`).join('\n') || compAlineada.indicador_logro,
         contents: {
           conceptual: compAlineada.contenidos.conceptuales.map(c => `• ${c}`).join('\n'),
           procedural: compAlineada.contenidos.procedimentales.map(p => `• ${p}`).join('\n'),

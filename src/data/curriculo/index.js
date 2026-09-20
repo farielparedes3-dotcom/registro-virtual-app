@@ -1,7 +1,10 @@
+import secundaria1roOfficial from './secundaria_1ro.json';
 import secundario1roCN from './secundario_1ro_ciencias_naturaleza.json';
 import secundario1roLE from './secundario_1ro_lengua_espanola.json';
 import secundario1roMAT from './secundario_1ro_matematica.json';
 import secundario4toCS from './secundario_4to_ciencias_sociales.json';
+
+export const OFFICIAL_SECUNDARIA_1RO = secundaria1roOfficial;
 
 // Master Curriculum Registry
 export const CURRICULO_DATASETS = [
@@ -12,12 +15,61 @@ export const CURRICULO_DATASETS = [
 ];
 
 /**
+ * Get Official Curriculum Specs for 1ro de Secundaria (Ordenanza 04-2023)
+ */
+export function getOfficial1roSubjectData(subjectKey) {
+  if (!subjectKey) return null;
+
+  // Map alternative keys if needed
+  const normalizedKey = subjectKey.toLowerCase().replace(/[\s-]/g, '_');
+  const areas = OFFICIAL_SECUNDARIA_1RO.areas || {};
+
+  if (areas[normalizedKey]) {
+    return areas[normalizedKey];
+  }
+  if (areas[subjectKey]) {
+    return areas[subjectKey];
+  }
+
+  // Soft fallback matching
+  const matchingKey = Object.keys(areas).find(k => k.includes(normalizedKey) || normalizedKey.includes(k));
+  return matchingKey ? areas[matchingKey] : areas['ciencias_naturaleza'];
+}
+
+/**
+ * Filter CEs and ILs for a given subject and optional fundamental competency filter
+ */
+export function filterOfficialCompetencies1ro(subjectKey, selectedFundamental) {
+  const subjectData = getOfficial1roSubjectData(subjectKey);
+  if (!subjectData || !Array.isArray(subjectData.competencias_especificas)) {
+    return { competencies: [], indicators: [], groups: {} };
+  }
+
+  let comps = subjectData.competencias_especificas;
+
+  if (selectedFundamental && selectedFundamental !== 'TODAS') {
+    comps = comps.filter(c => 
+      c.fundamental.toLowerCase().includes(selectedFundamental.toLowerCase()) ||
+      selectedFundamental.toLowerCase().includes(c.fundamental.toLowerCase())
+    );
+  }
+
+  const indicators = comps.flatMap(c => c.indicadores_logro || []);
+  const groups = OFFICIAL_SECUNDARIA_1RO.grupos_calificacion || {};
+
+  return {
+    competencies: comps,
+    indicators,
+    groups
+  };
+}
+
+/**
  * Get available curriculum units by Grade and Subject Area
  */
 export function getCurriculumUnits(gradeStr, subjectKey) {
   if (!gradeStr || !subjectKey) return [];
 
-  // Normalize grade string (e.g. '1ro A' -> '1ro', '4AM' -> '4')
   const cleanGrade = gradeStr.trim();
   
   const foundDataset = CURRICULO_DATASETS.find(dataset => {
@@ -32,21 +84,17 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
   }
 
   // Fallback dynamic generator if exact JSON file is not pre-packaged for that specific subject/grade
-  const subjectNames = {
-    lengua_espanola: 'Lengua Española',
-    ingles: 'Inglés',
-    frances: 'Francés',
-    matematica: 'Matemática',
-    ciencias_sociales: 'Ciencias Sociales',
-    ciencias_naturaleza: 'Ciencias de la Naturaleza',
-    artistica: 'Educación Artística',
-    educacion_fisica: 'Educación Física',
-    formacion_religiosa: 'Formación Humana e Integral Religiosa',
-    salida1: 'Asignatura Optativa de Salida I',
-    salida2: 'Asignatura Optativa de Salida II'
-  };
+  const officialData = getOfficial1roSubjectData(subjectKey);
+  const subName = officialData?.nombre || subjectKey;
 
-  const subName = subjectNames[subjectKey] || subjectKey;
+  const officialComps = officialData?.competencias_especificas || [];
+  const primaryCE = officialComps[0] || {
+    fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
+    descripcion: `Comprende y aplica los principios estructurantes y procedimientos normativos de ${subName} en situaciones concretas del Nivel Secundario.`,
+    indicadores_logro: [
+      { codigo: "IL-1", texto: `Aplica con rigor técnico y juicio crítico las herramientas conceptuales y procedimentales de ${subName}.` }
+    ]
+  };
 
   return [
     {
@@ -54,9 +102,9 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
       tema: `Fundamentos Curriculares e Indagación en ${subName} (${cleanGrade})`,
       competencias_alineadas: [
         {
-          fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
-          especifica: `Comprende y aplica los principios estructurantes y procedimientos normativos de ${subName} en situaciones concretas del contexto escolar y comunitario del Nivel Secundario.`,
-          indicador_logro: `Aplica con rigor técnico y juicio crítico las herramientas conceptuales y procedimentales de ${subName}, demostrando autonomía y ética en su desempeño.`,
+          fundamental: primaryCE.fundamental,
+          especifica: primaryCE.descripcion,
+          indicador_logro: primaryCE.indicadores_logro.map(i => `[${i.codigo}] ${i.texto}`).join(' | '),
           contenidos: {
             conceptuales: [
               `Principios esenciales y conceptos articuladores de ${subName}.`,

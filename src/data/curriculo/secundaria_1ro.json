@@ -1,0 +1,413 @@
+{
+  "nivel": "Secundario - Primer Ciclo",
+  "grado": "1ro",
+  "ordenanza_evaluacion": "04-2023",
+  "grupos_calificacion": {
+    "G1": { "nombre": "Competencia Comunicativa", "competencias": ["CE1"] },
+    "G2": { "nombre": "Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas", "competencias": ["CE2", "CE3"] },
+    "G3": { "nombre": "Científica y Tecnológica / Ambiental y de la Salud", "competencias": ["CE5", "CE6"] },
+    "G4": { "nombre": "Ética y Ciudadana / Desarrollo Personal y Espiritual", "competencias": ["CE4", "CE7"] }
+  },
+  "areas": {
+    "ciencias_naturaleza": {
+      "nombre": "Ciencias de la Naturaleza",
+      "enfoque": "Ciencias de la Tierra y del Universo",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-CN1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica utilizando el lenguaje científico y tecnológico de ciencias de la tierra y el universo que implica sus ideas básicas a respuestas a preguntas y situaciones de problemas simulados y reales.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Interpreta efectivamente el Lenguaje en Ciencias de la Tierra y el Universo considerando las ideas, contenidos y verificación de hipótesis asumiendo una posición crítica ante información o proceso pseudocientífico." },
+            { "codigo": "IL-2", "texto": "Produce apropiadamente textos, ensayos, carteles, informes de laboratorio, proyectos e información sobre Ciencias de la Tierra y el Universo." },
+            { "codigo": "IL-3", "texto": "Utiliza adecuadamente símbolos, términos, ecuaciones elementales de ciencia, modelos, gráficas y convenciones en Ciencias de la Tierra y el Universo." }
+          ]
+        },
+        {
+          "codigo": "CE-CN2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Ofrece explicaciones científicas y tecnológicas a problemas y fenómenos naturales relacionados a Ciencias de la Tierra y el Universo.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Utiliza procesos básicos, sistemáticos y pertinentes en ciencia en la búsqueda de evidencias para dar respuesta a problemas o situaciones." },
+            { "codigo": "IL-5", "texto": "Aplica adecuadamente los conceptos, principios, ideas básicas y modelos presentes en problemas y fenómenos." },
+            { "codigo": "IL-6", "texto": "Formula y critica las evidencias que dan respuestas a problemas y fenómenos naturales, comprendiendo el alcance de los modelos, principios e ideas centrales." }
+          ]
+        },
+        {
+          "codigo": "CE-CN3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Aplica procedimientos científicos y tecnológicos, básicos y organizados para solucionar problemas o dar respuestas a fenómenos naturales relacionados con Ciencias de la Tierra y el Universo.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Utiliza estrategias básicas, procedimientos, técnicas y herramientas para solución de problemas o diseñar y ejecutar experimentos." },
+            { "codigo": "IL-8", "texto": "Ejecuta y prevé adecuadamente experimentos, estructuras, herramientas, sistemas y mecanismos para dar respuesta al problema o fenómeno natural." },
+            { "codigo": "IL-9", "texto": "Construye y aplica apropiadamente objetos, herramientas y estructuras proponiendo mecanismos y modelos que le permitan dar respuestas a situaciones y problemas." }
+          ]
+        },
+        {
+          "codigo": "CE-CN4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza la naturaleza de las ciencias naturales y el alcance del desarrollo tecnológico en nuestra sociedad relacionada con Ciencias de la Tierra y el Universo, sus aportes y reflexiones éticas.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Expone apropiadamente análisis comparativo de época reciente en el contexto social y el desarrollo histórico de las Ciencias de la Tierra y el Universo en producción oral y escrita." },
+            { "codigo": "IL-11", "texto": "Asume postura con adecuados argumentos sobre conflicto en decisiones éticas de las Ciencias de la Tierra y el Universo." },
+            { "codigo": "IL-12", "texto": "Presenta apropiadamente acciones, actitudes y valores científicos." }
+          ]
+        },
+        {
+          "codigo": "CE-CN5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Se cuestiona e identifica problemas y situaciones y les da explicación, utilizando ideas y procesos fundamentales de las Ciencias de la Tierra y el Universo.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Realiza proyectos escolares o prácticas experimentales apropiadamente observando la sistematización y los informes de las actividades de investigación." },
+            { "codigo": "IL-14", "texto": "Aplica apropiadamente proyectos de investigación, observando procesos básicos imprescindibles para su realización." },
+            { "codigo": "IL-15", "texto": "Formula apropiadamente sus argumentos basados en evidencias e información de investigaciones verificables." }
+          ]
+        },
+        {
+          "codigo": "CE-CN6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Actúa con responsabilidad crítica y autónoma para el cuidado de su salud y ambientales relacionadas con Ciencias de la Tierra y el Universo.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Identifica apropiadamente situaciones o acciones de riesgo para su salud y el medio ambiente." },
+            { "codigo": "IL-17", "texto": "Aplica acciones apropiadas que promuevan el cuidado de su salud, del medioambiente, a favor del desarrollo en su comunidad." },
+            { "codigo": "IL-18", "texto": "Identifica acciones proactivas idóneas a estilo de vida saludable y sostenido con el medioambiente." }
+          ]
+        },
+        {
+          "codigo": "CE-CN7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal desde las Ciencias de la Tierra y el Universo.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Identifica su proyecto de desarrollo personal con planes organizados a corto, mediano y largo plazo." },
+            { "codigo": "IL-20", "texto": "Valora profesiones y oficios de las ciencias naturales e ingenierías." },
+            { "codigo": "IL-21", "texto": "Muestra una apropiada manifestación de actitudes y valores que fortalecen su desarrollo personal." }
+          ]
+        }
+      ]
+    },
+    "lengua_espanola": {
+      "nombre": "Lengua Española",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-LE1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica con claridad en diferentes contextos, siguiendo los procesos de comprensión y producción oral y escrita, con creatividad, al emplear adecuadamente un tipo de texto (funcional o literario), las TIC, así como otros recursos y medios.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Expresa sus ideas, a través de textos, de manera oral y/o escrita, creando un ambiente cultural e interactivo, desde una perspectiva social." },
+            { "codigo": "IL-2", "texto": "Emplea la lengua haciendo uso de las diferentes funciones textuales, a través de su expresión personal, creando estructuras para forjar el conocimiento en medios diversos." },
+            { "codigo": "IL-3", "texto": "Valora los recursos de la lengua y los utiliza al responder preguntas inferenciales y críticas en la comprensión de sentidos." }
+          ]
+        },
+        {
+          "codigo": "CE-LE2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Utiliza secuencias argumentativas (hechos, ejemplos, analogías, argumentos y contraargumentos), en discursos orales y escritos, creando nuevos conocimientos a partir de procesos de comprensión y producción de textos orales y escritos abordados con temas y problemas sociales de su realidad.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Demuestra capacidad en el uso de secuencias argumentativas, en la construcción de discursos con temas de su realidad, así como del contexto local, nacional y mundial." },
+            { "codigo": "IL-5", "texto": "Reconstruye conocimientos sobre situaciones sociales, a partir de inferencias en la comprensión y producción de textos funcionales y literarios." },
+            { "codigo": "IL-6", "texto": "Expone informaciones con juicios y puntos de vista pertinentes, en la construcción de pensamiento estructurado que derivan en conclusiones lógicas, acciones y respeto de opiniones." }
+          ]
+        },
+        {
+          "codigo": "CE-LE3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Identifica problemas de su vida estudiantil o cotidiana, a través de un tipo de texto específico y apropiado, como punto de partida para su estudio y solución.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Identifica problemas o conflictos del centro educativo y comunitario, a través de un tipo de texto específico y apropiado." },
+            { "codigo": "IL-8", "texto": "Utiliza textos específicos variados que apoyan la solución de problemas, facilitando la investigación, búsqueda de información, con criterios de relevancia, pertinencia, validez y confiabilidad." },
+            { "codigo": "IL-9", "texto": "Presenta informes de investigación, que evidencian la solución de problemas en un contexto determinado." }
+          ]
+        },
+        {
+          "codigo": "CE-LE4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza textos variados de manera oral o escrita que ponen de relieve hechos y tradiciones históricas relevantes, identificando nuevas relaciones sociales al reconocer y valorar el patrimonio natural y sociocultural dominicano.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Presenta nuevas relaciones sociales, en reconocimiento y valoración de lo natural y sociocultural, haciendo uso de textos, tales como análisis, comentarios, argumentos, entre otros." },
+            { "codigo": "IL-11", "texto": "Conoce y cuestiona las prácticas sociales de ciudadanía en el entorno local y su confrontación con los valores universales, a través de textos de secuencia argumentativa." },
+            { "codigo": "IL-12", "texto": "Elabora proyectos colaborativos, utilizando textos variados y apropiados, para la construcción de una ciudadanía que busca soluciones a problemas." }
+          ]
+        },
+        {
+          "codigo": "CE-LE5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Demuestra conocimiento de procesos investigativos científicos sencillos y del uso de tecnología de acuerdo con su grado, a través de textos científicos y especialmente los de secuencia expositivo-explicativa.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Expone conocimientos sobre procesos de investigación en el campo de la ciencia, mediante textos variados y haciendo uso de medios y herramientas tecnológicas." },
+            { "codigo": "IL-14", "texto": "Analiza textos de secuencia expositivo-explicativa relacionados con investigaciones científicas sencillas, para la comprensión de problemas o situaciones de su entorno escolar, familiar, comunitario." },
+            { "codigo": "IL-15", "texto": "Redacta textos expositivo-explicativos, sobre hallazgos científicos y sociales, haciendo uso de las convenciones de lengua y su divulgación en diferentes contextos." }
+          ]
+        },
+        {
+          "codigo": "CE-LE6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Explica con claridad situaciones sobre salud, medio ambiente y la comunidad, mediante textos de diferentes secuencias y géneros, a través de herramientas tecnológicas y otros medios y recursos.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Caracteriza problemáticas relacionadas con salud y ambiente que afectan el quehacer social, haciendo uso de textos diversos y apoyándose en recursos y medios variados." },
+            { "codigo": "IL-17", "texto": "Escribe textos sobre la flora y la fauna dominicanas, la salud y el ambiente, identificando especies endémicas, preparación de alimentos sanos, problemas ambientales de actualidad, proceso de reciclaje, zonas protegidas, para una mejor salud integral, ambiente favorable al desarrollo humano." },
+            { "codigo": "IL-18", "texto": "Aplica conocimientos sobre la conservación de la salud, la naturaleza y sus ecosistemas, redactando textos variados, para su divulgación en actividades de intercomunicación dentro y fuera del aula." }
+          ]
+        },
+        {
+          "codigo": "CE-LE7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Demuestra conocimiento y comprensión de sí mismo y de los demás al expresar su percepción del mundo, a través de un tipo de texto, favorable a las situaciones y a las personas.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Utiliza un género textual para la comprensión de sí mismo y de los demás, en variadas situaciones de comunicación." },
+            { "codigo": "IL-20", "texto": "Escribe textos literarios para el cultivo de valores universales y reforzar la dimensión humanista y el desarrollo físico y espiritual." },
+            { "codigo": "IL-21", "texto": "Canaliza emociones y sentimientos mediante lecturas y escrituras reflexivas, fortaleciendo las relaciones humanas, el respeto y la dignidad de las personas." }
+          ]
+        }
+      ]
+    },
+    "matematica": {
+      "nombre": "Matemática",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-MAT1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Usa métodos orales, escritos, concretos, pictóricos, gráficos y el lenguaje matemático para describir situaciones del entorno.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Utiliza el lenguaje matemático de forma oral, escrita y gráfica en la descripción de situaciones del entorno aplicando números enteros, racionales y sus operaciones." },
+            { "codigo": "IL-2", "texto": "Formula y resuelve variedad de problemas con números enteros y con racionales, a partir de situaciones dentro y fuera de la matemática." },
+            { "codigo": "IL-3", "texto": "Expresa con sus propias palabras, en forma oral y escrita, las ideas relativas a conceptos económicos y financieros, y áreas de aplicación." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Reconoce en el trabajo matemático, razonamientos deductivos e inductivos como soporte a planteamientos y resolución de problemas.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Utiliza el lenguaje matemático de forma oral, escrita y gráfica en la descripción de situaciones del entorno aplicando números enteros, racionales y sus operaciones." },
+            { "codigo": "IL-5", "texto": "Formula y resuelve variedad de problemas con números enteros y con racionales, a partir de situaciones dentro y fuera de la matemática." },
+            { "codigo": "IL-6", "texto": "Expresa con sus propias palabras, en forma oral y escrita, las ideas relativas a conceptos económicos y financieros, y áreas de aplicación." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Utiliza un enfoque de resolución de problemas para investigar y estudiar los conocimientos matemáticos, a partir de situaciones dentro y fuera de la matemática.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Expresa a través de algún tipo de razonamiento inductivo, resultados asociados al cálculo de probabilidades de ocurrencia de eventos, en un experimento aleatorio simple." },
+            { "codigo": "IL-8", "texto": "Evalúa argumentos que estén basados en el análisis de datos y gráficos estadísticos." },
+            { "codigo": "IL-9", "texto": "Realiza, lee e interpreta representaciones gráficas de puntos, rectas y figuras geométricas en el sistema de coordenadas cartesianas." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Interpreta situaciones del contexto que impliquen la movilización de conocimientos e ideas matemáticas, respetando diferentes puntos de vista y asumiendo actitud responsable.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Representa y resuelve problemas por medio de modelos geométricos, incluidas aplicaciones del Teorema de Pitágoras." },
+            { "codigo": "IL-11", "texto": "Identifica, describe, compara y clasifica diferentes tipos de objetos geométricos en situaciones de problemas relacionados con rectas y ángulos." },
+            { "codigo": "IL-12", "texto": "Se apoya en recursos de aprendizaje concretos y digitales para la construcción de conceptos, el desarrollo de fórmulas de áreas y volúmenes, la experimentación y la demostración de proposiciones geométricas." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Utiliza herramientas tecnológicas para la resolución de problemas diversos, integrando conocimientos matemáticos en situaciones del contexto.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Visualiza, representa y clasifica cuerpos geométricos (prismas y pirámides)." },
+            { "codigo": "IL-14", "texto": "Plantea y analiza conjeturas sobre figuras tridimensionales (prismas y pirámides), la relación entre sus volúmenes y entre las áreas de sus respectivas superficies." },
+            { "codigo": "IL-15", "texto": "Resuelve problemas del contexto, dentro y fuera de la matemática, y utiliza correctamente la notación matemática para expresar las correspondientes unidades de longitud, volumen, peso y capacidad del sistema métrico decimal." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Aplica modelos matemáticos para ayudar a comprender problemas relacionados con enfermedades que afecten la salud de las personas.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Entiende y aplica equivalencias y relaciones entre medidas de longitud, de capacidad, de peso y masa en la resolución de problemas del contexto." },
+            { "codigo": "IL-17", "texto": "Expone los razonamientos matemáticos empleados como soporte en la resolución de problemas relativos al tiempo y la temperatura." },
+            { "codigo": "IL-18", "texto": "Visualiza y construye, con el instrumental apropiado y con aplicaciones matemáticas tecnológicas, rectas paralelas y perpendiculares, bisectriz de diferentes ángulos, figuras geométricas en general." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Exhibe una actitud responsable en la interpretación de situaciones en el quehacer matemático, respetando los diferentes puntos de vista de los demás.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Integra las tecnologías (aplicaciones matemáticas, simulaciones, Internet, calculadoras), como apoyo para la comprensión de las ideas matemáticas y en la resolución de problemas." },
+            { "codigo": "IL-20", "texto": "Explica, auxiliándose de gráficos y modelos matemáticos los principales problemas relacionados con enfermedades que afectan la salud de las personas." },
+            { "codigo": "IL-21", "texto": "Trabaja colaborativamente respetando los diferentes puntos de vista de los demás en la interpretación de situaciones del quehacer matemático." }
+          ]
+        }
+      ]
+    },
+    "ciencias_sociales": {
+      "nombre": "Ciencias Sociales",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-CS1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Identifica en medios impresos y digitales fuentes primarias y secundarias sobre procesos sociales, políticos, económicos, culturales, históricos y geográficos; con la finalidad de obtener informaciones confiables.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Analiza diversos textos sobre la importancia de la geografía y sus ciencias auxiliares, distintas representaciones espaciales por medio de GPS y otras herramientas." },
+            { "codigo": "IL-2", "texto": "Utiliza fuentes confiables en el estudio de los periodos históricos correspondientes a los siglos abordados, asegurando la precisión y objetividad." },
+            { "codigo": "IL-3", "texto": "Ubica en mapa los territorios conquistados, las rutas comerciales y las colonias establecidas por los países europeos durante su expansión." }
+          ]
+        },
+        {
+          "codigo": "CE-CS2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Relaciona a través de propuestas y proyectos de investigación, hechos históricos con el espacio geográfico, ocurridos en diferentes periodos, con la finalidad de desarrollar una conciencia crítica en cuanto al tiempo y el espacio.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Ubica en mapas espacios cartográficos, puntos cardinales, meridiano de Greenwich y escala geográfica de acuerdo con la forma en la que se representa." },
+            { "codigo": "IL-5", "texto": "Sintetiza hechos históricos relevantes de la historia colonial en la isla de Santo Domingo durante los siglos XV al XVIII, a través de resúmenes e informes." },
+            { "codigo": "IL-6", "texto": "Utiliza de forma crítica las fuentes de información sobre la representación de la tierra, diferencias entre mapas y plano, y espacio geográfico." }
+          ]
+        },
+        {
+          "codigo": "CE-CS3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Verifica en el levantamiento de informaciones, la existencia de un problema, con la finalidad de ubicar el contexto social en el que se produce.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Elabora gráficos y cuadros sinópticos sobre las condiciones políticas, sociales y económicas que existían en la isla de Santo Domingo durante los siglos estudiados." },
+            { "codigo": "IL-8", "texto": "Compara la incidencia del colonialismo, mercantilismo, monopolio, contrabando y capitalismo en la expansión colonial europea." },
+            { "codigo": "IL-9", "texto": "Identifica los factores que motivaron las contradicciones políticas, religiosas y económicas desarrolladas entre Alemania, Italia y el Imperio Austrohúngaro." }
+          ]
+        },
+        {
+          "codigo": "CE-CS4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Realiza propuestas que promueven la interacción sociocultural, el respeto a la Constitución y la construcción ciudadana, con la finalidad de fortalecer la democracia, la cultura de paz y el respeto a los derechos humanos.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Plantea proyectos de educación vial y tributaria en el marco de una ciudadanía responsable." },
+            { "codigo": "IL-11", "texto": "Analiza la importancia de la Constitución de República Dominicana en la garantía del Estado de derecho, el equilibrio de los poderes y la soberanía nacional." },
+            { "codigo": "IL-12", "texto": "Compara planteamientos de autores sobre derechos humanos y movimientos obreros organizados durante las revoluciones burguesas." }
+          ]
+        },
+        {
+          "codigo": "CE-CS5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Utiliza sus habilidades al analizar planteamientos y teorías científicas en sus investigaciones, tanto en el ámbito de los fenómenos naturales como sociales, con la finalidad de proporcionar explicaciones fundamentadas y rigurosas.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Analiza cómo las revoluciones burguesas, la Revolución Francesa y la independencia de las 13 colonias influyeron en los cambios políticos y sociales." },
+            { "codigo": "IL-14", "texto": "Explica las implicaciones de la teoría de la dependencia para comprender la realidad de América Latina." },
+            { "codigo": "IL-15", "texto": "Realiza análisis de diversas fuentes históricas que abordan planteamientos y teorías acerca del origen del nacionalismo." }
+          ]
+        },
+        {
+          "codigo": "CE-CS6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Analiza críticamente las acciones humanas que pueden poner en riesgo los estilos de vida saludables y el equilibrio ambiental, con la finalidad de comprender sus efectos sobre la sociedad y la naturaleza.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Elabora pinturas, collages y murales sobre el impacto del calentamiento global en el planeta Tierra." },
+            { "codigo": "IL-17", "texto": "Presenta resúmenes, informes de lecturas y propuestas sobre la preservación de los recursos naturales en el mundo y en su país." },
+            { "codigo": "IL-18", "texto": "Analiza fuentes de información confiable sobre cómo la contaminación ambiental repercute en la estabilidad social." }
+          ]
+        },
+        {
+          "codigo": "CE-CS7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Emplea relaciones armoniosas y equilibradas, con la finalidad de promover la construcción de la cultura de paz, fundamentada en el respeto hacia uno mismo y hacia los demás.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Emplea el diálogo en la solución de situaciones conflictivas surgidas por incumplimiento al derecho ciudadano, desacuerdos culturales o identidad." },
+            { "codigo": "IL-20", "texto": "Elabora líneas de tiempo sobre los acontecimientos históricos que dieron origen a la cultura de paz, así como de los personajes que han luchado por ella." },
+            { "codigo": "IL-21", "texto": "Valora la importancia de los derechos humanos en la solución de conflictos, la igualdad y la cultura de paz." }
+          ]
+        }
+      ]
+    },
+    "ingles": {
+      "nombre": "Lenguas Extranjeras - Inglés",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-ING1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Comprende y produce discursos orales y escritos breves y sencillos en idioma inglés sobre necesidades inmediatas y temas cotidianos.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Comprende frases y vocabulario de uso frecuente sobre temas de interés personal y familiar." },
+            { "codigo": "IL-2", "texto": "Responde adecuadamente a preguntas sencillas sobre rutinas e información personal." }
+          ]
+        }
+      ]
+    },
+    "frances": {
+      "nombre": "Lenguas Extranjeras - Francés",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-FRA1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Comprende y produce expresiones sencillas en francés relativas a presentaciones e intercambios personales.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Utiliza fórmulas de cortesía y presentaciones personales en contextos simulados." }
+          ]
+        }
+      ]
+    },
+    "artistica": {
+      "nombre": "Educación Artística",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-ART1",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Utiliza el lenguaje artístico para expresar ideas, sentimientos y saberes mediante diversas técnicas plásticas y musicales.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Crea composiciones artísticas utilizando elementos básicos del lenguaje visual y musical." }
+          ]
+        }
+      ]
+    },
+    "educacion_fisica": {
+      "nombre": "Educación Física",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-EF1",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Aplica sus capacidades físicas y habilidades motrices en la práctica de juegos y actividades físicas para una vida saludable.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Demuestra dominio en habilidades motrices básicas y coordinativas en actividades lúdicas." }
+          ]
+        }
+      ]
+    },
+    "formacion_religiosa": {
+      "nombre": "Formación Integral Humana y Religiosa",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-FIHR1",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Promueve la convivencia pacífica, la solidaridad y los valores humanos en la familia y la escuela.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Demuestra actitudes de respeto, empatía y resolución pacífica de desacuerdos." }
+          ]
+        }
+      ]
+    }
+  }
+}
