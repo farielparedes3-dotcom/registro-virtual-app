@@ -24086,6 +24086,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
     } catch (e) { localStorage.removeItem('s_alert_logs'); return []; }
   });
+  const [viewingReportLog, setViewingReportLog] = useState(null);
   const [folderExplorerLevel, setFolderExplorerLevel] = useState('root'); // 'root' | 'grade' | 'period' | 'student'
   const [folderExplorerGrade, setFolderExplorerGrade] = useState('');
   const [folderExplorerPeriod, setFolderExplorerPeriod] = useState('P1');
