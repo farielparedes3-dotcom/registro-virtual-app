@@ -8,6 +8,7 @@ import { dbService } from './db';
 import { authService } from './services/authService';
 import SignatureModal from './components/SignatureModal';
 import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup, importFullDatabaseBackup } from './utils/dbBackup';
+import { extractTextFromPdf } from './services/pdfExtractor';
 
 // Global configuration
 const DEFAULT_SUBJECTS = {
@@ -24103,49 +24104,17 @@ export default function App() {
   const [isExtractingPdf, setIsExtractingPdf] = useState(false);
 
   const extractTextFromPdfFile = async (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const buffer = e.target.result;
-          const textDecoder = new TextDecoder('utf-8');
-          const rawString = textDecoder.decode(new Uint8Array(buffer));
-
-          const textBlocks = [];
-          const btMatches = rawString.match(/\/Text[\s\S]*?ET|BT[\s\S]*?ET/g) || [];
-
-          for (const block of btMatches) {
-            const stringMatches = block.match(/\(([^()]*)\)\s*T[jJ]/g) || [];
-            for (const sm of stringMatches) {
-              const inner = sm.replace(/^\(/, '').replace(/\)\s*T[jJ]$/, '').trim();
-              if (inner && inner.length > 1) textBlocks.push(inner);
-            }
-          }
-
-          let resultText = textBlocks.join(' ').replace(/\\\(|\\\)/g, '');
-
-          if (!resultText || resultText.trim().length < 40) {
-            const plainLines = rawString.replace(/[^\x20-\x7E\n\u00C0-\u024F]/g, ' ')
-              .split('\n')
-              .filter(line => line.trim().length > 15 && !line.includes('obj') && !line.includes('endobj') && !line.includes('stream') && !line.includes('PDF'))
-              .map(l => l.trim());
-            resultText = plainLines.join('\n');
-          }
-
-          if (!resultText || resultText.trim().length === 0) {
-            resultText = `SECUENCIA DIDÁCTICA OFICIAL EXTRAÍDA DE "${file.name}":\n` +
-              `• Desarrollo de actividades, estrategias socioformativas, lecturas e instrumentos de evaluación incorporados desde el documento PDF digital.`;
-          }
-
-          resolve(resultText.trim());
-        } catch (err) {
-          console.warn('PDF text parse fallback:', err);
-          resolve(`Secuencia Didáctica Oficial extraída del documento PDF "${file.name}".`);
-        }
-      };
-      reader.onerror = (err) => reject(err);
-      reader.readAsArrayBuffer(file);
-    });
+    try {
+      const extractedText = await extractTextFromPdf(file);
+      if (extractedText && extractedText.trim().length > 0) {
+        return extractedText.trim();
+      }
+      return `SECUENCIA DIDÁCTICA OFICIAL EXTRAÍDA DE "${file.name}":\n` +
+        `• Desarrollo de actividades, estrategias socioformativas, lecturas e instrumentos de evaluación incorporados desde el documento PDF digital.`;
+    } catch (err) {
+      console.warn('PDF text parse fallback:', err);
+      return `Secuencia Didáctica Oficial extraída del documento PDF "${file.name}".`;
+    }
   };
 
   const handlePdfFileSelected = async (file) => {
