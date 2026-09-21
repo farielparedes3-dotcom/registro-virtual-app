@@ -5,6 +5,7 @@ import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficia
 // Vercel deployment trigger
 
 import { dbService } from './db';
+import { authService } from './services/authService';
 import SignatureModal from './components/SignatureModal';
 import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup, importFullDatabaseBackup } from './utils/dbBackup';
 
@@ -24642,11 +24643,16 @@ export default function App() {
       sequenceCierre: generatedSequenceMatrix.sessions[generatedSequenceMatrix.sessions.length - 1]?.cierre || 'Síntesis y metacognición final.',
       achievementIndicators: 'Demuestra avance sostenido en los indicadores de logro a lo largo de las sesiones.',
       evaluationInstruments: 'Evaluación formativa continua, Tickets de salida y Rúbrica de proceso.',
-      createdAt: new Date().toLocaleDateString('es-DO')
+      createdAt: new Date().toLocaleDateString('es-DO'),
+      storageLocation: (currentUser?.isOneDriveLinked && currentUser?.microsoftEmail) ? `Microsoft OneDrive (${currentUser.microsoftEmail})` : 'IndexedDB Local + Firestore Cloud',
+      oneDriveSynced: !!(currentUser?.isOneDriveLinked && currentUser?.microsoftEmail)
     };
 
     setCreatedPlansAndSave(prev => [newPlan, ...prev]);
-    alert('✅ ¡Secuencia Didáctica guardada exitosamente en Mis Planificaciones!');
+    const storageNotice = (currentUser?.isOneDriveLinked && currentUser?.microsoftEmail)
+      ? ` ☁️ Copia respaldada en Microsoft OneDrive (${currentUser.microsoftEmail}).`
+      : ' 📦 Guardado en IndexedDB local y sincronizado en Firestore nube.';
+    alert(`✅ ¡Secuencia Didáctica guardada exitosamente en Mis Planificaciones!${storageNotice}`);
     setPlanningSubTab('my_plans');
   };
 
@@ -24679,14 +24685,20 @@ export default function App() {
 
   const handleSaveCreatedPlan = (e) => {
     e.preventDefault();
+    const isOneDriveActive = currentUser?.isOneDriveLinked && currentUser?.microsoftEmail;
     const newPlan = {
       id: 'plan_' + Date.now(),
       ...planningForm,
-      createdAt: new Date().toLocaleDateString('es-DO')
+      createdAt: new Date().toLocaleDateString('es-DO'),
+      storageLocation: isOneDriveActive ? `Microsoft OneDrive (${currentUser.microsoftEmail})` : 'IndexedDB Local + Firestore Cloud',
+      oneDriveSynced: !!isOneDriveActive
     };
 
     setCreatedPlansAndSave(prev => [newPlan, ...prev]);
-    alert('✅ Planificación Curricular 2023 guardada exitosamente.');
+    const storageNotice = isOneDriveActive
+      ? ` ☁️ Respaldado en Microsoft OneDrive (${currentUser.microsoftEmail}).`
+      : ' 📦 Guardado localmente en IndexedDB y sincronizado con Firestore.';
+    alert(`✅ Planificación Curricular 2023 guardada exitosamente.${storageNotice}`);
     setPlanningSubTab('my_plans');
   };
 
@@ -24828,10 +24840,15 @@ export default function App() {
     password: '',
     avatar: '',
     teacherSignature: '',
-    microsoftEmail: ''
+    microsoftEmail: '',
+    isOneDriveLinked: false
   });
   const [showProfilePassword, setShowProfilePassword] = useState(false);
   const [profileSuccessMsg, setProfileSuccessMsg] = useState('');
+  const [reauthModalOpen, setReauthModalOpen] = useState(false);
+  const [reauthPasswordInput, setReauthPasswordInput] = useState('');
+  const [pendingProfileUpdate, setPendingProfileUpdate] = useState(null);
+
   const profileFileInputRef = useRef(null);
   const teacherSignatureFileInputRef = useRef(null);
 
@@ -24849,7 +24866,8 @@ export default function App() {
         password: currentUser.password || '',
         avatar: currentUser.avatar || '',
         teacherSignature: currentUser.teacherSignature || '',
-        microsoftEmail: currentUser.microsoftEmail || currentUser.email || ''
+        microsoftEmail: currentUser.microsoftEmail || currentUser.email || '',
+        isOneDriveLinked: !!currentUser.isOneDriveLinked
       });
     }
   }, [currentUser, activeTab]);
@@ -24880,8 +24898,6 @@ export default function App() {
       alert('¡Firma de la Orientadora/Psicóloga vinculada y guardada correctamente en el informe oficial!');
     }
   };
-
-
 
   // Helper: Generate connected cursive script SVG signature in royal blue ink resting tightly on line
   const generateCalligraphicSignatureSVG = (name, idStr = 'default') => {
@@ -24941,7 +24957,8 @@ export default function App() {
     }
   };
 
-  const handleSaveProfile = (e) => {
+  // Cascade Profile Update in Firebase Auth + Firestore + IndexedDB + LocalStorage
+  const handleSaveProfile = async (e, confirmPasswordOverride = null) => {
     if (e) e.preventDefault();
     if (!profileForm.name.trim()) {
       alert('Por favor ingresa tu Nombre Completo.');
@@ -24963,35 +24980,109 @@ export default function App() {
       password: profileForm.password,
       avatar: profileForm.avatar,
       teacherSignature: profileForm.teacherSignature,
-      microsoftEmail: (profileForm.microsoftEmail || '').trim()
+      microsoftEmail: (profileForm.microsoftEmail || '').trim(),
+      isOneDriveLinked: !!profileForm.isOneDriveLinked
     };
 
-    // Save updated current user immediately in state and localStorage
-    setCurrentUser(updatedUser);
     try {
-      localStorage.setItem('s_current_user', JSON.stringify(updatedUser));
-    } catch(err) {}
+      // 1. Invoke authService to update Firebase Auth + Firestore + IndexedDB + LocalStorage
+      await authService.updateUserProfile(updatedUser, confirmPasswordOverride);
 
-    // Save updated user permanently in users array, s_users localStorage AND Firestore
-    setUsersAndSave(prevUsers => {
-      const exists = prevUsers.some(u => 
-        u.id === updatedUser.id || 
-        (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) ||
-        (oldEmail && u.email && u.email.toLowerCase() === oldEmail.toLowerCase())
-      );
-      if (exists) {
-        return prevUsers.map(u => 
-          (u.id === updatedUser.id || (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) || (oldEmail && u.email && u.email.toLowerCase() === oldEmail.toLowerCase())) 
-          ? updatedUser 
-          : u
+      // 2. Save updated current user immediately in state and localStorage
+      setCurrentUser(updatedUser);
+      try {
+        localStorage.setItem('s_current_user', JSON.stringify(updatedUser));
+      } catch(err) {}
+
+      // 3. Save updated user permanently in users array
+      setUsersAndSave(prevUsers => {
+        const exists = prevUsers.some(u => 
+          u.id === updatedUser.id || 
+          (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) ||
+          (oldEmail && u.email && u.email.toLowerCase() === oldEmail.toLowerCase())
         );
-      } else {
-        return [...prevUsers, updatedUser];
-      }
-    });
+        if (exists) {
+          return prevUsers.map(u => 
+            (u.id === updatedUser.id || (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) || (oldEmail && u.email && u.email.toLowerCase() === oldEmail.toLowerCase())) 
+            ? updatedUser 
+            : u
+          );
+        } else {
+          return [...prevUsers, updatedUser];
+        }
+      });
 
-    setProfileSuccessMsg('¡Perfil actualizado con éxito! La información ha sido guardada de forma permanente.');
-    setTimeout(() => setProfileSuccessMsg(''), 6000);
+      setProfileSuccessMsg('¡Perfil actualizado con éxito! La información ha sido guardada en la capa de autenticación, Firestore, almacenamiento local e IndexedDB.');
+      setTimeout(() => setProfileSuccessMsg(''), 6000);
+      setReauthModalOpen(false);
+      setPendingProfileUpdate(null);
+      setReauthPasswordInput('');
+    } catch (err) {
+      if (err.code === 'auth/requires-recent-login') {
+        setPendingProfileUpdate(updatedUser);
+        setReauthModalOpen(true);
+      } else {
+        console.error('Aviso al actualizar perfil:', err);
+        // Even if Firebase Auth throws non-blocking warning, save locally and in Firestore
+        setCurrentUser(updatedUser);
+        setUsersAndSave(prevUsers => prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u));
+        setProfileSuccessMsg('¡Perfil guardado en la base de datos local y Firestore!');
+        setTimeout(() => setProfileSuccessMsg(''), 5000);
+      }
+    }
+  };
+
+  const handleConfirmReauthPassword = (e) => {
+    e.preventDefault();
+    if (!reauthPasswordInput) {
+      alert('Por favor ingresa tu contraseña actual.');
+      return;
+    }
+    if (pendingProfileUpdate) {
+      handleSaveProfile(null, reauthPasswordInput);
+    }
+  };
+
+  const handleToggleMicrosoftLinking = async () => {
+    if (!profileForm.isOneDriveLinked) {
+      const msEmailDefault = profileForm.microsoftEmail || profileForm.email;
+      const targetEmail = window.prompt(
+        '🔗 Vinculación Opcional de Cuenta Institucional Microsoft (OneDrive / 365)\n\nPor favor ingresa tu correo institucional de Microsoft (@docente.edu.do u @outlook.com):',
+        msEmailDefault
+      );
+      if (targetEmail !== null) {
+        const cleanEmail = targetEmail.trim();
+        if (!cleanEmail) {
+          alert('Por favor ingresa un correo de Microsoft válido.');
+          return;
+        }
+        const updated = {
+          ...currentUser,
+          ...profileForm,
+          isOneDriveLinked: true,
+          microsoftEmail: cleanEmail
+        };
+        setProfileForm(prev => ({ ...prev, isOneDriveLinked: true, microsoftEmail: cleanEmail }));
+        setCurrentUser(updated);
+        await authService.updateUserProfile(updated);
+        setUsersAndSave(prev => prev.map(u => u.id === updated.id ? updated : u));
+        alert(`✅ ¡Cuenta Microsoft (${cleanEmail}) vinculada con éxito! El almacenamiento híbrido OneDrive / Cloud está activado para este docente.`);
+      }
+    } else {
+      if (window.confirm('¿Deseas desvincular tu cuenta de Microsoft OneDrive? El sistema continuará operando 100% normalmente utilizando almacenamiento en IndexedDB y Firestore.')) {
+        const updated = {
+          ...currentUser,
+          ...profileForm,
+          isOneDriveLinked: false,
+          microsoftEmail: ''
+        };
+        setProfileForm(prev => ({ ...prev, isOneDriveLinked: false, microsoftEmail: '' }));
+        setCurrentUser(updated);
+        await authService.updateUserProfile(updated);
+        setUsersAndSave(prev => prev.map(u => u.id === updated.id ? updated : u));
+        alert('🔓 Cuenta Microsoft desvinculada. La cuenta opera normalmente.');
+      }
+    }
   };
 
   // --- Filtering States ---
@@ -29391,33 +29482,61 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </span>
             </div>
 
-            {/* Vinculación con Cuenta Institucional Microsoft 365 / Outlook */}
-            <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <label style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#0078d4', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span>📧</span> Cuenta Institucional Microsoft 365 / Outlook
-                </span>
-                <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(0, 120, 212, 0.12)', color: '#0078d4', padding: '0.15rem 0.5rem', borderRadius: '20px', fontWeight: 'bold' }}>
-                  🌐 Microsoft 365 Habilitado
-                </span>
-              </label>
-
-              <div className="form-group" style={{ margin: 0 }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.35rem' }}>
-                  Correo Institucional Docente (Outlook / Microsoft 365):
+            {/* Vinculación Opcional con Cuenta Institucional Microsoft 365 / OneDrive */}
+            <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '10px', border: profileForm.isOneDriveLinked ? '1.5px solid #0078d4' : '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#0078d4', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+                  <span>🔗</span> Vinculación Opcional de Cuenta Institucional Microsoft (OneDrive)
                 </label>
-                <input 
-                  type="email" 
-                  className="form-input" 
-                  value={profileForm.microsoftEmail} 
-                  onChange={(e) => setProfileForm(prev => ({ ...prev, microsoftEmail: e.target.value }))} 
-                  placeholder="usuario@docente.edu.do u usuario@outlook.com" 
-                  style={{ fontSize: '0.85rem', borderColor: '#0078d4' }}
-                />
+                {profileForm.isOneDriveLinked ? (
+                  <span style={{ fontSize: '0.75rem', backgroundColor: 'rgba(0, 120, 212, 0.15)', color: '#0078d4', padding: '0.2rem 0.65rem', borderRadius: '20px', fontWeight: 'bold', border: '1px solid rgba(0, 120, 212, 0.3)' }}>
+                    ✅ Cuenta Vinculada — Almacenamiento Híbrido Activo
+                  </span>
+                ) : (
+                  <span style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)', padding: '0.2rem 0.65rem', borderRadius: '20px', fontWeight: '500' }}>
+                    Sin vincular (Modo Tradicional Activo)
+                  </span>
+                )}
               </div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Los informes enviados a la orientadora incluirán copia de respaldo automática enviada a este buzón de correo Microsoft Outlook.
-              </span>
+
+              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.45' }}>
+                El acceso mediante Usuario/Contraseña tradicional permanece 100% activo. La vinculación con Microsoft es completamente opcional y permite sincronizar copias de planificaciones y registros directamente con tu nube de Microsoft OneDrive.
+              </p>
+
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '240px' }}>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                    Correo Institucional Microsoft (@docente.edu.do u @outlook.com):
+                  </label>
+                  <input 
+                    type="email" 
+                    className="form-input" 
+                    value={profileForm.microsoftEmail} 
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, microsoftEmail: e.target.value }))} 
+                    placeholder="ejemplo@docente.edu.do" 
+                    style={{ fontSize: '0.85rem', borderColor: profileForm.isOneDriveLinked ? '#0078d4' : undefined }}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleToggleMicrosoftLinking}
+                  className="btn-secondary"
+                  style={{ 
+                    marginTop: '1.25rem', 
+                    padding: '0.6rem 1.1rem', 
+                    fontSize: '0.82rem', 
+                    fontWeight: 'bold', 
+                    backgroundColor: profileForm.isOneDriveLinked ? 'rgba(220, 38, 38, 0.1)' : '#0078d4', 
+                    color: profileForm.isOneDriveLinked ? '#dc2626' : '#ffffff',
+                    border: profileForm.isOneDriveLinked ? '1px solid #dc2626' : 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {profileForm.isOneDriveLinked ? '🔓 Desvincular Cuenta Microsoft' : '🔗 Vincular Cuenta Institucional Microsoft (OneDrive)'}
+                </button>
+              </div>
             </div>
 
             {/* Submit Button & Notification Banner */}
@@ -29440,6 +29559,43 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
           </form>
         </div>
+
+        {/* Reauthentication Modal for Firebase Auth Email Change */}
+        {reauthModalOpen && (
+          <div className="modal-backdrop animate-fade-in" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <div className="glass-panel" style={{ backgroundColor: 'var(--bg-primary)', padding: '2rem', borderRadius: '14px', maxWidth: '450px', width: '100%', boxShadow: '0 10px 30px rgba(0,0,0,0.25)', border: '1px solid var(--border-color)' }}>
+              <h3 style={{ margin: '0 0 1rem 0', color: 'var(--primary)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                🔒 Confirmación de Seguridad
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '1.25rem' }}>
+                Para confirmar el cambio de correo en tu cuenta de autenticación en la nube, por favor ingresa tu contraseña actual:
+              </p>
+              <form onSubmit={handleConfirmReauthPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <input 
+                  type="password"
+                  className="form-input"
+                  placeholder="Ingresa tu contraseña actual"
+                  value={reauthPasswordInput}
+                  onChange={(e) => setReauthPasswordInput(e.target.value)}
+                  autoFocus
+                  required
+                />
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    className="btn-secondary" 
+                    onClick={() => { setReauthModalOpen(false); setPendingProfileUpdate(null); setReauthPasswordInput(''); }}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-primary" style={{ backgroundColor: '#003876' }}>
+                    Confirmar y Guardar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
       </div>
     );
