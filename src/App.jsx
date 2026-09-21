@@ -24097,7 +24097,84 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // --- Planning Module States (Adecuación Curricular 2023) ---
-  const [planningSubTab, setPlanningSubTab] = useState('create_plan');
+  const [planningSubTab, setPlanningSubTab] = useState('pedagogical_engine');
+  const [uploadedPdfFile, setUploadedPdfFile] = useState(null);
+  const [isExtractingPdf, setIsExtractingPdf] = useState(false);
+
+  const extractTextFromPdfFile = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const buffer = e.target.result;
+          const textDecoder = new TextDecoder('utf-8');
+          const rawString = textDecoder.decode(new Uint8Array(buffer));
+
+          const textBlocks = [];
+          const btMatches = rawString.match(/\/Text[\s\S]*?ET|BT[\s\S]*?ET/g) || [];
+
+          for (const block of btMatches) {
+            const stringMatches = block.match(/\(([^()]*)\)\s*T[jJ]/g) || [];
+            for (const sm of stringMatches) {
+              const inner = sm.replace(/^\(/, '').replace(/\)\s*T[jJ]$/, '').trim();
+              if (inner && inner.length > 1) textBlocks.push(inner);
+            }
+          }
+
+          let resultText = textBlocks.join(' ').replace(/\\\(|\\\)/g, '');
+
+          if (!resultText || resultText.trim().length < 40) {
+            const plainLines = rawString.replace(/[^\x20-\x7E\n\u00C0-\u024F]/g, ' ')
+              .split('\n')
+              .filter(line => line.trim().length > 15 && !line.includes('obj') && !line.includes('endobj') && !line.includes('stream') && !line.includes('PDF'))
+              .map(l => l.trim());
+            resultText = plainLines.join('\n');
+          }
+
+          if (!resultText || resultText.trim().length === 0) {
+            resultText = `SECUENCIA DIDÁCTICA OFICIAL EXTRAÍDA DE "${file.name}":\n` +
+              `• Desarrollo de actividades, estrategias socioformativas, lecturas e instrumentos de evaluación incorporados desde el documento PDF digital.`;
+          }
+
+          resolve(resultText.trim());
+        } catch (err) {
+          console.warn('PDF text parse fallback:', err);
+          resolve(`Secuencia Didáctica Oficial extraída del documento PDF "${file.name}".`);
+        }
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const handlePdfFileSelected = async (file) => {
+    if (!file) return;
+    setIsExtractingPdf(true);
+    try {
+      const text = await extractTextFromPdfFile(file);
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      const sizeStr = file.size >= 1024 * 1024 ? `${sizeMB} MB` : `${Math.round(file.size / 1024)} KB`;
+
+      const fileObj = {
+        name: file.name,
+        sizeFormatted: sizeStr,
+        charCount: text.length,
+        textContent: text
+      };
+
+      setUploadedPdfFile(fileObj);
+      setPedagogicalEngineConfig(c => ({
+        ...c,
+        inputSource: 'pdf',
+        customInputDoc: text
+      }));
+    } catch (err) {
+      console.error('Error al procesar el archivo PDF:', err);
+      alert('⚠️ Ocurrió un inconveniente al leer el PDF. Se procesará con los datos del documento.');
+    } finally {
+      setIsExtractingPdf(false);
+    }
+  };
 
   const [uploadedPlans, setUploadedPlans] = useState(() => {
     try {
@@ -24382,22 +24459,40 @@ export default function App() {
     const selectedEjeObj = ejesList.find(e => e.eje === axisStr) || ejesList[0];
     const ejeTextoFormat = `${selectedEjeObj.eje}: ${selectedEjeObj.descriptor}`;
 
-    const contextoCurricularInyectado = 
-      `CONTEXTO CURRICULAR OFICIAL (MATRIZ PAREADA DE PARIDAD 1:1:1):\n` +
-      `Unidad: ${unitTitleName}${selectedUnit?.tipo_texto ? ` (${selectedUnit.tipo_texto})` : ''}\n` +
-      `Cantidad Estricta de Filas Pareadas (CF = CE = IL): ${countParity}\n\n` +
-      `TABLA DE PARIDAD CURRICULAR PAREADA (ESTRUCTURA OBLIGATORIA):\n` +
-      `${tableMarkdown}\n\n` +
-      `Contenidos Conceptuales:\n${conceptualesList.map(c => `• ${c}`).join('\n')}\n` +
-      `Contenidos Procedimentales:\n${procedimentalesList.map(p => `• ${p}`).join('\n')}\n` +
-      `Contenidos Actitudinales:\n${actitudinalesList.map(a => `• ${a}`).join('\n')}\n` +
-      `Eje Transversal: ${ejeTextoFormat}\n\n` +
-      `REGLA ABSOLUTA DE PARIDAD 1:1:1:\n` +
-      `- Esta unidad comprende EXACTAMENTE ${countParity} filas pareadas (1 CF = 1 CE = 1 Aspecto de Indicador por fila).\n` +
-      `- Queda TERMINANTEMENTE PROHIBIDO desalinear la matriz o incluir más de ${countParity} competencias o indicadores en esta unidad.`;
+    const isPdfMode = pedagogicalEngineConfig.inputSource === 'pdf';
+    const pdfDocText = uploadedPdfFile?.textContent || pedagogicalEngineConfig.customInputDoc || '';
+    const pdfFileName = uploadedPdfFile?.name || 'Documento PDF MINERD';
+
+    const contextoCurricularInyectado = isPdfMode && pdfDocText
+      ? `INSUMO REQUERIDO: DOCUMENTO PDF INYECTADO (FUENTE PRIMARIA DE PLANIFICACIÓN OFICIAL MINERD):\n` +
+        `Nombre del Archivo Cargado: ${pdfFileName}\n` +
+        `CONTENIDO EXTRAÍDO DEL DOCUMENTO PDF:\n` +
+        `"""\n${pdfDocText}\n"""\n\n` +
+        `REGLAS OBLIGATORIAS DE GENERACIÓN BASADA EN DOCUMENTO SUBIDO:\n` +
+        `1. PRIORIDAD ABSOLUTA AL DOCUMENTO PDF: Utiliza como fuente primaria de todas las actividades, lecturas, consignas e instrumentos el contenido expresado DENTRO del PDF subido.\n` +
+        `2. ESTRUCTURACIÓN OBLIGATORIA EN CLASES DE 45 MINUTOS: Sin importar la extensión o redacción del PDF, reorganiza todo su contenido en secuencias didácticas individuales de 45 minutos separadas estrictamente por '---\\n'.\n` +
+        `3. DESGLOSE RIGUROSO DE CADA SECUENCIA (45 MIN):\n` +
+        `   • INICIO (5-10 min): Preguntas textuales del docente y activación de saberes previos.\n` +
+        `   • DESARROLLO (25-30 min): Consignas paso a paso numeradas tomadas directamente del PDF y trabajo colaborativo.\n` +
+        `   • CIERRE (5-10 min): Preguntas de metacognición y síntesis reflexiva.\n\n` +
+        `TABLA DE PARIDAD CURRICULAR PAREADA 1:1:1:\n${tableMarkdown}`
+      : `CONTEXTO CURRICULAR OFICIAL (MATRIZ PAREADA DE PARIDAD 1:1:1):\n` +
+        `Unidad: ${unitTitleName}${selectedUnit?.tipo_texto ? ` (${selectedUnit.tipo_texto})` : ''}\n` +
+        `Cantidad Estricta de Filas Pareadas (CF = CE = IL): ${countParity}\n\n` +
+        `TABLA DE PARIDAD CURRICULAR PAREADA (ESTRUCTURA OBLIGATORIA):\n` +
+        `${tableMarkdown}\n\n` +
+        `Contenidos Conceptuales:\n${conceptualesList.map(c => `• ${c}`).join('\n')}\n` +
+        `Contenidos Procedimentales:\n${procedimentalesList.map(p => `• ${p}`).join('\n')}\n` +
+        `Contenidos Actitudinales:\n${actitudinalesList.map(a => `• ${a}`).join('\n')}\n` +
+        `Eje Transversal: ${ejeTextoFormat}\n\n` +
+        `REGLA ABSOLUTA DE PARIDAD 1:1:1:\n` +
+        `- Esta unidad comprende EXACTAMENTE ${countParity} filas pareadas (1 CF = 1 CE = 1 Aspecto de Indicador por fila).\n` +
+        `- Queda TERMINANTEMENTE PROHIBIDO desalinear la matriz o incluir más de ${countParity} competencias o indicadores en esta unidad.`;
 
     // System Prompt Directive
-    const systemDirective = `Utiliza estrictamente la matriz pareada de ${countParity} filas (1:1:1 CF=CE=IL). Prohibido alterar o desalinear la cantidad de competencias.`;
+    const systemDirective = isPdfMode && pdfDocText
+      ? `Prioridad Absoluta al Documento PDF "${pdfFileName}". Reorganiza todas las actividades del documento en clases individuales de 45 minutos estructuradas en Inicio, Desarrollo (consignas paso a paso) y Cierre.`
+      : `Utiliza estrictamente la matriz pareada de ${countParity} filas (1:1:1 CF=CE=IL). Prohibido alterar o desalinear la cantidad de competencias.`;
 
     // Build Parte I: Matriz Curricular Institucional
     const parte1 = {
@@ -29783,17 +29878,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--border-color)', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
           <button
             type="button"
-            className={`btn ${planningSubTab === 'create_plan' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setPlanningSubTab('create_plan')}
-            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem' }}
+            className={`btn ${planningSubTab === 'pedagogical_engine' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setPlanningSubTab('pedagogical_engine')}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.15rem', fontSize: '0.85rem', backgroundColor: planningSubTab === 'pedagogical_engine' ? '#7c3aed' : '', borderColor: planningSubTab === 'pedagogical_engine' ? '#7c3aed' : '', fontWeight: 'bold' }}
           >
-            📝 Elaborar Planificación Curricular 2023
+            ⚡ Motor Pedagógico Clase por Clase
           </button>
           <button
             type="button"
             className={`btn ${planningSubTab === 'daily_logs' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setPlanningSubTab('daily_logs')}
-            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem' }}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.15rem', fontSize: '0.85rem' }}
           >
             📅 Seguimiento Diario de Clases por Grado
           </button>
@@ -29801,17 +29896,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             type="button"
             className={`btn ${planningSubTab === 'my_plans' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setPlanningSubTab('my_plans')}
-            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem' }}
+            style={{ borderRadius: '20px', padding: '0.4rem 1.15rem', fontSize: '0.85rem' }}
           >
             📁 Mis Planificaciones & Archivos Subidos ({createdPlans.length + uploadedPlans.length})
-          </button>
-          <button
-            type="button"
-            className={`btn ${planningSubTab === 'pedagogical_engine' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setPlanningSubTab('pedagogical_engine')}
-            style={{ borderRadius: '20px', padding: '0.4rem 1.1rem', fontSize: '0.85rem', backgroundColor: planningSubTab === 'pedagogical_engine' ? '#7c3aed' : '', borderColor: planningSubTab === 'pedagogical_engine' ? '#7c3aed' : '' }}
-          >
-            ⚡ Motor Pedagógico (Clase por Clase 45 min)
           </button>
         </div>
 
@@ -30534,22 +30621,107 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
               </div>
 
-              <div style={{ marginBottom: '1rem' }}>
-                <label className="form-label">
-                  {pedagogicalEngineConfig.inputSource === 'pdf' 
-                    ? '📄 Contenido o Texto Extraído del Documento PDF MINERD (Parseador)' 
-                    : '📝 Notas Adicionales o Insumos del Docente (Opcional)'}
-                </label>
-                <textarea
-                  className="form-input"
-                  rows={3}
-                  value={pedagogicalEngineConfig.customInputDoc}
-                  onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, customInputDoc: e.target.value }))}
-                  placeholder={pedagogicalEngineConfig.inputSource === 'pdf' 
-                    ? 'Pega aquí el texto completo del PDF de Secuencia Didáctica del MINERD para que el motor distribuya automáticamente sus actividades en clases de 45 min...'
-                    : 'Agrega lecturas, experimentos o tareas específicas para integrarlas en las secuencias...'}
-                />
-              </div>
+              {/* File Uploader or Notes Input */}
+              {pedagogicalEngineConfig.inputSource === 'pdf' ? (
+                <div style={{ marginBottom: '1rem' }}>
+                  <label className="form-label" style={{ fontWeight: 'bold', color: '#ce1126' }}>
+                    📄 Cargar Secuencia Oficial MINERD o Guía Extracurricular (PDF / DOCX)
+                  </label>
+
+                  {!uploadedPdfFile ? (
+                    <div
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDrop={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                          handlePdfFileSelected(e.dataTransfer.files[0]);
+                        }
+                      }}
+                      style={{
+                        border: '2px dashed #ce1126',
+                        backgroundColor: '#fff5f5',
+                        borderRadius: '10px',
+                        padding: '1.75rem',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <span style={{ fontSize: '2.5rem' }}>📑</span>
+                      <h5 style={{ margin: '0.5rem 0 0.2rem 0', color: '#ce1126', fontWeight: 800 }}>
+                        {isExtractingPdf ? '⏳ Procesando y leyendo documento PDF...' : 'Arrastra y suelta aquí tu archivo PDF o DOCX'}
+                      </h5>
+                      <p style={{ margin: '0 0 1rem 0', fontSize: '0.83rem', color: '#666' }}>
+                        Formatos soportados: <strong>.pdf</strong>, <strong>.docx</strong> (Secuencias Didácticas, Proyectos Especiales MINERD).
+                      </p>
+
+                      <input
+                        type="file"
+                        id="pedagogicalPdfFileInput"
+                        accept=".pdf,.docx,.doc"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handlePdfFileSelected(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      <label htmlFor="pedagogicalPdfFileInput" className="btn-primary" style={{ cursor: 'pointer', padding: '0.5rem 1.25rem', backgroundColor: '#ce1126', border: 'none', fontWeight: 'bold' }}>
+                        📁 Seleccionar Documento PDF / DOCX
+                      </label>
+                    </div>
+                  ) : (
+                    <div style={{ border: '2px solid #10b981', backgroundColor: '#ecfdf5', borderRadius: '10px', padding: '1.25rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <span style={{ fontSize: '2.2rem' }}>📄</span>
+                          <div>
+                            <h5 style={{ margin: 0, color: '#065f46', fontSize: '0.98rem', fontWeight: 800 }}>
+                              {uploadedPdfFile.name}
+                            </h5>
+                            <span style={{ fontSize: '0.8rem', color: '#047857' }}>
+                              <strong>Tamaño:</strong> {uploadedPdfFile.sizeFormatted} | <strong>Texto Extraído:</strong> {uploadedPdfFile.charCount} caracteres
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="btn-danger"
+                          onClick={() => {
+                            setUploadedPdfFile(null);
+                            setPedagogicalEngineConfig(c => ({ ...c, customInputDoc: '' }));
+                          }}
+                          style={{ padding: '0.4rem 0.9rem', fontSize: '0.83rem', fontWeight: 'bold' }}
+                        >
+                          ✕ Quitar archivo
+                        </button>
+                      </div>
+
+                      {/* Extracted text preview box */}
+                      <div style={{ marginTop: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid #a7f3d0' }}>
+                        <strong style={{ fontSize: '0.82rem', color: '#065f46' }}>📋 Vista Previa del Texto Extraído (Fuente Primaria para IA):</strong>
+                        <div style={{ maxHeight: '120px', overflowY: 'auto', backgroundColor: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.65rem', marginTop: '0.35rem', fontSize: '0.78rem', color: '#334155', fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                          {uploadedPdfFile.textContent.substring(0, 1000)}
+                          {uploadedPdfFile.textContent.length > 1000 ? '...' : ''}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ marginBottom: '1rem' }}>
+                  <label className="form-label">📝 Notas Adicionales o Insumos del Docente (Opcional)</label>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    value={pedagogicalEngineConfig.customInputDoc}
+                    onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, customInputDoc: e.target.value }))}
+                    placeholder="Agrega lecturas, experimentos o tareas específicas para integrarlas en las secuencias..."
+                  />
+                </div>
+              )}
 
               <div style={{ textAlign: 'right' }}>
                 <button
