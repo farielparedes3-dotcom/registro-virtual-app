@@ -367,3 +367,33 @@ export function getUnitById(gradeStr, subjectKey, unitId) {
   const units = getCurriculumUnits(gradeStr, subjectKey);
   return units.find(u => u.id_unidad === unitId) || units[0] || null;
 }
+
+/**
+ * PRE-RENDER GUARDRAIL: Strict 1:1:1 Parity Validation (CF.length === CE.length === IL.length)
+ * Guarantees that every row in the curriculum matrix has exactly 1 Fundamental Competency,
+ * 1 Specific Competency, and 1 contextualized Achievement Indicator Aspect.
+ */
+export function validateAndHarmonizeParityMatrix(matrixRows) {
+  if (!Array.isArray(matrixRows) || matrixRows.length === 0) return [];
+
+  // Filter valid rows having required attributes
+  const sanitized = matrixRows.filter(r => r && r.fundamental && r.especifica && r.indicador_aspecto);
+
+  const countCF = sanitized.map(r => String(r.fundamental).trim()).filter(Boolean).length;
+  const countCE = sanitized.map(r => String(r.especifica).trim()).filter(Boolean).length;
+  const countIL = sanitized.map(r => String(r.indicador_aspecto).trim()).filter(Boolean).length;
+
+  if (countCF !== countCE || countCF !== countIL) {
+    console.warn(`[Guardrail Paridad 1:1:1 Alert] Discrepancia detectada: CF=${countCF}, CE=${countCE}, IL=${countIL}. Armonizando matriz a paridad estricta 1:1:1...`);
+    const minCount = Math.min(countCF, countCE, countIL);
+    return sanitized.slice(0, minCount).map((row, idx) => ({
+      ...row,
+      nro: idx + 1
+    }));
+  }
+
+  return sanitized.map((row, idx) => ({
+    ...row,
+    nro: idx + 1
+  }));
+}

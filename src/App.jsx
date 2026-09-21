@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
-import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData, getOfficialEjesTransversales } from './data/curriculo/index.js';
+import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData, getOfficialEjesTransversales, validateAndHarmonizeParityMatrix } from './data/curriculo/index.js';
 // Vercel deployment trigger
 
 import { dbService } from './db';
@@ -24303,8 +24303,6 @@ export default function App() {
       unitCEsList = officialSpecs.competencies.slice(0, 3);
     }
 
-    const countCE = unitCEsList.length;
-
     let unitILsList = [];
     let unitAspectsList = [];
 
@@ -24331,9 +24329,34 @@ export default function App() {
       }
     });
 
-    const unitCEsText = unitCEsList.map(c => `• [${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
-    const unitILsText = unitILsList.map(i => `• ${i}`).join('\n');
-    const unitAspectsText = unitAspectsList.map(a => `• ${a}`).join('\n');
+    // Construct 1:1:1 Paired Matrix Rows (CF - CE - IL)
+    const rawPairedRows = unitCEsList.map((ceObj, idx) => {
+      const fundName = ceObj.fundamental || (
+        ceObj.grupo_registro === 'G1' ? 'Competencia Comunicativa' :
+        ceObj.grupo_registro === 'G2' ? 'Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas' :
+        ceObj.grupo_registro === 'G3' ? 'Científica y Tecnológica / Ambiental y de la Salud' :
+        'Ética y Ciudadana / Desarrollo Personal'
+      );
+
+      return {
+        nro: idx + 1,
+        fundamental: fundName,
+        especifica: `[${ceObj.codigo}] ${ceObj.descripcion}`,
+        indicador_aspecto: unitAspectsList[idx] || `Aspecto evaluado en la unidad [IL-${idx + 1}]`
+      };
+    });
+
+    // CODE GUARDRAIL: Strict 1:1:1 Parity Validation (CF.length === CE.length === IL.length)
+    const pairedMatrixRows = validateAndHarmonizeParityMatrix(rawPairedRows);
+    const countParity = pairedMatrixRows.length;
+
+    const unitCEsText = pairedMatrixRows.map(r => `• ${r.fundamental} -> ${r.especifica}`).join('\n');
+    const unitAspectsText = pairedMatrixRows.map(r => `• ${r.fundamental} -> ${r.indicador_aspecto}`).join('\n');
+
+    const tableMarkdown = 
+      `| Nº | Competencia Fundamental | Competencia Específica del Área | Aspecto del Indicador de Logro a Evaluar |\n` +
+      `| :-: | :--- | :--- | :--- |\n` +
+      pairedMatrixRows.map(r => `| ${r.nro} | ${r.fundamental} | ${r.especifica} | ${r.indicador_aspecto} |`).join('\n');
 
     const compAlineada = selectedUnit?.competencias_alineadas?.[0] || {
       contenidos: {
@@ -24360,20 +24383,21 @@ export default function App() {
     const ejeTextoFormat = `${selectedEjeObj.eje}: ${selectedEjeObj.descriptor}`;
 
     const contextoCurricularInyectado = 
-      `CONTEXTO CURRICULAR OFICIAL:\n` +
+      `CONTEXTO CURRICULAR OFICIAL (MATRIZ PAREADA DE PARIDAD 1:1:1):\n` +
       `Unidad: ${unitTitleName}${selectedUnit?.tipo_texto ? ` (${selectedUnit.tipo_texto})` : ''}\n` +
-      `Competencias seleccionadas: ${countCE}\n` +
-      `Competencias Específicas:\n${unitCEsText}\n` +
-      `Aspectos de Indicadores a evaluar (1 por competencia):\n${unitAspectsText}\n` +
-      `Indicadores de Logro de referencia:\n${unitILsText}\n` +
+      `Cantidad Estricta de Filas Pareadas (CF = CE = IL): ${countParity}\n\n` +
+      `TABLA DE PARIDAD CURRICULAR PAREADA (ESTRUCTURA OBLIGATORIA):\n` +
+      `${tableMarkdown}\n\n` +
       `Contenidos Conceptuales:\n${conceptualesList.map(c => `• ${c}`).join('\n')}\n` +
       `Contenidos Procedimentales:\n${procedimentalesList.map(p => `• ${p}`).join('\n')}\n` +
       `Contenidos Actitudinales:\n${actitudinalesList.map(a => `• ${a}`).join('\n')}\n` +
-      `Eje Transversal: ${ejeTextoFormat}\n` +
-      `REGLA DE PARIDAD Y FOCO: Esta unidad comprende EXACTAMENTE ${countCE} Competencias Específicas y ${countCE} Indicadores/Aspectos (1 por competencia). Queda ESTRICTAMENTE PROHIBIDO desplegar indicadores no seleccionados o agregar los 21 indicadores del grado en una sola unidad didáctica.`;
+      `Eje Transversal: ${ejeTextoFormat}\n\n` +
+      `REGLA ABSOLUTA DE PARIDAD 1:1:1:\n` +
+      `- Esta unidad comprende EXACTAMENTE ${countParity} filas pareadas (1 CF = 1 CE = 1 Aspecto de Indicador por fila).\n` +
+      `- Queda TERMINANTEMENTE PROHIBIDO desalinear la matriz o incluir más de ${countParity} competencias o indicadores en esta unidad.`;
 
     // System Prompt Directive
-    const systemDirective = `Utiliza estrictamente las ${countCE} competencias y los ${countCE} aspectos de indicadores dosificados para esta unidad. Prohibido agregar los 21 indicadores del año escolar.`;
+    const systemDirective = `Utiliza estrictamente la matriz pareada de ${countParity} filas (1:1:1 CF=CE=IL). Prohibido alterar o desalinear la cantidad de competencias.`;
 
     // Build Parte I: Matriz Curricular Institucional
     const parte1 = {
@@ -24399,13 +24423,9 @@ export default function App() {
         producto: isABP ? `Elaboración de un Proyecto Integrador Tangible con informe socioformativo y solución comunitaria.` : `Elaboración de un Informe de Indagación Científica con prototipo explicativo y muestra escolar.`,
         transformacion: `Logrando desarrollar el pensamiento crítico, la autorregulación del aprendizaje y la conciencia social y ambiental.`
       },
+      pairedMatrixRows,
+      tableMarkdown,
       coherenceMatrix: {
-        fundamentalCompetencies: {
-          g1: `G1: Competencia Comunicativa — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G1')?.descripcion || 'Comprende y produce textos orales y escritos'}`,
-          g2: `G2: Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G2')?.descripcion || 'Analiza y resuelve situaciones complejas'}`,
-          g3: `G3: Científica y Tecnológica / Ambiental y de la Salud — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G3')?.descripcion || 'Aplica procesos de indagación y promueve el desarrollo sostenible'}`,
-          g4: `G4: Ética y Ciudadana / Desarrollo Personal y Espiritual — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G4')?.descripcion || 'Actúa con conciencia social y éticamente'}`
-        },
         specificCompetencies: unitCEsText,
         achievementIndicators: unitAspectsText,
         contents: {
@@ -30648,34 +30668,29 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     </p>
                   </div>
 
-                  {/* Matriz de Coherencia Curricular */}
-                  <h5 style={{ margin: '1rem 0 0.5rem 0', color: '#0f172a', fontSize: '0.92rem' }}>🎯 Matriz de Coherencia Curricular (Ordenanza 04-2023)</h5>
+                  {/* Matriz de Coherencia Curricular Pareada 1:1:1 */}
+                  <h5 style={{ margin: '1rem 0 0.5rem 0', color: '#0f172a', fontSize: '0.92rem' }}>
+                    🎯 Matriz de Coherencia Curricular Pareada 1:1:1 (Ordenanza 04-2023)
+                  </h5>
                   <div className="table-responsive">
-                    <table className="table" style={{ fontSize: '0.82rem', backgroundColor: '#ffffff' }}>
+                    <table className="table table-bordered" style={{ fontSize: '0.82rem', backgroundColor: '#ffffff', width: '100%', borderCollapse: 'collapse' }}>
                       <thead>
-                        <tr style={{ backgroundColor: '#e2e8f0' }}>
-                          <th>Competencias Fundamentales</th>
-                          <th>Competencias Específicas</th>
-                          <th>Indicadores de Logro</th>
+                        <tr style={{ backgroundColor: '#e2e8f0', color: '#0f172a' }}>
+                          <th style={{ width: '5%', textAlign: 'center', border: '1px solid #cbd5e1', padding: '0.5rem' }}>Nº</th>
+                          <th style={{ width: '25%', border: '1px solid #cbd5e1', padding: '0.5rem' }}>Competencia Fundamental</th>
+                          <th style={{ width: '35%', border: '1px solid #cbd5e1', padding: '0.5rem' }}>Competencia Específica del Área</th>
+                          <th style={{ width: '35%', border: '1px solid #cbd5e1', padding: '0.5rem' }}>Aspecto del Indicador de Logro a Evaluar</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            <ul style={{ paddingLeft: '1rem', margin: 0, lineHeight: '1.5' }}>
-                              <li>{generatedSequenceMatrix.parte1.coherenceMatrix.fundamentalCompetencies.g1}</li>
-                              <li>{generatedSequenceMatrix.parte1.coherenceMatrix.fundamentalCompetencies.g2}</li>
-                              <li>{generatedSequenceMatrix.parte1.coherenceMatrix.fundamentalCompetencies.g3}</li>
-                              <li>{generatedSequenceMatrix.parte1.coherenceMatrix.fundamentalCompetencies.g4}</li>
-                            </ul>
-                          </td>
-                          <td style={{ verticalAlign: 'top' }}>
-                            {generatedSequenceMatrix.parte1.coherenceMatrix.specificCompetencies}
-                          </td>
-                          <td style={{ verticalAlign: 'top' }}>
-                            {generatedSequenceMatrix.parte1.coherenceMatrix.achievementIndicators}
-                          </td>
-                        </tr>
+                        {(generatedSequenceMatrix.parte1.pairedMatrixRows || []).map((row) => (
+                          <tr key={row.nro}>
+                            <td style={{ textAlign: 'center', fontWeight: 'bold', border: '1px solid #cbd5e1', padding: '0.5rem' }}>{row.nro}</td>
+                            <td style={{ fontWeight: 'bold', color: '#1e3a8a', border: '1px solid #cbd5e1', padding: '0.5rem' }}>{row.fundamental}</td>
+                            <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', whiteSpace: 'pre-wrap' }}>{row.especifica}</td>
+                            <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', whiteSpace: 'pre-wrap' }}>{row.indicador_aspecto}</td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
