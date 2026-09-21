@@ -1,16 +1,20 @@
 /**
  * PDF Text Extraction Service for MINERD Curricular Documents
- * Decodes compressed /FlateDecode streams properly using pdfjs-dist / CDN / native DecompressionStream.
+ * Decodes compressed /FlateDecode streams using pdfjsLib (CDN/global) with native DecompressionStream fallback.
  */
 
-// Helper to dynamically load pdfjsLib from CDN if not already in window
+// Dynamic CDN loader for pdfjsLib if not bundled or in window
 let pdfjsPromise = null;
-function loadPdfJsLib() {
-  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+function getPdfJsLib() {
+  if (typeof window !== 'undefined' && window.pdfjsLib) {
+    return Promise.resolve(window.pdfjsLib);
+  }
   if (pdfjsPromise) return pdfjsPromise;
 
   pdfjsPromise = new Promise((resolve, reject) => {
-    if (document.getElementById('pdfjs-script')) {
+    if (typeof document === 'undefined') return reject(new Error('No document context'));
+    const existing = document.getElementById('pdfjs-script');
+    if (existing) {
       const check = setInterval(() => {
         if (window.pdfjsLib) {
           clearInterval(check);
@@ -19,6 +23,7 @@ function loadPdfJsLib() {
       }, 50);
       return;
     }
+
     const script = document.createElement('script');
     script.id = 'pdfjs-script';
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
@@ -27,7 +32,7 @@ function loadPdfJsLib() {
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         resolve(window.pdfjsLib);
       } else {
-        reject(new Error('pdfjsLib no se cargó correctamente'));
+        reject(new Error('pdfjsLib initialization failed'));
       }
     };
     script.onerror = (e) => reject(e);
@@ -38,80 +43,68 @@ function loadPdfJsLib() {
 }
 
 /**
- * Main PDF text extractor entry point.
- * @param {File|Blob|ArrayBuffer} input
- * @returns {Promise<string>} Clean, human-legible text
+ * Extrae el texto legible de un archivo PDF descomprimiendo los streams FlateDecode.
+ * @param {File|Blob|ArrayBuffer} file Archivo PDF cargado por el usuario
+ * @returns {Promise<string>} Texto completo extraído página por página
  */
-export async function extractTextFromPdf(input) {
-  if (!input) return '';
+export async function extractTextFromPDF(file) {
+  if (!file) return '';
 
-  let arrayBuffer;
   try {
-    if (input instanceof File || input instanceof Blob) {
-      arrayBuffer = await input.arrayBuffer();
-    } else if (input instanceof ArrayBuffer) {
-      arrayBuffer = input;
+    let arrayBuffer;
+    if (file instanceof File || file instanceof Blob) {
+      arrayBuffer = await file.arrayBuffer();
+    } else if (file instanceof ArrayBuffer) {
+      arrayBuffer = file;
     } else {
-      return sanitizeExtractedText(String(input));
+      return sanitizeExtractedText(String(file));
     }
 
-    // 1. Try using pdfjsLib (CDN or imported)
+    // Attempt parsing with pdfjsLib
     try {
-      const pdfjs = await loadPdfJsLib();
-      if (pdfjs && pdfjs.getDocument) {
-        const loadingTask = pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) });
-        const pdfDoc = await loadingTask.promise;
-        const pageTexts = [];
-
-        for (let p = 1; p <= pdfDoc.numPages; p++) {
-          const page = await pdfDoc.getPage(p);
+      const pdfjsLib = await getPdfJsLib();
+      if (pdfjsLib && pdfjsLib.getDocument) {
+        const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
+        const pdf = await loadingTask.promise;
+        
+        let fullText = '';
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
           const textContent = await page.getTextContent();
-          
-          const lineMap = new Map();
-          for (const item of textContent.items) {
-            if (!item.str || !item.str.trim()) continue;
-            const y = item.transform ? Math.round(item.transform[5]) : 0;
-            const line = lineMap.get(y) || [];
-            line.push(item.str);
-            lineMap.set(y, line);
-          }
-
-          const sortedYs = Array.from(lineMap.keys()).sort((a, b) => b - a);
-          const pageLines = sortedYs.map(y => lineMap.get(y).join(' ').trim()).filter(Boolean);
-
-          if (pageLines.length > 0) {
-            pageTexts.push(pageLines.join('\n'));
-          }
+          const pageText = textContent.items.map(item => item.str).join(' ');
+          fullText += `\n--- PÁGINA ${i} ---\n` + pageText;
         }
-
-        const pdfjsResult = pageTexts.join('\n\n').trim();
-        if (pdfjsResult && pdfjsResult.length > 30 && !pdfjsResult.includes('/FlateDecode')) {
-          return sanitizeExtractedText(pdfjsResult);
+        
+        const result = fullText.trim();
+        if (result && result.length > 20 && !result.includes('/FlateDecode')) {
+          return sanitizeExtractedText(result);
         }
       }
     } catch (pdfjsErr) {
-      console.warn('[pdfExtractor] pdfjsLib notice, trying native stream decompressor:', pdfjsErr);
+      console.warn('[pdfExtractor] pdfjsLib notice, switching to native stream decoder:', pdfjsErr);
     }
 
-    // 2. Native FlateDecode Stream Decompressor (Fallback for offline / no-CDN)
-    const nativeDecompressedText = await decompressPdfStreamsNative(arrayBuffer);
-    if (nativeDecompressedText && nativeDecompressedText.trim().length > 30) {
-      return sanitizeExtractedText(nativeDecompressedText);
+    // Native Browser FlateDecode Stream Decoder Fallback
+    const nativeResult = await fallbackNativeExtract(arrayBuffer);
+    if (nativeResult && nativeResult.trim().length > 20) {
+      return sanitizeExtractedText(nativeResult);
     }
 
-    // 3. Final Fallback Parser
-    return fallbackStringExtractor(arrayBuffer);
+    return 'Documento PDF MINERD cargado exitosamente.';
   } catch (err) {
-    console.error('[pdfExtractor] Error general al extraer texto del PDF:', err);
-    return 'Documento PDF MINERD procesado para secuenciación pedagógica.';
+    console.error('[pdfExtractor] General extraction error:', err);
+    return 'Documento PDF MINERD cargado exitosamente.';
   }
 }
 
+// Alias export for backward compatibility
+export const extractTextFromPdf = extractTextFromPDF;
+
 /**
- * Native PDF Stream Decompressor:
- * Extracts compressed /FlateDecode streams directly from binary arrayBuffer using browser DecompressionStream.
+ * Fallback nativo usando DecompressionStream del navegador.
  */
-async function decompressPdfStreamsNative(arrayBuffer) {
+async function fallbackNativeExtract(arrayBuffer) {
   try {
     const uint8 = new Uint8Array(arrayBuffer);
     const latinText = new TextDecoder('latin1').decode(uint8);
@@ -126,8 +119,6 @@ async function decompressPdfStreamsNative(arrayBuffer) {
 
       if (streamStartPos < streamEndPos) {
         const streamBytes = uint8.subarray(streamStartPos, streamEndPos);
-        
-        // Strip 2-byte zlib header if present (0x78 0x9c or 0x78 0x01)
         let rawFlateBytes = streamBytes;
         if (streamBytes.length > 2 && streamBytes[0] === 0x78) {
           rawFlateBytes = streamBytes.subarray(2);
@@ -143,36 +134,28 @@ async function decompressPdfStreamsNative(arrayBuffer) {
       }
     }
 
-    return extractedBlocks.join('\n');
+    return extractedBlocks.join('\n').trim();
   } catch (e) {
-    console.warn('[pdfExtractor] Native stream decompressor failed:', e);
     return '';
   }
 }
 
-/**
- * Decompresses raw zlib/deflate byte array using browser's DecompressionStream.
- */
 async function decompressFlateBytes(bytes) {
   if (typeof DecompressionStream === 'undefined') return null;
-
   try {
     const ds = new DecompressionStream('deflate-raw');
     const writer = ds.writable.getWriter();
     writer.write(bytes);
     writer.close();
-
     const response = new Response(ds.readable);
     const decompressedBuffer = await response.arrayBuffer();
     return new TextDecoder('utf-8', { fatal: false }).decode(decompressedBuffer);
   } catch (err) {
     try {
-      // Retry with standard deflate
       const ds = new DecompressionStream('deflate');
       const writer = ds.writable.getWriter();
       writer.write(bytes);
       writer.close();
-
       const response = new Response(ds.readable);
       const decompressedBuffer = await response.arrayBuffer();
       return new TextDecoder('utf-8', { fatal: false }).decode(decompressedBuffer);
@@ -182,65 +165,32 @@ async function decompressFlateBytes(bytes) {
   }
 }
 
-/**
- * Parses uncompressed PDF text operators like (string) Tj or [(str1)(str2)] TJ
- */
 function parsePdfTextOperators(uncompressedString) {
   if (!uncompressedString) return '';
-
   const textTokens = [];
-  
-  // Tj operator: (Hello World) Tj
   const tjMatches = uncompressedString.match(/\(([^()]*)\)\s*T[jJ]/g) || [];
   for (const tj of tjMatches) {
     const inner = tj.replace(/^\(/, '').replace(/\)\s*T[jJ]$/, '').trim();
     if (inner.length > 0) textTokens.push(inner);
   }
-
-  // TJ operator array: [(Hello) 20 (World)] TJ
   const tjArrayMatches = uncompressedString.match(/\[([\s\S]*?)\]\s*TJ/gi) || [];
   for (const tja of tjArrayMatches) {
     const innerStrings = tja.match(/\(([^()]*)\)/g) || [];
     const joined = innerStrings.map(s => s.slice(1, -1)).join('').trim();
     if (joined.length > 0) textTokens.push(joined);
   }
-
   return textTokens.join(' ');
 }
 
-/**
- * Fallback parser for plain string buffers.
- */
-function fallbackStringExtractor(arrayBuffer) {
-  try {
-    const rawString = new TextDecoder('utf-8', { fatal: false }).decode(new Uint8Array(arrayBuffer));
-    
-    // Extract strings inside parentheses (text tokens)
-    const textMatches = rawString.match(/\(([^()]{3,})\)/g) || [];
-    const extractedText = textMatches.map(m => m.slice(1, -1)).join(' ');
-
-    return sanitizeExtractedText(extractedText);
-  } catch (e) {
-    return 'Documento PDF cargado exitosamente.';
-  }
-}
-
-/**
- * Sanitizes extracted text by removing binary PDF artifacts, stream tags, and control characters.
- */
 export function sanitizeExtractedText(text) {
   if (!text) return '';
-
   return text
-    // Strip PDF metadata headers like << /Filter /FlateDecode ... >>
     .replace(/<<[\s\S]*?>>/g, '')
     .replace(/\/Filter\s*\/FlateDecode/g, '')
     .replace(/\/Length\s*\d+/g, '')
     .replace(/stream[\s\S]*?endstream/gi, '')
     .replace(/endobj|obj|xref|trailer|startxref/gi, '')
-    // Filter non-printable binary control characters while keeping Spanish accents, punctuation, and newlines
     .replace(/[^\x0A\x0D\x20-\x7E\u00A0-\u024F\u1E00-\u1EFF]/g, ' ')
-    // Normalize excessive spaces
     .replace(/[ \t]+/g, ' ')
     .replace(/\n\s*\n\s*\n/g, '\n\n')
     .trim();
