@@ -251,66 +251,131 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
     return foundDataset.unidades;
   }
 
-  // Fallback dynamic generator (Generates 6 full official units with EXACTLY 1 IL per CE)
+  // Fallback dynamic generator tailored to official MINERD Adecuación Curricular 2023 grade focus
   const subName = officialData?.nombre || subjectKey;
   const officialComps = officialData?.competencias_especificas || [];
   
-  const defaultUnits = [
-    {
-      title: `Fundamentos Curriculares e Indagación en ${subName}`,
-      tipo: "Funcional / Analítico",
-      ceIndices: [0, 1, 2],
-      ilIndices: [0, 3, 6],
-      conceptuales: [`Principios esenciales y conceptos articuladores de ${subName}.`, "Leyes, postulados y modelos explicativos de la disciplina."],
-      procedimentales: ["Formulación de hipótesis y preguntas de indagación contextualizadas.", "Recolección y análisis sistemático de evidencias."],
-      actitudinales: ["Rigor científico y honestidad en el manejo de datos."]
-    },
-    {
-      title: `Investigación, Modelos y Procedimientos en ${subName}`,
-      tipo: "Científico / Informativo",
-      ceIndices: [1, 2, 4],
-      ilIndices: [4, 7, 13],
-      conceptuales: [`Estructuras, mecanismos y modelos explicativos en ${subName}.`, "Procedimientos estándar e instrumentalización."],
-      procedimentales: ["Diseño de experiencias de laboratorio o simulaciones digitales.", "Sistematización de hallazgos en informes estructurados."],
-      actitudinales: ["Trabajo colaborativo, empatía y responsabilidad social."]
-    },
-    {
-      title: `Resolución de Problemas y Pensamiento Crítico en ${subName}`,
-      tipo: "Argumentativo / Evaluativo",
-      ceIndices: [1, 2, 3],
-      ilIndices: [5, 8, 10],
-      conceptuales: [`Problemas socioformativos y fenómenos emergentes en ${subName}.`, "Análisis crítico de evidencias empíricas."],
-      procedimentales: ["Resolución de situaciones de problemas simulados y reales.", "Construcción de esquemas y prototipos de solución."],
-      actitudinales: ["Perseverancia y sentido de rigor en la resolución de problemas."]
-    },
-    {
-      title: `Proyectos Socioformativos e Innovación en ${subName}`,
-      tipo: "Aplicado / Proyectual",
-      ceIndices: [0, 4, 5],
-      ilIndices: [1, 14, 16],
-      conceptuales: [`Aplicaciones tecnológicas y alcance social de ${subName}.`, "Indicadores de desarrollo humano y conservación."],
-      procedimentales: ["Ejecución de proyectos escolares socioformativos con impacto comunitario.", "Divulgación de productos mediante medios digitales."],
-      actitudinales: ["Compromiso ético con la sostenibilidad y la democracia."]
-    },
-    {
-      title: `Sostenibilidad, Medio Ambiente y Salud en ${subName}`,
-      tipo: "Científico / Ambiental",
-      ceIndices: [3, 5, 6],
-      ilIndices: [11, 17, 19],
-      conceptuales: [`Factores de riesgo ambiental y conductas promotoras de salud.`, "Ética ciudadana y desarrollo sostenible."],
-      procedimentales: ["Diseño de campañas de concienciación sobre salud y medio ambiente.", "Evaluación de estilos de vida y hábitos sostenibles."],
-      actitudinales: ["Valoración de estilos de vida saludables y respetuosos con el ambiente."]
-    },
-    {
-      title: `Proyección Personal, Éthos y Desarrollo Profesional en ${subName}`,
-      tipo: "Reflexivo / Vocacional",
-      ceIndices: [0, 3, 6],
-      ilIndices: [2, 12, 20],
-      conceptuales: [`Historia de la disciplina y profesiones/oficios científicos.`, "Proyecto de vida y ética en las ciencias."],
-      procedimentales: ["Elaboración de proyectos vocacionales vinculados al área.", "Argumentación sobre el valor social del conocimiento."],
-      actitudinales: ["Gestión autónoma del aprendizaje y proyección vocacional proactiva."]
+  const gNum = cleanGrade.substring(0, 1);
+  let customTitles = null;
+
+  if (subjectKey === 'ciencias_naturaleza') {
+    if (gNum === '1') {
+      customTitles = [
+        "1. Estructura Interna del Planeta Tierra y Tectónica de Placas",
+        "2. El Planeta Tierra: Rocas, Minerales y Dinámica Geológica",
+        "3. Composición y Dinámica de la Atmósfera e Hidrósfera",
+        "4. El Sistema Solar, la Luna y la Dinámica Astronómica",
+        "5. Recursos Naturales, Medio Ambiente y Gestión de Riesgos Geológicos"
+      ];
+    } else if (gNum === '2') {
+      customTitles = [
+        "1. La Célula y su Organización Estructural",
+        "2. Reproducción y División Celular",
+        "3. Genética y Herencia Biológica",
+        "4. Estructura y Función de los Sistemas del Cuerpo Humano",
+        "5. Ecosistemas, Biodiversidad y Biomas",
+        "6. Salud, Inmunología y Prevención de Enfermedades"
+      ];
+    } else if (gNum === '3') {
+      customTitles = [
+        "1. Materia y sus Propiedades (Química Fundamental)",
+        "2. Cinemática y Movimiento en Una Dimensión",
+        "3. Dinámica y Leyes de Newton",
+        "4. Trabajo, Energía Mecánica y Máquinas Simples",
+        "5. Ondas, Luz y Sonido"
+      ];
+    } else if (gNum === '4') {
+      customTitles = [
+        "1. Biología Celular y Bioquímica Molecular",
+        "2. Genética Molecular, Herencia Humana y Biotecnología",
+        "3. Evolución Biológica y Selección Natural",
+        "4. Ecología de Poblaciones y Comunidades",
+        "5. Fisiología e Inmunología Humana Avanzada"
+      ];
+    } else if (gNum === '5') {
+      customTitles = [
+        "1. Estructura Atómica, Tabla Periódica y Enlaces Químicos",
+        "2. Estequiometría y Reacciones Químicas",
+        "3. Soluciones Químicas, Concentración y pH",
+        "4. Termoquímica, Cinética Química y Equilibrio",
+        "5. Química Orgánica, Hidrocarburos y Polímeros"
+      ];
+    } else if (gNum === '6') {
+      customTitles = [
+        "1. Mecánica Avanzada, Movimiento Circular y Torque",
+        "2. Electrostática, Campo Eléctrico y Ley de Coulomb",
+        "3. Circuitos Eléctricos y Ley de Ohm",
+        "4. Electromagnetismo e Inducción Electromagnética",
+        "5. Termodinámica, Física Moderna y Relatividad"
+      ];
     }
-  ];
+  } else if (subjectKey === 'matematica') {
+    if (gNum === '1') {
+      customTitles = [
+        "1. Conjunto de los Números Enteros (Z) y Operaciones",
+        "2. Conjunto de los Números Racionales (Q) y Fracciones",
+        "3. Razones, Proporciones y Porcentajes",
+        "4. Geometría Plana: Ángulos, Rectas y Polígonos",
+        "5. Estadística Descriptiva y Recolección de Datos"
+      ];
+    } else if (gNum === '2') {
+      customTitles = [
+        "1. Expresiones Algebraicas y Polinomios",
+        "2. Operaciones con Polinomios (Suma, Resta y Multiplicación)",
+        "3. Ecuaciones e Inecuaciones de Primer Grado",
+        "4. Geometría de Triángulos y Teorema de Pitágoras",
+        "5. Estadística y Probabilidad Básica"
+      ];
+    } else if (gNum === '3') {
+      customTitles = [
+        "1. Productos y Cocientes Notables",
+        "2. Factorización de Expresiones Algebraicas",
+        "3. Ecuaciones Cuadráticas y Racionales",
+        "4. Funciones y Gráficas (Lineal y Cuadrática)",
+        "5. Trigonometría Básica y Razones Trigonométricas"
+      ];
+    }
+  } else if (subjectKey === 'ciencias_sociales') {
+    if (gNum === '1') {
+      customTitles = [
+        "1. Geografía Física General y Representación de la Tierra",
+        "2. Geografía Física de la Isla de Santo Domingo",
+        "3. Las Primeras Civilizaciones de la Antigüedad",
+        "4. Grecia y Roma Clásicas: Democracia y República",
+        "5. Edad Media y Feudalismo en Europa"
+      ];
+    } else if (gNum === '2') {
+      customTitles = [
+        "1. Geografía Humana y Población Mundial",
+        "2. Los Aborígenes de la Española (Taínos) y las Antillas",
+        "3. Descubrimiento, Conquista y Colonización de América",
+        "4. La Sociedad Colonial del Siglo XVI y XVII en Santo Domingo"
+      ];
+    } else if (gNum === '3') {
+      customTitles = [
+        "1. El Siglo XVIII en Santo Domingo y la Revolución Francesa",
+        "2. La Revolución Haitiana y sus Impactos en la Isla",
+        "3. Independencia Nacional Dominicana (1844) y La Trinitaria",
+        "4. La Anexión a España y la Guerra de la Restauración (1863-1865)"
+      ];
+    }
+  }
+
+  const defaultUnits = (customTitles || [
+    `1. Fundamentos Curriculares e Indagación en ${subName}`,
+    `2. Investigación, Modelos y Procedimientos en ${subName}`,
+    `3. Resolución de Problemas y Pensamiento Crítico en ${subName}`,
+    `4. Proyectos Socioformativos e Innovación en ${subName}`,
+    `5. Sostenibilidad, Medio Ambiente y Salud en ${subName}`
+  ]).map((title, idx) => ({
+    title,
+    tipo: idx % 2 === 0 ? "Funcional / Analítico" : "Científico / Aplicado",
+    ceIndices: [idx % 3, (idx + 1) % 4, (idx + 2) % 5],
+    ilIndices: [idx * 3, idx * 3 + 1, idx * 3 + 2],
+    conceptuales: [`Conceptos articuladores de ${title}.`, `Modelos teóricos de ${title}.`],
+    procedimentales: [`Investigación documentada y empírica sobre ${title}.`, `Modelación práctica y resolución de problemas.`],
+    actitudinales: [`Perseverancia, rigor científico y sentido ético en ${title}.`]
+  }));
 
   return defaultUnits.map((uDef, uIdx) => {
     const ces = uDef.ceIndices.map(idx => officialComps[idx]).filter(Boolean);

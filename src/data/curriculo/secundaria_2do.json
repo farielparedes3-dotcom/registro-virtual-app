@@ -3,10 +3,33 @@
   "grado": "2do",
   "ordenanza_evaluacion": "04-2023",
   "grupos_calificacion": {
-    "G1": { "nombre": "Competencia Comunicativa", "competencias": ["CE1"] },
-    "G2": { "nombre": "Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas", "competencias": ["CE2", "CE3"] },
-    "G3": { "nombre": "Científica y Tecnológica / Ambiental y de la Salud", "competencias": ["CE5", "CE6"] },
-    "G4": { "nombre": "Ética y Ciudadana / Desarrollo Personal y Espiritual", "competencias": ["CE4", "CE7"] }
+    "G1": {
+      "nombre": "Competencia Comunicativa",
+      "competencias": [
+        "CE1"
+      ]
+    },
+    "G2": {
+      "nombre": "Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas",
+      "competencias": [
+        "CE2",
+        "CE3"
+      ]
+    },
+    "G3": {
+      "nombre": "Científica y Tecnológica / Ambiental y de la Salud",
+      "competencias": [
+        "CE5",
+        "CE6"
+      ]
+    },
+    "G4": {
+      "nombre": "Ética y Ciudadana / Desarrollo Personal y Espiritual",
+      "competencias": [
+        "CE4",
+        "CE7"
+      ]
+    }
   },
   "areas": {
     "ciencias_naturaleza": {
@@ -19,9 +42,18 @@
           "grupo_registro": "G1",
           "descripcion": "Se comunica utilizando el Lenguaje científico y tecnológico de ciencias de la vida que implica sus ideas básicas a respuestas a preguntas y situaciones de problemas simulados y reales.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Interpreta efectivamente el Lenguaje científico y tecnológico considerando las ideas, contenidos y verificación de hipótesis asumiendo una posición crítica ante información o proceso pseudocientífico." },
-            { "codigo": "IL-2", "texto": "Produce apropiadamente texto e información científica o tecnológica." },
-            { "codigo": "IL-3", "texto": "Utiliza símbolos, términos, ecuaciones elementales de ciencia, modelos, gráficas y convenciones científicas y tecnológicas adecuadas." }
+            {
+              "codigo": "IL-1",
+              "texto": "Interpreta efectivamente el Lenguaje científico y tecnológico considerando las ideas, contenidos y verificación de hipótesis asumiendo una posición crítica ante información o proceso pseudocientífico."
+            },
+            {
+              "codigo": "IL-2",
+              "texto": "Produce apropiadamente texto e información científica o tecnológica."
+            },
+            {
+              "codigo": "IL-3",
+              "texto": "Utiliza símbolos, términos, ecuaciones elementales de ciencia, modelos, gráficas y convenciones científicas y tecnológicas adecuadas."
+            }
           ]
         },
         {
@@ -30,9 +62,18 @@
           "grupo_registro": "G2",
           "descripcion": "Ofrece explicaciones científicas y tecnológicas a problemas y fenómenos naturales relacionados a Ciencias de la Vida.",
           "indicadores_logro": [
-            { "codigo": "IL-4", "texto": "Utiliza de procesos básicos, sistemáticos y pertinentes en ciencia en la búsqueda de evidencias para dar respuesta a problemas o situaciones." },
-            { "codigo": "IL-5", "texto": "Aplica adecuadamente los conceptos, principios, ideas básicas y modelos presentes en problemas y fenómenos." },
-            { "codigo": "IL-6", "texto": "Formula y critica de las evidencias que dan respuestas a problemas y fenómenos naturales comprendiendo el alcance de los modelos, principios e ideas centrales." }
+            {
+              "codigo": "IL-4",
+              "texto": "Utiliza de procesos básicos, sistemáticos y pertinentes en ciencia en la búsqueda de evidencias para dar respuesta a problemas o situaciones."
+            },
+            {
+              "codigo": "IL-5",
+              "texto": "Aplica adecuadamente los conceptos, principios, ideas básicas y modelos presentes en problemas y fenómenos."
+            },
+            {
+              "codigo": "IL-6",
+              "texto": "Formula y critica de las evidencias que dan respuestas a problemas y fenómenos naturales comprendiendo el alcance de los modelos, principios e ideas centrales."
+            }
           ]
         },
         {
@@ -41,9 +82,18 @@
           "grupo_registro": "G2",
           "descripcion": "Aplica procedimientos científicos y tecnológicos, básicos y organizados para solucionar problemas o dar respuestas a fenómenos naturales relacionados con Ciencias de la Vida.",
           "indicadores_logro": [
-            { "codigo": "IL-7", "texto": "Utiliza pertinentemente estrategias básicas, procedimientos, técnicas y herramientas para solución de problemas o diseñar y ejecutar experimentos." },
-            { "codigo": "IL-8", "texto": "Ejecuta y prueba adecuadamente experimentos, estructuras, herramientas, sistemas y mecanismo para dar respuesta al problema o fenómeno natural." },
-            { "codigo": "IL-9", "texto": "Construye y aplica apropiadamente objetos, herramientas y estructuras proponiendo mecanismo y modelos que le permitan dar respuestas a situaciones y problemas." }
+            {
+              "codigo": "IL-7",
+              "texto": "Utiliza pertinentemente estrategias básicas, procedimientos, técnicas y herramientas para solución de problemas o diseñar y ejecutar experimentos."
+            },
+            {
+              "codigo": "IL-8",
+              "texto": "Ejecuta y prueba adecuadamente experimentos, estructuras, herramientas, sistemas y mecanismo para dar respuesta al problema o fenómeno natural."
+            },
+            {
+              "codigo": "IL-9",
+              "texto": "Construye y aplica apropiadamente objetos, herramientas y estructuras proponiendo mecanismo y modelos que le permitan dar respuestas a situaciones y problemas."
+            }
           ]
         },
         {
@@ -52,9 +102,18 @@
           "grupo_registro": "G4",
           "descripcion": "Analiza la naturaleza de las ciencias naturales y el alcance del desarrollo tecnológico en nuestra sociedad relacionada con Ciencias de la Vida, sus aportes y reflexiones éticas.",
           "indicadores_logro": [
-            { "codigo": "IL-10", "texto": "Expone apropiadamente en producción oral y escrita análisis comparativo de época reciente en el desarrollo histórico y su contexto social del desarrollo de ciencias naturales." },
-            { "codigo": "IL-11", "texto": "Presenta adecuados argumentos al asumir postura sobre conflicto en decisiones ética de la ciencia." },
-            { "codigo": "IL-12", "texto": "Representa apropiadamente acciones, actitudes y valores científicos." }
+            {
+              "codigo": "IL-10",
+              "texto": "Expone apropiadamente en producción oral y escrita análisis comparativo de época reciente en el desarrollo histórico y su contexto social del desarrollo de ciencias naturales."
+            },
+            {
+              "codigo": "IL-11",
+              "texto": "Presenta adecuados argumentos al asumir postura sobre conflicto en decisiones ética de la ciencia."
+            },
+            {
+              "codigo": "IL-12",
+              "texto": "Representa apropiadamente acciones, actitudes y valores científicos."
+            }
           ]
         },
         {
@@ -63,9 +122,18 @@
           "grupo_registro": "G3",
           "descripcion": "Se cuestiona e identifica problemas y situaciones, y les da explicación utilizando ideas y procesos fundamentales de las Ciencias de la Vida y las ingenierías.",
           "indicadores_logro": [
-            { "codigo": "IL-13", "texto": "Realiza proyectos escolares o prácticas experimentales apropiadamente observando la sistematización y los informes de las actividades de investigación." },
-            { "codigo": "IL-14", "texto": "Aplica apropiadamente proyecto de investigación, observando procesos básicos imprescindibles para su realización." },
-            { "codigo": "IL-15", "texto": "Formula apropiadamente sus argumentos basados en evidencia e información de investigaciones verificables." }
+            {
+              "codigo": "IL-13",
+              "texto": "Realiza proyectos escolares o prácticas experimentales apropiadamente observando la sistematización y los informes de las actividades de investigación."
+            },
+            {
+              "codigo": "IL-14",
+              "texto": "Aplica apropiadamente proyecto de investigación, observando procesos básicos imprescindibles para su realización."
+            },
+            {
+              "codigo": "IL-15",
+              "texto": "Formula apropiadamente sus argumentos basados en evidencia e información de investigaciones verificables."
+            }
           ]
         },
         {
@@ -74,9 +142,18 @@
           "grupo_registro": "G3",
           "descripcion": "Actúa con responsabilidad crítica y autónoma para el cuidado de su salud y ambiental relacionada con Ciencias de la Vida.",
           "indicadores_logro": [
-            { "codigo": "IL-16", "texto": "Identifica apropiadamente situaciones o acciones de riesgo para su salud o el medioambiente." },
-            { "codigo": "IL-17", "texto": "Aplica acciones apropiadas que promuevan cuidado de su salud, del medioambiente, a favor del desarrollo en su comunidad." },
-            { "codigo": "IL-18", "texto": "Identifica acciones proactivas idóneas a estilo de vida saludable y desarrollo sostenible con el medioambiente." }
+            {
+              "codigo": "IL-16",
+              "texto": "Identifica apropiadamente situaciones o acciones de riesgo para su salud o el medioambiente."
+            },
+            {
+              "codigo": "IL-17",
+              "texto": "Aplica acciones apropiadas que promuevan cuidado de su salud, del medioambiente, a favor del desarrollo en su comunidad."
+            },
+            {
+              "codigo": "IL-18",
+              "texto": "Identifica acciones proactivas idóneas a estilo de vida saludable y desarrollo sostenible con el medioambiente."
+            }
           ]
         },
         {
@@ -85,9 +162,18 @@
           "grupo_registro": "G4",
           "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal desde las Ciencias de la Vida.",
           "indicadores_logro": [
-            { "codigo": "IL-19", "texto": "Identifica apropiadamente su proyecto de desarrollo personal con planes organizados a corto y largo plazo." },
-            { "codigo": "IL-20", "texto": "Valora profesiones y oficios de las ciencias naturales e ingenierías." },
-            { "codigo": "IL-21", "texto": "Apropiada manifestación de actitudes y valores que fortalecen su desarrollo personal." }
+            {
+              "codigo": "IL-19",
+              "texto": "Identifica apropiadamente su proyecto de desarrollo personal con planes organizados a corto y largo plazo."
+            },
+            {
+              "codigo": "IL-20",
+              "texto": "Valora profesiones y oficios de las ciencias naturales e ingenierías."
+            },
+            {
+              "codigo": "IL-21",
+              "texto": "Apropiada manifestación de actitudes y valores que fortalecen su desarrollo personal."
+            }
           ]
         }
       ],
@@ -122,8 +208,18 @@
           "id_unidad": "2DO-CN-U1",
           "nombre_unidad": "La Célula y su Organización (Estructura, Organelos y Transporte Celular)",
           "tipo_texto": "Científico / Informativo",
-          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN3", "CE-CN5"],
-          "indicadores_asociados": ["IL-1", "IL-5", "IL-7", "IL-13"],
+          "competencias_asociadas": [
+            "CE-CN1",
+            "CE-CN2",
+            "CE-CN3",
+            "CE-CN5"
+          ],
+          "indicadores_asociados": [
+            "IL-1",
+            "IL-5",
+            "IL-7",
+            "IL-13"
+          ],
           "aspectos_indicadores": [
             "Aspecto evaluado [IL-1]: Interpreta adecuadamente el lenguaje científico de la estructura celular mediante diagramas, modelos e informes de laboratorio.",
             "Aspecto evaluado [IL-5]: Aplica conceptos de organelos celulares y mecanismos de transporte pasivo/activo para dar respuesta a fenómenos biológicos.",
@@ -154,8 +250,18 @@
           "id_unidad": "2DO-CN-U2",
           "nombre_unidad": "Reproducción Celular y Genética Básica (Mitosis, Meiosis y Ciclo Celular)",
           "tipo_texto": "Científico / Explicativo",
-          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN3", "CE-CN5"],
-          "indicadores_asociados": ["IL-2", "IL-4", "IL-8", "IL-14"],
+          "competencias_asociadas": [
+            "CE-CN1",
+            "CE-CN2",
+            "CE-CN3",
+            "CE-CN5"
+          ],
+          "indicadores_asociados": [
+            "IL-2",
+            "IL-4",
+            "IL-8",
+            "IL-14"
+          ],
           "aspectos_indicadores": [
             "Aspecto evaluado [IL-2]: Produce reportes e información científica detallando las fases del ciclo celular, mitosis y meiosis.",
             "Aspecto evaluado [IL-4]: Utiliza procesos sistemáticos para investigar y comparar la división celular somática (mitosis) y germinal (meiosis).",
@@ -184,8 +290,18 @@
           "id_unidad": "2DO-CN-U3",
           "nombre_unidad": "Herencia Biológica y Leyes de Mendel (Genética Mendeliana y ADN)",
           "tipo_texto": "Científico / Analítico",
-          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN3", "CE-CN4"],
-          "indicadores_asociados": ["IL-3", "IL-6", "IL-9", "IL-11"],
+          "competencias_asociadas": [
+            "CE-CN1",
+            "CE-CN2",
+            "CE-CN3",
+            "CE-CN4"
+          ],
+          "indicadores_asociados": [
+            "IL-3",
+            "IL-6",
+            "IL-9",
+            "IL-11"
+          ],
           "aspectos_indicadores": [
             "Aspecto evaluado [IL-3]: Utiliza adecuadamente símbolos genéticos, genotipos, fenotipos y cuadros de Punnett en problemas de herencia.",
             "Aspecto evaluado [IL-6]: Formula y critica evidencias empíricas sobre la transmisión de caracteres hereditarios según las Leyes de Mendel.",
@@ -214,8 +330,18 @@
           "id_unidad": "2DO-CN-U4",
           "nombre_unidad": "Sistemas del Cuerpo Humano (Nutrición, Circulación, Respiración y Excreción)",
           "tipo_texto": "Científico / Aplicado",
-          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN6", "CE-CN7"],
-          "indicadores_asociados": ["IL-1", "IL-5", "IL-16", "IL-18"],
+          "competencias_asociadas": [
+            "CE-CN1",
+            "CE-CN2",
+            "CE-CN6",
+            "CE-CN7"
+          ],
+          "indicadores_asociados": [
+            "IL-1",
+            "IL-5",
+            "IL-16",
+            "IL-18"
+          ],
           "aspectos_indicadores": [
             "Aspecto evaluado [IL-1]: Interpreta modelos morfofuncionales de los sistemas de nutrición humana expresando sus relaciones fisiológicas.",
             "Aspecto evaluado [IL-5]: Aplica conceptos del funcionamiento del sistema cardiovascular, digestivo, respiratorio y renal a situaciones cotidianas.",
@@ -245,8 +371,18 @@
           "id_unidad": "2DO-CN-U5",
           "nombre_unidad": "Ecosistemas, Biodiversidad y Biomas (Flujo de Energía y Conservación)",
           "tipo_texto": "Científico / Ambiental",
-          "competencias_asociadas": ["CE-CN2", "CE-CN3", "CE-CN6", "CE-CN7"],
-          "indicadores_asociados": ["IL-4", "IL-7", "IL-17", "IL-20"],
+          "competencias_asociadas": [
+            "CE-CN2",
+            "CE-CN3",
+            "CE-CN6",
+            "CE-CN7"
+          ],
+          "indicadores_asociados": [
+            "IL-4",
+            "IL-7",
+            "IL-17",
+            "IL-20"
+          ],
           "aspectos_indicadores": [
             "Aspecto evaluado [IL-4]: Utiliza métodos sistemáticos para caracterizar biomas dominicanos y redes tróficas comunitarias.",
             "Aspecto evaluado [IL-7]: Ejecuta técnicas de recolección de datos ecológicos sobre factores bióticos y abióticos en un entorno natural.",
@@ -275,8 +411,18 @@
           "id_unidad": "2DO-CN-U6",
           "nombre_unidad": "Salud, Inmunología y Prevención de Enfermedades",
           "tipo_texto": "Científico / Preventivo",
-          "competencias_asociadas": ["CE-CN1", "CE-CN4", "CE-CN5", "CE-CN6"],
-          "indicadores_asociados": ["IL-2", "IL-12", "IL-15", "IL-16"],
+          "competencias_asociadas": [
+            "CE-CN1",
+            "CE-CN4",
+            "CE-CN5",
+            "CE-CN6"
+          ],
+          "indicadores_asociados": [
+            "IL-2",
+            "IL-12",
+            "IL-15",
+            "IL-16"
+          ],
           "aspectos_indicadores": [
             "Aspecto evaluado [IL-2]: Redacta materiales informativos sobre el funcionamiento del sistema inmunológico y la importancia de las vacunas.",
             "Aspecto evaluado [IL-12]: Manifiesta conductas y actitudes científicas en la divulgación de medidas sanitarias y prevención de brotes.",
@@ -313,9 +459,18 @@
           "grupo_registro": "G1",
           "descripcion": "Comunica sus ideas y experiencias en diferentes situaciones, mediante un género textual (funcional o literario) abordado desde la comprensión y producción oral y escrita, mostrando creatividad y destrezas en el uso de la lengua, utilizando medios y recursos tecnológicos y de otros tipos.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Expresa sus ideas a través de textos orales y/o escritos, creando un ambiente cultural e interactivo, desde una perspectiva social." },
-            { "codigo": "IL-2", "texto": "Emplea la lengua haciendo uso de las diferentes funciones textuales, a través de su expresión personal, creando estructuras para forjar el conocimiento en medios diversos." },
-            { "codigo": "IL-3", "texto": "Valora los recursos de la lengua y los utiliza al responder preguntas inferenciales y criticas en la comprensión de sentidos." }
+            {
+              "codigo": "IL-1",
+              "texto": "Expresa sus ideas a través de textos orales y/o escritos, creando un ambiente cultural e interactivo, desde una perspectiva social."
+            },
+            {
+              "codigo": "IL-2",
+              "texto": "Emplea la lengua haciendo uso de las diferentes funciones textuales, a través de su expresión personal, creando estructuras para forjar el conocimiento en medios diversos."
+            },
+            {
+              "codigo": "IL-3",
+              "texto": "Valora los recursos de la lengua y los utiliza al responder preguntas inferenciales y criticas en la comprensión de sentidos."
+            }
           ]
         },
         {
@@ -324,9 +479,18 @@
           "grupo_registro": "G2",
           "descripcion": "Produce textos orales y escritos variados a partir de inferencias de comprensión y producción textual, demostrando un pensamiento estructurado, derivando en conclusiones razonables y lógicas.",
           "indicadores_logro": [
-            { "codigo": "IL-4", "texto": "Demuestra capacidad en el uso de secuencias argumentativas, en la construcción de discursos con temas de su realidad, así como del contexto local, nacional y mundial." },
-            { "codigo": "IL-5", "texto": "Reconstruye conocimientos sobre situaciones sociales a partir de inferencias en la comprensión y producción de textos funcionales y literarios." },
-            { "codigo": "IL-6", "texto": "Expone informaciones con juicios y puntos de vista pertinentes, en la construcción de pensamiento estructurado que derivan en conclusiones lógicas, acciones y respeto de opiniones." }
+            {
+              "codigo": "IL-4",
+              "texto": "Demuestra capacidad en el uso de secuencias argumentativas, en la construcción de discursos con temas de su realidad, así como del contexto local, nacional y mundial."
+            },
+            {
+              "codigo": "IL-5",
+              "texto": "Reconstruye conocimientos sobre situaciones sociales a partir de inferencias en la comprensión y producción de textos funcionales y literarios."
+            },
+            {
+              "codigo": "IL-6",
+              "texto": "Expone informaciones con juicios y puntos de vista pertinentes, en la construcción de pensamiento estructurado que derivan en conclusiones lógicas, acciones y respeto de opiniones."
+            }
           ]
         },
         {
@@ -335,9 +499,18 @@
           "grupo_registro": "G2",
           "descripcion": "Utiliza textos específicos variados (orales y escritos) que apoyan el desarrollo de una investigación de carácter científico, seleccionando información con criterios de relevancia, pertinencia, validez y confiabilidad.",
           "indicadores_logro": [
-            { "codigo": "IL-7", "texto": "Identifica problemas o conflictos del centro educativo y comunitario, a través de un tipo de texto específico y apropiado." },
-            { "codigo": "IL-8", "texto": "Utiliza textos específicos variados que apoyan la solución de problemas, facilitando la investigación, búsqueda de información, con criterios de relevancia, pertinencia, validez y confiabilidad." },
-            { "codigo": "IL-9", "texto": "Presenta informes de investigación que evidencian la solución de problemas en un contexto determinado." }
+            {
+              "codigo": "IL-7",
+              "texto": "Identifica problemas o conflictos del centro educativo y comunitario, a través de un tipo de texto específico y apropiado."
+            },
+            {
+              "codigo": "IL-8",
+              "texto": "Utiliza textos específicos variados que apoyan la solución de problemas, facilitando la investigación, búsqueda de información, con criterios de relevancia, pertinencia, validez y confiabilidad."
+            },
+            {
+              "codigo": "IL-9",
+              "texto": "Presenta informes de investigación que evidencian la solución de problemas en un contexto determinado."
+            }
           ]
         },
         {
@@ -346,9 +519,18 @@
           "grupo_registro": "G4",
           "descripcion": "Usa textos variados de secuencia argumentativa, con los que conoce y cuestiona prácticas sociales de ciudadanía en el entorno local, nacional e internacional, confrontándolas con los valores universales en discursos analiticos y propositivos.",
           "indicadores_logro": [
-            { "codigo": "IL-10", "texto": "Presenta nuevas relaciones sociales en reconocimiento y valoración de lo natural y sociocultural, haciendo uso de textos, tales como análisis, comentarios, argumentos, entre otros." },
-            { "codigo": "IL-11", "texto": "Conoce y cuestiona las prácticas sociales de ciudadanía en el entorno local y su confrontación con los valores universales, a través de textos y secuencia argumentativa." },
-            { "codigo": "IL-12", "texto": "Elabora proyectos colaborativos, utilizando textos variados y apropiados, para la construcción de una ciudadanía que busca soluciones a problemas." }
+            {
+              "codigo": "IL-10",
+              "texto": "Presenta nuevas relaciones sociales en reconocimiento y valoración de lo natural y sociocultural, haciendo uso de textos, tales como análisis, comentarios, argumentos, entre otros."
+            },
+            {
+              "codigo": "IL-11",
+              "texto": "Conoce y cuestiona las prácticas sociales de ciudadanía en el entorno local y su confrontación con los valores universales, a través de textos y secuencia argumentativa."
+            },
+            {
+              "codigo": "IL-12",
+              "texto": "Elabora proyectos colaborativos, utilizando textos variados y apropiados, para la construcción de una ciudadanía que busca soluciones a problemas."
+            }
           ]
         },
         {
@@ -357,9 +539,18 @@
           "grupo_registro": "G3",
           "descripcion": "Utiliza textos de secuencia expositivo-explicativa de manera oral y escrita, en la divulgación de hallazgos científicos y sociales, así como de los avances tecnológicos a lo largo del tiempo, haciendo uso de variadas herramientas que proporcionan las tecnologías de la información y la comunicación TIC.",
           "indicadores_logro": [
-            { "codigo": "IL-13", "texto": "Expone conocimientos sobre procesos de investigación en el campo de la ciencia, mediante textos variados y haciendo uso de medios y herramientas tecnológicas." },
-            { "codigo": "IL-14", "texto": "Analiza textos de secuencia expositivo-explicativa relacionados con investigaciones científicas sencillas, para la comprensión de problemas o situaciones de su entorno familiar, escolar y comunitario." },
-            { "codigo": "IL-15", "texto": "Redacta textos expositivo-explicativos sobre hallazgos científicos y sociales, haciendo uso de las convenciones de lengua y su divulgación en diferentes contextos." }
+            {
+              "codigo": "IL-13",
+              "texto": "Expone conocimientos sobre procesos de investigación en el campo de la ciencia, mediante textos variados y haciendo uso de medios y herramientas tecnológicas."
+            },
+            {
+              "codigo": "IL-14",
+              "texto": "Analiza textos de secuencia expositivo-explicativa relacionados con investigaciones científicas sencillas, para la comprensión de problemas o situaciones de su entorno familiar, escolar y comunitario."
+            },
+            {
+              "codigo": "IL-15",
+              "texto": "Redacta textos expositivo-explicativos sobre hallazgos científicos y sociales, haciendo uso de las convenciones de lengua y su divulgación en diferentes contextos."
+            }
           ]
         },
         {
@@ -368,9 +559,18 @@
           "grupo_registro": "G3",
           "descripcion": "Usa textos diversos en la divulgación y promoción de situaciones de salud y ambiente, abordando temas y problemas de actualidad, mediante el uso de herramientas tecnológicas, entre otras.",
           "indicadores_logro": [
-            { "codigo": "IL-16", "texto": "Caracteriza problemáticas relacionadas con salud y ambiente que afectan el quehacer social, haciendo uso de textos diversos y apoyándose en recursos y medios variados." },
-            { "codigo": "IL-17", "texto": "Escribe textos sobre la flora y la fauna dominicanas, la salud y el ambiente, identificando especies endémicas, preparación de alimentos sanos, problemas ambientales de actualidad, proceso de reciclaje, zonas protegidas, para una mejor salud integral y ambiente favorable al desarrollo humano." },
-            { "codigo": "IL-18", "texto": "Aplica conocimientos sobre la conservación de la salud, la naturaleza y sus ecosistemas, redactando textos variados, para su divulgación en actividades de intercomunicación dentro y fuera del aula." }
+            {
+              "codigo": "IL-16",
+              "texto": "Caracteriza problemáticas relacionadas con salud y ambiente que afectan el quehacer social, haciendo uso de textos diversos y apoyándose en recursos y medios variados."
+            },
+            {
+              "codigo": "IL-17",
+              "texto": "Escribe textos sobre la flora y la fauna dominicanas, la salud y el ambiente, identificando especies endémicas, preparación de alimentos sanos, problemas ambientales de actualidad, proceso de reciclaje, zonas protegidas, para una mejor salud integral y ambiente favorable al desarrollo humano."
+            },
+            {
+              "codigo": "IL-18",
+              "texto": "Aplica conocimientos sobre la conservación de la salud, la naturaleza y sus ecosistemas, redactando textos variados, para su divulgación en actividades de intercomunicación dentro y fuera del aula."
+            }
           ]
         },
         {
@@ -379,9 +579,18 @@
           "grupo_registro": "G4",
           "descripcion": "Utiliza textos literarios como manifestación de la lengua y recurso para promover valores universales y fortalecer la dimensión humanista.",
           "indicadores_logro": [
-            { "codigo": "IL-19", "texto": "Utiliza un género textual para la comprensión de sí mismo y de los demás en variadas situaciones de comunicación." },
-            { "codigo": "IL-20", "texto": "Escribe textos literarios para el cultivo de valores universales y reforzar la dimensión humanista y el desarrollo físico y espiritual." },
-            { "codigo": "IL-21", "texto": "Canalizar emociones y sentimientos mediante lecturas y escrituras reflexivas, fortaleciendo las relaciones humanas, el respeto y la dignidad de las personas." }
+            {
+              "codigo": "IL-19",
+              "texto": "Utiliza un género textual para la comprensión de sí mismo y de los demás en variadas situaciones de comunicación."
+            },
+            {
+              "codigo": "IL-20",
+              "texto": "Escribe textos literarios para el cultivo de valores universales y reforzar la dimensión humanista y el desarrollo físico y espiritual."
+            },
+            {
+              "codigo": "IL-21",
+              "texto": "Canalizar emociones y sentimientos mediante lecturas y escrituras reflexivas, fortaleciendo las relaciones humanas, el respeto y la dignidad de las personas."
+            }
           ]
         }
       ]
@@ -395,9 +604,18 @@
           "grupo_registro": "G1",
           "descripcion": "Elabora conjeturas y argumentos convincentes para presentar y discutir las propias ideas matemáticas.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Discute a partir de números reales y sus propiedades, ideas matemáticas en base a conjeturas y argumentos convincentes." },
-            { "codigo": "IL-2", "texto": "Discute sobre ideas matemáticas que impliquen la conceptualización y regularidades en patrones numéricos, así como la interpretación de expresiones algebraicas implicadas en ecuaciones de primer y segundo grado, desigualdades y sus propiedades." },
-            { "codigo": "IL-3", "texto": "Expresa a través de gráficos o cualquier otro medio soluciones a situaciones en estudios de casos, proyectos y problemas del contexto asociados a la planificación financiera, interés simple y compuesto." }
+            {
+              "codigo": "IL-1",
+              "texto": "Discute a partir de números reales y sus propiedades, ideas matemáticas en base a conjeturas y argumentos convincentes."
+            },
+            {
+              "codigo": "IL-2",
+              "texto": "Discute sobre ideas matemáticas que impliquen la conceptualización y regularidades en patrones numéricos, así como la interpretación de expresiones algebraicas implicadas en ecuaciones de primer y segundo grado, desigualdades y sus propiedades."
+            },
+            {
+              "codigo": "IL-3",
+              "texto": "Expresa a través de gráficos o cualquier otro medio soluciones a situaciones en estudios de casos, proyectos y problemas del contexto asociados a la planificación financiera, interés simple y compuesto."
+            }
           ]
         },
         {
@@ -406,9 +624,18 @@
           "grupo_registro": "G2",
           "descripcion": "Aplica procesos de razonamientos, con especial atención al razonamiento espacial y al razonamiento con proporciones y gráficas para la comprensión e interpretación del entorno.",
           "indicadores_logro": [
-            { "codigo": "IL-4", "texto": "Emplea el lenguaje matemático preciso en la interpretación de conceptos referidos a la geometria plana y su implicación con la fórmula de Herón y el teorema fundamental del triángulo." },
-            { "codigo": "IL-5", "texto": "Expresa con ideas claras los conceptos, propiedades y relaciones referidos al volumen de cuerpos redondos y su aplicación en situaciones de la vida diaria." },
-            { "codigo": "IL-6", "texto": "Expresa a partir de ideas matemáticas resultados de investigación asociados a los conocimientos de estadística y probabilidad para datos agrupados representándolos en gráficos estadísticos (circulares, diagramas de árbol y polígonos de frecuencia)." }
+            {
+              "codigo": "IL-4",
+              "texto": "Emplea el lenguaje matemático preciso en la interpretación de conceptos referidos a la geometria plana y su implicación con la fórmula de Herón y el teorema fundamental del triángulo."
+            },
+            {
+              "codigo": "IL-5",
+              "texto": "Expresa con ideas claras los conceptos, propiedades y relaciones referidos al volumen de cuerpos redondos y su aplicación en situaciones de la vida diaria."
+            },
+            {
+              "codigo": "IL-6",
+              "texto": "Expresa a partir de ideas matemáticas resultados de investigación asociados a los conocimientos de estadística y probabilidad para datos agrupados representándolos en gráficos estadísticos (circulares, diagramas de árbol y polígonos de frecuencia)."
+            }
           ]
         },
         {
@@ -417,9 +644,18 @@
           "grupo_registro": "G2",
           "descripcion": "Desarrolla diversas estrategias para resolver problemas del contexto, dentro y fuera de la matemática, interpretando y verificando los resultados en relación con la situación del problema original.",
           "indicadores_logro": [
-            { "codigo": "IL-7", "texto": "Interpreta haciendo uso del razonamiento lógico, situaciones que impliquen números reales y sus propiedades conectando con el razonamiento espacial y gráfico." },
-            { "codigo": "IL-8", "texto": "Emplea argumentos convincentes sobre ideas matemáticas referidas a la conceptualización y regularidades en patrones numéricos, así como la interpretación de expresiones algebraicas implicadas en ecuaciones de primer y segundo grado, desigualdades y sus propiedades." },
-            { "codigo": "IL-9", "texto": "Expresa a través de algún tipo de razonamiento matemático adecuado, soluciones a situaciones en proyectos y situaciones del contexto asociados a la planificación financiera, interés simple y compuesto." }
+            {
+              "codigo": "IL-7",
+              "texto": "Interpreta haciendo uso del razonamiento lógico, situaciones que impliquen números reales y sus propiedades conectando con el razonamiento espacial y gráfico."
+            },
+            {
+              "codigo": "IL-8",
+              "texto": "Emplea argumentos convincentes sobre ideas matemáticas referidas a la conceptualización y regularidades en patrones numéricos, así como la interpretación de expresiones algebraicas implicadas en ecuaciones de primer y segundo grado, desigualdades y sus propiedades."
+            },
+            {
+              "codigo": "IL-9",
+              "texto": "Expresa a través de algún tipo de razonamiento matemático adecuado, soluciones a situaciones en proyectos y situaciones del contexto asociados a la planificación financiera, interés simple y compuesto."
+            }
           ]
         },
         {
@@ -428,9 +664,18 @@
           "grupo_registro": "G4",
           "descripcion": "Muestra autonomía en la búsqueda de soluciones a situaciones relacionadas con los conocimientos matemáticos, respetando los diferentes criterios de solución de los demás.",
           "indicadores_logro": [
-            { "codigo": "IL-10", "texto": "Emplea inferencias lógicas acertadas en la interpretación de conceptos referidos a la geometría plana y su implicación con la fórmula de Herón y el teorema fundamental del triángulo." },
-            { "codigo": "IL-11", "texto": "Emplea el pensamiento lógico matemático al interpretar conceptos, propiedades y relaciones referidos al volumen de cuerpos redondos y su aplicación en situaciones de la vida diaria." },
-            { "codigo": "IL-12", "texto": "Toma decisiones sobre la base del razonamiento en resultados de investigación, asociados a los conocimientos de estadística y probabilidad para datos agrupados, representándolos en gráficos estadísticos (diagramas de árbol, circulares y polígonos de frecuencia)." }
+            {
+              "codigo": "IL-10",
+              "texto": "Emplea inferencias lógicas acertadas en la interpretación de conceptos referidos a la geometría plana y su implicación con la fórmula de Herón y el teorema fundamental del triángulo."
+            },
+            {
+              "codigo": "IL-11",
+              "texto": "Emplea el pensamiento lógico matemático al interpretar conceptos, propiedades y relaciones referidos al volumen de cuerpos redondos y su aplicación en situaciones de la vida diaria."
+            },
+            {
+              "codigo": "IL-12",
+              "texto": "Toma decisiones sobre la base del razonamiento en resultados de investigación, asociados a los conocimientos de estadística y probabilidad para datos agrupados, representándolos en gráficos estadísticos (diagramas de árbol, circulares y polígonos de frecuencia)."
+            }
           ]
         },
         {
@@ -439,9 +684,18 @@
           "grupo_registro": "G3",
           "descripcion": "Aplica herramientas tecnológicas para la resolución e interpretación de problemas del entorno y a partir de los conocimientos matemáticos que posee.",
           "indicadores_logro": [
-            { "codigo": "IL-13", "texto": "Resuelve problemas que impliquen números reales y sus propiedades y los relaciona a situaciones con patrones numéricos, expresiones algebraicas en ecuaciones de primer y segundo grado y desigualdades." },
-            { "codigo": "IL-14", "texto": "Emplea la resolución de problema como estrategia, para buscar soluciones a situaciones asociadas a la planificación financiera, interés simple y compuesto en proyectos y casos dentro y fuera de la matemática." },
-            { "codigo": "IL-15", "texto": "Resuelve situaciones problemáticas diversas en la que estén implicados conceptos referidos a la geometría plana y su relación con la fórmula de Herón y el teorema fundamental del triángulo." }
+            {
+              "codigo": "IL-13",
+              "texto": "Resuelve problemas que impliquen números reales y sus propiedades y los relaciona a situaciones con patrones numéricos, expresiones algebraicas en ecuaciones de primer y segundo grado y desigualdades."
+            },
+            {
+              "codigo": "IL-14",
+              "texto": "Emplea la resolución de problema como estrategia, para buscar soluciones a situaciones asociadas a la planificación financiera, interés simple y compuesto en proyectos y casos dentro y fuera de la matemática."
+            },
+            {
+              "codigo": "IL-15",
+              "texto": "Resuelve situaciones problemáticas diversas en la que estén implicados conceptos referidos a la geometría plana y su relación con la fórmula de Herón y el teorema fundamental del triángulo."
+            }
           ]
         },
         {
@@ -450,9 +704,18 @@
           "grupo_registro": "G3",
           "descripcion": "Aplica modelos matemáticos para estudiar situaciones del medioambiente que afecten la vida de la comunidad escolar.",
           "indicadores_logro": [
-            { "codigo": "IL-16", "texto": "Analiza y resuelve situaciones del contexto vinculadas a conceptos, propiedades y relaciones referidos al volumen de cuerpos redondos." },
-            { "codigo": "IL-17", "texto": "Toma decisiones sobre la base de la resolución de problemas, asociados a los conocimientos de estadística y probabilidad para datos agrupados, representándolos en gráficos estadísticos (diagramas de árbol, circulares y polígonos de frecuencia)." },
-            { "codigo": "IL-18", "texto": "Exhibe tolerancia y respeto frente a diferentes criterios y puntos de vistas sobre acciones y estrategias implicadas en la resolución de problemas dentro y fuera de la matemática." }
+            {
+              "codigo": "IL-16",
+              "texto": "Analiza y resuelve situaciones del contexto vinculadas a conceptos, propiedades y relaciones referidos al volumen de cuerpos redondos."
+            },
+            {
+              "codigo": "IL-17",
+              "texto": "Toma decisiones sobre la base de la resolución de problemas, asociados a los conocimientos de estadística y probabilidad para datos agrupados, representándolos en gráficos estadísticos (diagramas de árbol, circulares y polígonos de frecuencia)."
+            },
+            {
+              "codigo": "IL-18",
+              "texto": "Exhibe tolerancia y respeto frente a diferentes criterios y puntos de vistas sobre acciones y estrategias implicadas en la resolución de problemas dentro y fuera de la matemática."
+            }
           ]
         },
         {
@@ -461,10 +724,138 @@
           "grupo_registro": "G4",
           "descripcion": "Muestra autonomía en la búsqueda de soluciones a situaciones de problemas matemáticos, respetando los diferentes criterios de abordaje de sus compañeros.",
           "indicadores_logro": [
-            { "codigo": "IL-19", "texto": "Integra la tecnologia (Excel, GeoGebra y otros recursos tecnológicos...) para interpretar problemas del entorno relacionados con los conocimientos matemáticos que posee." },
-            { "codigo": "IL-20", "texto": "Emplea modelos matemáticos para interpretar situaciones diversas referidas al medioambiente y la salud sobre la base de los conocimientos matemáticos que posee." },
-            { "codigo": "IL-21", "texto": "Asume actitud de respeto frente a los diferentes criterios y puntos de vistas de sus compañeros al interpretar soluciones en determinados problemas propios de la matemática." }
+            {
+              "codigo": "IL-19",
+              "texto": "Integra la tecnologia (Excel, GeoGebra y otros recursos tecnológicos...) para interpretar problemas del entorno relacionados con los conocimientos matemáticos que posee."
+            },
+            {
+              "codigo": "IL-20",
+              "texto": "Emplea modelos matemáticos para interpretar situaciones diversas referidas al medioambiente y la salud sobre la base de los conocimientos matemáticos que posee."
+            },
+            {
+              "codigo": "IL-21",
+              "texto": "Asume actitud de respeto frente a los diferentes criterios y puntos de vistas de sus compañeros al interpretar soluciones en determinados problemas propios de la matemática."
+            }
           ]
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "2DO-MA-U1",
+          "nombre_unidad": "1. Expresiones Algebraicas y Polinomios",
+          "tipo_texto": "Procedimental / Lógico",
+          "competencias_asociadas": [
+            "CE-MA1",
+            "CE-MA2",
+            "CE-MA3"
+          ],
+          "indicadores_asociados": [
+            "IL-1",
+            "IL-4",
+            "IL-7"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Variables, constantes y expresiones algebraicas.",
+              "Términos algebraicos: coeficiente, parte literal y grado.",
+              "Polinomios: definición, clasificación (monomios, binomios, trinomios) y grado absoluto/relativo.",
+              "Evaluación de polinomios para valores numéricos."
+            ],
+            "procedimentales": [
+              "Traducción de enunciados en lenguaje ordinario a lenguaje algebraico.",
+              "Reducción de términos semejantes en expresiones algebraicas complejas."
+            ],
+            "actitudinales": [
+              "Perseverancia y precisión en la simulación algebraica."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-MA-U2",
+          "nombre_unidad": "2. Operaciones con Polinomios (Suma, Resta y Multiplicación)",
+          "tipo_texto": "Procedimental / Algorítmico",
+          "competencias_asociadas": [
+            "CE-MA1",
+            "CE-MA3",
+            "CE-MA5"
+          ],
+          "indicadores_asociados": [
+            "IL-2",
+            "IL-8",
+            "IL-13"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Suma y resta de polinomios.",
+              "Multiplicación de monomios por polinomios y de polinomios por polinomios.",
+              "Propiedad distributiva y suma de términos semejantes."
+            ],
+            "procedimentales": [
+              "Ejecución sistemática de algoritmos de operaciones polinómicas.",
+              "Modelación algebraica de áreas y perímetros de figuras geométricas."
+            ],
+            "actitudinales": [
+              "Rigor y orden en el desarrollo de procedimientos algebraicos."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-MA-U3",
+          "nombre_unidad": "3. Ecuaciones e Inecuaciones de Primer Grado",
+          "tipo_texto": "Resolución de Problemas",
+          "competencias_asociadas": [
+            "CE-MA2",
+            "CE-MA3",
+            "CE-MA6"
+          ],
+          "indicadores_asociados": [
+            "IL-5",
+            "IL-9",
+            "IL-16"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Ecuación lineal con una incógnita y concepto de igualdad.",
+              "Propiedades de la igualdad y despeje de variables.",
+              "Inecuaciones de primer grado e intervalos en la recta real."
+            ],
+            "procedimentales": [
+              "Planteamiento y resolución de problemas cotidianos mediante ecuaciones lineales.",
+              "Representación gráfica de soluciones de inecuaciones en la recta numérica."
+            ],
+            "actitudinales": [
+              "Pensamiento crítico frente a situaciones problemáticas reales."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-MA-U4",
+          "nombre_unidad": "4. Geometría de Triángulos y Teorema de Pitágoras",
+          "tipo_texto": "Geométrico / Deductivo",
+          "competencias_asociadas": [
+            "CE-MA1",
+            "CE-MA4",
+            "CE-MA5"
+          ],
+          "indicadores_asociados": [
+            "IL-3",
+            "IL-10",
+            "IL-14"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Triángulos: clasificación según sus lados y ángulos.",
+              "Propiedades fundamentales de los triángulos (suma de ángulos internos = 180°).",
+              "Teorema de Pitágoras en triángulos rectángulos."
+            ],
+            "procedimentales": [
+              "Demostración gráfica y aplicación práctica del Teorema de Pitágoras.",
+              "Cálculo de distancias inaccesibles en planos y maquetas."
+            ],
+            "actitudinales": [
+              "Aprecio por la geometría deductiva y su utilidad práctica."
+            ]
+          }
         }
       ]
     },
@@ -477,9 +868,18 @@
           "grupo_registro": "G1",
           "descripcion": "Compara de manera rigurosa la autoría de fuentes primarias y secundarias consultadas en medios impresos y digitales sobre procesos sociales, políticos, económicos, históricos, geográficos o culturales, con la finalidad de garantizar la credibilidad de las informaciones.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Identifica con pertinencia los movimientos sismicos y sus puntos geográficos en distinto mapa, a partir de consulta en fuentes confiables de información." },
-            { "codigo": "IL-2", "texto": "Elabora mapa de las migraciones humanas de una región o país, identificando los diferentes tipos de migraciones y las características de cada uno, utilizando informaciones confiables y rigurosa." },
-            { "codigo": "IL-3", "texto": "Realiza en brochure e infografías, explicaciones sencillas de los cambios históricos, espaciales, políticos, económicos y culturales durante los períodos históricos estudiados." }
+            {
+              "codigo": "IL-1",
+              "texto": "Identifica con pertinencia los movimientos sismicos y sus puntos geográficos en distinto mapa, a partir de consulta en fuentes confiables de información."
+            },
+            {
+              "codigo": "IL-2",
+              "texto": "Elabora mapa de las migraciones humanas de una región o país, identificando los diferentes tipos de migraciones y las características de cada uno, utilizando informaciones confiables y rigurosa."
+            },
+            {
+              "codigo": "IL-3",
+              "texto": "Realiza en brochure e infografías, explicaciones sencillas de los cambios históricos, espaciales, políticos, económicos y culturales durante los períodos históricos estudiados."
+            }
           ]
         },
         {
@@ -488,9 +888,18 @@
           "grupo_registro": "G2",
           "descripcion": "Interpreta por medio de investigaciones realizadas, hechos históricos y su relación con el espacio geográfico, con la finalidad de evaluar críticamente los cambios que se producen en el tiempo y el espacio.",
           "indicadores_logro": [
-            { "codigo": "IL-4", "texto": "Analiza las tasas demográficas de un país, su evolución a lo largo del tiempo y evalúa la influencia de diferentes factores económicos o culturales presentes en estos cambios." },
-            { "codigo": "IL-5", "texto": "Analiza los cambios que se produjeron en el mundo tras la Primera Guerra Mundial." },
-            { "codigo": "IL-6", "texto": "Argumenta mediante ensayos e informes de lectura sobre las caracteristicas fundamentales de la cultura moderna y postmoderna." }
+            {
+              "codigo": "IL-4",
+              "texto": "Analiza las tasas demográficas de un país, su evolución a lo largo del tiempo y evalúa la influencia de diferentes factores económicos o culturales presentes en estos cambios."
+            },
+            {
+              "codigo": "IL-5",
+              "texto": "Analiza los cambios que se produjeron en el mundo tras la Primera Guerra Mundial."
+            },
+            {
+              "codigo": "IL-6",
+              "texto": "Argumenta mediante ensayos e informes de lectura sobre las caracteristicas fundamentales de la cultura moderna y postmoderna."
+            }
           ]
         },
         {
@@ -499,9 +908,18 @@
           "grupo_registro": "G2",
           "descripcion": "Explica mediante el levantamiento de información, la existencia de un problema social y el contexto en el que se produce, con la finalidad de comprender su incidencia en el tiempo y el espacio.",
           "indicadores_logro": [
-            { "codigo": "IL-7", "texto": "Elabora proyectos comunitarios enfocados hacia la protección del medioambiente, aplicando conocimientos sobre los problemas ambientales y herramientas para su abordaje." },
-            { "codigo": "IL-8", "texto": "Elabora una línea de tiempo que muestre los principales acontecimientos históricos del siglo estudiados." },
-            { "codigo": "IL-9", "texto": "Aplica metodologías participativas y democráticas para buscar soluciones a conflictos en distintos contextos sociales." }
+            {
+              "codigo": "IL-7",
+              "texto": "Elabora proyectos comunitarios enfocados hacia la protección del medioambiente, aplicando conocimientos sobre los problemas ambientales y herramientas para su abordaje."
+            },
+            {
+              "codigo": "IL-8",
+              "texto": "Elabora una línea de tiempo que muestre los principales acontecimientos históricos del siglo estudiados."
+            },
+            {
+              "codigo": "IL-9",
+              "texto": "Aplica metodologías participativas y democráticas para buscar soluciones a conflictos en distintos contextos sociales."
+            }
           ]
         },
         {
@@ -510,9 +928,18 @@
           "grupo_registro": "G4",
           "descripcion": "Promueve proyectos e iniciativas que fomenten una cultura de paz, el respeto por los valores culturales e interculturales, y los derechos humanos, con la finalidad de lograr una convivencia pacífica y armoniosa en la sociedad.",
           "indicadores_logro": [
-            { "codigo": "IL-10", "texto": "Elabora propuestas sobre prácticas democráticas, solución de conflictos y cultura de paz mediante la participación como medio de solución." },
-            { "codigo": "IL-11", "texto": "Elabora proyectos sencillos sobre los aspectos fundamentales de la Constitución dominicana y las características del Estado de derecho." },
-            { "codigo": "IL-12", "texto": "Elabora proyectos sobre educación vial y tributaria que permiten concientizar a la comunidad sobre la importancia del cumplimiento de las normas." }
+            {
+              "codigo": "IL-10",
+              "texto": "Elabora propuestas sobre prácticas democráticas, solución de conflictos y cultura de paz mediante la participación como medio de solución."
+            },
+            {
+              "codigo": "IL-11",
+              "texto": "Elabora proyectos sencillos sobre los aspectos fundamentales de la Constitución dominicana y las características del Estado de derecho."
+            },
+            {
+              "codigo": "IL-12",
+              "texto": "Elabora proyectos sobre educación vial y tributaria que permiten concientizar a la comunidad sobre la importancia del cumplimiento de las normas."
+            }
           ]
         },
         {
@@ -521,9 +948,18 @@
           "grupo_registro": "G3",
           "descripcion": "Analiza explicaciones científicas de fenómenos naturales y teorías de fenómenos sociales, mediante el uso de fuentes confiables en sus proyectos de investigación, con la finalidad de sustentar los hallazgos.",
           "indicadores_logro": [
-            { "codigo": "IL-13", "texto": "Compara las similitudes y diferencias entre los cambios ocurridos en el mundo durante el neocolonialismo, la descolonización y las guerras mundiales, utilizando varios mapas de fuentes confiables." },
-            { "codigo": "IL-14", "texto": "Analiza teorías que explican la incidencia de las placas tectónicas en los continentes, las causas de sismos, terremotos, maremotos y huracanes." },
-            { "codigo": "IL-15", "texto": "Explica mediante el análisis de autores relevantes, los tratados internacionales antes y después de las guerras mundiales y su impacto en la división del mundo en conceptos (norte y sur)." }
+            {
+              "codigo": "IL-13",
+              "texto": "Compara las similitudes y diferencias entre los cambios ocurridos en el mundo durante el neocolonialismo, la descolonización y las guerras mundiales, utilizando varios mapas de fuentes confiables."
+            },
+            {
+              "codigo": "IL-14",
+              "texto": "Analiza teorías que explican la incidencia de las placas tectónicas en los continentes, las causas de sismos, terremotos, maremotos y huracanes."
+            },
+            {
+              "codigo": "IL-15",
+              "texto": "Explica mediante el análisis de autores relevantes, los tratados internacionales antes y después de las guerras mundiales y su impacto en la división del mundo en conceptos (norte y sur)."
+            }
           ]
         },
         {
@@ -532,9 +968,18 @@
           "grupo_registro": "G3",
           "descripcion": "Argumenta a través de investigaciones sobre las acciones humanas que pueden afectar los estilos de vida saludables y el equilibrio ambiental, con la finalidad de presentar su impacto en la sociedad y en la naturaleza.",
           "indicadores_logro": [
-            { "codigo": "IL-16", "texto": "Desarrolla argumentos de manera funcional a través de textos que permitan comprender las propuestas presentadas por organismos internacionales en relación con la protección del medioambiente." },
-            { "codigo": "IL-17", "texto": "Analiza la influencia de los factores naturales y humanos en los elementos del clima, sus implicaciones del calentamiento en el planeta Tierra a nivel global, regional y local." },
-            { "codigo": "IL-18", "texto": "Analiza rigurosamente el impacto social de la incidencia de la contaminación en la República Dominicana, explorando las causas y consecuencias en la salud, economía, calidad de vida y medioambiente." }
+            {
+              "codigo": "IL-16",
+              "texto": "Desarrolla argumentos de manera funcional a través de textos que permitan comprender las propuestas presentadas por organismos internacionales en relación con la protección del medioambiente."
+            },
+            {
+              "codigo": "IL-17",
+              "texto": "Analiza la influencia de los factores naturales y humanos en los elementos del clima, sus implicaciones del calentamiento en el planeta Tierra a nivel global, regional y local."
+            },
+            {
+              "codigo": "IL-18",
+              "texto": "Analiza rigurosamente el impacto social de la incidencia de la contaminación en la República Dominicana, explorando las causas y consecuencias en la salud, economía, calidad de vida y medioambiente."
+            }
           ]
         },
         {
@@ -543,10 +988,108 @@
           "grupo_registro": "G4",
           "descripcion": "Demuestra su capacidad para valorar y fomentar relaciones equilibradas y armoniosas, con la finalidad de impulsar la formación de una ciudadania responsable y la defensa de los principios democráticos.",
           "indicadores_logro": [
-            { "codigo": "IL-19", "texto": "Comprende la importancia del respeto a los derechos humanos y el respeto a lo establecido en la Constitución en la solución de problemáticas sociales." },
-            { "codigo": "IL-20", "texto": "Realiza propuestas que garanticen la cultura de paz en cualquier espacio y el respeto a los derechos humanos." },
-            { "codigo": "IL-21", "texto": "Propone proyectos comunitarios que benefician a todos los ciudadanos, utilizando herramientas y estrategias que fomenten la participación activa y colaborativa de la comunidad." }
+            {
+              "codigo": "IL-19",
+              "texto": "Comprende la importancia del respeto a los derechos humanos y el respeto a lo establecido en la Constitución en la solución de problemáticas sociales."
+            },
+            {
+              "codigo": "IL-20",
+              "texto": "Realiza propuestas que garanticen la cultura de paz en cualquier espacio y el respeto a los derechos humanos."
+            },
+            {
+              "codigo": "IL-21",
+              "texto": "Propone proyectos comunitarios que benefician a todos los ciudadanos, utilizando herramientas y estrategias que fomenten la participación activa y colaborativa de la comunidad."
+            }
           ]
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "2DO-CS-U1",
+          "nombre_unidad": "1. Geografía Humana y Población Mundial",
+          "tipo_texto": "Geográfico / Social",
+          "competencias_asociadas": [
+            "CE-CS1",
+            "CE-CS2",
+            "CE-CS5"
+          ],
+          "indicadores_asociados": [
+            "IL-1",
+            "IL-4",
+            "IL-13"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Geografía humana: concepto, objeto de estudio y ramas.",
+              "Distribución de la población mundial y densidad demográfica.",
+              "Tasas de natalidad, mortalidad, crecimiento poblacional y pirámides de edad."
+            ],
+            "procedimentales": [
+              "Análisis de pirámides demográficas comparativas de países desarrollados y en desarrollo.",
+              "Elaboración de mapas temáticos de densidad poblacional global."
+            ],
+            "actitudinales": [
+              "Sensibilidad ante los problemas de sobrepoblación y desigualdad social."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CS-U2",
+          "nombre_unidad": "2. Los Aborígenes de la Española (Taínos) y las Antillas",
+          "tipo_texto": "Histórico / Cultural",
+          "competencias_asociadas": [
+            "CE-CS1",
+            "CE-CS3",
+            "CE-CS6"
+          ],
+          "indicadores_asociados": [
+            "IL-2",
+            "IL-7",
+            "IL-16"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Grupos pobladores prehispánicos de las Antillas (Ciguayos, Macorijes, Taínos).",
+              "Organización social, política (cacicazgos), económica (conuco) y religiosa de los Taínos.",
+              "Manifestaciones culturales y legado taíno en la sociedad dominicana actual."
+            ],
+            "procedimentales": [
+              "Exposición de objetos y herramientas taínas tradicionales.",
+              "Investigación sobre vocablos, alimentos y costumbres de origen taíno."
+            ],
+            "actitudinales": [
+              "Orgullo y valoración del patrimonio indígena taíno."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CS-U3",
+          "nombre_unidad": "3. Descubrimiento, Conquista y Colonización de América",
+          "tipo_texto": "Histórico / Analítico",
+          "competencias_asociadas": [
+            "CE-CS2",
+            "CE-CS4",
+            "CE-CS5"
+          ],
+          "indicadores_asociados": [
+            "IL-5",
+            "IL-10",
+            "IL-14"
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Europa en el siglo XV: los viajes de exploración portugueses y españoles.",
+              "Llegada de Cristóbal Colón a la Española en 1492 y proceso de conquista.",
+              "La encomienda, la catástrofe demográfica indígena y la introducción de la esclavitud africana."
+            ],
+            "procedimentales": [
+              "Debate histórico sobre el impacto del encuentro entre dos mundos.",
+              "Análisis de testimonios de Bartolomé de las Casas y Antonio de Montesinos."
+            ],
+            "actitudinales": [
+              "Rechazo a toda forma de violencia, opresión y racismo."
+            ]
+          }
         }
       ]
     },
@@ -559,8 +1102,14 @@
           "grupo_registro": "G1",
           "descripcion": "Comprende y expresa ideas, sentimientos y valores culturales en distintas situaciones de comunicación, utilizando el idioma inglés de forma breve y sencilla.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Responde de forma adecuada a preguntas e indicaciones a partir de textos breves y sencillos." },
-            { "codigo": "IL-2", "texto": "Produce textos breves y sencillos enlazados por conectores básicos." }
+            {
+              "codigo": "IL-1",
+              "texto": "Responde de forma adecuada a preguntas e indicaciones a partir de textos breves y sencillos."
+            },
+            {
+              "codigo": "IL-2",
+              "texto": "Produce textos breves y sencillos enlazados por conectores básicos."
+            }
           ]
         }
       ]
@@ -574,7 +1123,10 @@
           "grupo_registro": "G1",
           "descripcion": "Se comunica en francés utilizando frases y oraciones básicas, breves y sencillas sobre temas cotidianos.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Responde de manera adecuada a preguntas sobre información personal básica y preferencias." }
+            {
+              "codigo": "IL-1",
+              "texto": "Responde de manera adecuada a preguntas sobre información personal básica y preferencias."
+            }
           ]
         }
       ]
@@ -588,7 +1140,10 @@
           "grupo_registro": "G1",
           "descripcion": "Argumenta sobre la función de los distintos lenguajes artísticos en la construcción histórica de la sociedad.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Expresa temáticas populares en sus creaciones artísticas utilizando materiales diversos." }
+            {
+              "codigo": "IL-1",
+              "texto": "Expresa temáticas populares en sus creaciones artísticas utilizando materiales diversos."
+            }
           ]
         }
       ]
@@ -602,7 +1157,10 @@
           "grupo_registro": "G3",
           "descripcion": "Aplica sus capacidades físicas y habilidades motrices en la práctica de deportes y actividades corporales sostenibles.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Ejecuta patrones motrices complejos y fomenta la actividad física para el bienestar integral." }
+            {
+              "codigo": "IL-1",
+              "texto": "Ejecuta patrones motrices complejos y fomenta la actividad física para el bienestar integral."
+            }
           ]
         }
       ]
@@ -616,7 +1174,10 @@
           "grupo_registro": "G4",
           "descripcion": "Promueve iniciativas comunitarias de cultura de paz, empatía y valores éticos universales.",
           "indicadores_logro": [
-            { "codigo": "IL-1", "texto": "Diseña proyectos comunitarios de ayuda social y convivencia pacífica." }
+            {
+              "codigo": "IL-1",
+              "texto": "Diseña proyectos comunitarios de ayuda social y convivencia pacífica."
+            }
           ]
         }
       ]
