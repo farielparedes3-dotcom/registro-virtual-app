@@ -3,6 +3,7 @@ import secundaria2doOfficial from './secundaria_2do.json';
 import secundaria3roOfficial from './secundaria_3ro.json';
 import secundaria4toOfficial from './secundaria_4to.json';
 import secundaria5toOfficial from './secundaria_5to.json';
+import secundaria6toOfficial from './secundaria_6to.json';
 import secundario1roCN from './secundario_1ro_ciencias_naturaleza.json';
 import secundario1roLE from './secundario_1ro_lengua_espanola.json';
 import secundario1roMAT from './secundario_1ro_matematica.json';
@@ -13,6 +14,7 @@ export const OFFICIAL_SECUNDARIA_2DO = secundaria2doOfficial;
 export const OFFICIAL_SECUNDARIA_3RO = secundaria3roOfficial;
 export const OFFICIAL_SECUNDARIA_4TO = secundaria4toOfficial;
 export const OFFICIAL_SECUNDARIA_5TO = secundaria5toOfficial;
+export const OFFICIAL_SECUNDARIA_6TO = secundaria6toOfficial;
 
 // Master Curriculum Registry
 export const CURRICULO_DATASETS = [
@@ -28,6 +30,9 @@ export const CURRICULO_DATASETS = [
 export function getOfficialGradeDataset(gradeStr) {
   if (!gradeStr) return secundaria1roOfficial;
   const cleanGrade = String(gradeStr).trim().toLowerCase();
+  if (cleanGrade.includes('6to') || cleanGrade.startsWith('6')) {
+    return secundaria6toOfficial;
+  }
   if (cleanGrade.includes('5to') || cleanGrade.startsWith('5')) {
     return secundaria5toOfficial;
   }
