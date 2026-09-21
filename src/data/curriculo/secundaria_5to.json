@@ -1,0 +1,414 @@
+{
+  "nivel": "Secundario - Segundo Ciclo",
+  "modalidad": "Académica",
+  "grado": "5to",
+  "ordenanza_evaluacion": "04-2023",
+  "grupos_calificacion": {
+    "G1": { "nombre": "Competencia Comunicativa", "competencias": ["CE1"] },
+    "G2": { "nombre": "Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas", "competencias": ["CE2", "CE3"] },
+    "G3": { "nombre": "Científica y Tecnológica / Ambiental y de la Salud", "competencias": ["CE5", "CE6"] },
+    "G4": { "nombre": "Ética y Ciudadana / Desarrollo Personal y Espiritual", "competencias": ["CE4", "CE7"] }
+  },
+  "areas": {
+    "ciencias_naturaleza": {
+      "nombre": "Ciencias de la Naturaleza",
+      "disciplina": "Química",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-CN1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica utilizando el lenguaje científico y tecnológico fundamental de la química que implica ideas, leyes, modelos y procesos.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Interpreta de manera precisa el lenguaje científico y tecnológico considerando las ideas básicas y procesos científicos de la química, así como sus contextos y su alcance, asumiendo una posición crítica ante información o proceso pseudocientífico, partiendo de problemática de ejes temáticos transversales." },
+            { "codigo": "IL-2", "texto": "Produce y comunica efectivamente informes de laboratorio, ensayo, resúmenes, proyectos, resolución de problema, presentación oral, carteles e información científica relacionada con los fundamentos de la química." },
+            { "codigo": "IL-3", "texto": "Utiliza símbolos, términos, modelos, gráficas, ecuaciones y definiciones de la química, leyes y convenciones químicas y tecnológicas de forma adecuadas." }
+          ]
+        },
+        {
+          "codigo": "CE-CN2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Ofrece explicaciones y estrategias científicas y tecnológicas a problemas y fenómenos naturales relacionados con los fundamentos de la química.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Utiliza estrategias efectivas en la búsqueda de evidencias para dar respuesta a problemas o situaciones relacionadas con la química." },
+            { "codigo": "IL-5", "texto": "Aplica de forma adecuada los conceptos, principios, ideas, modelos y leyes presentes en problemas y fenómenos químicos, diseñando y aplicando estrategias en la búsqueda de soluciones, tanto en términos cualitativos como cuantitativos." },
+            { "codigo": "IL-6", "texto": "Formula, analiza y evalúa pertinentemente las evidencias que dan respuestas a problemas y fenómenos asociados con explicación química, comprendiendo el alcance de los conceptos, modelos, principios, teoría y leyes." }
+          ]
+        },
+        {
+          "codigo": "CE-CN3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Aplica diversos procedimientos científicos y tecnológicos para solucionar problemas o dar respuestas a fenómenos naturales relacionados con los fundamentos de la química.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Utiliza y evalúa efectivamente diversas estrategias, procedimientos, herramientas técnicas, para solucionar, diseñar y ejecutar experimentos con base en la química." },
+            { "codigo": "IL-8", "texto": "Formula, ejecuta y evalúa efectivamente experimentos, estructuras, herramientas, sistemas y mecanismo para dar respuesta al problema o fenómeno natural asociada con la química." },
+            { "codigo": "IL-9", "texto": "Construye, utiliza y evalúa apropiadamente objetos, herramientas y estructuras proponiendo mecanismo y modelos que le permitan dar respuestas a situaciones y problemas vinculado a la química." }
+          ]
+        },
+        {
+          "codigo": "CE-CN4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza críticamente la naturaleza y filosofía de la química, ingenierías y las tecnologías, sus aportes, alcance del desarrollo tecnológico en nuestra sociedad y la ética en la investigación.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Expone efectivamente producción oral o escrita, basados en análisis crítico y comparativo de época abordando el desarrollo histórico y su contexto social del desarrollo de química." },
+            { "codigo": "IL-11", "texto": "Usa de manera efectiva argumentos sustentados con evidencias o posición filosófica, al asumir postura sobre conflicto en decisiones éticas de la química y las ingenierías." },
+            { "codigo": "IL-12", "texto": "Analiza en forma apropiada y representa el desarrollo científico y tecnológico y el impacto de la química en nuestra sociedad." }
+          ]
+        },
+        {
+          "codigo": "CE-CN5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Se cuestiona e identifica problemas y situaciones, a la vez que construye una explicación utilizando conceptos, modelos, leyes, teorías y procesos fundamentales de la química y las ingenierías.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Planifica y realiza de investigación escolar o prácticas experimentales y simulaciones efectivamente." },
+            { "codigo": "IL-14", "texto": "Lleva a cabo aplicación apropiada de investigación en química, identificando planteamiento del problema, materiales, métodos, recolección de información, recursos tecnológicos, gráficas, tablas, resultados, discusión, conclusión y derechos de autor." },
+            { "codigo": "IL-15", "texto": "Presentación efectiva y sistemática de sus argumentos basados en evidencias." }
+          ]
+        },
+        {
+          "codigo": "CE-CN6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Asume y actúa con responsabilidad crítica y autónoma para un desarrollo sostenible, cuidado ambiental y su salud, basadas en las ideas y teorías de la química.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Identifica de manera correcta situaciones o acciones de riesgo para su salud, el medioambiente o de desarrollo sostenible." },
+            { "codigo": "IL-17", "texto": "Planifica acciones efectivas que promueva cuidado de su salud, del medioambiente y, a favor del desarrollo sostenible en su comunidad." },
+            { "codigo": "IL-18", "texto": "Aplica acciones proactivas apropiadas a un estilo de vida saludable y sostenido con el medioambiente." }
+          ]
+        },
+        {
+          "codigo": "CE-CN7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal y profesional desde la química e ingenierías.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Identifica acciones efectivas en procura de seguimiento al proceso de su proyecto de desarrollo personal, académico." },
+            { "codigo": "IL-20", "texto": "Evalúa y valora pertinentemente profesiones y oficios afines a la química." },
+            { "codigo": "IL-21", "texto": "Muestra actitudes y valores apropiados que fortalezcan su desarrollo personal, académico y vocación profesional." }
+          ]
+        }
+      ]
+    },
+    "lengua_espanola": {
+      "nombre": "Lengua Española",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-LE1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Muestra destrezas lingüísticas al exponer ideas y experiencias en diferentes situaciones de comunicación social, mediante un tipo de texto (funcional o literario) conveniente desde la comprensión y producción oral y escrita, usando medios y recursos diversos.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Evidencia conocimientos, dominio y habilidades al comunicarse, utilizando un tipo de texto conveniente para relacionarse en diferentes contextos comunicativos, mediante medios y recursos tecnológicos, así como de otros tipos." },
+            { "codigo": "IL-2", "texto": "Emplea diversidad de textos en situaciones de comunicación para una mayor relación con los demás, usando diferentes medios y recursos tecnológicos y de otros tipos." },
+            { "codigo": "IL-3", "texto": "Se comunica de manera eficaz, usando diferentes textos, en contextos del ámbito local, nacional y mundial, demostrando criticidad y creatividad de sus ideas." }
+          ]
+        },
+        {
+          "codigo": "CE-LE2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Analiza textos variados a partir de inferencias, demostrando un pensamiento estructurado que le lleva a conclusiones razonables y lógicas en diferentes contextos.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Demuestra conocimiento y dominio de secuencias argumentativas en discursos diversos, abordando temas sociales y partiendo de sus habilidades de comprensión y producción." },
+            { "codigo": "IL-5", "texto": "Pone en práctica sus conocimientos de comprensión y producción a partir de explicaciones de temas del entorno familiar, escolar, comunitario, nacional y del mundo, promocionando conocimientos innovadores." },
+            { "codigo": "IL-6", "texto": "Presenta informaciones en las que sostiene juicios y puntos de vista para la construcción de un pensamiento estructurado, derivando conclusiones y guardando el respeto de las opiniones de los demás." }
+          ]
+        },
+        {
+          "codigo": "CE-LE3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Selecciona textos específicos que apoyan el desarrollo de una investigación científica, siguiendo criterios de relevancia, pertinencia, validez y confiabilidad para la solución de problemas.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Utiliza sus conocimientos sobre problemas sociales para búsqueda de posibles soluciones, explicándolas en medios y textos apropiados." },
+            { "codigo": "IL-8", "texto": "Emplea textos diversos con mayor grado de complejidad y con informaciones confiables, que aportan propuestas para la solución de problemas locales, nacionales e internacionales." },
+            { "codigo": "IL-9", "texto": "Produce ensayos, informes u otros tipos de textos para presentar conclusiones y recomendaciones de investigaciones realizadas, que plantean soluciones de problemas de diferentes ámbitos." }
+          ]
+        },
+        {
+          "codigo": "CE-LE4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Emplea diversidad de textos de secuencia argumentativa, con los que conoce y cuestiona las prácticas sociales de ciudadanía en el entorno local y nacional, confrontándolas con valores universales.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Especifica nuevas relaciones socioculturales en las diferentes situaciones de comunicación que participa, caracterizándolas mediante un género textual." },
+            { "codigo": "IL-11", "texto": "Produce textos diversos para la promoción de prácticas sociales de ciudadanía y valores universales, en variados contextos, como aporte al fortaleciendo de las relaciones de los seres humanos." },
+            { "codigo": "IL-12", "texto": "Elabora proyectos que valoran las prácticas ciudadanas de la comunidad, así como la solución a los problemas, haciendo uso de textos adecuados." }
+          ]
+        },
+        {
+          "codigo": "CE-LE5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Divulga a través textos de secuencia expositivo-explicativa hallazgos científicos, sociales y tecnológicos a lo largo del tiempo, para aportar soluciones a problemas de diferentes contextos.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Realiza investigaciones de acuerdo con su capacidad sobre situaciones que inciden en la comunidad que lo rodea, apoyándose en el uso de una tipología textual conveniente y recursos variados." },
+            { "codigo": "IL-14", "texto": "Produce textos variados, especialmente de secuencia expositivo-explicativa, para presentar resultados de investigaciones sobre temas sociales de diferentes ámbitos." },
+            { "codigo": "IL-15", "texto": "Publica resultados de investigaciones realizadas, de incidencia escolar, comunitario y nacional, apoyándose en medios y recursos tecnológicos y haciendo uso de un género textual conveniente." }
+          ]
+        },
+        {
+          "codigo": "CE-LE6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Publica informaciones sobre temas relacionados con salud y medioambiente, a través de textos como catálogo, receta, artículos de opinión e instructivos, en el ámbito escolar y comunitario, haciendo uso de herramientas tecnológicas, entre otras.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Identifica, con mayor nivel de criticidad, temas diversos sobre salud, ambiente, alimentación, entre otros que inciden en la comunidad a través de textos apropiados y TIC." },
+            { "codigo": "IL-17", "texto": "Elabora diversidad de textos como catálogos, recetas, artículos de opinión, instructivos, con la finalidad de promover temáticas de salubridad y medioambiente." },
+            { "codigo": "IL-18", "texto": "Utiliza variedad de textos en actividades de intercomunicación para sensibilizar a las personas frente a la preservación de la salud y el cuidado de los ecosistemas." }
+          ]
+        },
+        {
+          "codigo": "CE-LE7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Utiliza textos literarios y de otros tipos, para manifestar sus sentimientos, emociones, inquietudes en la promoción de valores universales y fortalecer la dimensión humanista.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Evidencia compromisos más profundos consigo mismo y con los demás a través de textos convenientes, fortaleciendo la confianza y comprensión humana." },
+            { "codigo": "IL-20", "texto": "Cultiva valores universales y refuerza la dimensión humanista mediante textos relacionados que produce." },
+            { "codigo": "IL-21", "texto": "Reflexiona mediante textos diversos en procura de canalizar emociones y sentimientos, así como fortalecer valores espirituales." }
+          ]
+        }
+      ]
+    },
+    "matematica": {
+      "nombre": "Matemática",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-MAT1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Emplea ideas oralmente y por escrito, haciendo uso de la notación apropiada y valorando la potencia de esta en el desarrollo de las propias ideas matemáticas.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Valora el desarrollo de ideas matemáticas relacionadas con las cónicas, recta, circunferencia y parábola y haciendo uso de la notación matemática adecuada." },
+            { "codigo": "IL-2", "texto": "Se expresa de manera convincente al concluir el desarrollo de procesos implicados con las cónicas (elipse, hipérbola y sus elementos) y los representa de manera gráfica." },
+            { "codigo": "IL-3", "texto": "Emplea el lenguaje matemático adecuado para diferenciar y operar con vectores y matrices, estableciendo la característica de una matriz, sus tipos y la inversa de una matriz." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Juzga la validez de un argumento matemático, haciendo uso de los conocimientos y las reglas de razonamiento lógico.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Comunica sus ideas en el desarrollo histórico de la trigonometría y las vincula con las funciones trigonométricas y la ley de seno y del coseno." },
+            { "codigo": "IL-5", "texto": "Se expresa con criterios claros al interpretar los procesos implicados en la resolución de triángulos rectángulos, oblicuángulos e identidades trigonométricas asociadas a situaciones matemáticas." },
+            { "codigo": "IL-6", "texto": "Utiliza el razonamiento matemático para argumentar los procesos en el estudio de las cónicas, recta, circunferencia y parábola y las relaciona con situaciones de la vida diaria." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Formula problemas a partir de situaciones dentro y fuera del contexto matemático y busca sus soluciones.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Emplea el pensamiento lógico al desarrollar los procesos implicados con las cónicas (elipse, hipérbola y sus elementos) y los representa de manera gráfica." },
+            { "codigo": "IL-8", "texto": "Aplica razonamientos matemáticos correctos para diferenciar y operar con vectores y matrices estableciendo la característica de una matriz, sus tipos y su inversa." },
+            { "codigo": "IL-9", "texto": "Se expresa con argumentos convincentes y bien articulados al interpretar sus ideas en el desarrollo histórico de la trigonometría y los vincula con funciones trigonométricas y leyes de seno y coseno." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Justifica, respetando e integrando el criterio de las demás personas, soluciones a problemas por medio de sus conocimientos matemáticos.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Utiliza principios lógicos matemáticos para el análisis de los procesos implicados en la resolución de triángulos rectángulos, oblicuángulos e identidades trigonométricas asociadas a situaciones matemáticas." },
+            { "codigo": "IL-11", "texto": "Utiliza la estrategia de resolución de problemas para dar respuestas a situaciones relacionadas con el estudio de las cónicas, recta, circunferencia y parábola." },
+            { "codigo": "IL-12", "texto": "Emplea la creatividad para formular situaciones relacionadas con las cónicas (elipse, hipérbola y sus elementos) interpretando posibles vías de solución." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Aplica herramientas tecnológicas para la toma de decisiones frente a determinados problemas dentro y fuera de la matemática.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Resuelve problemas propios de la matemática referidos a las operaciones con vectores y matrices, la característica de una matriz, sus tipos y su inversa y los vincula a situaciones de la vida diaria." },
+            { "codigo": "IL-14", "texto": "Resuelve situaciones de la comunidad al interpretar ideas matemáticas en el desarrollo histórico de la trigonometría y los vincula con las funciones trigonométricas y leyes de seno y coseno." },
+            { "codigo": "IL-15", "texto": "Formula problemas y situaciones del contexto asociados a la resolución de triángulos rectángulos, oblicuángulos e identidades trigonométricas." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Aplica la metodología de resolución de problemas para descomponer y estudiar los problemas relativos a cambio climático y preservación del medioambiente.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Formula e interpreta modelos asociados a situaciones de la vida diaria en la que se movilicen los conocimientos de triángulos asociados a la ley de senos y cosenos." },
+            { "codigo": "IL-17", "texto": "Justifica procesos implicados en determinados problemas matemáticos, integrando sus propios conocimientos y el criterio de las demás personas." },
+            { "codigo": "IL-18", "texto": "Aplica herramientas y software tecnológicos en la interpretación y análisis de distintos problemas y situaciones dentro y fuera de la matemática." }
+          ]
+        },
+        {
+          "codigo": "CE-MAT7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Aplica sus conocimientos matemáticos, mostrando interés en la discusión e interpretación de situaciones de su entorno.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Integra la tecnología en los procesos matemáticos para interpretar de manera precisa modelos asociados a situaciones dentro y fuera de la matemática." },
+            { "codigo": "IL-20", "texto": "Analiza situaciones problemáticas que impliquen diferentes casos de cambio climático y preservación del medioambiente, integrando sus conocimientos matemáticos." },
+            { "codigo": "IL-21", "texto": "Interpreta situaciones diversas, empleando los conocimientos matemáticos y mostrando interés y respeto en las aportaciones de los demás." }
+          ]
+        }
+      ]
+    },
+    "ciencias_sociales": {
+      "nombre": "Ciencias Sociales",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-CS1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Desarrolla análisis críticos de información, utilizando fuentes primarias y secundarias; con la finalidad de establecer comparaciones respaldadas en información verificable y confiable entre eventos sociales, políticos, económicos, históricos, geográficos o culturales.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Analiza información de fuentes confiables digitales e impresas sobre la formación geológica de la isla de Santo Domingo y las épocas estudiadas." },
+            { "codigo": "IL-2", "texto": "Interpreta información de diferentes autores y mapas referentes a la geografía física, política e hidrográfica de la isla." },
+            { "codigo": "IL-3", "texto": "Analiza factores políticos, sociales, económicos, geográficos, y culturales que dieron lugar a la Independencia de la República Dominicana, la Anexión y la Restauración." }
+          ]
+        },
+        {
+          "codigo": "CE-CS2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Contextualiza la relación existente entre los procesos históricos ocurridos en espacios geográficos de la isla de Santo Domingo, mediante el uso de hipótesis; con la finalidad presentar argumentaciones que evidencian su influencia en los cambios económicos, sociales, políticos y culturales del contexto en el que se produjeron.",
+          "indicadores_logro": [
+            { "codigo": "IL-4", "texto": "Identifica los grupos aborígenes que habitaban la isla antes de la llegada de los españoles mediante cuadros sinópticos y organizadores gráficos." },
+            { "codigo": "IL-5", "texto": "Reconoce las situaciones principales que provocaron el contrabando, la división de la isla en dos colonias y las incursiones de potencias extranjeras en la parte este de la isla." },
+            { "codigo": "IL-6", "texto": "Compara críticamente investigaciones científicas sobre el impacto político, económico y social de los eventos históricos más significativos que tuvieron lugar en la República Dominicana entre los años 1865-1916." }
+          ]
+        },
+        {
+          "codigo": "CE-CS3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Comprende la naturaleza y contexto de un problema o situación específica, incluyendo su ubicación temporal y espacial; con la finalidad de identificar sus posibles causas mediante la realización de investigaciones pertinentes que permitan desarrollar estrategias efectivas en garantes de su resolución.",
+          "indicadores_logro": [
+            { "codigo": "IL-7", "texto": "Analiza la influencia de la ilustración y las revoluciones burguesas en las colonias de Santo Domingo utilizando fuentes confiables." },
+            { "codigo": "IL-8", "texto": "Compara las diferencias y similitudes de las constituciones liberales y conservadoras del siglo XIX y XX." },
+            { "codigo": "IL-9", "texto": "Expresa su punto de vista a partir de fuentes consultadas sobre los procesos históricos estudiados y realiza cuadros comparativos." }
+          ]
+        },
+        {
+          "codigo": "CE-CS4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Diseña propuestas de investigación que involucren activamente a diversos actores en la promoción de los valores culturales e interculturales garantes de la construcción ciudadana y de la convivencia democrática; con la finalidad de propiciar el respeto por la Constitución y los derechos humanos.",
+          "indicadores_logro": [
+            { "codigo": "IL-10", "texto": "Examina la importancia de la Constitución de la República Dominicana en la garantía de un Estado de Derecho." },
+            { "codigo": "IL-11", "texto": "Analiza el papel de la Constitución de la República Dominicana en la garantía del estado de derecho y la soberanía nacional." },
+            { "codigo": "IL-12", "texto": "Propone proyectos de educación vial y tributaria en el marco de una ciudadanía responsable." }
+          ]
+        },
+        {
+          "codigo": "CE-CS5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Integra el análisis de información científica sobre teorías relacionadas a fenómenos naturales y sociales, utilizando la tecnología, con la finalidad de ofrecer explicaciones claras y concisas de las informaciones obtenidas.",
+          "indicadores_logro": [
+            { "codigo": "IL-13", "texto": "Describe los periodos de la historia de Santo Domingo mediante cuadros sinópticos y organizadores gráficos." },
+            { "codigo": "IL-14", "texto": "Verifica que las fuentes utilizadas son de carácter científico en el abordaje de las zonas de riesgos y las áreas protegidas." },
+            { "codigo": "IL-15", "texto": "Realiza una evaluación crítica de las fuentes históricas y las investigaciones científicas disponibles sobre las implicaciones de las dictaduras y el caudillismo en la sociedad dominicana durante la segunda mitad del siglo XIX." }
+          ]
+        },
+        {
+          "codigo": "CE-CS6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Explica situaciones que ponen en riesgo su salud y los recursos naturales, con la finalidad de promover el cuidado de su entorno y estilos de vida saludables.",
+          "indicadores_logro": [
+            { "codigo": "IL-16", "texto": "Realiza investigación sobre la geografía política, física y económica de la isla de Santo Domingo, así como de actividades agropecuarias y mineras." },
+            { "codigo": "IL-17", "texto": "Identifica las zonas de riesgo ante la ocurrencia de fenómenos naturales y catástrofes." },
+            { "codigo": "IL-18", "texto": "Evalúa el impacto de la deforestación y el uso de petroquímicos en los espacios naturales." }
+          ]
+        },
+        {
+          "codigo": "CE-CS7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Aplica propuestas que promuevan el respeto hacia su persona y la sociedad; con la finalidad de fomentar una convivencia armoniosa implicando el valor de la dignidad, los derechos y las necesidades de cada individuo sin discriminación o menosprecio hacia los demás.",
+          "indicadores_logro": [
+            { "codigo": "IL-19", "texto": "Elabora resúmenes, informes de lecturas de fuentes de información confiables y propuestas sobre la preservación de los recursos naturales." },
+            { "codigo": "IL-20", "texto": "Reconoce la importancia de los derechos humanos en la solución de conflictos, la igualdad y la cultura de paz." },
+            { "codigo": "IL-21", "texto": "Muestra respeto por los valores humanos, la vida propia y demás personas en cualquier espacio." }
+          ]
+        }
+      ]
+    },
+    "ingles": {
+      "nombre": "Lenguas Extranjeras - Inglés",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-LEI1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica en el idioma inglés oral y escrito de forma sostenida y comprensible en consultas médicas, quejas y probabilidad.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Responde a preguntas sobre quejas, consultas médicas y sugerencias." },
+            { "codigo": "IL-2", "texto": "Produce textos orales y escritos para comparar e interactuar en consultas médicas." }
+          ]
+        }
+      ]
+    },
+    "frances": {
+      "nombre": "Lenguas Extranjeras - Francés",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-LEF1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Comprende y expresa ideas en francés para describir personas, lugares y dar instrucciones.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Responde de forma adecuada a preguntas sobre descripción de personas y lugares." }
+          ]
+        }
+      ]
+    },
+    "artistica": {
+      "nombre": "Educación Artística",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-EA1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Usa adecuadamente técnicas y lenguajes artísticos en la comunicación de vivencias personales.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Reconoce la síntesis plasmada en obras de vanguardias y artistas dominicanos." }
+          ]
+        }
+      ]
+    },
+    "educacion_fisica": {
+      "nombre": "Educación Física",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-EF1",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Aplica hábitos corporales y desarrollo motor eficiente en la práctica deportiva.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Ejecuta acciones físicas orientadas a la salud física y el bienestar social." }
+          ]
+        }
+      ]
+    },
+    "formacion_religiosa": {
+      "nombre": "Formación Integral Humana y Religiosa",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-FIHR1",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Fomenta la resolución pacífica de conflictos y la convivencia armoniosa en la comunidad.",
+          "indicadores_logro": [
+            { "codigo": "IL-1", "texto": "Diseña campañas comunitarias sobre la dignidad humana y los derechos individuales." }
+          ]
+        }
+      ]
+    }
+  }
+}
