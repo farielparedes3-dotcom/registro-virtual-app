@@ -24289,13 +24289,51 @@ export default function App() {
     const officialSubject = getOfficialSubjectData(gradeStr, subjectKey);
 
     const unitTitleName = selectedUnit?.nombre_unidad || selectedUnit?.tema || pedagogicalEngineConfig.unitTitle || 'Unidad Didáctica Integrada';
-    const unitCEsText = (selectedUnit?.ces_alineadas_text && selectedUnit.ces_alineadas_text.length > 0)
-      ? selectedUnit.ces_alineadas_text.map(c => `• ${c}`).join('\n')
-      : officialSpecs.competencies.map(c => `• [${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
+    
+    // Parity and Focus Rule: Extract only selected CEs and EXACTLY 1 IL/Aspect per CE
+    const selectedCECodes = selectedUnit?.competencias_asociadas || [];
+    const selectedILCodes = selectedUnit?.indicadores_asociados || [];
+    const selectedAspects = selectedUnit?.aspectos_indicadores || [];
 
-    const unitILsText = (selectedUnit?.ils_alineados_text && selectedUnit.ils_alineados_text.length > 0)
-      ? selectedUnit.ils_alineados_text.map(i => `• ${i}`).join('\n')
-      : officialSpecs.indicators.map(i => `• [${i.codigo}] ${i.texto}`).join('\n');
+    let unitCEsList = [];
+    if (selectedCECodes.length > 0) {
+      unitCEsList = officialSpecs.competencies.filter(c => selectedCECodes.includes(c.codigo));
+    }
+    if (unitCEsList.length === 0) {
+      unitCEsList = officialSpecs.competencies.slice(0, 3);
+    }
+
+    const countCE = unitCEsList.length;
+
+    let unitILsList = [];
+    let unitAspectsList = [];
+
+    unitCEsList.forEach((ceObj, idx) => {
+      let ilCode = selectedILCodes[idx];
+      let ilObj = null;
+      if (ilCode) {
+        ilObj = (ceObj.indicadores_logro || []).find(i => i.codigo === ilCode);
+      }
+      if (!ilObj && ceObj.indicadores_logro && ceObj.indicadores_logro.length > 0) {
+        ilObj = ceObj.indicadores_logro[0];
+      }
+      if (!ilObj) {
+        const allILs = officialSpecs.indicators;
+        ilObj = allILs[idx % allILs.length] || { codigo: `IL-${idx+1}`, texto: `Evalúa procedimientos de ${unitTitleName}` };
+      }
+
+      unitILsList.push(`[${ilObj.codigo}] ${ilObj.texto}`);
+
+      if (selectedAspects[idx]) {
+        unitAspectsList.push(selectedAspects[idx]);
+      } else {
+        unitAspectsList.push(`Aspecto evaluado en la unidad [${ilObj.codigo}]: Contextualización de "${ilObj.texto}" para la unidad ${unitTitleName}.`);
+      }
+    });
+
+    const unitCEsText = unitCEsList.map(c => `• [${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
+    const unitILsText = unitILsList.map(i => `• ${i}`).join('\n');
+    const unitAspectsText = unitAspectsList.map(a => `• ${a}`).join('\n');
 
     const compAlineada = selectedUnit?.competencias_alineadas?.[0] || {
       contenidos: {
@@ -24324,16 +24362,18 @@ export default function App() {
     const contextoCurricularInyectado = 
       `CONTEXTO CURRICULAR OFICIAL:\n` +
       `Unidad: ${unitTitleName}${selectedUnit?.tipo_texto ? ` (${selectedUnit.tipo_texto})` : ''}\n` +
+      `Competencias seleccionadas: ${countCE}\n` +
       `Competencias Específicas:\n${unitCEsText}\n` +
-      `Indicadores de Logro:\n${unitILsText}\n` +
+      `Aspectos de Indicadores a evaluar (1 por competencia):\n${unitAspectsText}\n` +
+      `Indicadores de Logro de referencia:\n${unitILsText}\n` +
       `Contenidos Conceptuales:\n${conceptualesList.map(c => `• ${c}`).join('\n')}\n` +
       `Contenidos Procedimentales:\n${procedimentalesList.map(p => `• ${p}`).join('\n')}\n` +
       `Contenidos Actitudinales:\n${actitudinalesList.map(a => `• ${a}`).join('\n')}\n` +
       `Eje Transversal: ${ejeTextoFormat}\n` +
-      `REGLA DE ORO: Utiliza estos mediadores oficiales determinísticamente. Está prohibido modificar sus códigos o redacción.`;
+      `REGLA DE PARIDAD Y FOCO: Esta unidad comprende EXACTAMENTE ${countCE} Competencias Específicas y ${countCE} Indicadores/Aspectos (1 por competencia). Queda ESTRICTAMENTE PROHIBIDO desplegar indicadores no seleccionados o agregar los 21 indicadores del grado en una sola unidad didáctica.`;
 
     // System Prompt Directive
-    const systemDirective = "Utiliza estrictamente las competencias, indicadores y contenidos provistos en el contexto curricular oficial. No inventes ni alteres códigos ni redacciones oficiales.";
+    const systemDirective = `Utiliza estrictamente las ${countCE} competencias y los ${countCE} aspectos de indicadores dosificados para esta unidad. Prohibido agregar los 21 indicadores del año escolar.`;
 
     // Build Parte I: Matriz Curricular Institucional
     const parte1 = {
@@ -24367,7 +24407,7 @@ export default function App() {
           g4: `G4: Ética y Ciudadana / Desarrollo Personal y Espiritual — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G4')?.descripcion || 'Actúa con conciencia social y éticamente'}`
         },
         specificCompetencies: unitCEsText,
-        achievementIndicators: unitILsText,
+        achievementIndicators: unitAspectsText,
         contents: {
           conceptual: conceptualesList.map(c => `• ${c}`).join('\n'),
           procedural: procedimentalesList.map(p => `• ${p}`).join('\n'),

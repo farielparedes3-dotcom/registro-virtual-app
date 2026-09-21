@@ -211,6 +211,12 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
         return match ? `[${match.codigo}] ${match.texto}` : code;
       });
 
+      const aspectos = u.aspectos_indicadores || (u.indicadores_asociados || []).map((code, idx) => {
+        const match = allILs.find(i => i.codigo === code);
+        const ceCode = u.competencias_asociadas?.[idx] || '';
+        return `Aspecto evaluado en la unidad [${code}]: Contextualización práctica de "${match?.texto || code}" en los contenidos de ${u.nombre_unidad}.`;
+      });
+
       return {
         id_unidad: u.id_unidad,
         tema: u.nombre_unidad,
@@ -218,6 +224,7 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
         tipo_texto: u.tipo_texto || 'Funcional / Descriptivo',
         competencias_asociadas: u.competencias_asociadas || [],
         indicadores_asociados: u.indicadores_asociados || [],
+        aspectos_indicadores: aspectos,
         ces_alineadas_text: cesAlineadasText,
         ils_alineados_text: ilsAlineadosText,
         contenidos: u.contenidos || { conceptuales: [], procedimentales: [], actitudinales: [] },
@@ -225,7 +232,7 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
           {
             fundamental: "Competencias Específicas Oficiales MINERD (Adecuación 2023)",
             especifica: cesAlineadasText.join(' | ') || `Desarrollo de competencias de ${u.nombre_unidad}`,
-            indicador_logro: ilsAlineadosText.join(' | ') || `Aplica los mediadores de ${u.nombre_unidad}`,
+            indicador_logro: aspectos.join(' | ') || `Aplica los mediadores de ${u.nombre_unidad}`,
             contenidos: u.contenidos || { conceptuales: [], procedimentales: [], actitudinales: [] }
           }
         ]
@@ -244,109 +251,113 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
     return foundDataset.unidades;
   }
 
-  // Fallback dynamic generator if exact JSON file is not pre-packaged for that specific subject/grade
+  // Fallback dynamic generator (Generates 6 full official units with EXACTLY 1 IL per CE)
   const subName = officialData?.nombre || subjectKey;
   const officialComps = officialData?.competencias_especificas || [];
-  const primaryCE = officialComps[0] || {
-    fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
-    descripcion: `Comprende y aplica los principios estructurantes y procedimientos normativos de ${subName} en situaciones concretas del Nivel Secundario.`,
-    indicadores_logro: [
-      { codigo: "IL-1", texto: `Aplica con rigor técnico y juicio crítico las herramientas conceptuales y procedimentales de ${subName}.` }
-    ]
-  };
-
-  return [
+  
+  const defaultUnits = [
     {
-      id_unidad: `${subjectKey.toUpperCase().substring(0, 3)}-${cleanGrade}-U1`,
-      tema: `Fundamentos Curriculares e Indagación en ${subName} (${cleanGrade})`,
-      nombre_unidad: `Fundamentos Curriculares e Indagación en ${subName} (${cleanGrade})`,
-      tipo_texto: "Funcional / Analítico",
-      competencias_asociadas: officialComps.slice(0, 3).map(c => c.codigo),
-      indicadores_asociados: officialComps.flatMap(c => c.indicadores_logro || []).slice(0, 4).map(i => i.codigo),
-      contenidos: {
-        conceptuales: [
-          `Principios esenciales y conceptos articuladores de ${subName}.`,
-          "Leyes, postulados y modelos explicativos de la disciplina.",
-          "Vocabulario técnico y categorización de fenómenos según la Adecuación 2023."
-        ],
-        procedimentales: [
-          "Formulación de hipótesis y preguntas de indagación contextualizadas.",
-          "Recolección, clasificación y análisis sistemático de evidencias.",
-          "Elaboración de informes sintéticos, diagramas y productos finales."
-        ],
-        actitudinales: [
-          "Rigor científico y honestidad en el manejo de datos.",
-          "Trabajo colaborativo, empatía y responsabilidad social.",
-          "Valoración del conocimiento científico como motor de transformación."
-        ]
-      },
-      competencias_alineadas: [
-        {
-          fundamental: primaryCE.fundamental,
-          especifica: primaryCE.descripcion,
-          indicador_logro: primaryCE.indicadores_logro.map(i => `[${i.codigo}] ${i.texto}`).join(' | '),
-          contenidos: {
-            conceptuales: [
-              `Principios esenciales y conceptos articuladores de ${subName}.`,
-              "Leyes, postulados y modelos explicativos de la disciplina.",
-              "Vocabulario técnico y categorización de fenómenos según la Adecuación 2023."
-            ],
-            procedimentales: [
-              "Formulación de hipótesis y preguntas de indagación contextualizadas.",
-              "Recolección, clasificación y análisis sistemático de evidencias.",
-              "Elaboración de informes sintéticos, diagramas y productos finales."
-            ],
-            actitudinales: [
-              "Rigor científico y honestidad en el manejo de datos.",
-              "Trabajo colaborativo, empatía y responsabilidad social.",
-              "Valoración del conocimiento científico como motor de transformación."
-            ]
-          }
-        }
-      ]
+      title: `Fundamentos Curriculares e Indagación en ${subName}`,
+      tipo: "Funcional / Analítico",
+      ceIndices: [0, 1, 2],
+      ilIndices: [0, 3, 6],
+      conceptuales: [`Principios esenciales y conceptos articuladores de ${subName}.`, "Leyes, postulados y modelos explicativos de la disciplina."],
+      procedimentales: ["Formulación de hipótesis y preguntas de indagación contextualizadas.", "Recolección y análisis sistemático de evidencias."],
+      actitudinales: ["Rigor científico y honestidad en el manejo de datos."]
     },
     {
-      id_unidad: `${subjectKey.toUpperCase().substring(0, 3)}-${cleanGrade}-U2`,
-      tema: `Aplicación Práctica y Proyectos de Intervención en ${subName}`,
-      nombre_unidad: `Aplicación Práctica y Proyectos de Intervención en ${subName}`,
-      tipo_texto: "Argumentativo / Persuasivo",
-      competencias_asociadas: officialComps.slice(3, 6).map(c => c.codigo),
-      indicadores_asociados: officialComps.flatMap(c => c.indicadores_logro || []).slice(4, 8).map(i => i.codigo),
+      title: `Investigación, Modelos y Procedimientos en ${subName}`,
+      tipo: "Científico / Informativo",
+      ceIndices: [1, 2, 4],
+      ilIndices: [4, 7, 13],
+      conceptuales: [`Estructuras, mecanismos y modelos explicativos en ${subName}.`, "Procedimientos estándar e instrumentalización."],
+      procedimentales: ["Diseño de experiencias de laboratorio o simulaciones digitales.", "Sistematización de hallazgos en informes estructurados."],
+      actitudinales: ["Trabajo colaborativo, empatía y responsabilidad social."]
+    },
+    {
+      title: `Resolución de Problemas y Pensamiento Crítico en ${subName}`,
+      tipo: "Argumentativo / Evaluativo",
+      ceIndices: [1, 2, 3],
+      ilIndices: [5, 8, 10],
+      conceptuales: [`Problemas socioformativos y fenómenos emergentes en ${subName}.`, "Análisis crítico de evidencias empíricas."],
+      procedimentales: ["Resolución de situaciones de problemas simulados y reales.", "Construcción de esquemas y prototipos de solución."],
+      actitudinales: ["Perseverancia y sentido de rigor en la resolución de problemas."]
+    },
+    {
+      title: `Proyectos Socioformativos e Innovación en ${subName}`,
+      tipo: "Aplicado / Proyectual",
+      ceIndices: [0, 4, 5],
+      ilIndices: [1, 14, 16],
+      conceptuales: [`Aplicaciones tecnológicas y alcance social de ${subName}.`, "Indicadores de desarrollo humano y conservación."],
+      procedimentales: ["Ejecución de proyectos escolares socioformativos con impacto comunitario.", "Divulgación de productos mediante medios digitales."],
+      actitudinales: ["Compromiso ético con la sostenibilidad y la democracia."]
+    },
+    {
+      title: `Sostenibilidad, Medio Ambiente y Salud en ${subName}`,
+      tipo: "Científico / Ambiental",
+      ceIndices: [3, 5, 6],
+      ilIndices: [11, 17, 19],
+      conceptuales: [`Factores de riesgo ambiental y conductas promotoras de salud.`, "Ética ciudadana y desarrollo sostenible."],
+      procedimentales: ["Diseño de campañas de concienciación sobre salud y medio ambiente.", "Evaluación de estilos de vida y hábitos sostenibles."],
+      actitudinales: ["Valoración de estilos de vida saludables y respetuosos con el ambiente."]
+    },
+    {
+      title: `Proyección Personal, Éthos y Desarrollo Profesional en ${subName}`,
+      tipo: "Reflexivo / Vocacional",
+      ceIndices: [0, 3, 6],
+      ilIndices: [2, 12, 20],
+      conceptuales: [`Historia de la disciplina y profesiones/oficios científicos.`, "Proyecto de vida y ética en las ciencias."],
+      procedimentales: ["Elaboración de proyectos vocacionales vinculados al área.", "Argumentación sobre el valor social del conocimiento."],
+      actitudinales: ["Gestión autónoma del aprendizaje y proyección vocacional proactiva."]
+    }
+  ];
+
+  return defaultUnits.map((uDef, uIdx) => {
+    const ces = uDef.ceIndices.map(idx => officialComps[idx]).filter(Boolean);
+    const cesCodes = ces.map(c => c.codigo);
+    const cesText = ces.map(c => `[${c.codigo}] ${c.descripcion}`);
+
+    const ilsText = uDef.ilIndices.map((ilIdx, idx) => {
+      const allILs = officialComps.flatMap(c => c.indicadores_logro || []);
+      const ilObj = allILs[ilIdx] || { codigo: `IL-${ilIdx + 1}`, texto: `Evalúa contenidos de ${uDef.title}` };
+      return `[${ilObj.codigo}] ${ilObj.texto}`;
+    });
+
+    const ilCodes = uDef.ilIndices.map(ilIdx => `IL-${ilIdx + 1}`);
+
+    const aspectos = ilsText.map((ilStr, idx) => {
+      return `Aspecto evaluado en la unidad [${ilCodes[idx]}]: Contextualización de "${ilStr}" aplicada a ${uDef.title}.`;
+    });
+
+    return {
+      id_unidad: `${subjectKey.toUpperCase().substring(0, 3)}-${cleanGrade}-U${uIdx + 1}`,
+      tema: uDef.title,
+      nombre_unidad: uDef.title,
+      tipo_texto: uDef.tipo,
+      competencias_asociadas: cesCodes,
+      indicadores_asociados: ilCodes,
+      aspectos_indicadores: aspectos,
+      ces_alineadas_text: cesText,
+      ils_alineados_text: ilsText,
       contenidos: {
-        conceptuales: [
-          `Impacto social, tecnológico y ambiental de los avances en ${subName}.`,
-          "Estrategias de desarrollo sostenible y ética ciudadana en el entorno."
-        ],
-        procedimentales: [
-          "Diseño de prototipos, proyectos de investigación-acción o debates escolares.",
-          "Socialización de productos formativos mediante medios analógicos y digitales."
-        ],
-        actitudinales: [
-          "Compromiso ético con la sostenibilidad y la democracia deliberativa."
-        ]
+        conceptuales: uDef.conceptuales,
+        procedimentales: uDef.procedimentales,
+        actitudinales: uDef.actitudinales
       },
       competencias_alineadas: [
         {
-          fundamental: "Ambiental y de la Salud; Ética y Ciudadana; Resolución de Problemas",
-          especifica: `Diseña y ejecuta alternativas de solución ante problemáticas sociales, ambientales y culturales mediante los mediadores de ${subName}.`,
-          indicador_logro: `Evalúa responsablemente los resultados de intervenciones comunitarias sustentadas en los contenidos del área de ${subName}.`,
+          fundamental: "Competencias Específicas Oficiales MINERD",
+          especifica: cesText.join(' | '),
+          indicador_logro: aspectos.join(' | '),
           contenidos: {
-            conceptuales: [
-              `Impacto social, tecnológico y ambiental de los avances en ${subName}.`,
-              "Estrategias de desarrollo sostenible y ética ciudadana en el entorno."
-            ],
-            procedimentales: [
-              "Diseño de prototipos, proyectos de investigación-acción o debates escolares.",
-              "Socialización de productos formativos mediante medios analógicos y digitales."
-            ],
-            actitudinales: [
-              "Compromiso ético con la sostenibilidad y la democracia deliberativa."
-            ]
+            conceptuales: uDef.conceptuales,
+            procedimentales: uDef.procedimentales,
+            actitudinales: uDef.actitudinales
           }
         }
       ]
-    }
-  ];
+    };
+  });
 }
 
 /**

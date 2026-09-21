@@ -90,6 +90,218 @@
             { "codigo": "IL-21", "texto": "Apropiada manifestación de actitudes y valores que fortalecen su desarrollo personal." }
           ]
         }
+      ],
+      "carga_horaria_semanal": {
+        "jornada_extendida": 5,
+        "jornada_regular": 5
+      },
+      "ejes_transversales": [
+        {
+          "eje": "Salud y Bienestar",
+          "descriptor": "Caracterización de situaciones de salud biológica y ambiental que arriesgan el entorno escolar, familiar y comunitario en general, proponiendo acciones de solución sostenibles."
+        },
+        {
+          "eje": "Desarrollo Sostenible",
+          "descriptor": "Identificación de factores ecológicos y antrópicos que ponen en riesgo la biodiversidad y el equilibrio ecosistémico a fin de aportar soluciones posibles."
+        },
+        {
+          "eje": "Ciudadanía y Convivencia",
+          "descriptor": "Promoción del trabajo colaborativo y la toma de decisiones bioéticas ante problemas de las ciencias de la vida."
+        },
+        {
+          "eje": "Alfabetización Imprescindible",
+          "descriptor": "Empleo de tecnologías digitales e indagación científica para la búsqueda y comunicación rigurosa de evidencias biológicas."
+        },
+        {
+          "eje": "Desarrollo Personal y Profesional",
+          "descriptor": "Valoración de las profesiones de las ciencias de la vida y desarrollo de hábitos autónomos de salud e investigación."
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "2DO-CN-U1",
+          "nombre_unidad": "La Célula y su Organización (Estructura, Organelos y Transporte Celular)",
+          "tipo_texto": "Científico / Informativo",
+          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN3", "CE-CN5"],
+          "indicadores_asociados": ["IL-1", "IL-5", "IL-7", "IL-13"],
+          "aspectos_indicadores": [
+            "Aspecto evaluado [IL-1]: Interpreta adecuadamente el lenguaje científico de la estructura celular mediante diagramas, modelos e informes de laboratorio.",
+            "Aspecto evaluado [IL-5]: Aplica conceptos de organelos celulares y mecanismos de transporte pasivo/activo para dar respuesta a fenómenos biológicos.",
+            "Aspecto evaluado [IL-7]: Diseña y ejecuta un montaje experimental para la observación directa de células vegetales y animales al microscopio.",
+            "Aspecto evaluado [IL-13]: Realiza prácticas experimentales sobre ósmosis y difusión registrando datos en informes de investigación con evidencias verificables."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "La célula como unidad estructural, funcional y de origen de los seres vivos.",
+              "Teoría celular y clasificación de células (procariotas y eucariotas, animal y vegetal).",
+              "Organelos celulares: membrana plasmática, núcleo, mitocondrias, cloroplastos, retículo endoplásmico, aparato de Golgi, ribosomas y lisosomas.",
+              "Transporte a través de la membrana: transporte pasivo (difusión simple, facilitada, ósmosis) y transporte activo (bombas, endocitosis, exocitosis)."
+            ],
+            "procedimentales": [
+              "Observación microscópica de muestras citológicas vegetales (cebolla, elodea) y animales (epitelio bucal).",
+              "Diseño de experimentos caseros o de laboratorio sobre transporte celular (ósmosis en papa o huevo).",
+              "Construcción de modelos tridimensionales o esquemas comparativos entre células procariotas y eucariotas.",
+              "Elaboración de informes sintéticos de laboratorio aplicando la metodología científica."
+            ],
+            "actitudinales": [
+              "Curiosidad y rigor científico durante el manejo del microscopio y preparación de muestras.",
+              "Valoración de la célula como base fundamental de la biodiversidad y la vida.",
+              "Cuidado y conservación del equipamiento de laboratorio."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CN-U2",
+          "nombre_unidad": "Reproducción Celular y Genética Básica (Mitosis, Meiosis y Ciclo Celular)",
+          "tipo_texto": "Científico / Explicativo",
+          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN3", "CE-CN5"],
+          "indicadores_asociados": ["IL-2", "IL-4", "IL-8", "IL-14"],
+          "aspectos_indicadores": [
+            "Aspecto evaluado [IL-2]: Produce reportes e información científica detallando las fases del ciclo celular, mitosis y meiosis.",
+            "Aspecto evaluado [IL-4]: Utiliza procesos sistemáticos para investigar y comparar la división celular somática (mitosis) y germinal (meiosis).",
+            "Aspecto evaluado [IL-8]: Ejecuta modelos o diagramas del ciclo celular identificando anomalías o proliferaciones incontroladas.",
+            "Aspecto evaluado [IL-14]: Aplica proyectos de indagación sobre las consecuencias biológicas de las alteraciones mitóticas (cáncer)."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "El ciclo celular: interfase (G1, S, G2) y fase M.",
+              "Mitosis: prophase, metafase, anafase, telofase y citocinesis.",
+              "Meiosis: meiosis I, meiosis II y gametogénesis (espermatogénesis y ovogénesis).",
+              "Importancia biológica de la reproducción celular (crecimiento, reparación de tejidos y variabilidad genética)."
+            ],
+            "procedimentales": [
+              "Identificación de fases mitóticas en cortes histológicos (raíz de cebolla) al microscopio o en micrografías.",
+              "Representación gráfica y secuencial del ciclo celular mediante esquemas interactivos.",
+              "Análisis comparativo en tablas entre mitosis y meiosis (células somáticas vs gametos, diploide vs haploide)."
+            ],
+            "actitudinales": [
+              "Respeto y cuidado del propio cuerpo al comprender los procesos de renovación celular.",
+              "Responsabilidad en el trabajo colaborativo de indagación biológica."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CN-U3",
+          "nombre_unidad": "Herencia Biológica y Leyes de Mendel (Genética Mendeliana y ADN)",
+          "tipo_texto": "Científico / Analítico",
+          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN3", "CE-CN4"],
+          "indicadores_asociados": ["IL-3", "IL-6", "IL-9", "IL-11"],
+          "aspectos_indicadores": [
+            "Aspecto evaluado [IL-3]: Utiliza adecuadamente símbolos genéticos, genotipos, fenotipos y cuadros de Punnett en problemas de herencia.",
+            "Aspecto evaluado [IL-6]: Formula y critica evidencias empíricas sobre la transmisión de caracteres hereditarios según las Leyes de Mendel.",
+            "Aspecto evaluado [IL-9]: Construye modelos de la molécula de ADN y ARN explicando la duplicación y expresión génica.",
+            "Aspecto evaluado [IL-11]: Presenta argumentos fundamentados sobre dilemas bioéticos en manipulación genética y alimentos transgénicos."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Conceptos fundamentales de genética: gen, alelo, genotipo, fenotipo, homocigoto, heterocigoto, dominante, recesivo.",
+              "Leyes de Mendel: Primera ley (Uniformidad), Segunda ley (Segregación) y Tercera ley (Distribución independiente).",
+              "Estructura del ADN (ácido desoxirribonucleico) y ARN (ácido ribonucleico).",
+              "Introducción a las mutaciones genéticas y biotecnología."
+            ],
+            "procedimentales": [
+              "Resolución de ejercicios prácticos de cruzamientos genéticos monohíbridos mediante cuadros de Punnett.",
+              "Extracción casera de ADN (a partir de fresa, banana o saliva) y observación macroscópica de hebras.",
+              "Análisis de árbol genealógico familiar para rastrear caracteres fenotípicos observables (color de ojos, lóbulo de oreja)."
+            ],
+            "actitudinales": [
+              "Reflexión ética ante los avances biotecnológicos y la ingeniería genética.",
+              "Valoración de la diversidad genética humana rechazando la discriminación."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CN-U4",
+          "nombre_unidad": "Sistemas del Cuerpo Humano (Nutrición, Circulación, Respiración y Excreción)",
+          "tipo_texto": "Científico / Aplicado",
+          "competencias_asociadas": ["CE-CN1", "CE-CN2", "CE-CN6", "CE-CN7"],
+          "indicadores_asociados": ["IL-1", "IL-5", "IL-16", "IL-18"],
+          "aspectos_indicadores": [
+            "Aspecto evaluado [IL-1]: Interpreta modelos morfofuncionales de los sistemas de nutrición humana expresando sus relaciones fisiológicas.",
+            "Aspecto evaluado [IL-5]: Aplica conceptos del funcionamiento del sistema cardiovascular, digestivo, respiratorio y renal a situaciones cotidianas.",
+            "Aspecto evaluado [IL-16]: Identifica situaciones de riesgo para la salud humana como enfermedades cardiovasculares, renales o respiratorias.",
+            "Aspecto evaluado [IL-18]: Promueve un estilo de vida saludable mediante la planificación de dietas equilibradas y ejercicio constante."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Función de nutrición en el ser humano y sus sistemas implicados.",
+              "Sistema Digestivo: órganos, digestión mecánica y química, absorción de nutrientes.",
+              "Sistema Circulatorio: corazón, vasos sanguíneos (arterias, venas, capilares), sangre y circulación mayor y menor.",
+              "Sistema Respiratorio: vías respiratorias, pulmones, intercambio gaseoso (hematosis).",
+              "Sistema Excretor / Renal: riñones, nefronas, formación de orina y homeostasis."
+            ],
+            "procedimentales": [
+              "Identificación de estructuras anatómicas en maquetas, láminas digitales o disecación de órganos animales (corazón o riñón de cerdo).",
+              "Medición de parámetros fisiológicos simples (frecuencia cardíaca y respiratoria en reposo y tras ejercicio).",
+              "Diseño de propuestas de menús saludables basados en la pirámide alimenticia y el plato del bien comer."
+            ],
+            "actitudinales": [
+              "Adopción voluntaria de hábitos de higiene y alimentación saludable.",
+              "Conciencia sobre las consecuencias del consumo de alcohol, tabaco y comida chatarra."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CN-U5",
+          "nombre_unidad": "Ecosistemas, Biodiversidad y Biomas (Flujo de Energía y Conservación)",
+          "tipo_texto": "Científico / Ambiental",
+          "competencias_asociadas": ["CE-CN2", "CE-CN3", "CE-CN6", "CE-CN7"],
+          "indicadores_asociados": ["IL-4", "IL-7", "IL-17", "IL-20"],
+          "aspectos_indicadores": [
+            "Aspecto evaluado [IL-4]: Utiliza métodos sistemáticos para caracterizar biomas dominicanos y redes tróficas comunitarias.",
+            "Aspecto evaluado [IL-7]: Ejecuta técnicas de recolección de datos ecológicos sobre factores bióticos y abióticos en un entorno natural.",
+            "Aspecto evaluado [IL-17]: Aplica acciones concretas de conservación medioambiental y protección de biomas en su comunidad.",
+            "Aspecto evaluado [IL-20]: Valora carreras u oficios ligados a la conservación biológica, gestión ambiental e ingeniería ecológica."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Ecosistemas: componentes bióticos y abióticos, niveles de organización ecológica (individuo, población, comunidad, ecosistema, bioma).",
+              "Flujo de energía: niveles tróficos (productores, consumidores, descomponedores), cadenas y redes tróficas, pirámides ecológicas.",
+              "Ciclos biogeoquímicos: ciclo del agua, carbono, nitrógeno y oxígeno.",
+              "Biodiversidad dominicana: biomas, especies nativas, endémicas y amenazadas."
+            ],
+            "procedimentales": [
+              "Mapeo y descripción de un microecosistema escolar o parque comunitario.",
+              "Elaboración de esquemas de redes alimentarias locales identificando el rol de cada organismo.",
+              "Diseño de una campaña de concienciación sobre la deforestación y protección de biomas dominicanos."
+            ],
+            "actitudinales": [
+              "Sensibilidad y compromiso ético con la protección de la biodiversidad local y nacional.",
+              "Rechazo a la contaminación ambiental y destrucción de hábitats."
+            ]
+          }
+        },
+        {
+          "id_unidad": "2DO-CN-U6",
+          "nombre_unidad": "Salud, Inmunología y Prevención de Enfermedades",
+          "tipo_texto": "Científico / Preventivo",
+          "competencias_asociadas": ["CE-CN1", "CE-CN4", "CE-CN5", "CE-CN6"],
+          "indicadores_asociados": ["IL-2", "IL-12", "IL-15", "IL-16"],
+          "aspectos_indicadores": [
+            "Aspecto evaluado [IL-2]: Redacta materiales informativos sobre el funcionamiento del sistema inmunológico y la importancia de las vacunas.",
+            "Aspecto evaluado [IL-12]: Manifiesta conductas y actitudes científicas en la divulgación de medidas sanitarias y prevención de brotes.",
+            "Aspecto evaluado [IL-15]: Argumenta con evidencias científicas verificables el impacto de agentes patógenos en la población.",
+            "Aspecto evaluado [IL-16]: Identifica oportunamente factores de riesgo epidemiológicos en la escuela y el hogar proponiendo soluciones."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Salud y enfermedad según la OMS.",
+              "Agentes patógenos: virus, bacterias, hongos y parásitos.",
+              "Sistema Inmunológico: barreras primarias (piel, mucosas), barreras secundarias (fagocitos, inflamación) y barreras terciarias (linfocitos T y B, anticuerpos).",
+              "Inmunidad natural y adquirida; vacunas y su mecanismo de acción.",
+              "Enfermedades infecciosas comunes en R.D. (Dengue, Leptospirosis, Cólera) y prevención."
+            ],
+            "procedimentales": [
+              "Investigación sobre el esquema nacional de vacunación y su impacto histórico.",
+              "Diseño de infografías digitales o murales sobre hábitos de profilaxis y eliminación de criaderos de mosquitos.",
+              "Análisis de noticias científicas sobre brotes epidémicos y respuestas inmunológicas."
+            ],
+            "actitudinales": [
+              "Valoración de la ciencia inmunológica y la medicina preventiva.",
+              "Solidaridad comunitaria en situaciones de alerta sanitaria."
+            ]
+          }
+        }
       ]
     },
     "lengua_espanola": {
