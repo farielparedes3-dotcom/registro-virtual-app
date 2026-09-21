@@ -48,6 +48,43 @@ export function getOfficialGradeDataset(gradeStr) {
   return secundaria1roOfficial;
 }
 
+export function normalizeSubjectKey(rawKey) {
+  if (!rawKey) return 'ciencias_naturaleza';
+  const clean = String(rawKey).toLowerCase().trim().replace(/[\s-]/g, '_');
+
+  if (clean.includes('naturaleza') || clean.includes('biologia') || clean.includes('quimica') || clean.includes('fisica') && !clean.includes('educacion_fisica')) {
+    return 'ciencias_naturaleza';
+  }
+  if (clean.includes('espanol') || clean.includes('lengua')) {
+    return 'lengua_espanola';
+  }
+  if (clean.includes('matematica')) {
+    return 'matematica';
+  }
+  if (clean.includes('sociales') || clean.includes('historia') || clean.includes('geografia')) {
+    return 'ciencias_sociales';
+  }
+  if (clean.includes('ingles') || clean.includes('english')) {
+    return 'ingles';
+  }
+  if (clean.includes('frances') || clean.includes('french')) {
+    return 'frances';
+  }
+  if (clean.includes('artistica') || clean.includes('arte')) {
+    return 'artistica';
+  }
+  if (clean.includes('educacion_fisica') || clean.includes('deporte')) {
+    return 'educacion_fisica';
+  }
+  if (clean.includes('religiosa') || clean.includes('fihr') || clean.includes('humana')) {
+    return 'formacion_religiosa';
+  }
+  if (clean.includes('optativa') || clean.includes('salida')) {
+    return 'salidas_optativas';
+  }
+  return clean;
+}
+
 /**
  * Get Official Subject Specs for a specific grade (Ordenanza 04-2023)
  */
@@ -55,18 +92,22 @@ export function getOfficialSubjectData(gradeStr, subjectKey) {
   if (!subjectKey) return null;
 
   const dataset = getOfficialGradeDataset(gradeStr);
-  const normalizedKey = subjectKey.toLowerCase().replace(/[\s-]/g, '_');
+  const normKey = normalizeSubjectKey(subjectKey);
   const areas = dataset.areas || {};
 
-  if (areas[normalizedKey]) {
-    return areas[normalizedKey];
+  if (areas[normKey]) {
+    return areas[normKey];
   }
   if (areas[subjectKey]) {
     return areas[subjectKey];
   }
 
-  // Soft fallback matching
-  const matchingKey = Object.keys(areas).find(k => k.includes(normalizedKey) || normalizedKey.includes(k));
+  // Soft fallback matching by key or name
+  const matchingKey = Object.keys(areas).find(k => {
+    const normK = k.toLowerCase().replace(/[\s-]/g, '_');
+    return normK.includes(normKey) || normKey.includes(normK) || (areas[k]?.nombre && areas[k].nombre.toLowerCase().includes(subjectKey.toLowerCase()));
+  });
+
   return matchingKey ? areas[matchingKey] : (areas['ciencias_naturaleza'] || Object.values(areas)[0]);
 }
 
