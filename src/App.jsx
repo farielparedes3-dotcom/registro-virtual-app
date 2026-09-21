@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
-import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData } from './data/curriculo/index.js';
+import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData, getOfficialEjesTransversales } from './data/curriculo/index.js';
 // Vercel deployment trigger
 
 import { dbService } from './db';
@@ -24284,27 +24284,20 @@ export default function App() {
     const teacherNameStr = currentUser?.name || 'Docente Emisor';
     const axisStr = pedagogicalEngineConfig.transversalAxis || 'Salud y Bienestar';
 
-    // Extract official specs from grade-specific JSON (Ordenanza 04-2023)
+    // Extract official specs and unit data from grade-specific JSON (Ordenanza 04-2023)
     const officialSpecs = filterOfficialCompetencies(gradeStr, subjectKey, pedagogicalEngineConfig.selectedFundamental || 'TODAS');
     const officialSubject = getOfficialSubjectData(gradeStr, subjectKey);
 
-    const ceTextList = officialSpecs.competencies.map(c => `[${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
-    const ilTextList = officialSpecs.indicators.map(i => `[${i.codigo}] ${i.texto}`).join('\n');
-    const gTextList = `G1: ${officialSpecs.groups.G1?.nombre || 'Comunicativa'}\nG2: ${officialSpecs.groups.G2?.nombre || 'Pensamiento Lógico / Resolución'}\nG3: ${officialSpecs.groups.G3?.nombre || 'Científica-Tecnológica / Ambiental'}\nG4: ${officialSpecs.groups.G4?.nombre || 'Ética / Desarrollo Personal'}`;
+    const unitTitleName = selectedUnit?.nombre_unidad || selectedUnit?.tema || pedagogicalEngineConfig.unitTitle || 'Unidad Didáctica Integrada';
+    const unitCEsText = (selectedUnit?.ces_alineadas_text && selectedUnit.ces_alineadas_text.length > 0)
+      ? selectedUnit.ces_alineadas_text.map(c => `• ${c}`).join('\n')
+      : officialSpecs.competencies.map(c => `• [${c.codigo}] ${c.fundamental}: ${c.descripcion}`).join('\n');
 
-    const contextoCurricularInyectado = 
-      `CONTEXTO CURRICULAR INYECTADO:\n` +
-      `Asignatura: ${officialSubject?.nombre || subName}\n` +
-      `Competencias Específicas:\n${ceTextList}\n` +
-      `Indicadores de Logro:\n${ilTextList}\n` +
-      `Grupos de Calificación Ordenanza 04-2023:\n${gTextList}\n` +
-      `REGLA DE ORO: Utiliza estos textos oficiales textualmente. Está prohibido modificar sus códigos o redacción.`;
+    const unitILsText = (selectedUnit?.ils_alineados_text && selectedUnit.ils_alineados_text.length > 0)
+      ? selectedUnit.ils_alineados_text.map(i => `• ${i}`).join('\n')
+      : officialSpecs.indicators.map(i => `• [${i.codigo}] ${i.texto}`).join('\n');
 
-    // Extract official alignment data
     const compAlineada = selectedUnit?.competencias_alineadas?.[0] || {
-      fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
-      especifica: officialSpecs.competencies[0]?.descripcion || `Comprende y aplica los principios estructurantes de ${subName} según el diseño curricular del Nivel Secundario.`,
-      indicador_logro: officialSpecs.indicators.map(i => `[${i.codigo}] ${i.texto}`).slice(0, 3).join(' | ') || `Argumenta y explica fenómenos de ${subName} utilizando modelos e hipótesis validadas.`,
       contenidos: {
         conceptuales: [`Conceptos estructurantes de ${topicTitle}`],
         procedimentales: ["Indagación documentada y empírica"],
@@ -24312,8 +24305,35 @@ export default function App() {
       }
     };
 
+    const conceptualesList = selectedUnit?.contenidos?.conceptuales?.length > 0
+      ? selectedUnit.contenidos.conceptuales
+      : compAlineada.contenidos.conceptuales;
+
+    const procedimentalesList = selectedUnit?.contenidos?.procedimentales?.length > 0
+      ? selectedUnit.contenidos.procedimentales
+      : compAlineada.contenidos.procedimentales;
+
+    const actitudinalesList = selectedUnit?.contenidos?.actitudinales?.length > 0
+      ? selectedUnit.contenidos.actitudinales
+      : compAlineada.contenidos.actitudinales;
+
+    const ejesList = getOfficialEjesTransversales(gradeStr, subjectKey);
+    const selectedEjeObj = ejesList.find(e => e.eje === axisStr) || ejesList[0];
+    const ejeTextoFormat = `${selectedEjeObj.eje}: ${selectedEjeObj.descriptor}`;
+
+    const contextoCurricularInyectado = 
+      `CONTEXTO CURRICULAR OFICIAL:\n` +
+      `Unidad: ${unitTitleName}${selectedUnit?.tipo_texto ? ` (${selectedUnit.tipo_texto})` : ''}\n` +
+      `Competencias Específicas:\n${unitCEsText}\n` +
+      `Indicadores de Logro:\n${unitILsText}\n` +
+      `Contenidos Conceptuales:\n${conceptualesList.map(c => `• ${c}`).join('\n')}\n` +
+      `Contenidos Procedimentales:\n${procedimentalesList.map(p => `• ${p}`).join('\n')}\n` +
+      `Contenidos Actitudinales:\n${actitudinalesList.map(a => `• ${a}`).join('\n')}\n` +
+      `Eje Transversal: ${ejeTextoFormat}\n` +
+      `REGLA DE ORO: Utiliza estos mediadores oficiales determinísticamente. Está prohibido modificar sus códigos o redacción.`;
+
     // System Prompt Directive
-    const systemDirective = "Utiliza estrictamente las competencias, indicadores y contenidos provistos en el contexto curricular. No inventes ni alteres códigos ni redacciones oficiales.";
+    const systemDirective = "Utiliza estrictamente las competencias, indicadores y contenidos provistos en el contexto curricular oficial. No inventes ni alteres códigos ni redacciones oficiales.";
 
     // Build Parte I: Matriz Curricular Institucional
     const parte1 = {
@@ -24331,7 +24351,7 @@ export default function App() {
         sessionDuration: '45 Minutos',
         unitId: selectedUnit?.id_unidad || 'MINERD-CURR-01'
       },
-      transversalAxis: axisStr,
+      transversalAxis: ejeTextoFormat,
       situacionAprendizaje: {
         contexto: `En la comunidad escolar del Liceo Ana Rosa Castillo (Nagua), los estudiantes del grado ${gradeStr}...`,
         problema: `Han manifestado inquietud y vacíos procedimentales al abordar la problemática de "${topicTitle}" en su entorno inmediato.`,
@@ -24341,17 +24361,17 @@ export default function App() {
       },
       coherenceMatrix: {
         fundamentalCompetencies: {
-          g1: `G1: Competencia Comunicativa — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G1')?.descripcion || compAlineada.especifica}`,
-          g2: `G2: Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G2')?.descripcion || compAlineada.especifica}`,
-          g3: `G3: Científica y Tecnológica / Ambiental y de la Salud — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G3')?.descripcion || compAlineada.especifica}`,
-          g4: `G4: Ética y Ciudadana / Desarrollo Personal y Espiritual — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G4')?.descripcion || compAlineada.especifica}`
+          g1: `G1: Competencia Comunicativa — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G1')?.descripcion || 'Comprende y produce textos orales y escritos'}`,
+          g2: `G2: Pensamiento Lógico, Creativo y Crítico / Resolución de Problemas — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G2')?.descripcion || 'Analiza y resuelve situaciones complejas'}`,
+          g3: `G3: Científica y Tecnológica / Ambiental y de la Salud — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G3')?.descripcion || 'Aplica procesos de indagación y promueve el desarrollo sostenible'}`,
+          g4: `G4: Ética y Ciudadana / Desarrollo Personal y Espiritual — ${officialSpecs.competencies.find(c => c.grupo_registro === 'G4')?.descripcion || 'Actúa con conciencia social y éticamente'}`
         },
-        specificCompetencies: officialSpecs.competencies.map(c => `• [${c.codigo}] ${c.descripcion}`).join('\n') || compAlineada.especifica,
-        achievementIndicators: officialSpecs.indicators.map(i => `• [${i.codigo}] ${i.texto}`).join('\n') || compAlineada.indicador_logro,
+        specificCompetencies: unitCEsText,
+        achievementIndicators: unitILsText,
         contents: {
-          conceptual: compAlineada.contenidos.conceptuales.map(c => `• ${c}`).join('\n'),
-          procedural: compAlineada.contenidos.procedimentales.map(p => `• ${p}`).join('\n'),
-          attitudinal: compAlineada.contenidos.actitudinales.map(a => `• ${a}`).join('\n')
+          conceptual: conceptualesList.map(c => `• ${c}`).join('\n'),
+          procedural: procedimentalesList.map(p => `• ${p}`).join('\n'),
+          attitudinal: actitudinalesList.map(a => `• ${a}`).join('\n')
         },
         evidences: {
           conocimiento: 'Organizadores gráficos, mapa mental de saberes y prueba escrita diagnóstica/sumativa.',
@@ -30289,11 +30309,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     onChange={(e) => {
                       const newGrade = e.target.value;
                       const units = getCurriculumUnits(newGrade, pedagogicalEngineConfig.subject);
+                      const axes = getOfficialEjesTransversales(newGrade, pedagogicalEngineConfig.subject);
                       setPedagogicalEngineConfig(c => ({
                         ...c,
                         grade: newGrade,
                         selectedUnitId: units[0]?.id_unidad || '',
-                        unitTitle: units[0]?.tema || c.unitTitle
+                        unitTitle: units[0]?.nombre_unidad || units[0]?.tema || c.unitTitle,
+                        transversalAxis: axes[0]?.eje || c.transversalAxis
                       }));
                     }}
                   >
@@ -30311,11 +30333,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     onChange={(e) => {
                       const newSubject = e.target.value;
                       const units = getCurriculumUnits(pedagogicalEngineConfig.grade, newSubject);
+                      const axes = getOfficialEjesTransversales(pedagogicalEngineConfig.grade, newSubject);
                       setPedagogicalEngineConfig(c => ({
                         ...c,
                         subject: newSubject,
                         selectedUnitId: units[0]?.id_unidad || '',
-                        unitTitle: units[0]?.tema || c.unitTitle
+                        unitTitle: units[0]?.nombre_unidad || units[0]?.tema || c.unitTitle,
+                        transversalAxis: axes[0]?.eje || c.transversalAxis
                       }));
                     }}
                   >
@@ -30337,13 +30361,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       setPedagogicalEngineConfig(c => ({
                         ...c,
                         selectedUnitId: uId,
-                        unitTitle: unitObj ? unitObj.tema : c.unitTitle
+                        unitTitle: unitObj ? (unitObj.nombre_unidad || unitObj.tema) : c.unitTitle
                       }));
                     }}
                   >
                     {getCurriculumUnits(pedagogicalEngineConfig.grade, pedagogicalEngineConfig.subject).map(u => (
                       <option key={u.id_unidad} value={u.id_unidad}>
-                        [{u.id_unidad}] {u.tema}
+                        [{u.id_unidad}] {u.nombre_unidad || u.tema} {u.tipo_texto ? `(${u.tipo_texto})` : ''}
                       </option>
                     ))}
                   </select>
@@ -30356,11 +30380,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     value={pedagogicalEngineConfig.transversalAxis}
                     onChange={(e) => setPedagogicalEngineConfig(c => ({ ...c, transversalAxis: e.target.value }))}
                   >
-                    <option value="Salud y Bienestar">Salud y Bienestar</option>
-                    <option value="Desarrollo Sostenible">Desarrollo Sostenible</option>
-                    <option value="Alfabetización Imprescindible">Alfabetización Imprescindible</option>
-                    <option value="Ciudadanía y Convivencia">Ciudadanía y Convivencia</option>
-                    <option value="Desarrollo Personal y Profesional">Desarrollo Personal y Profesional</option>
+                    {getOfficialEjesTransversales(pedagogicalEngineConfig.grade, pedagogicalEngineConfig.subject).map(ejeObj => (
+                      <option key={ejeObj.eje} value={ejeObj.eje}>{ejeObj.eje}</option>
+                    ))}
                   </select>
                 </div>
               </div>

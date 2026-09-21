@@ -94,6 +94,212 @@
     },
     "lengua_espanola": {
       "nombre": "Lengua Española",
+      "enfoque": "Textual, funcional y comunicativo",
+      "carga_horaria_semanal": {
+        "jornada_extendida": 6,
+        "jornada_regular": 6
+      },
+      "ejes_transversales": [
+        {
+          "eje": "Salud y Bienestar",
+          "descriptor": "Caracterización de situaciones de salud que arriesgan el entorno escolar, familiar y comunitario en general, a través de variadas fuentes de información en diferentes formatos, proponiendo posibles acciones de solución para el bienestar común."
+        },
+        {
+          "eje": "Desarrollo Sostenible",
+          "descriptor": "Identificación de factores que ponen en riesgo el desarrollo sostenible (por ejemplo: cambio climático, contaminación ambiental, deforestación, entre otros), a fin de aportar soluciones posibles."
+        },
+        {
+          "eje": "Ciudadanía y Convivencia",
+          "descriptor": "Uso de diferentes textos orales y escritos para caracterizar diferentes conflictos que se presentan en contextos sociales, proponiendo soluciones según su capacidad y nivel."
+        },
+        {
+          "eje": "Alfabetización Imprescindible",
+          "descriptor": "Investigación sobre los variados usos de su lengua materna y la alfabetización digital, con miras a fortalecer la comunicación oral y escrita y el empleo de las tecnologías en diferentes situaciones de comunicación."
+        },
+        {
+          "eje": "Desarrollo Personal y Profesional",
+          "descriptor": "Iniciación en la elaboración de proyectos para su vida estudiantil y profesional, partiendo del uso de la lengua como medio fundamental de la cultura, para la formación de un ser humano democrático, participativo e integral."
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "1RO-LE-U1",
+          "nombre_unidad": "La Noticia (Naturaleza y Medioambiente)",
+          "tipo_texto": "Funcional / Informativo",
+          "competencias_asociadas": ["CE-LE1", "CE-LE2", "CE-LE5", "CE-LE6"],
+          "indicadores_asociados": ["IL-1", "IL-2", "IL-4", "IL-13", "IL-16"],
+          "contenidos": {
+            "conceptuales": [
+              "La noticia: función y estructura (titular, entrada o copete, cuerpo, foto y pie de foto).",
+              "Interrogantes fundamentales de la noticia: qué, quién, cuándo, dónde y cómo ocurrió.",
+              "Elementos que convierten un hecho en noticia.",
+              "Conectores de orden y temporales.",
+              "Modos y tiempos verbales.",
+              "La puntuación, siglas, abreviaturas, acrónimos y elementos paratextuales."
+            ],
+            "procedimentales": [
+              "Escucha atenta de noticias de interés mundial relacionadas con la naturaleza y el ambiente e identificación de su intención comunicativa.",
+              "Utilización de la estructura de la noticia para comprender su contenido.",
+              "Selección de un acontecimiento de actualidad sobre la naturaleza y el medioambiente.",
+              "Organización de la información según las interrogantes básicas.",
+              "Redacción de borradores atendiendo al registro formal y al uso de conectores de orden y tiempo.",
+              "Revisión, edición y publicación de la versión final en formato impreso o digital."
+            ],
+            "actitudinales": [
+              "Valoración de la objetividad de las noticias que escucha y lee.",
+              "Curiosidad por conocer lo que sucede a su alrededor y en el mundo.",
+              "Sensibilidad y solidaridad con lo sucedido y reportado en las noticias.",
+              "Criticidad frente a las cuestiones relacionadas con la naturaleza y el medioambiente.",
+              "Valoración de la escritura de la noticia como un proceso de construcción."
+            ]
+          }
+        },
+        {
+          "id_unidad": "1RO-LE-U2",
+          "nombre_unidad": "La Guía Turística (Patrimonio Local)",
+          "tipo_texto": "Funcional / Descriptivo",
+          "competencias_asociadas": ["CE-LE1", "CE-LE4", "CE-LE7"],
+          "indicadores_asociados": ["IL-1", "IL-2", "IL-10", "IL-19"],
+          "contenidos": {
+            "conceptuales": [
+              "La guía turística: función y estructura (portada, información, imágenes y cierre).",
+              "Características: apariencia, estímulos, atractivo y contenido.",
+              "Sustantivos propios, comunes y abstractos.",
+              "Adjetivos calificativos y determinativos; vocabulario persuasivo.",
+              "Verbos en presente de indicativo y oraciones exclamativas e interrogativas.",
+              "Información gráfica: mapas, planos, gráficos y fotografías."
+            ],
+            "procedimentales": [
+              "Escucha y lectura de guías turísticas identificando lugares de interés sociocultural.",
+              "Inferencia del sentido global a partir de elementos visuales y paratextuales.",
+              "Selección y clasificación de atractivos comunitarios (parques, monumentos, museos).",
+              "Uso de descripciones topográficas y adjetivos para resaltar cualidades del entorno.",
+              "Elaboración de borradores en soportes físicos o digitales integrando mapas y fotos.",
+              "Edición y publicación de la guía para visitantes de la comunidad."
+            ],
+            "actitudinales": [
+              "Veracidad de los contenidos respecto a la realidad comunitaria.",
+              "Respeto y orgullo por los valores identitarios y el patrimonio sociocultural.",
+              "Valoración de aspectos geográficos y culturales de su entorno.",
+              "Creatividad como medio para optimizar la comunicación de atractivos locales."
+            ]
+          }
+        },
+        {
+          "id_unidad": "1RO-LE-U3",
+          "nombre_unidad": "El Informe de Lectura (Patrones Socioculturales)",
+          "tipo_texto": "Funcional / Analítico",
+          "competencias_asociadas": ["CE-LE2", "CE-LE3", "CE-LE7"],
+          "indicadores_asociados": ["IL-5", "IL-7", "IL-8", "IL-21"],
+          "contenidos": {
+            "conceptuales": [
+              "El informe de lectura: función y estructura (título, introducción, desarrollo, conclusión).",
+              "El resumen como estrategia: reglas de omisión, selección, generalización y reconstrucción.",
+              "Adjetivos y verbos en presente y pasado de indicativo.",
+              "Conectores de ejemplificación y adición."
+            ],
+            "procedimentales": [
+              "Escucha y lectura analítica de textos narrativos (cuentos, fábulas, leyendas).",
+              "Aplicación de macrorreglas para resumir la trama sin perder ideas clave.",
+              "Análisis de patrones socioculturales, costumbres y conductas de los personajes.",
+              "Redacción de informes estructurando introducción, síntesis y valoración personal.",
+              "Corrección de estilo y publicación del informe en formato físico o digital."
+            ],
+            "actitudinales": [
+              "Curiosidad y rigor analítico ante obras literarias.",
+              "Valoración del informe como herramienta de comprensión profunda.",
+              "Respeto por la diversidad cultural reflejada en los textos.",
+              "Organización y honestidad intelectual al resumir obras ajenas."
+            ]
+          }
+        },
+        {
+          "id_unidad": "1RO-LE-U4",
+          "nombre_unidad": "El Afiche (Prevención y Convivencia)",
+          "tipo_texto": "Argumentativo / Persuasivo",
+          "competencias_asociadas": ["CE-LE2", "CE-LE4", "CE-LE6"],
+          "indicadores_asociados": ["IL-4", "IL-11", "IL-12", "IL-17"],
+          "contenidos": {
+            "conceptuales": [
+              "El afiche: función apelativa y estructura compositiva.",
+              "El afiche como texto argumentativo: tesis visual y escrita.",
+              "Uso del modo imperativo para mover a la acción.",
+              "Recursos poéticos y persuasivos: metáfora, exageración, elipsis, datos y cifras.",
+              "Elementos gráficos: tipografía, jerarquía visual, color, distribución espacial."
+            ],
+            "procedimentales": [
+              "Lectura e interpretación de afiches sobre salud, emergencias y convivencia.",
+              "Análisis de la intencionalidad persuasiva a través del lema y la imagen.",
+              "Planificación de campañas de concienciación escolar o comunitaria.",
+              "Diseño de afiches combinando texto directo, verbos imperativos e impacto gráfico.",
+              "Publicación y colocación de afiches en puntos estratégicos del centro educativo."
+            ],
+            "actitudinales": [
+              "Veracidad y responsabilidad ética en los mensajes de alerta o prevención.",
+              "Valoración del diseño y la síntesis como herramientas persuasivas.",
+              "Compromiso social ante problemáticas de salud y emergencias colectivas.",
+              "Promoción de valores de convivencia justa y armónica."
+            ]
+          }
+        },
+        {
+          "id_unidad": "1RO-LE-U5",
+          "nombre_unidad": "El Cuento Policiaco y Detectivesco",
+          "tipo_texto": "Literario / Narrativo",
+          "competencias_asociadas": ["CE-LE1", "CE-LE2", "CE-LE7"],
+          "indicadores_asociados": ["IL-1", "IL-6", "IL-20"],
+          "contenidos": {
+            "conceptuales": [
+              "El cuento policiaco: función lúdica, enigma y resolución deductiva.",
+              "Estructura narrativa: inicio, nudo (crimen/enigma, investigación) y desenlace.",
+              "Elementos narrativos: ambiente (cerrado/abierto, urbano), trama, personajes y actantes.",
+              "Tipos de narrador y recursos literarios (descripción, diálogo, pistas falsas).",
+              "Tiempos verbales: pretérito indefinido y pretérito imperfecto del indicativo.",
+              "Adverbios y conectores de causa y consecuencia."
+            ],
+            "procedimentales": [
+              "Escucha y lectura de relatos detectivescos identificando el móvil y las pistas.",
+              "Deducción lógica de hipótesis para resolver el enigma antes del desenlace.",
+              "Creación de esquemas de trama policial definiendo sospechosos y coartadas.",
+              "Redacción de cuentos policiacos usando descripciones de atmósferas de suspenso.",
+              "Revisión en parejas de la coherencia lógica de las pistas y edición final."
+            ],
+            "actitudinales": [
+              "Disfrute estético y entretenimiento a través de la lectura analítica.",
+              "Desarrollo de la paciencia, observación y pensamiento lógico-deductivo.",
+              "Valoración de la justicia y la verdad frente a conflictos y transgresiones.",
+              "Creatividad y rigor en la construcción de secuencias narrativas."
+            ]
+          }
+        },
+        {
+          "id_unidad": "1RO-LE-U6",
+          "nombre_unidad": "El Caligrama",
+          "tipo_texto": "Literario / Poético-Visual",
+          "competencias_asociadas": ["CE-LE1", "CE-LE7"],
+          "indicadores_asociados": ["IL-1", "IL-3", "IL-20", "IL-21"],
+          "contenidos": {
+            "conceptuales": [
+              "El caligrama: fusión entre poesía, tipografía y artes visuales.",
+              "Estructura: disposición espacial del verso libre formando siluetas alusivas.",
+              "Figuras literarias: metáfora, imagen, personificación, comparación, epíteto.",
+              "Recursos poéticos: ritmo, musicalidad y juego de palabras."
+            ],
+            "procedimentales": [
+              "Lectura y declamación de caligramas de poetas dominicanos e hispanoamericanos.",
+              "Análisis de la correspondencia entre la imagen gráfica y el tema poético.",
+              "Selección de motivos líricos y trazado de bocetos visuales.",
+              "Composición de versos adaptados al contorno del dibujo.",
+              "Exposición en murales o antologías poéticas escolares."
+            ],
+            "actitudinales": [
+              "Sensibilidad estética ante formas híbridas de arte y literatura.",
+              "Expresión libre y creativa de emociones y percepciones del entorno.",
+              "Valoración de la dimensión lúdica de la palabra escrita."
+            ]
+          }
+        }
+      ],
       "competencias_especificas": [
         {
           "codigo": "CE-LE1",
@@ -134,7 +340,7 @@
           "grupo_registro": "G4",
           "descripcion": "Analiza textos variados de manera oral o escrita que ponen de relieve hechos y tradiciones históricas relevantes, identificando nuevas relaciones sociales al reconocer y valorar el patrimonio natural y sociocultural dominicano.",
           "indicadores_logro": [
-            { "codigo": "IL-10", "texto": "Presenta nuevas relaciones sociales, en reconocimiento y valoración de lo natural y sociocultural, haciendo uso de textos, tales como análisis, comentarios, argumentos, entre otros." },
+            { "codigo": "IL-10", "texto": "Presenta nuevas relaciones sociales, en recognition y valoración de lo natural y sociocultural, haciendo uso de textos, tales como análisis, comentarios, argumentos, entre otros." },
             { "codigo": "IL-11", "texto": "Conoce y cuestiona las prácticas sociales de ciudadanía en el entorno local y su confrontación con los valores universales, a través de textos de secuencia argumentativa." },
             { "codigo": "IL-12", "texto": "Elabora proyectos colaborativos, utilizando textos variados y apropiados, para la construcción de una ciudadanía que busca soluciones a problemas." }
           ]

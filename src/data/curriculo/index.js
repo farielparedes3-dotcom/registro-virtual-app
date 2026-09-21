@@ -156,13 +156,83 @@ export function filterOfficialCompetencies1ro(subjectKey, selectedFundamental) {
 }
 
 /**
+ * Get official Ejes Transversales for a given grade and subject
+ */
+export function getOfficialEjesTransversales(gradeStr, subjectKey) {
+  const officialData = getOfficialSubjectData(gradeStr, subjectKey);
+  if (officialData && Array.isArray(officialData.ejes_transversales) && officialData.ejes_transversales.length > 0) {
+    return officialData.ejes_transversales;
+  }
+  return [
+    {
+      eje: "Salud y Bienestar",
+      descriptor: "Caracterización de situaciones de salud que arriesgan el entorno escolar, familiar y comunitario en general, a través de variadas fuentes de información en diferentes formatos, proponiendo posibles acciones de solución para el bienestar común."
+    },
+    {
+      eje: "Desarrollo Sostenible",
+      descriptor: "Identificación de factores que ponen en riesgo el desarrollo sostenible (por ejemplo: cambio climático, contaminación ambiental, deforestación, entre otros), a fin de aportar soluciones posibles."
+    },
+    {
+      eje: "Ciudadanía y Convivencia",
+      descriptor: "Uso de diferentes textos orales y escritos para caracterizar diferentes conflictos que se presentan en contextos sociales, proponiendo soluciones según su capacidad y nivel."
+    },
+    {
+      eje: "Alfabetización Imprescindible",
+      descriptor: "Investigación sobre los variados usos de su lengua materna y la alfabetización digital, con miras a fortalecer la comunicación oral y escrita y el empleo de las tecnologías en diferentes situaciones de comunicación."
+    },
+    {
+      eje: "Desarrollo Personal y Profesional",
+      descriptor: "Iniciación en la elaboración de proyectos para su vida estudiantil y profesional, partiendo del uso de la lengua como medio fundamental de la cultura, para la formación de un ser humano democrático, participativo e integral."
+    }
+  ];
+}
+
+/**
  * Get available curriculum units by Grade and Subject Area
  */
 export function getCurriculumUnits(gradeStr, subjectKey) {
   if (!gradeStr || !subjectKey) return [];
 
   const cleanGrade = gradeStr.trim();
-  
+  const officialData = getOfficialSubjectData(cleanGrade, subjectKey);
+
+  if (officialData && Array.isArray(officialData.unidades_tematicas) && officialData.unidades_tematicas.length > 0) {
+    const allCEs = officialData.competencias_especificas || [];
+    const allILs = allCEs.flatMap(c => c.indicadores_logro || []);
+
+    return officialData.unidades_tematicas.map(u => {
+      const cesAlineadasText = (u.competencias_asociadas || []).map(code => {
+        const match = allCEs.find(c => c.codigo === code);
+        return match ? `[${match.codigo}] ${match.descripcion}` : code;
+      });
+
+      const ilsAlineadosText = (u.indicadores_asociados || []).map(code => {
+        const match = allILs.find(i => i.codigo === code);
+        return match ? `[${match.codigo}] ${match.texto}` : code;
+      });
+
+      return {
+        id_unidad: u.id_unidad,
+        tema: u.nombre_unidad,
+        nombre_unidad: u.nombre_unidad,
+        tipo_texto: u.tipo_texto || 'Funcional / Descriptivo',
+        competencias_asociadas: u.competencias_asociadas || [],
+        indicadores_asociados: u.indicadores_asociados || [],
+        ces_alineadas_text: cesAlineadasText,
+        ils_alineados_text: ilsAlineadosText,
+        contenidos: u.contenidos || { conceptuales: [], procedimentales: [], actitudinales: [] },
+        competencias_alineadas: [
+          {
+            fundamental: "Competencias Específicas Oficiales MINERD (Adecuación 2023)",
+            especifica: cesAlineadasText.join(' | ') || `Desarrollo de competencias de ${u.nombre_unidad}`,
+            indicador_logro: ilsAlineadosText.join(' | ') || `Aplica los mediadores de ${u.nombre_unidad}`,
+            contenidos: u.contenidos || { conceptuales: [], procedimentales: [], actitudinales: [] }
+          }
+        ]
+      };
+    });
+  }
+
   const foundDataset = CURRICULO_DATASETS.find(dataset => {
     const isSameArea = dataset.area === subjectKey;
     const isSameGrade = dataset.grado === cleanGrade || 
@@ -170,14 +240,12 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
     return isSameArea && isSameGrade;
   });
 
-  if (foundDataset && Array.isArray(foundDataset.unidades)) {
+  if (foundDataset && Array.isArray(foundDataset.unidades) && foundDataset.unidades.length > 0) {
     return foundDataset.unidades;
   }
 
   // Fallback dynamic generator if exact JSON file is not pre-packaged for that specific subject/grade
-  const officialData = getOfficialSubjectData(cleanGrade, subjectKey);
   const subName = officialData?.nombre || subjectKey;
-
   const officialComps = officialData?.competencias_especificas || [];
   const primaryCE = officialComps[0] || {
     fundamental: "Comunicativa; Pensamiento Lógico, Crítico y Creativo; Científica y Tecnológica",
@@ -191,6 +259,27 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
     {
       id_unidad: `${subjectKey.toUpperCase().substring(0, 3)}-${cleanGrade}-U1`,
       tema: `Fundamentos Curriculares e Indagación en ${subName} (${cleanGrade})`,
+      nombre_unidad: `Fundamentos Curriculares e Indagación en ${subName} (${cleanGrade})`,
+      tipo_texto: "Funcional / Analítico",
+      competencias_asociadas: officialComps.slice(0, 3).map(c => c.codigo),
+      indicadores_asociados: officialComps.flatMap(c => c.indicadores_logro || []).slice(0, 4).map(i => i.codigo),
+      contenidos: {
+        conceptuales: [
+          `Principios esenciales y conceptos articuladores de ${subName}.`,
+          "Leyes, postulados y modelos explicativos de la disciplina.",
+          "Vocabulario técnico y categorización de fenómenos según la Adecuación 2023."
+        ],
+        procedimentales: [
+          "Formulación de hipótesis y preguntas de indagación contextualizadas.",
+          "Recolección, clasificación y análisis sistemático de evidencias.",
+          "Elaboración de informes sintéticos, diagramas y productos finales."
+        ],
+        actitudinales: [
+          "Rigor científico y honestidad en el manejo de datos.",
+          "Trabajo colaborativo, empatía y responsabilidad social.",
+          "Valoración del conocimiento científico como motor de transformación."
+        ]
+      },
       competencias_alineadas: [
         {
           fundamental: primaryCE.fundamental,
@@ -219,6 +308,23 @@ export function getCurriculumUnits(gradeStr, subjectKey) {
     {
       id_unidad: `${subjectKey.toUpperCase().substring(0, 3)}-${cleanGrade}-U2`,
       tema: `Aplicación Práctica y Proyectos de Intervención en ${subName}`,
+      nombre_unidad: `Aplicación Práctica y Proyectos de Intervención en ${subName}`,
+      tipo_texto: "Argumentativo / Persuasivo",
+      competencias_asociadas: officialComps.slice(3, 6).map(c => c.codigo),
+      indicadores_asociados: officialComps.flatMap(c => c.indicadores_logro || []).slice(4, 8).map(i => i.codigo),
+      contenidos: {
+        conceptuales: [
+          `Impacto social, tecnológico y ambiental de los avances en ${subName}.`,
+          "Estrategias de desarrollo sostenible y ética ciudadana en el entorno."
+        ],
+        procedimentales: [
+          "Diseño de prototipos, proyectos de investigación-acción o debates escolares.",
+          "Socialización de productos formativos mediante medios analógicos y digitales."
+        ],
+        actitudinales: [
+          "Compromiso ético con la sostenibilidad y la democracia deliberativa."
+        ]
+      },
       competencias_alineadas: [
         {
           fundamental: "Ambiental y de la Salud; Ética y Ciudadana; Resolución de Problemas",
