@@ -298,6 +298,7 @@ export const dbService = {
       const subjects = localStorage.getItem('s_subjects');
       const grades = localStorage.getItem('s_grades');
       const staff = localStorage.getItem('s_grade_staff');
+      const counselorMap = localStorage.getItem('s_grade_counselor_map');
       const monthlyDays = localStorage.getItem('s_monthly_worked_days');
       const attendanceDates = localStorage.getItem('s_attendance_day_dates');
 
@@ -305,6 +306,7 @@ export const dbService = {
         subjects: subjects ? JSON.parse(subjects) : null,
         grades: grades ? JSON.parse(grades) : null,
         staff: staff ? JSON.parse(staff) : null,
+        counselorMap: counselorMap ? JSON.parse(counselorMap) : null,
         monthlyDays: monthlyDays ? JSON.parse(monthlyDays) : null,
         attendanceDates: attendanceDates ? JSON.parse(attendanceDates) : null
       });
@@ -317,10 +319,14 @@ export const dbService = {
         conf[docItem.id] = docItem.data();
       });
       remoteCache['config'] = JSON.stringify(conf);
+      if (conf['staff']?.mapping) {
+        localStorage.setItem('s_grade_counselor_map', JSON.stringify(conf['staff'].mapping));
+      }
       callback({
         subjects: conf['subjects']?.data || null,
         grades: conf['grades']?.data || null,
         staff: conf['staff']?.data || null,
+        counselorMap: conf['staff']?.mapping || null,
         monthlyDays: conf['attendance']?.monthlyDays || null,
         attendanceDates: conf['attendance']?.attendanceDates || null
       });
@@ -346,12 +352,16 @@ export const dbService = {
       console.error('Error saving grades to Firestore:', e);
     }
   },
-  async saveGradeStaff(staff) {
-    if (!hasChanged('config_staff', staff)) return;
+  async saveGradeStaff(staff, counselorMap) {
+    const payload = { staff, counselorMap };
+    if (!hasChanged('config_staff', payload)) return;
     localStorage.setItem('s_grade_staff', JSON.stringify(staff));
+    if (counselorMap) {
+      localStorage.setItem('s_grade_counselor_map', JSON.stringify(counselorMap));
+    }
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'config', 'staff'), { data: staff });
+      await setDoc(doc(firestore, 'config', 'staff'), { data: staff, mapping: counselorMap || {} });
     } catch (e) {
       console.error('Error saving grade staff to Firestore:', e);
     }

@@ -26470,15 +26470,20 @@ export default function App() {
   const handleOpenAlertModal = (student, subjectKey, score, period) => {
     const contacts = gradeStaffContacts[student.grade] || {};
     
+    // Read from s_grade_counselor_map for courseKey matching (e.g. "1ro A" or "1ro Secundaria A" or "1ro Secundaria")
+    const courseKeyFull = `${student.grade} ${student.section || ''}`.trim();
+    const mapping = JSON.parse(localStorage.getItem('s_grade_counselor_map') || '{}');
+    const mappedCounselor = mapping[courseKeyFull] || mapping[student.grade] || null;
+
     const assignedCounselor = users.find(u => {
       const r = (u.role || u.rol || '').toLowerCase();
       const gradesList = Array.isArray(u.assignedGrades) ? u.assignedGrades : (Array.isArray(u.gradosAsignados) ? u.gradosAsignados : []);
-      return (r === 'counselor' || r === 'orientadora') && gradesList.includes(student.grade);
+      return (r === 'counselor' || r === 'orientadora') && (gradesList.includes(student.grade) || gradesList.includes(courseKeyFull));
     });
 
-    const counselorEmail = contacts.counselor || contacts.orientadorEmail || (contacts.orientadora?.correo) || assignedCounselor?.email || assignedCounselor?.correo || 'orientacion@docente.edu.do';
-    const counselorName = contacts.counselorName || (contacts.orientadora?.nombre) || assignedCounselor?.name || assignedCounselor?.nombre || 'Licda. Orientadora Escolar';
-    const counselorId = contacts.counselorId || (contacts.orientadora?.uid) || assignedCounselor?.id || assignedCounselor?.uid || '';
+    const counselorEmail = mappedCounselor?.counselorEmail || contacts.counselor || contacts.orientadorEmail || (contacts.orientadora?.correo) || assignedCounselor?.email || assignedCounselor?.correo || 'orientacion@docente.edu.do';
+    const counselorName = mappedCounselor?.counselorName || contacts.counselorName || (contacts.orientadora?.nombre) || assignedCounselor?.name || assignedCounselor?.nombre || 'Licda. Orientadora Escolar';
+    const counselorId = mappedCounselor?.counselorId || contacts.counselorId || (contacts.orientadora?.uid) || assignedCounselor?.id || assignedCounselor?.uid || '';
     const coordinatorEmail = contacts.coordinator || contacts.coordinadorEmail || '';
 
     setAlertFormModal({
@@ -32051,8 +32056,42 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             className="btn-primary"
                             style={{ backgroundColor: '#6f42c1', borderColor: '#6f42c1', fontWeight: 'bold', fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
                             onClick={() => {
+                              const counselorList = users.filter(u => {
+                                const r = (u.role || u.rol || '').toLowerCase();
+                                const em = (u.email || '').toLowerCase();
+                                return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
+                              });
+
+                              const updatedStaff = counselorList.map(c => ({
+                                id: c.id,
+                                name: c.name,
+                                email: c.email,
+                                assignedGrades: Array.isArray(c.assignedGrades) ? c.assignedGrades : (Array.isArray(c.gradosAsignados) ? c.gradosAsignados : [])
+                              }));
+
+                              const gradeToCounselorMap = {};
+                              updatedStaff.forEach(c => {
+                                (c.assignedGrades || []).forEach(gradeKey => {
+                                  gradeToCounselorMap[gradeKey] = {
+                                    counselorId: c.id,
+                                    counselorName: c.name,
+                                    counselorEmail: c.email
+                                  };
+                                  ['A', 'B', 'C', 'D', 'E'].forEach(sec => {
+                                    gradeToCounselorMap[`${gradeKey} ${sec}`] = {
+                                      counselorId: c.id,
+                                      counselorName: c.name,
+                                      counselorEmail: c.email
+                                    };
+                                  });
+                                });
+                              });
+
+                              localStorage.setItem('s_grade_staff', JSON.stringify(updatedStaff));
+                              localStorage.setItem('s_grade_counselor_map', JSON.stringify(gradeToCounselorMap));
+                              dbService.saveGradeStaff(updatedStaff, gradeToCounselorMap);
+
                               setUsersAndSave(prev => [...prev]);
-                              setGradeStaffAndSave(prev => ({ ...prev }));
                               setCounselorToastMsg('✅ Asignaciones guardadas y sincronizadas correctamente en Firestore e IndexedDB');
                               setTimeout(() => setCounselorToastMsg(''), 4000);
                             }}
@@ -32125,18 +32164,48 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                 : currentAssigned.filter(x => x !== g);
 
                                               // 1. Update user's assignedGrades & gradosAsignados
-                                              setUsersAndSave(prev => {
-                                                const exists = prev.some(u => u.id === counselor.id || u.email === counselor.email);
-                                                if (exists) {
-                                                  return prev.map(u => (u.id === counselor.id || u.email === counselor.email) 
-                                                    ? { ...u, assignedGrades: updatedAssigned, gradosAsignados: updatedAssigned } 
-                                                    : u);
-                                                } else {
-                                                  return [...prev, { ...counselor, assignedGrades: updatedAssigned, gradosAsignados: updatedAssigned }];
-                                                }
+                                              const updatedUsers = users.map(u => (u.id === counselor.id || u.email === counselor.email) 
+                                                ? { ...u, assignedGrades: updatedAssigned, gradosAsignados: updatedAssigned } 
+                                                : u);
+                                              setUsersAndSave(updatedUsers);
+
+                                              // 2. Build updatedStaff & gradeToCounselorMap
+                                              const cList = updatedUsers.filter(u => {
+                                                const r = (u.role || u.rol || '').toLowerCase();
+                                                const em = (u.email || '').toLowerCase();
+                                                return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
                                               });
 
-                                              // 2. Sync with gradeStaff (Contactos de Coordinación y Orientación por Grado)
+                                              const updatedStaff = cList.map(c => ({
+                                                id: c.id,
+                                                name: c.name,
+                                                email: c.email,
+                                                assignedGrades: Array.isArray(c.assignedGrades) ? c.assignedGrades : (Array.isArray(c.gradosAsignados) ? c.gradosAsignados : [])
+                                              }));
+
+                                              const gradeToCounselorMap = {};
+                                              updatedStaff.forEach(c => {
+                                                (c.assignedGrades || []).forEach(gradeKey => {
+                                                  gradeToCounselorMap[gradeKey] = {
+                                                    counselorId: c.id,
+                                                    counselorName: c.name,
+                                                    counselorEmail: c.email
+                                                  };
+                                                  ['A', 'B', 'C', 'D', 'E'].forEach(sec => {
+                                                    gradeToCounselorMap[`${gradeKey} ${sec}`] = {
+                                                      counselorId: c.id,
+                                                      counselorName: c.name,
+                                                      counselorEmail: c.email
+                                                    };
+                                                  });
+                                                });
+                                              });
+
+                                              localStorage.setItem('s_grade_staff', JSON.stringify(updatedStaff));
+                                              localStorage.setItem('s_grade_counselor_map', JSON.stringify(gradeToCounselorMap));
+                                              dbService.saveGradeStaff(updatedStaff, gradeToCounselorMap);
+
+                                              // 3. Sync with gradeStaffContacts
                                               setGradeStaffAndSave(prevStaff => {
                                                 const nextStaff = { ...prevStaff };
                                                 const currentContact = nextStaff[g] || { coordinator: '', counselor: '' };
@@ -32162,7 +32231,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                                 return nextStaff;
                                               });
 
-                                              // 3. Show Toast Feedback
+                                              // 4. Show Toast Feedback
                                               setCounselorToastMsg(`✅ Grados asignados y vinculados correctamente a ${counselor.name}`);
                                               setTimeout(() => setCounselorToastMsg(''), 4000);
                                             }}
