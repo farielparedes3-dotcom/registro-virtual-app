@@ -25135,7 +25135,7 @@ export default function App() {
 
   const fileInputRef = useRef(null);
 
-  // --- Refs and Event-Driven Save Wrappers to break infinite loops ---
+  const lastAttendanceEditTimeRef = useRef(0);
   const monthlyWorkedDaysRef = useRef(monthlyWorkedDays);
   const attendanceDayDatesRef = useRef(attendanceDayDates);
   useEffect(() => { monthlyWorkedDaysRef.current = monthlyWorkedDays; }, [monthlyWorkedDays]);
@@ -25211,6 +25211,7 @@ export default function App() {
   };
 
   const setStudentAttendanceDetailAndSave = (updater) => {
+    lastAttendanceEditTimeRef.current = Date.now();
     setStudentAttendanceDetail(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
       try { localStorage.setItem('s_student_attendance_detail', JSON.stringify(next)); } catch (e) {}
@@ -25435,7 +25436,16 @@ export default function App() {
     });
 
     const unsubStudentAttendance = dbService.subscribeStudentAttendance((data) => {
-      setStudentAttendanceDetail(data || {});
+      if (data && typeof data === 'object') {
+        if (Date.now() - lastAttendanceEditTimeRef.current < 3000) {
+          return;
+        }
+        setStudentAttendanceDetail(prev => {
+          const merged = { ...data, ...prev };
+          try { localStorage.setItem('s_student_attendance_detail', JSON.stringify(merged)); } catch (e) {}
+          return merged;
+        });
+      }
     });
 
     const unsubAttendanceComments = dbService.subscribeAttendanceComments ? dbService.subscribeAttendanceComments((data) => {
@@ -26074,6 +26084,33 @@ export default function App() {
     alert('Docente registrado.');
   };
 
+  const handleSaveAllTeacherAssignments = async () => {
+    try {
+      const updatedUsers = users.map(u => {
+        if (u.role === 'teacher') {
+          const assignList = u.assignments || [];
+          const uniqueGrades = Array.from(new Set(assignList.map(a => a.grade)));
+          return {
+            ...u,
+            assignedGrades: uniqueGrades,
+            gradosAsignados: uniqueGrades
+          };
+        }
+        return u;
+      });
+
+      setUsersAndSave(updatedUsers);
+      if (typeof syncToIndexedDB === 'function') {
+        try { syncToIndexedDB('s_users', updatedUsers); } catch (e) {}
+      }
+      setCounselorToastMsg("✅ Asignaciones y Carga Académica guardadas con éxito en la nube y en el dispositivo");
+      setTimeout(() => setCounselorToastMsg(''), 4000);
+    } catch (err) {
+      console.error("Error al guardar asignaciones de docentes:", err);
+      alert("⚠️ Hubo un error al guardar la asignación de docentes.");
+    }
+  };
+
   const handleAddAssignment = (userId, targetGrade, targetSubject) => {
     if (currentUser.role !== 'admin') return;
     const gradeVal = normalizeGradeString(targetGrade || (grades[0] || ''));
@@ -26094,7 +26131,14 @@ export default function App() {
           alert('Esta asignación ya existe para este docente.');
           return u;
         }
-        return { ...u, assignments: [...assignmentsList, { grade: gradeVal, subject: subjectVal }] };
+        const nextAssignments = [...assignmentsList, { grade: gradeVal, subject: subjectVal }];
+        const uniqueGrades = Array.from(new Set(nextAssignments.map(a => a.grade)));
+        return {
+          ...u,
+          assignments: nextAssignments,
+          assignedGrades: uniqueGrades,
+          gradosAsignados: uniqueGrades
+        };
       }
       return u;
     }));
@@ -26104,9 +26148,13 @@ export default function App() {
     if (currentUser.role !== 'admin') return;
     setUsersAndSave(prev => prev.map(u => {
       if (u.id === userId) {
+        const nextAssignments = u.assignments.filter((_, idx) => idx !== indexToRemove);
+        const uniqueGrades = Array.from(new Set(nextAssignments.map(a => a.grade)));
         return {
           ...u,
-          assignments: u.assignments.filter((_, idx) => idx !== indexToRemove)
+          assignments: nextAssignments,
+          assignedGrades: uniqueGrades,
+          gradosAsignados: uniqueGrades
         };
       }
       return u;
@@ -31471,10 +31519,53 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
               {activeTab === 'teachers' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <h2>Configuración de la Estructura Escolar</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginTop: '-1rem', marginBottom: '0.5rem' }}>
-                    Administra y personaliza los grados, asignaturas e instructores del plantel. Expande cada bloque para realizar modificaciones y adiciones en caliente.
-                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <h2>Configuración de la Estructura Escolar</h2>
+                      <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                        Administra y personaliza los grados, asignaturas e instructores del plantel. Expande cada bloque para realizar modificaciones y adiciones en caliente.
+                      </p>
+                    </div>
+                    <button
+                      className="btn-primary"
+                      onClick={handleSaveAllTeacherAssignments}
+                      style={{
+                        padding: '0.75rem 1.4rem',
+                        fontSize: '0.95rem',
+                        fontWeight: 'bold',
+                        backgroundColor: 'var(--primary)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        transition: 'transform 0.1s ease'
+                      }}
+                    >
+                      💾 Guardar Asignación y Carga Académica
+                    </button>
+                  </div>
+
+                  {counselorToastMsg && (
+                    <div style={{
+                      padding: '0.85rem 1.25rem',
+                      backgroundColor: '#10B981',
+                      color: '#FFFFFF',
+                      borderRadius: '10px',
+                      fontWeight: 'bold',
+                      fontSize: '0.92rem',
+                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}>
+                      <span>{counselorToastMsg}</span>
+                      <button onClick={() => setCounselorToastMsg('')} style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+                    </div>
+                  )}
 
                   {/* BLOCK 1: DOCENTES Y ASIGNACIONES */}
                   <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
