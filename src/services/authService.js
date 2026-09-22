@@ -9,7 +9,8 @@ import {
   updateEmail,
   updateProfile,
   EmailAuthProvider,
-  reauthenticateWithCredential
+  reauthenticateWithCredential,
+  createUserWithEmailAndPassword
 } from 'firebase/auth';
 import { syncToIndexedDB } from '../utils/dbBackup';
 
@@ -43,6 +44,19 @@ export const authService = {
   
   get currentUser() {
     return auth ? auth.currentUser : null;
+  },
+
+  async createAuthUser(email, password) {
+    if (isFirebaseEnabled && auth) {
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        return userCred?.user ? userCred.user.uid : null;
+      } catch (err) {
+        console.warn('⚠️ Firebase Auth creation warning or fallback mode:', err.message || err);
+        return null;
+      }
+    }
+    return null;
   },
 
   /**

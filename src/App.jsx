@@ -24096,6 +24096,7 @@ export default function App() {
   const [folderExplorerStudentName, setFolderExplorerStudentName] = useState('');
   const [selectedManualReportStudentId, setSelectedManualReportStudentId] = useState('');
   const [counselorForm, setCounselorForm] = useState({ name: '', email: '', password: '' });
+  const [counselorToastMsg, setCounselorToastMsg] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // --- Planning Module States (Adecuación Curricular 2023) ---
@@ -25153,6 +25154,25 @@ export default function App() {
           await dbService.saveUsers(next);
         } catch (e) {
           console.error("Error saving users to Firestore:", e);
+        }
+      }, 0);
+      return next;
+    });
+  };
+
+  const setGradeStaffAndSave = (updater) => {
+    setGradeStaffContacts(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      try {
+        localStorage.setItem('s_grade_staff', JSON.stringify(next));
+      } catch (e) {
+        console.error("Error saving s_grade_staff to localStorage:", e);
+      }
+      setTimeout(async () => {
+        try {
+          await dbService.saveGradeStaff(next);
+        } catch (e) {
+          console.error("Error saving grade staff to Firestore:", e);
         }
       }, 0);
       return next;
@@ -26448,7 +26468,19 @@ export default function App() {
   };
 
   const handleOpenAlertModal = (student, subjectKey, score, period) => {
-    const contacts = gradeStaffContacts[student.grade] || { coordinator: '', counselor: '' };
+    const contacts = gradeStaffContacts[student.grade] || {};
+    
+    const assignedCounselor = users.find(u => {
+      const r = (u.role || u.rol || '').toLowerCase();
+      const gradesList = Array.isArray(u.assignedGrades) ? u.assignedGrades : (Array.isArray(u.gradosAsignados) ? u.gradosAsignados : []);
+      return (r === 'counselor' || r === 'orientadora') && gradesList.includes(student.grade);
+    });
+
+    const counselorEmail = contacts.counselor || contacts.orientadorEmail || (contacts.orientadora?.correo) || assignedCounselor?.email || assignedCounselor?.correo || 'orientacion@docente.edu.do';
+    const counselorName = contacts.counselorName || (contacts.orientadora?.nombre) || assignedCounselor?.name || assignedCounselor?.nombre || 'Licda. Orientadora Escolar';
+    const counselorId = contacts.counselorId || (contacts.orientadora?.uid) || assignedCounselor?.id || assignedCounselor?.uid || '';
+    const coordinatorEmail = contacts.coordinator || contacts.coordinadorEmail || '';
+
     setAlertFormModal({
       isOpen: true,
       student,
@@ -26465,8 +26497,10 @@ export default function App() {
       comments: '',
       modifiedWithAI: false,
       finalText: '',
-      coordinatorEmail: contacts.coordinator || '',
-      counselorEmail: contacts.counselor || ''
+      coordinatorEmail: coordinatorEmail,
+      counselorEmail: counselorEmail,
+      counselorName: counselorName,
+      counselorId: counselorId
     });
   };
 
@@ -26668,6 +26702,9 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       score: formatScoreValue(alertFormModal.score),
       coordinator: alertFormModal.coordinatorEmail || '',
       counselor: alertFormModal.counselorEmail || '',
+      counselorName: alertFormModal.counselorName || '',
+      counselorId: alertFormModal.counselorId || '',
+      destinatario: alertFormModal.counselorName ? `${alertFormModal.counselorName} (${alertFormModal.counselorEmail})` : alertFormModal.counselorEmail,
       teacherEmail: currentUser ? currentUser.email : '',
       timestamp: new Date().toLocaleString('es-DO'),
       type: alertFormModal.type || 'académico',
@@ -31998,21 +32035,45 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                     {expandedSections.counselors && (
                       <div className="accordion-content animate-fade-in" style={{ padding: '1.5rem' }}>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 1.25rem 0' }}>
-                          Habilita qué grados específicos atenderá cada Orientadora/Psicóloga. Solo tendrán acceso a las carpetas, notificaciones y boletines de los grados seleccionados.
-                        </p>
+                        {counselorToastMsg && (
+                          <div style={{ padding: '0.75rem 1rem', marginBottom: '1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '8px', border: '1px solid #c3e6cb', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                            <span>{counselorToastMsg}</span>
+                            <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', color: '#155724' }} onClick={() => setCounselorToastMsg('')}>✕</button>
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, flex: 1 }}>
+                            Habilita qué grados específicos atenderá cada Orientadora/Psicóloga. Solo tendrán acceso a las carpetas, notificaciones y boletines de los grados seleccionados.
+                          </p>
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            style={{ backgroundColor: '#6f42c1', borderColor: '#6f42c1', fontWeight: 'bold', fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                            onClick={() => {
+                              setUsersAndSave(prev => [...prev]);
+                              setGradeStaffAndSave(prev => ({ ...prev }));
+                              setCounselorToastMsg('✅ Asignaciones guardadas y sincronizadas correctamente en Firestore e IndexedDB');
+                              setTimeout(() => setCounselorToastMsg(''), 4000);
+                            }}
+                          >
+                            <span>💾</span> Guardar Asignaciones
+                          </button>
+                        </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
                           {(() => {
                             const counselorList = users.filter(u => {
-                              const r = (u.role || '').toLowerCase();
+                              const r = (u.role || u.rol || '').toLowerCase();
                               const em = (u.email || '').toLowerCase();
                               return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
                             });
                             const activeCounselors = counselorList.length > 0 ? counselorList : DEFAULT_USERS.filter(u => u.role === 'counselor');
 
                             return activeCounselors.map(counselor => {
-                              const assigned = Array.isArray(counselor.assignedGrades) ? counselor.assignedGrades : grades;
+                              const assigned = Array.isArray(counselor.assignedGrades) 
+                                ? counselor.assignedGrades 
+                                : (Array.isArray(counselor.gradosAsignados) ? counselor.gradosAsignados : grades);
                               return (
                                 <div key={counselor.id} className="glass-panel" style={{ padding: '1.25rem', backgroundColor: 'var(--bg-primary)', border: '1.5px solid var(--border-color)', borderRadius: '10px' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
@@ -32035,6 +32096,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       onClick={() => {
                                         if (confirm(`¿Estás seguro de eliminar la cuenta de ${counselor.name}?`)) {
                                           setUsersAndSave(prev => prev.filter(u => u.id !== counselor.id && u.email !== counselor.email));
+                                          setCounselorToastMsg(`✅ Cuenta de ${counselor.name} eliminada.`);
+                                          setTimeout(() => setCounselorToastMsg(''), 4000);
                                         }
                                       }}
                                       title="Eliminar Cuenta de Orientación"
@@ -32054,32 +32117,54 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                             style={{ transform: 'scale(1.1)', cursor: 'pointer' }}
                                             onChange={(e) => {
                                               const isNowChecked = e.target.checked;
-                                              const currentAssigned = Array.isArray(counselor.assignedGrades) ? counselor.assignedGrades : [...grades];
+                                              const currentAssigned = Array.isArray(counselor.assignedGrades) 
+                                                ? counselor.assignedGrades 
+                                                : (Array.isArray(counselor.gradosAsignados) ? counselor.gradosAsignados : [...grades]);
                                               const updatedAssigned = isNowChecked
                                                 ? (currentAssigned.includes(g) ? currentAssigned : [...currentAssigned, g])
                                                 : currentAssigned.filter(x => x !== g);
 
-                                              // 1. Update user's assignedGrades
+                                              // 1. Update user's assignedGrades & gradosAsignados
                                               setUsersAndSave(prev => {
                                                 const exists = prev.some(u => u.id === counselor.id || u.email === counselor.email);
                                                 if (exists) {
-                                                  return prev.map(u => (u.id === counselor.id || u.email === counselor.email) ? { ...u, assignedGrades: updatedAssigned } : u);
+                                                  return prev.map(u => (u.id === counselor.id || u.email === counselor.email) 
+                                                    ? { ...u, assignedGrades: updatedAssigned, gradosAsignados: updatedAssigned } 
+                                                    : u);
                                                 } else {
-                                                  return [...prev, { ...counselor, assignedGrades: updatedAssigned }];
+                                                  return [...prev, { ...counselor, assignedGrades: updatedAssigned, gradosAsignados: updatedAssigned }];
                                                 }
                                               });
 
                                               // 2. Sync with gradeStaff (Contactos de Coordinación y Orientación por Grado)
                                               setGradeStaffAndSave(prevStaff => {
                                                 const nextStaff = { ...prevStaff };
-                                                if (!nextStaff[g]) nextStaff[g] = { coordinadorEmail: '', orientadorEmail: '' };
+                                                const currentContact = nextStaff[g] || { coordinator: '', counselor: '' };
                                                 if (isNowChecked) {
-                                                  nextStaff[g] = { ...nextStaff[g], orientadorEmail: counselor.email };
-                                                } else if (nextStaff[g].orientadorEmail === counselor.email) {
-                                                  nextStaff[g] = { ...nextStaff[g], orientadorEmail: '' };
+                                                  nextStaff[g] = { 
+                                                    ...currentContact, 
+                                                    counselor: counselor.email,
+                                                    counselorEmail: counselor.email,
+                                                    counselorName: counselor.name,
+                                                    counselorId: counselor.id,
+                                                    orientadorEmail: counselor.email 
+                                                  };
+                                                } else if (nextStaff[g]?.counselor === counselor.email || nextStaff[g]?.orientadorEmail === counselor.email) {
+                                                  nextStaff[g] = { 
+                                                    ...currentContact, 
+                                                    counselor: '',
+                                                    counselorEmail: '',
+                                                    counselorName: '',
+                                                    counselorId: '',
+                                                    orientadorEmail: '' 
+                                                  };
                                                 }
                                                 return nextStaff;
                                               });
+
+                                              // 3. Show Toast Feedback
+                                              setCounselorToastMsg(`✅ Grados asignados y vinculados correctamente a ${counselor.name}`);
+                                              setTimeout(() => setCounselorToastMsg(''), 4000);
                                             }}
                                           />
                                           {g}
@@ -32107,21 +32192,45 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               alert('Por favor ingresa el nombre y correo electrónico.');
                               return;
                             }
+                            const formattedName = name.startsWith('Licda.') || name.startsWith('Lic.') || name.startsWith('Psic.') ? name : `Licda. ${name}`;
                             const newCounselor = {
                               id: 'u_counselor_' + Date.now(),
-                              name: name.startsWith('Licda.') ? name : `Licda. ${name}`,
+                              name: formattedName,
                               email: email,
                               username: email.split('@')[0],
                               password: password,
                               role: 'counselor',
+                              rol: 'counselor',
                               classroomGrade: '',
                               assignments: [],
                               assignedGrades: [...grades],
+                              gradosAsignados: [...grades],
                               active: true
                             };
+
                             setUsersAndSave(prev => [...prev.filter(u => u.email.toLowerCase() !== email.toLowerCase()), newCounselor]);
+                            
+                            // Link counselor to gradeStaff for assigned grades
+                            setGradeStaffAndSave(prevStaff => {
+                              const nextStaff = { ...prevStaff };
+                              grades.forEach(g => {
+                                if (!nextStaff[g] || !nextStaff[g].counselor) {
+                                  nextStaff[g] = {
+                                    ...(nextStaff[g] || {}),
+                                    counselor: email,
+                                    counselorEmail: email,
+                                    counselorName: formattedName,
+                                    counselorId: newCounselor.id,
+                                    orientadorEmail: email
+                                  };
+                                }
+                              });
+                              return nextStaff;
+                            });
+
                             setCounselorForm({ name: '', email: '', password: '' });
-                            alert(`¡Cuenta de Orientación creada con éxito para ${newCounselor.name}!`);
+                            setCounselorToastMsg(`✅ Cuenta de Orientación creada con éxito para ${newCounselor.name}`);
+                            setTimeout(() => setCounselorToastMsg(''), 4000);
                           }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
                             <div className="form-group-compact" style={{ margin: 0 }}>
                               <label style={{ fontWeight: 'bold' }}>Nombre y Apellido</label>
@@ -36312,13 +36421,19 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     />
                   </div>
                   <div className="form-group-compact">
-                    <label style={{ fontWeight: 'bold' }}>Orientador Encargado</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontWeight: 'bold' }}>Orientador Encargado</label>
+                      <span style={{ fontSize: '0.68rem', backgroundColor: '#e0cffc', color: '#6f42c1', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                        🔒 Enrutado Automático
+                      </span>
+                    </div>
                     <input 
-                      type="email" 
+                      type="text" 
                       className="form-input-compact" 
                       placeholder="orientador@liceo.edu" 
-                      value={alertFormModal.counselorEmail || ''}
+                      value={alertFormModal.counselorName ? `${alertFormModal.counselorName} (${alertFormModal.counselorEmail})` : (alertFormModal.counselorEmail || '')}
                       onChange={(e) => setAlertFormModal(prev => ({ ...prev, counselorEmail: e.target.value }))}
+                      title="Asignado automáticamente según el grado del estudiante"
                     />
                   </div>
                 </div>
