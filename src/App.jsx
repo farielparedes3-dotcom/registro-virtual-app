@@ -25494,6 +25494,32 @@ export default function App() {
   // Scroll to top on tab change to prevent content being "pushed down" or hidden above viewport on mobile
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    if (activeTab === 'admin_grades') {
+      const localStaff = localStorage.getItem('s_grade_staff');
+      if (localStaff) {
+        try {
+          const parsed = JSON.parse(localStaff);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setUsers(prev => {
+              const next = [...prev];
+              parsed.forEach(c => {
+                const idx = next.findIndex(u => u.id === c.id || u.email === c.email);
+                if (idx >= 0) {
+                  next[idx] = { 
+                    ...next[idx], 
+                    assignedGrades: c.assignedGrades || c.gradosAsignados || [], 
+                    gradosAsignados: c.assignedGrades || c.gradosAsignados || [] 
+                  };
+                }
+              });
+              return next;
+            });
+          }
+        } catch (e) {
+          console.error("Error loading s_grade_staff on admin_grades mount:", e);
+        }
+      }
+    }
   }, [activeTab]);
 
   // Prevent mouse wheel and arrow keys from incrementing/decrementing numeric inputs in grades & instruments
@@ -32092,11 +32118,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               dbService.saveGradeStaff(updatedStaff, gradeToCounselorMap);
 
                               setUsersAndSave(prev => [...prev]);
-                              setCounselorToastMsg('✅ Asignaciones guardadas y sincronizadas correctamente en Firestore e IndexedDB');
+                              setCounselorToastMsg('✅ Cambios guardados con éxito en la nube y en el dispositivo');
                               setTimeout(() => setCounselorToastMsg(''), 4000);
                             }}
                           >
-                            <span>💾</span> Guardar Asignaciones
+                            <span>💾</span> Guardar Asignaciones de Orientación
                           </button>
                         </div>
 
