@@ -48,7 +48,9 @@ function getPdfJsLib() {
  * @returns {Promise<string>} Texto completo extraído página por página
  */
 export async function extractTextFromPDF(file) {
-  if (!file) return '';
+  if (!file) {
+    throw new Error('No se proporcionó ningún archivo PDF.');
+  }
 
   try {
     let arrayBuffer;
@@ -57,44 +59,43 @@ export async function extractTextFromPDF(file) {
     } else if (file instanceof ArrayBuffer) {
       arrayBuffer = file;
     } else {
-      return sanitizeExtractedText(String(file));
+      arrayBuffer = await new Blob([file]).arrayBuffer();
     }
 
-    // Attempt parsing with pdfjsLib
+    let fullText = '';
+
     try {
       const pdfjsLib = await getPdfJsLib();
       if (pdfjsLib && pdfjsLib.getDocument) {
         const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
         const pdf = await loadingTask.promise;
-        
-        let fullText = '';
-        
+
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i);
           const textContent = await page.getTextContent();
           const pageText = textContent.items.map(item => item.str).join(' ');
           fullText += `\n--- PÁGINA ${i} ---\n` + pageText;
         }
-        
-        const result = fullText.trim();
-        if (result && result.length > 20 && !result.includes('/FlateDecode')) {
-          return sanitizeExtractedText(result);
-        }
       }
     } catch (pdfjsErr) {
-      console.warn('[pdfExtractor] pdfjsLib notice, switching to native stream decoder:', pdfjsErr);
+      console.warn('[pdfExtractor] pdfjsLib fallback notice:', pdfjsErr);
     }
 
-    // Native Browser FlateDecode Stream Decoder Fallback
-    const nativeResult = await fallbackNativeExtract(arrayBuffer);
-    if (nativeResult && nativeResult.trim().length > 20) {
-      return sanitizeExtractedText(nativeResult);
+    if (!fullText.trim() || fullText.includes('/FlateDecode')) {
+      const nativeText = await fallbackNativeExtract(arrayBuffer);
+      if (nativeText) fullText += '\n' + nativeText;
     }
 
-    return 'Documento PDF MINERD cargado exitosamente.';
-  } catch (err) {
-    console.error('[pdfExtractor] General extraction error:', err);
-    return 'Documento PDF MINERD cargado exitosamente.';
+    const cleanText = fullText.replace(/\s+/g, ' ').trim();
+
+    if (!cleanText || cleanText.length < 50) {
+      throw new Error('El PDF no contiene texto digital legible (podría ser un documento escaneado como imagen).');
+    }
+
+    return cleanText;
+  } catch (error) {
+    console.error('Error al parsear el PDF:', error);
+    throw error;
   }
 }
 
