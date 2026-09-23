@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { OFFICIAL_BELL_SCHEDULE, getCurrentBlockInfo, parseTimeToMinutes } from '../config/scheduleConfig';
 import docentesHorariosData from '../data/docentesHorarios.json';
 import { useUpcomingClasses } from '../hooks/useUpcomingClasses';
+import ScheduleTimeline from './dashboard/ScheduleTimeline';
 
 const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 const DISPLAY_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
@@ -163,6 +164,23 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
               </button>
               <button
                 type="button"
+                className={`btn-tab ${viewMode === 'live' ? 'active' : ''}`}
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 'bold',
+                  borderRadius: '7px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: viewMode === 'live' ? '#6366F1' : 'transparent',
+                  color: viewMode === 'live' ? '#fff' : 'var(--text-primary)'
+                }}
+                onClick={() => setViewMode('live')}
+              >
+                ⏱️ Agenda Live (3h)
+              </button>
+              <button
+                type="button"
                 className={`btn-tab ${viewMode === 'weekly' ? 'active' : ''}`}
                 style={{
                   padding: '0.4rem 0.85rem',
@@ -300,6 +318,14 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
           </div>
         )}
       </div>
+
+      {/* LIVE SCHEDULE TIMELINE VIEW MODE */}
+      {viewMode === 'live' && (
+        <ScheduleTimeline 
+          currentUser={currentUser} 
+          onSelectCourse={(grado) => onNavigateToGrade && onNavigateToGrade(grado)} 
+        />
+      )}
 
       {/* TIMELINE VIEW MODE */}
       {viewMode === 'timeline' && (
