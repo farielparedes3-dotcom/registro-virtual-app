@@ -10,6 +10,7 @@ import SignatureModal from './components/SignatureModal';
 import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup, importFullDatabaseBackup } from './utils/dbBackup';
 import { extractTextFromPdf } from './services/pdfExtractor';
 import ClassTimelineDashboard from './components/ClassTimelineDashboard';
+import ScheduleTimeline from './components/dashboard/ScheduleTimeline';
 
 // Global configuration
 const DEFAULT_SUBJECTS = {
@@ -34278,6 +34279,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
                   </div>
                 </div>
+
+                {/* Schedule Timeline Header Widget */}
+                <ScheduleTimeline 
+                  currentUser={currentUser} 
+                  onSelectCourse={(grado) => {
+                    const found = (currentUser?.assignments || []).find(a => a.grade === grado);
+                    setSelectedGrade(grado);
+                    if (found) {
+                      setSelectedSubject(found.subject);
+                    }
+                    setActiveTab('grades');
+                    setSidebarCollapsed(true);
+                  }} 
+                />
 
                 {/* Official Bell Schedule & Class Timeline Dashboard */}
                 <ClassTimelineDashboard 
