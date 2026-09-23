@@ -1,0 +1,77 @@
+[
+  {
+    "docente": "Mario Paredes",
+    "email": "mario.paredes@docente.edu.do",
+    "asignatura": "Ciencias de la Naturaleza",
+    "horario": {
+      "Lunes": [
+        { "block": 4, "grado": "1A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 5, "grado": "1A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": "4BH", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Martes": [
+        { "block": 4, "grado": "1A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 5, "grado": "4BH", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": "4BH", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Miercoles": [
+        { "block": 4, "grado": "4BH", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 5, "grado": "4BH", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": "1A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Jueves": [
+        { "block": 4, "grado": "1A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 5, "grado": "4BH", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": "1A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Viernes": []
+    }
+  },
+  {
+    "docente": "Lohany Mateo",
+    "email": "lohany.mateo@docente.edu.do",
+    "asignatura": "Ciencias de la Naturaleza",
+    "horario": {
+      "Lunes": [
+        { "block": 1, "grado": "2B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 2, "grado": "3C", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 4, "grado": "2A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 5, "grado": null, "materia": "Registro", "tipo": "administrativo" },
+        { "block": 6, "grado": "2B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": "3B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Martes": [
+        { "block": 1, "grado": "3A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 2, "grado": null, "materia": "Registro", "tipo": "administrativo" },
+        { "block": 4, "grado": "3C", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 6, "grado": "2A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": null, "materia": "Planificación", "tipo": "pedagogico" },
+        { "block": 8, "grado": "2B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Miercoles": [
+        { "block": 1, "grado": "3B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 2, "grado": "2A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 4, "grado": null, "materia": "Registro", "tipo": "administrativo" },
+        { "block": 5, "grado": null, "materia": "Registro", "tipo": "administrativo" },
+        { "block": 7, "grado": "3A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 8, "grado": "2B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ],
+      "Jueves": [
+        { "block": 1, "grado": "3C", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 2, "grado": "2A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 4, "grado": "3B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 6, "grado": "2B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 7, "grado": null, "materia": "Planificación", "tipo": "pedagogico" },
+        { "block": 8, "grado": null, "materia": "Planificación", "tipo": "pedagogico" }
+      ],
+      "Viernes": [
+        { "block": 1, "grado": "2B", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 2, "grado": "2A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 4, "grado": null, "materia": "Registro", "tipo": "administrativo" },
+        { "block": 5, "grado": null, "materia": "Planificación", "tipo": "pedagogico" },
+        { "block": 7, "grado": "3A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" },
+        { "block": 8, "grado": "2A", "materia": "Ciencias de la Naturaleza", "tipo": "docencia" }
+      ]
+    }
+  }
+]

@@ -9,6 +9,7 @@ import { authService } from './services/authService';
 import SignatureModal from './components/SignatureModal';
 import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup, importFullDatabaseBackup } from './utils/dbBackup';
 import { extractTextFromPdf } from './services/pdfExtractor';
+import ClassTimelineDashboard from './components/ClassTimelineDashboard';
 
 // Global configuration
 const DEFAULT_SUBJECTS = {
@@ -31548,6 +31549,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </div>
                       </div>
 
+                      {/* Official Bell Schedule & Class Timeline Dashboard */}
+                      <ClassTimelineDashboard 
+                        currentUser={currentUser} 
+                        onNavigateToGrade={(g) => setClassroomGrade(g)} 
+                      />
+
                       <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Grados y Aulas</h2>
                       <div className="classroom-grid">
                         {grades.map((g, idx) => {
@@ -34271,6 +34278,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
                   </div>
                 </div>
+
+                {/* Official Bell Schedule & Class Timeline Dashboard */}
+                <ClassTimelineDashboard 
+                  currentUser={currentUser} 
+                  onNavigateToGrade={(g) => {
+                    const found = (currentUser?.assignments || []).find(a => a.grade === g);
+                    setSelectedGrade(g);
+                    if (found) {
+                      setSelectedSubject(found.subject);
+                    }
+                    setActiveTab('grades');
+                    setSidebarCollapsed(true);
+                  }} 
+                />
 
                 <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
                 <div className="classroom-grid">
