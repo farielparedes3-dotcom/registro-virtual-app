@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { OFFICIAL_BELL_SCHEDULE, getCurrentBlockInfo, parseTimeToMinutes } from '../config/scheduleConfig';
 import docentesHorariosData from '../data/docentesHorarios.json';
+import { useUpcomingClasses } from '../hooks/useUpcomingClasses';
 
 const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 const DISPLAY_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
@@ -15,6 +16,7 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
     return 'Lunes';
   });
   const [viewMode, setViewMode] = useState('timeline'); // 'timeline' | 'weekly'
+  const upcomingSchedule = useUpcomingClasses(currentUser);
 
   // Update clock every 10 seconds
   useEffect(() => {
@@ -266,6 +268,33 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
                     Próxima: {activeBlockInfo.nextBlock.label} ({activeBlockInfo.nextBlock.start})
                   </span>
                 )}
+              </div>
+            )}
+
+            {/* UPCOMING CLASSES (NEXT 3 HOURS) STRIP */}
+            {upcomingSchedule.upcomingBlocks && upcomingSchedule.upcomingBlocks.length > 0 && (
+              <div style={{ marginTop: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+                  Próximas 3h:
+                </span>
+                {upcomingSchedule.upcomingBlocks.map((b) => (
+                  <span key={b.block + '_' + b.start} style={{
+                    padding: '0.25rem 0.6rem',
+                    borderRadius: '12px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600',
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem'
+                  }}>
+                    <strong style={{ color: 'var(--primary)' }}>{b.start}</strong>
+                    <span>{b.assignment?.materia || b.label}</span>
+                    {b.assignment?.grado && <span style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '0 0.3rem', borderRadius: '4px', fontSize: '0.7rem' }}>{b.assignment.grado}</span>}
+                  </span>
+                ))}
               </div>
             )}
           </div>
