@@ -863,6 +863,1330 @@
           ]
         }
       ]
+    },
+    "quimica_y_computacion": {
+      "nombre": "Química y Computación",
+      "nivel": "Secundario - Segundo Ciclo",
+      "grado": "5to",
+      "modalidad": "Salida Optativa: Ciencias y Tecnología",
+      "area": "Ciencias de la Naturaleza",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-QC1",
+          "id": "CE-QC1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica utilizando el lenguaje científico y tecnológico fundamental de la química aplicada en los alimentos y bioquímica que implica ideas, leyes, modelos y procesos."
+        },
+        {
+          "codigo": "CE-QC2",
+          "id": "CE-QC2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Ofrece explicaciones y estrategias científicas y tecnológicas a problemas y fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos."
+        },
+        {
+          "codigo": "CE-QC3",
+          "id": "CE-QC3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Aplica diversos procedimientos científicos y tecnológicos para solucionar problemas o dar respuestas a fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos y bioquímica."
+        },
+        {
+          "codigo": "CE-QC4",
+          "id": "CE-QC4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza críticamente la naturaleza y filosofía de ingenierías químicas y las tecnologías, sus aportes, alcance del desarrollo tecnológico en nuestra sociedad y la ética asociada con las tecnologías en bioquímica."
+        },
+        {
+          "codigo": "CE-QC5",
+          "id": "CE-QC5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Se cuestiona e identifica problemas y situaciones, y construye una explicación utilizando conceptos, modelos, leyes, teorías y procesos fundamentales de las ingenierías químicas y bioquímica."
+        },
+        {
+          "codigo": "CE-QC6",
+          "id": "CE-QC6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Asume y actúa con responsabilidad crítica y autónoma para un desarrollo sostenible, cuidado ambiental y su salud, basadas en las ideas y aplicaciones de las ingenierías químicas."
+        },
+        {
+          "codigo": "CE-QC7",
+          "id": "CE-QC7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal y profesional relacionados con los fundamentos de la química aplicada."
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "5TO-QC-U1",
+          "nombre_unidad": "Aplicaciones Químicas para Alimentos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC1",
+            "IL-QC2",
+            "IL-QC3",
+            "IL-QC4",
+            "IL-QC5"
+          ],
+          "subtemas_conceptuales": [
+            "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+            "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+            "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+            "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+            "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+          ],
+          "procedimientos": [
+            "Observación, formulación de preguntas e hipótesis.",
+            "Planificación y ejecución de experimentos y registro de evidencias.",
+            "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+            "Diseño y elaboración de alimentos con aditivos y conservantes.",
+            "Determinación de propiedades físicas y químicas de los alimentos.",
+            "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Identificación y análisis de microorganismos en alimentos.",
+            "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+          ],
+          "actitudes_valores": [
+            "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+            "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+            "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+            "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+            "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+              "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+              "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+              "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+              "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+            ],
+            "procedimentales": [
+              "Observación, formulación de preguntas e hipótesis.",
+              "Planificación y ejecución de experimentos y registro de evidencias.",
+              "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+              "Diseño y elaboración de alimentos con aditivos y conservantes.",
+              "Determinación de propiedades físicas y químicas de los alimentos.",
+              "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+              "Identificación y análisis de microorganismos en alimentos.",
+              "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+            ],
+            "actitudinales": [
+              "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+              "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+              "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+              "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+              "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y elaboración de alimentos con aditivos y conservantes bajo normas de seguridad alimentaria.",
+            "Identificación y análisis de microorganismos en alimentos y aplicación de medidas preventivas.",
+            "Realización de pruebas de calidad en la industria alimentaria y elaboración de informes técnicos.",
+            "Demostración de habilidades para la elaboración de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Manejo adecuado de herramientas y equipos de laboratorio en la industria alimentaria."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U2",
+          "nombre_unidad": "Aplicaciones Químicas para Fármacos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5"
+          ],
+          "indicadores_asociados": [
+            "IL-QC6",
+            "IL-QC7",
+            "IL-QC8",
+            "IL-QC9"
+          ],
+          "subtemas_conceptuales": [
+            "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+            "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+            "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+            "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+            "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+          ],
+          "procedimientos": [
+            "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+            "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+            "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+            "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+            "Uso de software especializado para el diseño y simulación de fármacos.",
+            "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+          ],
+          "actitudes_valores": [
+            "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+            "Manifestación de curiosidad y creatividad en ensayos científicos.",
+            "Demostración de respeto y protección por el medio ambiente y la salud pública."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+              "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+              "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+              "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+              "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+            ],
+            "procedimentales": [
+              "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+              "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+              "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+              "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+              "Uso de software especializado para el diseño y simulación de fármacos.",
+              "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+            ],
+            "actitudinales": [
+              "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+              "Manifestación de curiosidad y creatividad en ensayos científicos.",
+              "Demostración de respeto y protección por el medio ambiente y la salud pública."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y síntesis de un compuesto orgánico con potencial actividad farmacológica.",
+            "Realización de ensayos in vitro e interpretación de resultados preclínicos y clínicos.",
+            "Determinación experimental de factores de farmacocinética y farmacodinámica de un fármaco.",
+            "Utilización de software especializado para el modelado y simulación de fármacos."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U3",
+          "nombre_unidad": "Química Computacional",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC7"
+          ],
+          "indicadores_asociados": [
+            "IL-QC10",
+            "IL-QC11",
+            "IL-QC12",
+            "IL-QC13"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+            "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+            "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+            "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+            "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+          ],
+          "procedimientos": [
+            "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+            "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+            "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+            "Diseño y optimización de moléculas con propiedades específicas.",
+            "Programación y uso de scripts para automatizar tareas en química computacional.",
+            "Resolución de problemas científicos mediante modelado molecular."
+          ],
+          "actitudes_valores": [
+            "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+            "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+            "Trabajo colaborativo y metódico en proyectos de simulación."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+              "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+              "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+              "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+              "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+            ],
+            "procedimentales": [
+              "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+              "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+              "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+              "Diseño y optimización de moléculas con propiedades específicas.",
+              "Programación y uso de scripts para automatizar tareas en química computacional.",
+              "Resolución de problemas científicos mediante modelado molecular."
+            ],
+            "actitudinales": [
+              "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+              "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+              "Trabajo colaborativo y metódico en proyectos de simulación."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y simulación de una molécula con propiedades específicas (actividad biológica o materials).",
+            "Análisis y presentación fundamentada de resultados obtenidos en simulaciones moleculares.",
+            "Programación y uso efectivo de software computacional para modelar propiedades moleculares.",
+            "Identificación y discusión de aspectos éticos y de privacidad en el uso de la química computacional."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U4",
+          "nombre_unidad": "Aplicaciones Químicas para Textiles",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC14",
+            "IL-QC15",
+            "IL-QC16",
+            "IL-QC17"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+            "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+            "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+            "Impacto ambiental de la industria textil y formas de mitigación",
+            "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+          ],
+          "procedimientos": [
+            "Identificación y análisis químico de materiales y fibras textiles.",
+            "Pruebas químicas para determinar sustancias específicas en textiles.",
+            "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+            "Preparación de disoluciones químicas y cálculos de concentración.",
+            "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+            "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+          ],
+          "actitudes_valores": [
+            "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+            "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+              "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+              "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+              "Impacto ambiental de la industria textil y formas de mitigación",
+              "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+            ],
+            "procedimentales": [
+              "Identificación y análisis químico de materiales y fibras textiles.",
+              "Pruebas químicas para determinar sustancias específicas en textiles.",
+              "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+              "Preparación de disoluciones químicas y cálculos de concentración.",
+              "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+              "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+            ],
+            "actitudinales": [
+              "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+              "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+            ]
+          },
+          "indicadores_logro": [
+            "Identificación y análisis de diferentes materiales textiles y sus características químicas.",
+            "Selección y aplicación correcta de técnicas de tintura y acabado en diferentes sustratos.",
+            "Uso adecuado y seguro de reactivos peligrosos y equipos de espectrofotometría textil.",
+            "Diseño y elaboración de propuestas textiles integrando principios de química sostenible."
+          ]
+        }
+      ]
+    },
+    "quimica_computacion": {
+      "nombre": "Química y Computación",
+      "nivel": "Secundario - Segundo Ciclo",
+      "grado": "5to",
+      "modalidad": "Salida Optativa: Ciencias y Tecnología",
+      "area": "Ciencias de la Naturaleza",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-QC1",
+          "id": "CE-QC1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica utilizando el lenguaje científico y tecnológico fundamental de la química aplicada en los alimentos y bioquímica que implica ideas, leyes, modelos y procesos."
+        },
+        {
+          "codigo": "CE-QC2",
+          "id": "CE-QC2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Ofrece explicaciones y estrategias científicas y tecnológicas a problemas y fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos."
+        },
+        {
+          "codigo": "CE-QC3",
+          "id": "CE-QC3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Aplica diversos procedimientos científicos y tecnológicos para solucionar problemas o dar respuestas a fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos y bioquímica."
+        },
+        {
+          "codigo": "CE-QC4",
+          "id": "CE-QC4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza críticamente la naturaleza y filosofía de ingenierías químicas y las tecnologías, sus aportes, alcance del desarrollo tecnológico en nuestra sociedad y la ética asociada con las tecnologías en bioquímica."
+        },
+        {
+          "codigo": "CE-QC5",
+          "id": "CE-QC5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Se cuestiona e identifica problemas y situaciones, y construye una explicación utilizando conceptos, modelos, leyes, teorías y procesos fundamentales de las ingenierías químicas y bioquímica."
+        },
+        {
+          "codigo": "CE-QC6",
+          "id": "CE-QC6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Asume y actúa con responsabilidad crítica y autónoma para un desarrollo sostenible, cuidado ambiental y su salud, basadas en las ideas y aplicaciones de las ingenierías químicas."
+        },
+        {
+          "codigo": "CE-QC7",
+          "id": "CE-QC7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal y profesional relacionados con los fundamentos de la química aplicada."
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "5TO-QC-U1",
+          "nombre_unidad": "Aplicaciones Químicas para Alimentos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC1",
+            "IL-QC2",
+            "IL-QC3",
+            "IL-QC4",
+            "IL-QC5"
+          ],
+          "subtemas_conceptuales": [
+            "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+            "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+            "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+            "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+            "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+          ],
+          "procedimientos": [
+            "Observación, formulación de preguntas e hipótesis.",
+            "Planificación y ejecución de experimentos y registro de evidencias.",
+            "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+            "Diseño y elaboración de alimentos con aditivos y conservantes.",
+            "Determinación de propiedades físicas y químicas de los alimentos.",
+            "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Identificación y análisis de microorganismos en alimentos.",
+            "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+          ],
+          "actitudes_valores": [
+            "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+            "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+            "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+            "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+            "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+              "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+              "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+              "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+              "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+            ],
+            "procedimentales": [
+              "Observación, formulación de preguntas e hipótesis.",
+              "Planificación y ejecución de experimentos y registro de evidencias.",
+              "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+              "Diseño y elaboración de alimentos con aditivos y conservantes.",
+              "Determinación de propiedades físicas y químicas de los alimentos.",
+              "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+              "Identificación y análisis de microorganismos en alimentos.",
+              "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+            ],
+            "actitudinales": [
+              "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+              "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+              "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+              "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+              "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y elaboración de alimentos con aditivos y conservantes bajo normas de seguridad alimentaria.",
+            "Identificación y análisis de microorganismos en alimentos y aplicación de medidas preventivas.",
+            "Realización de pruebas de calidad en la industria alimentaria y elaboración de informes técnicos.",
+            "Demostración de habilidades para la elaboración de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Manejo adecuado de herramientas y equipos de laboratorio en la industria alimentaria."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U2",
+          "nombre_unidad": "Aplicaciones Químicas para Fármacos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5"
+          ],
+          "indicadores_asociados": [
+            "IL-QC6",
+            "IL-QC7",
+            "IL-QC8",
+            "IL-QC9"
+          ],
+          "subtemas_conceptuales": [
+            "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+            "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+            "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+            "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+            "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+          ],
+          "procedimientos": [
+            "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+            "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+            "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+            "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+            "Uso de software especializado para el diseño y simulación de fármacos.",
+            "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+          ],
+          "actitudes_valores": [
+            "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+            "Manifestación de curiosidad y creatividad en ensayos científicos.",
+            "Demostración de respeto y protección por el medio ambiente y la salud pública."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+              "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+              "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+              "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+              "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+            ],
+            "procedimentales": [
+              "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+              "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+              "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+              "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+              "Uso de software especializado para el diseño y simulación de fármacos.",
+              "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+            ],
+            "actitudinales": [
+              "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+              "Manifestación de curiosidad y creatividad en ensayos científicos.",
+              "Demostración de respeto y protección por el medio ambiente y la salud pública."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y síntesis de un compuesto orgánico con potencial actividad farmacológica.",
+            "Realización de ensayos in vitro e interpretación de resultados preclínicos y clínicos.",
+            "Determinación experimental de factores de farmacocinética y farmacodinámica de un fármaco.",
+            "Utilización de software especializado para el modelado y simulación de fármacos."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U3",
+          "nombre_unidad": "Química Computacional",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC7"
+          ],
+          "indicadores_asociados": [
+            "IL-QC10",
+            "IL-QC11",
+            "IL-QC12",
+            "IL-QC13"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+            "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+            "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+            "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+            "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+          ],
+          "procedimientos": [
+            "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+            "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+            "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+            "Diseño y optimización de moléculas con propiedades específicas.",
+            "Programación y uso de scripts para automatizar tareas en química computacional.",
+            "Resolución de problemas científicos mediante modelado molecular."
+          ],
+          "actitudes_valores": [
+            "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+            "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+            "Trabajo colaborativo y metódico en proyectos de simulación."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+              "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+              "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+              "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+              "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+            ],
+            "procedimentales": [
+              "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+              "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+              "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+              "Diseño y optimización de moléculas con propiedades específicas.",
+              "Programación y uso de scripts para automatizar tareas en química computacional.",
+              "Resolución de problemas científicos mediante modelado molecular."
+            ],
+            "actitudinales": [
+              "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+              "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+              "Trabajo colaborativo y metódico en proyectos de simulación."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y simulación de una molécula con propiedades específicas (actividad biológica o materials).",
+            "Análisis y presentación fundamentada de resultados obtenidos en simulaciones moleculares.",
+            "Programación y uso efectivo de software computacional para modelar propiedades moleculares.",
+            "Identificación y discusión de aspectos éticos y de privacidad en el uso de la química computacional."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U4",
+          "nombre_unidad": "Aplicaciones Químicas para Textiles",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC14",
+            "IL-QC15",
+            "IL-QC16",
+            "IL-QC17"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+            "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+            "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+            "Impacto ambiental de la industria textil y formas de mitigación",
+            "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+          ],
+          "procedimientos": [
+            "Identificación y análisis químico de materiales y fibras textiles.",
+            "Pruebas químicas para determinar sustancias específicas en textiles.",
+            "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+            "Preparación de disoluciones químicas y cálculos de concentración.",
+            "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+            "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+          ],
+          "actitudes_valores": [
+            "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+            "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+              "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+              "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+              "Impacto ambiental de la industria textil y formas de mitigación",
+              "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+            ],
+            "procedimentales": [
+              "Identificación y análisis químico de materiales y fibras textiles.",
+              "Pruebas químicas para determinar sustancias específicas en textiles.",
+              "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+              "Preparación de disoluciones químicas y cálculos de concentración.",
+              "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+              "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+            ],
+            "actitudinales": [
+              "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+              "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+            ]
+          },
+          "indicadores_logro": [
+            "Identificación y análisis de diferentes materiales textiles y sus características químicas.",
+            "Selección y aplicación correcta de técnicas de tintura y acabado en diferentes sustratos.",
+            "Uso adecuado y seguro de reactivos peligrosos y equipos de espectrofotometría textil.",
+            "Diseño y elaboración de propuestas textiles integrando principios de química sostenible."
+          ]
+        }
+      ]
+    },
+    "Química y Computación": {
+      "nombre": "Química y Computación",
+      "nivel": "Secundario - Segundo Ciclo",
+      "grado": "5to",
+      "modalidad": "Salida Optativa: Ciencias y Tecnología",
+      "area": "Ciencias de la Naturaleza",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-QC1",
+          "id": "CE-QC1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica utilizando el lenguaje científico y tecnológico fundamental de la química aplicada en los alimentos y bioquímica que implica ideas, leyes, modelos y procesos."
+        },
+        {
+          "codigo": "CE-QC2",
+          "id": "CE-QC2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Ofrece explicaciones y estrategias científicas y tecnológicas a problemas y fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos."
+        },
+        {
+          "codigo": "CE-QC3",
+          "id": "CE-QC3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Aplica diversos procedimientos científicos y tecnológicos para solucionar problemas o dar respuestas a fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos y bioquímica."
+        },
+        {
+          "codigo": "CE-QC4",
+          "id": "CE-QC4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza críticamente la naturaleza y filosofía de ingenierías químicas y las tecnologías, sus aportes, alcance del desarrollo tecnológico en nuestra sociedad y la ética asociada con las tecnologías en bioquímica."
+        },
+        {
+          "codigo": "CE-QC5",
+          "id": "CE-QC5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Se cuestiona e identifica problemas y situaciones, y construye una explicación utilizando conceptos, modelos, leyes, teorías y procesos fundamentales de las ingenierías químicas y bioquímica."
+        },
+        {
+          "codigo": "CE-QC6",
+          "id": "CE-QC6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Asume y actúa con responsabilidad crítica y autónoma para un desarrollo sostenible, cuidado ambiental y su salud, basadas en las ideas y aplicaciones de las ingenierías químicas."
+        },
+        {
+          "codigo": "CE-QC7",
+          "id": "CE-QC7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal y profesional relacionados con los fundamentos de la química aplicada."
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "5TO-QC-U1",
+          "nombre_unidad": "Aplicaciones Químicas para Alimentos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC1",
+            "IL-QC2",
+            "IL-QC3",
+            "IL-QC4",
+            "IL-QC5"
+          ],
+          "subtemas_conceptuales": [
+            "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+            "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+            "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+            "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+            "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+          ],
+          "procedimientos": [
+            "Observación, formulación de preguntas e hipótesis.",
+            "Planificación y ejecución de experimentos y registro de evidencias.",
+            "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+            "Diseño y elaboración de alimentos con aditivos y conservantes.",
+            "Determinación de propiedades físicas y químicas de los alimentos.",
+            "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Identificación y análisis de microorganismos en alimentos.",
+            "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+          ],
+          "actitudes_valores": [
+            "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+            "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+            "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+            "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+            "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+              "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+              "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+              "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+              "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+            ],
+            "procedimentales": [
+              "Observación, formulación de preguntas e hipótesis.",
+              "Planificación y ejecución de experimentos y registro de evidencias.",
+              "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+              "Diseño y elaboración de alimentos con aditivos y conservantes.",
+              "Determinación de propiedades físicas y químicas de los alimentos.",
+              "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+              "Identificación y análisis de microorganismos en alimentos.",
+              "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+            ],
+            "actitudinales": [
+              "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+              "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+              "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+              "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+              "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y elaboración de alimentos con aditivos y conservantes bajo normas de seguridad alimentaria.",
+            "Identificación y análisis de microorganismos en alimentos y aplicación de medidas preventivas.",
+            "Realización de pruebas de calidad en la industria alimentaria y elaboración de informes técnicos.",
+            "Demostración de habilidades para la elaboración de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Manejo adecuado de herramientas y equipos de laboratorio en la industria alimentaria."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U2",
+          "nombre_unidad": "Aplicaciones Químicas para Fármacos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5"
+          ],
+          "indicadores_asociados": [
+            "IL-QC6",
+            "IL-QC7",
+            "IL-QC8",
+            "IL-QC9"
+          ],
+          "subtemas_conceptuales": [
+            "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+            "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+            "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+            "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+            "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+          ],
+          "procedimientos": [
+            "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+            "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+            "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+            "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+            "Uso de software especializado para el diseño y simulación de fármacos.",
+            "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+          ],
+          "actitudes_valores": [
+            "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+            "Manifestación de curiosidad y creatividad en ensayos científicos.",
+            "Demostración de respeto y protección por el medio ambiente y la salud pública."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+              "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+              "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+              "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+              "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+            ],
+            "procedimentales": [
+              "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+              "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+              "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+              "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+              "Uso de software especializado para el diseño y simulación de fármacos.",
+              "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+            ],
+            "actitudinales": [
+              "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+              "Manifestación de curiosidad y creatividad en ensayos científicos.",
+              "Demostración de respeto y protección por el medio ambiente y la salud pública."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y síntesis de un compuesto orgánico con potencial actividad farmacológica.",
+            "Realización de ensayos in vitro e interpretación de resultados preclínicos y clínicos.",
+            "Determinación experimental de factores de farmacocinética y farmacodinámica de un fármaco.",
+            "Utilización de software especializado para el modelado y simulación de fármacos."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U3",
+          "nombre_unidad": "Química Computacional",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC7"
+          ],
+          "indicadores_asociados": [
+            "IL-QC10",
+            "IL-QC11",
+            "IL-QC12",
+            "IL-QC13"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+            "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+            "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+            "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+            "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+          ],
+          "procedimientos": [
+            "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+            "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+            "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+            "Diseño y optimización de moléculas con propiedades específicas.",
+            "Programación y uso de scripts para automatizar tareas en química computacional.",
+            "Resolución de problemas científicos mediante modelado molecular."
+          ],
+          "actitudes_valores": [
+            "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+            "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+            "Trabajo colaborativo y metódico en proyectos de simulación."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+              "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+              "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+              "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+              "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+            ],
+            "procedimentales": [
+              "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+              "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+              "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+              "Diseño y optimización de moléculas con propiedades específicas.",
+              "Programación y uso de scripts para automatizar tareas en química computacional.",
+              "Resolución de problemas científicos mediante modelado molecular."
+            ],
+            "actitudinales": [
+              "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+              "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+              "Trabajo colaborativo y metódico en proyectos de simulación."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y simulación de una molécula con propiedades específicas (actividad biológica o materials).",
+            "Análisis y presentación fundamentada de resultados obtenidos en simulaciones moleculares.",
+            "Programación y uso efectivo de software computacional para modelar propiedades moleculares.",
+            "Identificación y discusión de aspectos éticos y de privacidad en el uso de la química computacional."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U4",
+          "nombre_unidad": "Aplicaciones Químicas para Textiles",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC14",
+            "IL-QC15",
+            "IL-QC16",
+            "IL-QC17"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+            "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+            "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+            "Impacto ambiental de la industria textil y formas de mitigación",
+            "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+          ],
+          "procedimientos": [
+            "Identificación y análisis químico de materiales y fibras textiles.",
+            "Pruebas químicas para determinar sustancias específicas en textiles.",
+            "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+            "Preparación de disoluciones químicas y cálculos de concentración.",
+            "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+            "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+          ],
+          "actitudes_valores": [
+            "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+            "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+              "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+              "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+              "Impacto ambiental de la industria textil y formas de mitigación",
+              "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+            ],
+            "procedimentales": [
+              "Identificación y análisis químico de materiales y fibras textiles.",
+              "Pruebas químicas para determinar sustancias específicas en textiles.",
+              "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+              "Preparación de disoluciones químicas y cálculos de concentración.",
+              "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+              "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+            ],
+            "actitudinales": [
+              "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+              "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+            ]
+          },
+          "indicadores_logro": [
+            "Identificación y análisis de diferentes materiales textiles y sus características químicas.",
+            "Selección y aplicación correcta de técnicas de tintura y acabado en diferentes sustratos.",
+            "Uso adecuado y seguro de reactivos peligrosos y equipos de espectrofotometría textil.",
+            "Diseño y elaboración de propuestas textiles integrando principios de química sostenible."
+          ]
+        }
+      ]
+    },
+    "Quimica y Computacion": {
+      "nombre": "Química y Computación",
+      "nivel": "Secundario - Segundo Ciclo",
+      "grado": "5to",
+      "modalidad": "Salida Optativa: Ciencias y Tecnología",
+      "area": "Ciencias de la Naturaleza",
+      "competencias_especificas": [
+        {
+          "codigo": "CE-QC1",
+          "id": "CE-QC1",
+          "fundamental": "Comunicativa",
+          "grupo_registro": "G1",
+          "descripcion": "Se comunica utilizando el lenguaje científico y tecnológico fundamental de la química aplicada en los alimentos y bioquímica que implica ideas, leyes, modelos y procesos."
+        },
+        {
+          "codigo": "CE-QC2",
+          "id": "CE-QC2",
+          "fundamental": "Pensamiento Lógico, Creativo y Crítico",
+          "grupo_registro": "G2",
+          "descripcion": "Ofrece explicaciones y estrategias científicas y tecnológicas a problemas y fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos."
+        },
+        {
+          "codigo": "CE-QC3",
+          "id": "CE-QC3",
+          "fundamental": "Resolución de Problemas",
+          "grupo_registro": "G2",
+          "descripcion": "Aplica diversos procedimientos científicos y tecnológicos para solucionar problemas o dar respuestas a fenómenos naturales relacionados con los fundamentos de la química aplicada en los alimentos y bioquímica."
+        },
+        {
+          "codigo": "CE-QC4",
+          "id": "CE-QC4",
+          "fundamental": "Ética y Ciudadana",
+          "grupo_registro": "G4",
+          "descripcion": "Analiza críticamente la naturaleza y filosofía de ingenierías químicas y las tecnologías, sus aportes, alcance del desarrollo tecnológico en nuestra sociedad y la ética asociada con las tecnologías en bioquímica."
+        },
+        {
+          "codigo": "CE-QC5",
+          "id": "CE-QC5",
+          "fundamental": "Científica y Tecnológica",
+          "grupo_registro": "G3",
+          "descripcion": "Se cuestiona e identifica problemas y situaciones, y construye una explicación utilizando conceptos, modelos, leyes, teorías y procesos fundamentales de las ingenierías químicas y bioquímica."
+        },
+        {
+          "codigo": "CE-QC6",
+          "id": "CE-QC6",
+          "fundamental": "Ambiental y de la Salud",
+          "grupo_registro": "G3",
+          "descripcion": "Asume y actúa con responsabilidad crítica y autónoma para un desarrollo sostenible, cuidado ambiental y su salud, basadas en las ideas y aplicaciones de las ingenierías químicas."
+        },
+        {
+          "codigo": "CE-QC7",
+          "id": "CE-QC7",
+          "fundamental": "Desarrollo Personal y Espiritual",
+          "grupo_registro": "G4",
+          "descripcion": "Gestiona actitudes intelectuales, emocionales y conductuales proactivas al desarrollo de su proyección personal y profesional relacionados con los fundamentos de la química aplicada."
+        }
+      ],
+      "unidades_tematicas": [
+        {
+          "id_unidad": "5TO-QC-U1",
+          "nombre_unidad": "Aplicaciones Químicas para Alimentos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC1",
+            "IL-QC2",
+            "IL-QC3",
+            "IL-QC4",
+            "IL-QC5"
+          ],
+          "subtemas_conceptuales": [
+            "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+            "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+            "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+            "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+            "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+          ],
+          "procedimientos": [
+            "Observación, formulación de preguntas e hipótesis.",
+            "Planificación y ejecución de experimentos y registro de evidencias.",
+            "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+            "Diseño y elaboración de alimentos con aditivos y conservantes.",
+            "Determinación de propiedades físicas y químicas de los alimentos.",
+            "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Identificación y análisis de microorganismos en alimentos.",
+            "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+          ],
+          "actitudes_valores": [
+            "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+            "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+            "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+            "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+            "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Alimentos: carbohidratos, proteínas, lípidos, especias, hierbas aromáticas, alimentos a nivel molecular",
+              "Producción de alimentos, transporte, recepción y almacenamiento en cámaras frigoríficas",
+              "Procesamiento de alimentos, aditivos y conservantes, normativas sanitarias e inocuidad",
+              "Conservación: deshidratación, liofilización, pasteurización, esterilización, métodos químicos y fermentación",
+              "Seguridad alimentaria, infecciones, patógenos (E. coli, salmonella, listeria) y pesticidas"
+            ],
+            "procedimentales": [
+              "Observación, formulación de preguntas e hipótesis.",
+              "Planificación y ejecución de experimentos y registro de evidencias.",
+              "Diseño y construcción de modelos y simulaciones con integración de TIC e ingeniería.",
+              "Diseño y elaboración de alimentos con aditivos y conservantes.",
+              "Determinación de propiedades físicas y químicas de los alimentos.",
+              "Procesamiento de alimentos mediante técnicas de biotecnología y fermentación.",
+              "Identificación y análisis de microorganismos en alimentos.",
+              "Elaboración de un código de buenas prácticas sobre riesgos y consumo de frutas y vegetales."
+            ],
+            "actitudinales": [
+              "Muestra de interés y participa al comparar las diferentes ideas de los grupos.",
+              "Desarrollo de sus actividades científicas en forma organizada y metódica.",
+              "Manifestación de sentido de iniciativa al realizar actividades científicas.",
+              "Demostración de responsabilidad en el desarrollo de sus trabajos.",
+              "Valoración de los aportes de la ciencia a la seguridad alimentaria."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y elaboración de alimentos con aditivos y conservantes bajo normas de seguridad alimentaria.",
+            "Identificación y análisis de microorganismos en alimentos y aplicación de medidas preventivas.",
+            "Realización de pruebas de calidad en la industria alimentaria y elaboración de informes técnicos.",
+            "Demostración de habilidades para la elaboración de alimentos mediante técnicas de biotecnología y fermentación.",
+            "Manejo adecuado de herramientas y equipos de laboratorio en la industria alimentaria."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U2",
+          "nombre_unidad": "Aplicaciones Químicas para Fármacos",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5"
+          ],
+          "indicadores_asociados": [
+            "IL-QC6",
+            "IL-QC7",
+            "IL-QC8",
+            "IL-QC9"
+          ],
+          "subtemas_conceptuales": [
+            "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+            "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+            "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+            "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+            "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+          ],
+          "procedimientos": [
+            "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+            "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+            "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+            "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+            "Uso de software especializado para el diseño y simulación de fármacos.",
+            "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+          ],
+          "actitudes_valores": [
+            "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+            "Manifestación de curiosidad y creatividad en ensayos científicos.",
+            "Demostración de respeto y protección por el medio ambiente y la salud pública."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Química farmacéutica y salud humana; conceptos de química orgánica en síntesis de fármacos",
+              "Clasificación de fármacos por modo de acción y estructura; interacciones organismo-fármaco",
+              "Desarrollo de fármacos y evaluación preclínica/clínica; fuentes (plantas y microorganismos)",
+              "Farmacocinética y farmacodinámica; mecanismos de acción y efectos adversos",
+              "Lectura e interpretación de prospectos médicos, dosis, posología, contraindicaciones y botiquín"
+            ],
+            "procedimentales": [
+              "Síntesis de compuestos orgánicos y su caracterización por técnicas analíticas.",
+              "Identificación de grupos funcionales y estructuras básicas en fármacos.",
+              "Realización de ensayos in vitro para evaluar actividad farmacológica.",
+              "Experimentos seguros para determinar absorción, distribución, metabolismo y excreción (ADME).",
+              "Uso de software especializado para el diseño y simulación de fármacos.",
+              "Lectura e interpretación de información técnica en prospectos y etiquetas de medicamentos."
+            ],
+            "actitudinales": [
+              "Valoración y acatamiento riguroso de las reglas de seguridad en el laboratorio.",
+              "Manifestación de curiosidad y creatividad en ensayos científicos.",
+              "Demostración de respeto y protección por el medio ambiente y la salud pública."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y síntesis de un compuesto orgánico con potencial actividad farmacológica.",
+            "Realización de ensayos in vitro e interpretación de resultados preclínicos y clínicos.",
+            "Determinación experimental de factores de farmacocinética y farmacodinámica de un fármaco.",
+            "Utilización de software especializado para el modelado y simulación de fármacos."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U3",
+          "nombre_unidad": "Química Computacional",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC7"
+          ],
+          "indicadores_asociados": [
+            "IL-QC10",
+            "IL-QC11",
+            "IL-QC12",
+            "IL-QC13"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+            "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+            "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+            "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+            "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+          ],
+          "procedimientos": [
+            "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+            "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+            "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+            "Diseño y optimización de moléculas con propiedades específicas.",
+            "Programación y uso de scripts para automatizar tareas en química computacional.",
+            "Resolución de problemas científicos mediante modelado molecular."
+          ],
+          "actitudes_valores": [
+            "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+            "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+            "Trabajo colaborativo y metódico en proyectos de simulación."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química computacional y su vínculo con la química teórica y experimental",
+              "Modelos moleculares y métodos de cálculo: mecánica molecular y dinámica molecular",
+              "Simulación de estructuras moleculares, optimización de geometría y cálculo de propiedades físico-químicas",
+              "Densidad electrónica, energía de enlace, energía de disociación y relación estructura-actividad (SAR)",
+              "Simulación de reacciones y mecanismos; programación, scripts y aspectos éticos/privacidad"
+            ],
+            "procedimentales": [
+              "Uso de software para modelar moléculas y simular propiedades físicas y químicas.",
+              "Aplicación de métodos de cálculo computacional y optimización geométrica.",
+              "Análisis de resultados de simulaciones moleculares sencillas e inferencia de propiedades.",
+              "Diseño y optimización de moléculas con propiedades específicas.",
+              "Programación y uso de scripts para automatizar tareas en química computacional.",
+              "Resolución de problemas científicos mediante modelado molecular."
+            ],
+            "actitudinales": [
+              "Vinculación con entusiasmo de herramientas tecnológicas a sus actividades científicas.",
+              "Compromiso ético en el manejo de datos, privacidad y algoritmos computacionales.",
+              "Trabajo colaborativo y metódico en proyectos de simulación."
+            ]
+          },
+          "indicadores_logro": [
+            "Diseño y simulación de una molécula con propiedades específicas (actividad biológica o materials).",
+            "Análisis y presentación fundamentada de resultados obtenidos en simulaciones moleculares.",
+            "Programación y uso efectivo de software computacional para modelar propiedades moleculares.",
+            "Identificación y discusión de aspectos éticos y de privacidad en el uso de la química computacional."
+          ]
+        },
+        {
+          "id_unidad": "5TO-QC-U4",
+          "nombre_unidad": "Aplicaciones Químicas para Textiles",
+          "tipo_texto": "Científico / Tecnológico",
+          "competencias_asociadas": [
+            "CE-QC1",
+            "CE-QC2",
+            "CE-QC3",
+            "CE-QC5",
+            "CE-QC6"
+          ],
+          "indicadores_asociados": [
+            "IL-QC14",
+            "IL-QC15",
+            "IL-QC16",
+            "IL-QC17"
+          ],
+          "subtemas_conceptuales": [
+            "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+            "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+            "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+            "Impacto ambiental de la industria textil y formas de mitigación",
+            "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+          ],
+          "procedimientos": [
+            "Identificación y análisis químico de materiales y fibras textiles.",
+            "Pruebas químicas para determinar sustancias específicas en textiles.",
+            "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+            "Preparación de disoluciones químicas y cálculos de concentración.",
+            "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+            "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+          ],
+          "actitudes_valores": [
+            "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+            "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+          ],
+          "contenidos": {
+            "conceptuales": [
+              "Introducción a la química textil: fibras, hilado, tejidos, procesos de tintura y acabado",
+              "Química de colorantes, pigmentos, suavizantes, repelentes al agua y retardantes de llama",
+              "Sustancias químicas de preparación (agentes blanqueadores, desengrasantes) y seguridad",
+              "Impacto ambiental de la industria textil y formas de mitigación",
+              "Nuevas tendencias: impresión digital textil, ropa inteligente e interacción con la moda"
+            ],
+            "procedimentales": [
+              "Identificación y análisis químico de materiales y fibras textiles.",
+              "Pruebas químicas para determinar sustancias específicas en textiles.",
+              "Selección y aplicación de técnicas de tintura y acabado textil según el material.",
+              "Preparación de disoluciones químicas y cálculos de concentración.",
+              "Manejo de equipos especializados: máquina de teñir, acabado y espectrofotómetro.",
+              "Diseño y confección de prendas utilizando tecnologías químicas avanzadas."
+            ],
+            "actitudinales": [
+              "Conciencia crítica frente al impacto ambiental y uso racional de recursos hídricos en tintorería.",
+              "Creatividad en el diseño e integración de textiles sostenibles e inteligentes."
+            ]
+          },
+          "indicadores_logro": [
+            "Identificación y análisis de diferentes materiales textiles y sus características químicas.",
+            "Selección y aplicación correcta de técnicas de tintura y acabado en diferentes sustratos.",
+            "Uso adecuado y seguro de reactivos peligrosos y equipos de espectrofotometría textil.",
+            "Diseño y elaboración de propuestas textiles integrando principios de química sostenible."
+          ]
+        }
+      ]
     }
   }
 }

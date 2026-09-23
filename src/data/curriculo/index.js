@@ -52,6 +52,10 @@ export function normalizeSubjectKey(rawKey) {
   if (!rawKey) return 'ciencias_naturaleza';
   const clean = String(rawKey).toLowerCase().trim().replace(/[\s-]/g, '_');
 
+  if (clean.includes('computacion') || clean.includes('quimica_y_computacion') || clean.includes('quimica_computacion')) {
+    return 'quimica_y_computacion';
+  }
+
   if (clean.includes('naturaleza') || clean.includes('biologia') || clean.includes('quimica') || clean.includes('fisica') && !clean.includes('educacion_fisica')) {
     return 'ciencias_naturaleza';
   }

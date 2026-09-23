@@ -27,7 +27,8 @@ const DEFAULT_SUBJECTS = {
   analisis_textos_cientificos: { name: 'Análisis y Producción de Textos Científicos y Profesionales', color: 'hsl(199, 85%, 42%)', bg: 'rgba(2, 132, 199, 0.08)' },
   apreciacion_produccion_literaria: { name: 'Apreciación y Producción Literaria', color: 'hsl(265, 70%, 50%)', bg: 'rgba(124, 58, 237, 0.08)' },
   filosofia_pensamiento_dominicano: { name: 'Filosofía Social y Pensamiento Dominicano', color: 'hsl(35, 85%, 45%)', bg: 'rgba(217, 119, 6, 0.08)' },
-  estadistica_probabilidad_tecnologia: { name: 'Estadística Probabilidad y Tecnología', color: 'hsl(178, 75%, 36%)', bg: 'rgba(13, 148, 136, 0.08)' }
+  estadistica_probabilidad_tecnologia: { name: 'Estadística Probabilidad y Tecnología', color: 'hsl(178, 75%, 36%)', bg: 'rgba(13, 148, 136, 0.08)' },
+  quimica_y_computacion: { name: 'Química y Computación', color: 'hsl(160, 70%, 40%)', bg: 'rgba(16, 185, 129, 0.08)' }
 };
 
 const DEFAULT_GRADES = ['1ro A', '1ro B', '2do A', '2do B', '3ro A', '3ro B', '3ro C', '4AM', '4AH', '4BH', '5AM', '5AN', '6AM', '6AH'];
