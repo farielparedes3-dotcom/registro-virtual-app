@@ -25600,7 +25600,9 @@ export default function App() {
           teacherSignature: fresh.teacherSignature,
           microsoftEmail: fresh.microsoftEmail,
           classroomGrade: fresh.classroomGrade,
-          assignments: fresh.assignments
+          assignments: fresh.assignments,
+          assignedGrades: fresh.assignedGrades,
+          teachingLoad: fresh.teachingLoad
         });
         const currJson = JSON.stringify({
           name: currentUser.name,
@@ -25611,7 +25613,9 @@ export default function App() {
           teacherSignature: currentUser.teacherSignature,
           microsoftEmail: currentUser.microsoftEmail,
           classroomGrade: currentUser.classroomGrade,
-          assignments: currentUser.assignments
+          assignments: currentUser.assignments,
+          assignedGrades: currentUser.assignedGrades,
+          teachingLoad: currentUser.teachingLoad
         });
 
         if (freshJson !== currJson) {
@@ -25619,7 +25623,10 @@ export default function App() {
             ...currentUser,
             ...fresh,
             classroomGrade: fresh.classroomGrade,
-            assignments: fresh.assignments || []
+            assignments: fresh.assignments || [],
+            assignedGrades: fresh.assignedGrades || fresh.gradosAsignados || [],
+            gradosAsignados: fresh.assignedGrades || fresh.gradosAsignados || [],
+            teachingLoad: fresh.teachingLoad || fresh.assignments || []
           };
           setCurrentUser(updated);
           try { localStorage.setItem('s_current_user', JSON.stringify(updated)); } catch(e) {}
@@ -26084,16 +26091,65 @@ export default function App() {
     alert('Docente registrado.');
   };
 
-  const handleSaveAllTeacherAssignments = async () => {
+  const updateTeacherAssignments = async (teacherId, newAssignments) => {
+    const uniqueGrades = Array.from(new Set((newAssignments || []).map(a => a.grade)));
+    
+    const currentUsers = JSON.parse(localStorage.getItem('s_users') || '[]');
+    const baseUsers = currentUsers.length > 0 ? currentUsers : users;
+    const updatedUsers = baseUsers.map(u => {
+      if (u.id === teacherId || u.uid === teacherId) {
+        return { 
+          ...u, 
+          assignments: newAssignments, 
+          assignedGrades: uniqueGrades, 
+          gradosAsignados: uniqueGrades, 
+          teachingLoad: newAssignments 
+        };
+      }
+      return u;
+    });
+
+    setUsersAndSave(updatedUsers);
+
+    if (currentUser && (currentUser.id === teacherId || currentUser.uid === teacherId)) {
+      const updatedCurrent = {
+        ...currentUser,
+        assignments: newAssignments,
+        assignedGrades: uniqueGrades,
+        gradosAsignados: uniqueGrades,
+        teachingLoad: newAssignments
+      };
+      setCurrentUser(updatedCurrent);
+      try { localStorage.setItem('s_current_user', JSON.stringify(updatedCurrent)); } catch(e) {}
+    }
+
+    if (typeof syncToIndexedDB === 'function') {
+      try { syncToIndexedDB('s_users', updatedUsers); } catch (e) {}
+    }
+    if (dbService?.updateUser) {
+      await dbService.updateUser(teacherId, { 
+        assignments: newAssignments, 
+        assignedGrades: uniqueGrades, 
+        gradosAsignados: uniqueGrades, 
+        teachingLoad: newAssignments 
+      });
+    } else if (dbService?.saveUsers) {
+      await dbService.saveUsers(updatedUsers);
+    }
+  };
+
+  const handleSaveTeachersAccordion = async () => {
     try {
       const updatedUsers = users.map(u => {
         if (u.role === 'teacher') {
-          const assignList = u.assignments || [];
+          const assignList = u.assignments || u.teachingLoad || [];
           const uniqueGrades = Array.from(new Set(assignList.map(a => a.grade)));
           return {
             ...u,
+            assignments: assignList,
             assignedGrades: uniqueGrades,
-            gradosAsignados: uniqueGrades
+            gradosAsignados: uniqueGrades,
+            teachingLoad: assignList
           };
         }
         return u;
@@ -26103,15 +26159,20 @@ export default function App() {
       if (typeof syncToIndexedDB === 'function') {
         try { syncToIndexedDB('s_users', updatedUsers); } catch (e) {}
       }
-      setCounselorToastMsg("✅ Asignaciones y Carga Académica guardadas con éxito en la nube y en el dispositivo");
+      if (dbService?.saveUsers) {
+        await dbService.saveUsers(updatedUsers);
+      }
+      setCounselorToastMsg("✅ Cambios de docentes guardados correctamente");
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
-      console.error("Error al guardar asignaciones de docentes:", err);
-      alert("⚠️ Hubo un error al guardar la asignación de docentes.");
+      console.error("Error al guardar docentes:", err);
+      alert("⚠️ Hubo un error al guardar los docentes.");
     }
   };
 
-  const handleAddAssignment = (userId, targetGrade, targetSubject) => {
+  const handleSaveAllTeacherAssignments = handleSaveTeachersAccordion;
+
+  const handleAddAssignment = async (userId, targetGrade, targetSubject) => {
     if (currentUser.role !== 'admin') return;
     const gradeVal = normalizeGradeString(targetGrade || (grades[0] || ''));
     const subjectVal = targetSubject || (Object.keys(subjects)[0] || 'matematica');
@@ -26121,44 +26182,29 @@ export default function App() {
       return;
     }
 
-    setUsersAndSave(prev => prev.map(u => {
-      if (u.id === userId) {
-        const assignmentsList = u.assignments || [];
-        const exists = assignmentsList.some(
-          a => matchGrade(a.grade, gradeVal) && a.subject === subjectVal
-        );
-        if (exists) {
-          alert('Esta asignación ya existe para este docente.');
-          return u;
-        }
-        const nextAssignments = [...assignmentsList, { grade: gradeVal, subject: subjectVal }];
-        const uniqueGrades = Array.from(new Set(nextAssignments.map(a => a.grade)));
-        return {
-          ...u,
-          assignments: nextAssignments,
-          assignedGrades: uniqueGrades,
-          gradosAsignados: uniqueGrades
-        };
-      }
-      return u;
-    }));
+    const teacher = users.find(u => u.id === userId || u.uid === userId);
+    if (!teacher) return;
+
+    const assignmentsList = teacher.assignments || teacher.teachingLoad || [];
+    const exists = assignmentsList.some(
+      a => matchGrade(a.grade, gradeVal) && a.subject === subjectVal
+    );
+    if (exists) {
+      alert('Esta asignación ya existe para este docente.');
+      return;
+    }
+
+    const nextAssignments = [...assignmentsList, { grade: gradeVal, subject: subjectVal }];
+    await updateTeacherAssignments(userId, nextAssignments);
   };
 
-  const handleRemoveAssignment = (userId, indexToRemove) => {
+  const handleRemoveAssignment = async (userId, indexToRemove) => {
     if (currentUser.role !== 'admin') return;
-    setUsersAndSave(prev => prev.map(u => {
-      if (u.id === userId) {
-        const nextAssignments = u.assignments.filter((_, idx) => idx !== indexToRemove);
-        const uniqueGrades = Array.from(new Set(nextAssignments.map(a => a.grade)));
-        return {
-          ...u,
-          assignments: nextAssignments,
-          assignedGrades: uniqueGrades,
-          gradosAsignados: uniqueGrades
-        };
-      }
-      return u;
-    }));
+    const teacher = users.find(u => u.id === userId || u.uid === userId);
+    if (!teacher) return;
+    const currentAssignments = teacher.assignments || teacher.teachingLoad || [];
+    const nextAssignments = currentAssignments.filter((_, idx) => idx !== indexToRemove);
+    await updateTeacherAssignments(userId, nextAssignments);
   };
 
   const handleUpdateClassroomGrade = (userId, newGrade) => {
@@ -26379,13 +26425,82 @@ export default function App() {
   const handleSaveSubjectsToCloud = async () => {
     setSavingSubjects(true);
     try {
+      localStorage.setItem('s_subjects', JSON.stringify(subjects));
+      localStorage.setItem('s_grades', JSON.stringify(grades));
+      if (typeof syncToIndexedDB === 'function') {
+        try {
+          syncToIndexedDB('s_subjects', subjects);
+          syncToIndexedDB('s_grades', grades);
+        } catch(e) {}
+      }
       await dbService.saveSubjects(subjects);
-      alert('✅ ¡Cambios en las asignaturas guardados en la nube con éxito!');
+      if (dbService?.saveGrades) {
+        await dbService.saveGrades(grades);
+      }
+      setCounselorToastMsg("✅ Asignaciones de materias guardadas correctamente");
+      setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (error) {
       console.error('Error saving subjects:', error);
-      alert(`❌ Error al guardar en la nube: ${error.message || error}\n\nPor favor, verifica que tus reglas de Firestore permitan acceso de lectura y escritura para la colección 'config'.`);
+      alert(`❌ Error al guardar materias: ${error.message || error}`);
     } finally {
       setSavingSubjects(false);
+    }
+  };
+
+  const handleSaveCounselorsAccordion = async () => {
+    try {
+      const counselorList = users.filter(u => {
+        const r = (u.role || u.rol || '').toLowerCase();
+        const em = (u.email || '').toLowerCase();
+        return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
+      });
+
+      const updatedStaff = counselorList.map(c => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        assignedGrades: Array.isArray(c.assignedGrades) ? c.assignedGrades : (Array.isArray(c.gradosAsignados) ? c.gradosAsignados : [])
+      }));
+
+      const gradeToCounselorMap = {};
+      updatedStaff.forEach(c => {
+        (c.assignedGrades || []).forEach(gradeKey => {
+          gradeToCounselorMap[gradeKey] = {
+            counselorId: c.id,
+            counselorName: c.name,
+            counselorEmail: c.email
+          };
+          ['A', 'B', 'C', 'D', 'E'].forEach(sec => {
+            gradeToCounselorMap[`${gradeKey} ${sec}`] = {
+              counselorId: c.id,
+              counselorName: c.name,
+              counselorEmail: c.email
+            };
+          });
+        });
+      });
+
+      localStorage.setItem('s_users', JSON.stringify(users));
+      localStorage.setItem('s_grade_staff', JSON.stringify(updatedStaff));
+      localStorage.setItem('s_grade_counselor_map', JSON.stringify(gradeToCounselorMap));
+      if (typeof syncToIndexedDB === 'function') {
+        try {
+          syncToIndexedDB('s_users', users);
+          syncToIndexedDB('s_grade_staff', updatedStaff);
+          syncToIndexedDB('s_grade_counselor_map', gradeToCounselorMap);
+        } catch(e) {}
+      }
+      dbService.saveGradeStaff(updatedStaff, gradeToCounselorMap);
+      if (dbService?.saveUsers) {
+        await dbService.saveUsers(users);
+      }
+
+      setUsersAndSave(prev => [...prev]);
+      setCounselorToastMsg('✅ Asignaciones de orientación guardadas correctamente');
+      setTimeout(() => setCounselorToastMsg(''), 4000);
+    } catch (err) {
+      console.error("Error al guardar orientadoras:", err);
+      alert("⚠️ Hubo un error al guardar asignaciones de orientación.");
     }
   };
 
@@ -31829,6 +31944,28 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             <button type="submit" className="btn-add-event-submit" style={{ marginTop: '0.5rem' }}>Crear Cuenta</button>
                           </form>
                         </div>
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            onClick={handleSaveTeachersAccordion}
+                            style={{
+                              padding: '0.65rem 1.3rem',
+                              backgroundColor: 'var(--primary)',
+                              color: '#fff',
+                              fontWeight: 'bold',
+                              fontSize: '0.9rem',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                            }}
+                          >
+                            💾 Guardar Cambios de Docentes
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -32100,7 +32237,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               onClick={handleSaveSubjectsToCloud}
                               disabled={savingSubjects}
                             >
-                              {savingSubjects ? '💾 Guardando...' : '💾 Guardar Cambios en la Nube'}
+                              {savingSubjects ? '💾 Guardando...' : '💾 Guardar Asignaciones de Materias'}
                             </button>
                           </div>
                         </div>
@@ -32172,46 +32309,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             type="button"
                             className="btn-primary"
                             style={{ backgroundColor: '#6f42c1', borderColor: '#6f42c1', fontWeight: 'bold', fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
-                            onClick={() => {
-                              const counselorList = users.filter(u => {
-                                const r = (u.role || u.rol || '').toLowerCase();
-                                const em = (u.email || '').toLowerCase();
-                                return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
-                              });
-
-                              const updatedStaff = counselorList.map(c => ({
-                                id: c.id,
-                                name: c.name,
-                                email: c.email,
-                                assignedGrades: Array.isArray(c.assignedGrades) ? c.assignedGrades : (Array.isArray(c.gradosAsignados) ? c.gradosAsignados : [])
-                              }));
-
-                              const gradeToCounselorMap = {};
-                              updatedStaff.forEach(c => {
-                                (c.assignedGrades || []).forEach(gradeKey => {
-                                  gradeToCounselorMap[gradeKey] = {
-                                    counselorId: c.id,
-                                    counselorName: c.name,
-                                    counselorEmail: c.email
-                                  };
-                                  ['A', 'B', 'C', 'D', 'E'].forEach(sec => {
-                                    gradeToCounselorMap[`${gradeKey} ${sec}`] = {
-                                      counselorId: c.id,
-                                      counselorName: c.name,
-                                      counselorEmail: c.email
-                                    };
-                                  });
-                                });
-                              });
-
-                              localStorage.setItem('s_grade_staff', JSON.stringify(updatedStaff));
-                              localStorage.setItem('s_grade_counselor_map', JSON.stringify(gradeToCounselorMap));
-                              dbService.saveGradeStaff(updatedStaff, gradeToCounselorMap);
-
-                              setUsersAndSave(prev => [...prev]);
-                              setCounselorToastMsg('✅ Cambios guardados con éxito en la nube y en el dispositivo');
-                              setTimeout(() => setCounselorToastMsg(''), 4000);
-                            }}
+                            onClick={handleSaveCounselorsAccordion}
                           >
                             <span>💾</span> Guardar Asignaciones de Orientación
                           </button>
@@ -32454,6 +32552,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               ＋ Crear Cuenta
                             </button>
                           </form>
+                        </div>
+
+                        <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'flex-end' }}>
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            style={{ backgroundColor: '#6f42c1', borderColor: '#6f42c1', fontWeight: 'bold', fontSize: '0.9rem', padding: '0.65rem 1.3rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', borderRadius: '8px', boxShadow: '0 4px 12px rgba(111, 66, 193, 0.2)' }}
+                            onClick={handleSaveCounselorsAccordion}
+                          >
+                            <span>💾</span> Guardar Asignaciones de Orientación
+                          </button>
                         </div>
 
                       </div>

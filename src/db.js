@@ -122,6 +122,27 @@ export const dbService = {
       console.error('Error saving users to Firestore:', err);
     }
   },
+  async updateUser(userId, partialData) {
+    if (!userId) return;
+    try {
+      const savedUsers = JSON.parse(localStorage.getItem('s_users') || '[]');
+      const updatedUsers = savedUsers.map(u => {
+        if (u.id === userId || u.uid === userId) {
+          return { ...u, ...partialData };
+        }
+        return u;
+      });
+      localStorage.setItem('s_users', JSON.stringify(updatedUsers));
+      triggerFallbackUpdate('users', updatedUsers);
+      
+      if (isFirebaseEnabled) {
+        const userRef = doc(firestore, 'users', userId);
+        await setDoc(userRef, partialData, { merge: true });
+      }
+    } catch (err) {
+      console.error('Error updating user in Firestore:', err);
+    }
+  },
 
   // --- 2. STUDENTS COLLECTION ---
   subscribeStudents(callback) {
@@ -648,6 +669,15 @@ export const dbService = {
       await setDoc(doc(firestore, 'planificaciones', 'store'), { list: planificacionesArray });
     } catch (err) {
       console.error('Error saving planificaciones to Firestore:', err);
+    }
+  }
+};
+
+export const db = {
+  async saveData(collectionName, data) {
+    localStorage.setItem(`s_${collectionName}`, JSON.stringify(data));
+    if (collectionName === 'users') {
+      return dbService.saveUsers(data);
     }
   }
 };
