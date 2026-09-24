@@ -57,6 +57,42 @@ const hasChanged = (key, data) => {
   return true;
 };
 
+// Helper: sanitize objects before passing to Firestore (Firestore rejects `undefined` values)
+function sanitizeFirestoreData(obj) {
+  if (obj === null || obj === undefined) {
+    return null;
+  }
+  if (typeof obj !== 'object') {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj
+      .filter(item => item !== undefined)
+      .map(item => sanitizeFirestoreData(item));
+  }
+
+  const clean = {};
+  for (const key of Object.keys(obj)) {
+    const val = obj[key];
+    if (val === undefined) {
+      if (key === 'attendance') {
+        clean[key] = {};
+      }
+    } else if (val !== null && typeof val === 'object') {
+      clean[key] = sanitizeFirestoreData(val);
+    } else {
+      clean[key] = val;
+    }
+  }
+
+  // Special check for student objects: ensure attendance is never undefined
+  if (clean.attendance === undefined && (clean.name || clean.number || clean.grade || clean.id)) {
+    clean.attendance = {};
+  }
+
+  return clean;
+}
+
 // LocalStorage fallback listeners list
 const fallbackSubscribers = {};
 const triggerFallbackUpdate = (key, data) => {
@@ -99,8 +135,10 @@ export const dbService = {
       querySnapshot.forEach(d => existingIds.add(d.id));
 
       const ops = [];
-      usersList.forEach(user => {
-        const { id, ...data } = user;
+      (usersList || []).forEach(user => {
+        if (!user || !user.id) return;
+        const cleanUser = sanitizeFirestoreData(user);
+        const { id, ...data } = cleanUser;
         ops.push({ type: 'set', ref: doc(firestore, 'users', id), data });
         existingIds.delete(id);
       });
@@ -113,13 +151,13 @@ export const dbService = {
         const batch = writeBatch(firestore);
         const chunk = ops.slice(i, i + 400);
         chunk.forEach(op => {
-          if (op.type === 'set') batch.set(op.ref, op.data);
+          if (op.type === 'set') batch.set(op.ref, op.data, { merge: true });
           else if (op.type === 'delete') batch.delete(op.ref);
         });
         await batch.commit();
       }
     } catch (err) {
-      console.error('Error saving users to Firestore:', err);
+      console.error('Error no bloqueante al guardar usuarios en Firestore:', err);
     }
   },
   async updateUser(userId, partialData) {
@@ -137,10 +175,11 @@ export const dbService = {
       
       if (isFirebaseEnabled) {
         const userRef = doc(firestore, 'users', userId);
-        await setDoc(userRef, partialData, { merge: true });
+        const cleanData = sanitizeFirestoreData(partialData);
+        await setDoc(userRef, cleanData, { merge: true });
       }
     } catch (err) {
-      console.error('Error updating user in Firestore:', err);
+      console.error('Error no bloqueante al actualizar usuario en Firestore:', err);
     }
   },
 
@@ -167,7 +206,6 @@ export const dbService = {
     if (!hasChanged('students', studentsList)) return;
     localStorage.setItem('s_students', JSON.stringify(studentsList));
     triggerFallbackUpdate('students', studentsList);
-    triggerFallbackUpdate('students', studentsList);
     if (!isFirebaseEnabled) return;
 
     try {
@@ -176,8 +214,13 @@ export const dbService = {
       querySnapshot.forEach(d => existingIds.add(d.id));
 
       const ops = [];
-      studentsList.forEach(student => {
-        const { id, ...data } = student;
+      (studentsList || []).forEach(student => {
+        if (!student || !student.id) return;
+        const cleanStudent = sanitizeFirestoreData(student);
+        if (cleanStudent.attendance === undefined) {
+          cleanStudent.attendance = {};
+        }
+        const { id, ...data } = cleanStudent;
         ops.push({ type: 'set', ref: doc(firestore, 'students', id), data });
         existingIds.delete(id);
       });
@@ -190,13 +233,13 @@ export const dbService = {
         const batch = writeBatch(firestore);
         const chunk = ops.slice(i, i + 400);
         chunk.forEach(op => {
-          if (op.type === 'set') batch.set(op.ref, op.data);
+          if (op.type === 'set') batch.set(op.ref, op.data, { merge: true });
           else if (op.type === 'delete') batch.delete(op.ref);
         });
         await batch.commit();
       }
     } catch (err) {
-      console.error('Error saving students to Firestore:', err);
+      console.error('Error no bloqueante al guardar estudiantes en Firestore:', err);
     }
   },
 
@@ -231,8 +274,10 @@ export const dbService = {
       querySnapshot.forEach(d => existingIds.add(d.id));
 
       const ops = [];
-      eventsList.forEach(event => {
-        const { id, ...data } = event;
+      (eventsList || []).forEach(event => {
+        if (!event || !event.id) return;
+        const cleanEvent = sanitizeFirestoreData(event);
+        const { id, ...data } = cleanEvent;
         ops.push({ type: 'set', ref: doc(firestore, 'events', id), data });
         existingIds.delete(id);
       });
@@ -245,13 +290,13 @@ export const dbService = {
         const batch = writeBatch(firestore);
         const chunk = ops.slice(i, i + 400);
         chunk.forEach(op => {
-          if (op.type === 'set') batch.set(op.ref, op.data);
+          if (op.type === 'set') batch.set(op.ref, op.data, { merge: true });
           else if (op.type === 'delete') batch.delete(op.ref);
         });
         await batch.commit();
       }
     } catch (err) {
-      console.error('Error saving events to Firestore:', err);
+      console.error('Error no bloqueante al guardar eventos en Firestore:', err);
     }
   },
 
@@ -287,8 +332,10 @@ export const dbService = {
       querySnapshot.forEach(d => existingIds.add(d.id));
 
       const ops = [];
-      logsList.forEach(log => {
-        const { id, ...data } = log;
+      (logsList || []).forEach(log => {
+        if (!log || !log.id) return;
+        const cleanLog = sanitizeFirestoreData(log);
+        const { id, ...data } = cleanLog;
         ops.push({ type: 'set', ref: doc(firestore, 'alert_logs', id), data });
         existingIds.delete(id);
       });
@@ -301,13 +348,13 @@ export const dbService = {
         const batch = writeBatch(firestore);
         const chunk = ops.slice(i, i + 400);
         chunk.forEach(op => {
-          if (op.type === 'set') batch.set(op.ref, op.data);
+          if (op.type === 'set') batch.set(op.ref, op.data, { merge: true });
           else if (op.type === 'delete') batch.delete(op.ref);
         });
         await batch.commit();
       }
     } catch (err) {
-      console.error('Error saving alert logs to Firestore:', err);
+      console.error('Error no bloqueante al guardar registros de alertas en Firestore:', err);
     }
   },
 
@@ -358,9 +405,9 @@ export const dbService = {
     localStorage.setItem('s_subjects', JSON.stringify(subjects));
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'config', 'subjects'), { data: subjects });
+      await setDoc(doc(firestore, 'config', 'subjects'), { data: sanitizeFirestoreData(subjects) });
     } catch (e) {
-      console.error('Error saving subjects to Firestore:', e);
+      console.error('Error no bloqueante al guardar materias en Firestore:', e);
     }
   },
   async saveGrades(grades) {
@@ -368,9 +415,9 @@ export const dbService = {
     localStorage.setItem('s_grades', JSON.stringify(grades));
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'config', 'grades'), { data: grades });
+      await setDoc(doc(firestore, 'config', 'grades'), { data: sanitizeFirestoreData(grades) });
     } catch (e) {
-      console.error('Error saving grades to Firestore:', e);
+      console.error('Error no bloqueante al guardar grados en Firestore:', e);
     }
   },
   async saveGradeStaff(staff, counselorMap) {
@@ -382,9 +429,9 @@ export const dbService = {
     }
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'config', 'staff'), { data: staff, mapping: counselorMap || {} });
+      await setDoc(doc(firestore, 'config', 'staff'), { data: sanitizeFirestoreData(staff), mapping: sanitizeFirestoreData(counselorMap || {}) });
     } catch (e) {
-      console.error('Error saving grade staff to Firestore:', e);
+      console.error('Error no bloqueante al guardar asignaciones de personal en Firestore:', e);
     }
   },
   async saveAttendanceConfigs(monthlyDays, attendanceDates) {
@@ -394,9 +441,9 @@ export const dbService = {
     localStorage.setItem('s_attendance_day_dates', JSON.stringify(attendanceDates));
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'config', 'attendance'), payload);
+      await setDoc(doc(firestore, 'config', 'attendance'), sanitizeFirestoreData(payload));
     } catch (e) {
-      console.error('Error saving attendance configs to Firestore:', e);
+      console.error('Error no bloqueante al guardar configuración de asistencia en Firestore:', e);
     }
   },
 
@@ -430,9 +477,9 @@ export const dbService = {
     triggerFallbackUpdate('eval_configs', configsObject);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'eval_configs', 'store'), { blocks: configsObject });
+      await setDoc(doc(firestore, 'eval_configs', 'store'), { blocks: sanitizeFirestoreData(configsObject) });
     } catch (err) {
-      console.error('Error saving eval configs to Firestore:', err);
+      console.error('Error no bloqueante al guardar configuraciones de evaluación en Firestore:', err);
     }
   },
 
@@ -466,9 +513,9 @@ export const dbService = {
     triggerFallbackUpdate('student_assessments', assessmentsObject);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'student_assessments', 'store'), { ratings: assessmentsObject });
+      await setDoc(doc(firestore, 'student_assessments', 'store'), { ratings: sanitizeFirestoreData(assessmentsObject) });
     } catch (err) {
-      console.error('Error saving student assessments to Firestore:', err);
+      console.error('Error no bloqueante al guardar evaluaciones de estudiantes en Firestore:', err);
     }
   },
 
@@ -502,9 +549,9 @@ export const dbService = {
     triggerFallbackUpdate('student_rp_grades', rpGradesObject);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'student_rp_grades', 'store'), { grades: rpGradesObject });
+      await setDoc(doc(firestore, 'student_rp_grades', 'store'), { grades: sanitizeFirestoreData(rpGradesObject) });
     } catch (err) {
-      console.error('Error saving student RP grades to Firestore:', err);
+      console.error('Error no bloqueante al guardar calificaciones RP en Firestore:', err);
     }
   },
 
@@ -538,9 +585,9 @@ export const dbService = {
     triggerFallbackUpdate('student_attendance', attendanceObject);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'student_attendance', 'store'), { detail: attendanceObject });
+      await setDoc(doc(firestore, 'student_attendance', 'store'), { detail: sanitizeFirestoreData(attendanceObject) });
     } catch (err) {
-      console.error('Error saving student attendance to Firestore:', err);
+      console.error('Error no bloqueante al guardar asistencias en Firestore:', err);
     }
   },
 
@@ -574,9 +621,9 @@ export const dbService = {
     triggerFallbackUpdate('attendance_comments', commentsObject);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'attendance_comments', 'store'), { comments: commentsObject });
+      await setDoc(doc(firestore, 'attendance_comments', 'store'), { comments: sanitizeFirestoreData(commentsObject) });
     } catch (err) {
-      console.error('Error saving attendance comments to Firestore:', err);
+      console.error('Error no bloqueante al guardar comentarios de asistencia en Firestore:', err);
     }
   },
 
@@ -610,9 +657,9 @@ export const dbService = {
     triggerFallbackUpdate('promotion_grades', promotionGradesObject);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'promotion_grades', 'store'), { grades: promotionGradesObject });
+      await setDoc(doc(firestore, 'promotion_grades', 'store'), { grades: sanitizeFirestoreData(promotionGradesObject) });
     } catch (err) {
-      console.error('Error saving promotion grades to Firestore:', err);
+      console.error('Error no bloqueante al guardar notas de promoción en Firestore:', err);
     }
   },
 
@@ -638,9 +685,9 @@ export const dbService = {
     triggerFallbackUpdate('student_reports', reportsArray);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'student_reports', 'store'), { reports: reportsArray });
+      await setDoc(doc(firestore, 'student_reports', 'store'), { reports: sanitizeFirestoreData(reportsArray) });
     } catch (err) {
-      console.error('Error saving student reports to Firestore:', err);
+      console.error('Error no bloqueante al guardar reportes de estudiantes en Firestore:', err);
     }
   },
 
@@ -666,9 +713,9 @@ export const dbService = {
     triggerFallbackUpdate('planificaciones', planificacionesArray);
     if (!isFirebaseEnabled) return;
     try {
-      await setDoc(doc(firestore, 'planificaciones', 'store'), { list: planificacionesArray });
+      await setDoc(doc(firestore, 'planificaciones', 'store'), { list: sanitizeFirestoreData(planificacionesArray) });
     } catch (err) {
-      console.error('Error saving planificaciones to Firestore:', err);
+      console.error('Error no bloqueante al guardar planificaciones en Firestore:', err);
     }
   }
 };

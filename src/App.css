@@ -17,6 +17,7 @@ input[type=number] {
 }
 
 /* Contenedor Principal de la App (Layout con Scroll Independiente) */
+.app-layout,
 .app-container,
 .app-layout-container,
 #root > div {
@@ -33,6 +34,7 @@ input[type=number] {
 }
 
 /* 1. Menú Lateral Izquierdo (Sidebar) */
+.sidebar-container,
 .app-sidebar,
 .sidebar,
 aside {
@@ -50,7 +52,8 @@ aside {
   transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
 
-.app-sidebar.sidebar-collapsed {
+.app-sidebar.sidebar-collapsed,
+.sidebar-container.sidebar-collapsed {
   width: 0 !important;
   min-width: 0 !important;
   max-width: 0 !important;
@@ -63,7 +66,8 @@ aside {
 }
 
 @media (max-width: 968px) {
-  .app-sidebar {
+  .app-sidebar,
+  .sidebar-container {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -78,17 +82,18 @@ aside {
     box-shadow: 10px 0 25px rgba(0,0,0,0.5);
   }
 
-  .app-sidebar.sidebar-collapsed {
+  .app-sidebar.sidebar-collapsed,
+  .sidebar-container.sidebar-collapsed {
     transform: translateX(-100%);
     width: 280px !important;
   }
 }
 
 /* 2. Área de Contenido Principal (Derecha) */
+.main-content-area,
 .app-main-content,
 .main-wrapper {
   flex: 1 1 0% !important;
-  width: calc(100vw - 250px) !important;
   max-width: 100% !important;
   min-width: 0 !important;
   height: 100vh !important;
