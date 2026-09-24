@@ -31381,11 +31381,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       : '85.0';
 
     return (
-      <div className="app-layout-container">
+      <div className="app-layout-container" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
         {!sidebarCollapsed && (
           <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
         )}
-        <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ padding: '1.5rem', position: 'relative' }}>
+        <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ width: sidebarCollapsed ? '0' : '250px', minWidth: sidebarCollapsed ? '0' : '250px', height: '100vh', overflowY: 'auto', flexShrink: 0, borderRight: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: sidebarCollapsed ? '0' : '1.5rem', position: 'relative' }}>
           <button 
             type="button" 
             className="sidebar-close-btn" 
@@ -31430,8 +31430,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
         </aside>
 
-        <div className="app-main-content">
-          <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
+        <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
+          <header className="header" style={{ width: '100%', minHeight: '65px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <button 
                 type="button" 
@@ -34134,11 +34134,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   const activeConfigs = evaluationConfigs[`${selectedGrade}_${selectedSubject}_${activeBloque}`] || [];
 
   return (
-    <div className="app-layout-container">
+    <div className="app-layout-container" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       {!sidebarCollapsed && (
         <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
       )}
-      <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ padding: '1.5rem', position: 'relative' }}>
+      <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ width: sidebarCollapsed ? '0' : '250px', minWidth: sidebarCollapsed ? '0' : '250px', height: '100vh', overflowY: 'auto', flexShrink: 0, borderRight: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: sidebarCollapsed ? '0' : '1.5rem', position: 'relative' }}>
         <button 
           type="button" 
           className="sidebar-close-btn" 
@@ -34193,8 +34193,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
           </aside>
 
-      <div className="app-main-content">
-        <header className="header" style={{ borderBottom: '2px solid var(--border-color)' }}>
+      <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
+        <header className="header" style={{ width: '100%', minHeight: '65px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <button 
               type="button" 

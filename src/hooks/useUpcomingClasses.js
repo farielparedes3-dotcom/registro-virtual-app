@@ -38,72 +38,75 @@ export function useUpcomingClasses(currentUser) {
       // 2. Obtener hora actual en minutos (ej: 08:30 = 8 * 60 + 30 = 510)
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-      // 3. Buscar horario docente asignado
-      const teacherName = currentUser?.displayName || currentUser?.name || '';
-      const teacherEmail = currentUser?.email || '';
+      try {
+        const teacherName = currentUser?.displayName || currentUser?.name || '';
+        const teacherEmail = currentUser?.email || '';
 
-      const teacherRecord = docentesData.find(d => 
-        (d.email && d.email.toLowerCase() === teacherEmail.toLowerCase()) ||
-        (teacherName && teacherName.toLowerCase().includes(d.docente.toLowerCase())) ||
-        (d.docente && teacherName && d.docente.toLowerCase().includes(teacherName.toLowerCase()))
-      ) || docentesData[1]; // Fallback predeterminado
+        const teacherRecord = (Array.isArray(docentesData) ? docentesData : []).find(d => 
+          (d?.email && d.email.toLowerCase() === teacherEmail.toLowerCase()) ||
+          (teacherName && d?.docente && teacherName.toLowerCase().includes(d.docente.toLowerCase())) ||
+          (d?.docente && teacherName && d.docente.toLowerCase().includes(teacherName.toLowerCase()))
+        ) || docentesData?.[0] || null;
 
-      const daySchedule = teacherRecord?.horario?.[dayName] || [];
+        const daySchedule = teacherRecord?.horario?.[dayName] || [];
 
-      // 4. Mapear la grilla de la jornada escolar oficial (10 bloques incluyendo recreos)
-      const todaySchedule = OFFICIAL_BELL_SCHEDULE.map(bell => {
-        const startMinutes = parseTimeToMinutes(bell.start);
-        const endMinutes = parseTimeToMinutes(bell.end);
-        
-        let assignment = null;
-        if (!bell.isBreak) {
-          const found = daySchedule.find(s => s.block === bell.block);
-          if (found) {
-            assignment = {
-              materia: found.materia,
-              grado: found.grado,
-              tipo: found.tipo || 'docencia'
-            };
-          } else {
-            assignment = {
-              materia: 'Hora Libre',
-              grado: null,
-              tipo: 'libre'
-            };
+        // 4. Mapear la grilla de la jornada escolar oficial (10 bloques incluyendo recreos)
+        const todaySchedule = (OFFICIAL_BELL_SCHEDULE || []).map(bell => {
+          const startMinutes = parseTimeToMinutes(bell.start);
+          const endMinutes = parseTimeToMinutes(bell.end);
+          
+          let assignment = null;
+          if (!bell?.isBreak) {
+            const found = (Array.isArray(daySchedule) ? daySchedule : []).find(s => s?.block === bell.block);
+            if (found) {
+              assignment = {
+                materia: found.materia || 'Hora Libre',
+                grado: found.grado || null,
+                tipo: found.tipo || 'docencia'
+              };
+            } else {
+              assignment = {
+                materia: 'Hora Libre',
+                grado: null,
+                tipo: 'libre'
+              };
+            }
           }
-        }
 
-        return {
-          ...bell,
-          startMinutes,
-          endMinutes,
-          startMin: startMinutes,
-          endMin: endMinutes,
-          assignment,
-          isBreak: !!bell.isBreak
-        };
-      });
+          return {
+            ...bell,
+            startMinutes,
+            endMinutes,
+            startMin: startMinutes,
+            endMin: endMinutes,
+            assignment,
+            isBreak: !!bell?.isBreak
+          };
+        });
 
-      // 5. Bloque activo actual
-      const currentBlock = todaySchedule.find(b => currentMinutes >= b.startMinutes && currentMinutes < b.endMinutes) || null;
+        // 5. Bloque activo actual
+        const currentBlock = todaySchedule.find(b => currentMinutes >= b.startMinutes && currentMinutes < b.endMinutes) || null;
 
-      // 6. Filtrar bloques del día actual que terminen después de la hora actual
-      const pendingBlocksToday = todaySchedule.filter(b => b.endMinutes > currentMinutes);
+        // 6. Filtrar bloques del día actual que terminen después de la hora actual
+        const pendingBlocksToday = todaySchedule.filter(b => b.endMinutes > currentMinutes);
 
-      // 7. Limitar de forma estricta a un máximo de 3 elementos
-      const visibleBlocks = pendingBlocksToday.slice(0, 3);
+        // 7. Limitar de forma estricta a un máximo de 3 elementos
+        const visibleBlocks = pendingBlocksToday.slice(0, 3);
 
-      const isSchoolHours = currentMinutes >= 480 && currentMinutes <= 900; // Entre 8:00 AM y 3:00 PM
+        const isSchoolHours = currentMinutes >= 480 && currentMinutes <= 900; // Entre 8:00 AM y 3:00 PM
 
-      setScheduleState({
-        visibleBlocks,
-        pendingBlocksToday,
-        currentBlock,
-        todaySchedule,
-        statusText: currentBlock ? `En curso: ${currentBlock.label}` : 'Fuera de bloque lectivo activo',
-        isSchoolHours,
-        isWeekend: false
-      });
+        setScheduleState({
+          visibleBlocks,
+          pendingBlocksToday,
+          currentBlock,
+          todaySchedule,
+          statusText: currentBlock ? `En curso: ${currentBlock.label}` : 'Fuera de bloque lectivo activo',
+          isSchoolHours,
+          isWeekend: false
+        });
+      } catch (err) {
+        console.error('Error computing upcoming classes schedule:', err);
+      }
     };
 
     updateTimeline();

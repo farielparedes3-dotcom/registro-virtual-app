@@ -3,8 +3,14 @@ import { useUpcomingClasses } from '../../hooks/useUpcomingClasses';
 import ScheduleWeeklyModal from './ScheduleWeeklyModal';
 
 export default function UpcomingThreeHoursBar({ currentUser, onSelectCourse }) {
-  const { visibleBlocks, currentBlock, isSchoolHours } = useUpcomingClasses(currentUser);
   const [showWeeklyModal, setShowWeeklyModal] = useState(false);
+
+  if (!currentUser) return null;
+
+  const upcomingSchedule = useUpcomingClasses(currentUser) || {};
+  const visibleBlocks = upcomingSchedule.visibleBlocks || [];
+  const currentBlock = upcomingSchedule.currentBlock || null;
+  const isSchoolHours = !!upcomingSchedule.isSchoolHours;
 
   return (
     <div style={{
