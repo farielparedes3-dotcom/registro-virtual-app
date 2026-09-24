@@ -54,18 +54,6 @@ input[type=number] {
   border: none !important;
 }
 
-/* Área de Contenido Principal (Dashboard y Módulos) */
-.app-main-content {
-  flex: 1;
-  height: 100vh;
-  overflow-y: auto; /* Scroll propio para el contenido */
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  scrollbar-width: thin;
-  box-sizing: border-box;
-}
-
 @media (max-width: 968px) {
   .app-sidebar {
     position: fixed;
@@ -86,18 +74,67 @@ input[type=number] {
   }
 }
 
-.header {
-  border-bottom: 1px solid var(--border-color);
+/* Área de Contenido Principal (Dashboard y Módulos) - LAYOUT FLUIDO 100% */
+.app-main-content,
+.main-content,
+main {
+  flex: 1 1 0% !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.app-header,
+.header,
+header {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 24px !important;
+  box-sizing: border-box !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background-color: var(--bg-secondary);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+.dashboard-container,
+.grades-container,
+.attendance-container,
+.content-area {
+  width: 100% !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 24px 32px !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
+
+footer {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  padding: 1.5rem 1rem !important;
+  text-align: center !important;
+  border-top: 1px solid var(--border-color) !important;
+  color: var(--text-muted) !important;
+  font-size: 0.85rem !important;
+  margin-top: 2rem !important;
 }
 
 .header-logo {
