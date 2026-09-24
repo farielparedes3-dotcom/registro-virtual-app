@@ -25060,9 +25060,34 @@ export default function App() {
   };
 
   // --- Filtering States ---
-  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState(() => {
+    try {
+      return localStorage.getItem('s_last_selected_course') || '';
+    } catch (e) {
+      return '';
+    }
+  });
   const [selectedSubject, setSelectedSubject] = useState('math');
   const [classroomGrade, setClassroomGrade] = useState(null);
+
+  const handleCourseChange = (newCourseKey) => {
+    if (!newCourseKey) return;
+    setSelectedGrade(newCourseKey);
+    setClassroomGrade(newCourseKey);
+
+    if (currentUser && currentUser.assignments) {
+      const foundAssignment = currentUser.assignments.find(a => matchGrade(a.grade, newCourseKey));
+      if (foundAssignment) {
+        setSelectedSubject(foundAssignment.subject);
+      }
+    }
+
+    try {
+      localStorage.setItem('s_last_selected_course', newCourseKey);
+    } catch (e) {
+      console.error('Error persisting s_last_selected_course:', e);
+    }
+  };
   const [activeAdminGrade, setActiveAdminGrade] = useState(() => {
     try {
     const saved = localStorage.getItem('s_grades');
@@ -31356,159 +31381,175 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       : '85.0';
 
     return (
-      <div className="app-container">
-        <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              ☰
-            </button>
-            <div 
-              className="header-logo" 
-              onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
-              title="Ir a Inicio"
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-                <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-                <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
-                <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
-              </div>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
-              <span 
-                style={{ 
-                  fontSize: '0.72rem', 
-                  padding: '0.2rem 0.5rem', 
-                  backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
-                  color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
-                  border: '1px solid currentColor', 
-                  borderRadius: '4px', 
-                  marginLeft: '0.4rem', 
-                  fontWeight: 'bold', 
-                  alignSelf: 'center',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.25rem'
-                }}
-                title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
-              >
-                <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
-              </span>
+      <div className="app-layout-container">
+        {!sidebarCollapsed && (
+          <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
+        )}
+        <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ padding: '1.5rem', position: 'relative' }}>
+          <button 
+            type="button" 
+            className="sidebar-close-btn" 
+            onClick={() => setSidebarCollapsed(true)}
+          >
+            ✕
+          </button>
+          <div className="sidebar-nav">
+            <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
+            </div>
+            <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>👤</span> Mi Perfil
+            </div>
+            <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => { setActiveTab('teachers'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>👨‍🏫</span> Asignación Docentes
+            </div>
+            <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => { setActiveTab('students'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>🎒</span> Estudiantes por Grado
+            </div>
+            <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📊</span> Control Calificaciones
+            </div>
+            <div className={`nav-item ${activeTab === 'admin_attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_attendance'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📅</span> Control Asistencia
+            </div>
+            <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📋</span> Registro General
+            </div>
+            <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín Calificaciones
+            </div>
+            <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
+            </div>
+            <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
+            </div>
+            <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
             </div>
           </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <button 
-              type="button"
-              className="theme-toggle"
-              onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
-              title="Notificaciones de Reportes para Orientación"
-              style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
-            >
-              <span style={{ fontSize: '1.15rem' }}>🔔</span>
-              {alertLogs.length > 0 && (
-                <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                  {alertLogs.length > 99 ? '99+' : alertLogs.length}
-                </span>
-              )}
-            </button>
+        </aside>
 
-            <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
-              {theme === 'light' ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                </svg>
-              )}
-            </button>
-
-            <div 
-              onClick={() => setActiveTab('profile')}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
-              title="Ver / Editar Mi Perfil"
-            >
-              {currentUser.avatar ? (
-                <img 
-                  src={currentUser.avatar} 
-                  alt={currentUser.name} 
-                  style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-                />
-              ) : (
-                <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                  {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'AD'}
-                </div>
-              )}
-              <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Administrador Principal</span>
-              </div>
-              <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>
-                Salir
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <div className="main-content animate-fade-in">
-          <div className={`dashboard-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-            {!sidebarCollapsed && (
-              <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
-            )}
-            <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start', position: 'relative' }}>
+        <div className="app-main-content">
+          <header className="header" style={{ borderBottom: '2px solid #ebdcb9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <button 
                 type="button" 
-                className="sidebar-close-btn" 
-                onClick={() => setSidebarCollapsed(true)}
+                className="sidebar-toggle-btn" 
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                ✕
+                ☰
               </button>
-              <div className="sidebar-nav">
-                <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
+              <div 
+                className="header-logo" 
+                onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+                title="Ir a Inicio"
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                  <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+                  <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>👤</span> Mi Perfil
-                </div>
-                <div className={`nav-item ${activeTab === 'teachers' ? 'active' : ''}`} onClick={() => { setActiveTab('teachers'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>👨‍🏫</span> Asignación Docentes
-                </div>
-                <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => { setActiveTab('students'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>🎒</span> Estudiantes por Grado
-                </div>
-                <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📊</span> Control Calificaciones
-                </div>
-                <div className={`nav-item ${activeTab === 'admin_attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_attendance'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📅</span> Control Asistencia
-                </div>
-                <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📋</span> Registro General
-                </div>
-                <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín Calificaciones
-                </div>
-                <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
-                </div>
-                <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
-                </div>
-                <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📖</span> Manual / Instructivo
-                </div>
-                <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
-                  <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
-                </div>
+                <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
+                <span 
+                  style={{ 
+                    fontSize: '0.72rem', 
+                    padding: '0.2rem 0.5rem', 
+                    backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                    color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                    border: '1px solid currentColor', 
+                    borderRadius: '4px', 
+                    marginLeft: '0.4rem', 
+                    fontWeight: 'bold', 
+                    alignSelf: 'center',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                  title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+                >
+                  <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+                </span>
               </div>
-            </aside>
 
+              {/* Selector Rápido de Curso (Grade Switcher en Admin) */}
+              <div 
+                className="header-course-switcher" 
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.25rem 0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.5rem' }}
+              >
+                <span style={{ fontSize: '0.9rem' }}>🏫</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
+                <select 
+                  className="form-select" 
+                  value={selectedGrade} 
+                  onChange={(e) => handleCourseChange(e.target.value)}
+                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                >
+                  {(grades || []).map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+              <button 
+                type="button"
+                className="theme-toggle"
+                onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
+                title="Notificaciones de Reportes para Orientación"
+                style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+              >
+                <span style={{ fontSize: '1.15rem' }}>🔔</span>
+                {alertLogs.length > 0 && (
+                  <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                    {alertLogs.length > 99 ? '99+' : alertLogs.length}
+                  </span>
+                )}
+              </button>
+
+              <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
+                {theme === 'light' ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                  </svg>
+                )}
+              </button>
+
+              <div 
+                onClick={() => setActiveTab('profile')}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
+                title="Ver / Editar Mi Perfil"
+              >
+                {currentUser.avatar ? (
+                  <img 
+                    src={currentUser.avatar} 
+                    alt={currentUser.name} 
+                    style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                  />
+                ) : (
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                    {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'AD'}
+                  </div>
+                )}
+                <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Administrador Principal</span>
+                </div>
+                <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>
+                  Salir
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <main className="main-content animate-fade-in" style={{ padding: '2rem', flex: 1 }}>
             <section className="content-area" style={{ minWidth: 0 }}>
               {activeTab === 'dashboard' && (
                 <div>
@@ -34080,7 +34121,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               {activeTab === 'planificacion' && renderPlanningTabContent()}
               {activeTab === 'profile' && renderProfileTabContent()}
             </section>
-          </div>
+          </main>
         </div>
       </div>
     );
@@ -34090,133 +34131,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   const activeConfigs = evaluationConfigs[`${selectedGrade}_${selectedSubject}_${activeBloque}`] || [];
 
   return (
-    <div className="app-container">
-      <header className="header" style={{ borderBottom: '2px solid var(--border-color)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button 
-            type="button" 
-            className="sidebar-toggle-btn" 
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            ☰
-          </button>
-          <div 
-            className="header-logo" 
-            onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
-            title="Ir a Inicio"
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-              <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
-              <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
-            </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
-            <span 
-              style={{ 
-                fontSize: '0.72rem', 
-                padding: '0.2rem 0.5rem', 
-                backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
-                color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
-                border: '1px solid currentColor', 
-                borderRadius: '4px', 
-                marginLeft: '0.4rem', 
-                fontWeight: 'bold', 
-                alignSelf: 'center',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.25rem'
-              }}
-              title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
-            >
-              <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
-            </span>
-          </div>
+    <div className="app-layout-container">
+      {!sidebarCollapsed && (
+        <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
+      )}
+      <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ padding: '1.5rem', position: 'relative' }}>
+        <button 
+          type="button" 
+          className="sidebar-close-btn" 
+          onClick={() => setSidebarCollapsed(true)}
+        >
+          ✕
+        </button>
+        <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
+          <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Seleccionar Curso / Grado</label>
+          <select className="form-select" value={selectedGrade} onChange={(e) => { handleCourseChange(e.target.value); setActiveTab('grades'); setSidebarCollapsed(true); }}>
+            {teacherUniqueGrades.map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
         </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <button 
-            type="button"
-            className="theme-toggle"
-            onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
-            title="Notificaciones de Reportes para Orientación"
-            style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
-          >
-            <span style={{ fontSize: '1.15rem' }}>🔔</span>
-            {(() => {
-              const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
-                ? currentUser.assignedGrades
-                : grades;
-              const relevantLogs = alertLogs.filter(log => {
-                if (currentUser?.role === 'admin') return true;
-                if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
-                return true;
-              });
-              const unreadLogs = relevantLogs.filter(log => !log.readByCounselor);
-              if (unreadLogs.length === 0) return null;
-              return (
-                <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                  {unreadLogs.length > 99 ? '99+' : unreadLogs.length}
-                </span>
-              );
-            })()}
-          </button>
 
-          <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
-            {theme === 'light' ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
-            )}
-          </button>
-
-          <div 
-            onClick={() => setActiveTab('profile')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
-            title="Ver / Editar Mi Perfil"
-          >
-            {currentUser.avatar ? (
-              <img 
-                src={currentUser.avatar} 
-                alt={currentUser.name} 
-                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-              />
-            ) : (
-              <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'US'}
-              </div>
-            )}
-            <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
-            </div>
-            <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
-          </div>
-        </div>
-      </header>
-
-      <div className="main-content animate-fade-in">
-        <div className={`dashboard-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-          {!sidebarCollapsed && (
-            <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
-          )}
-          <aside className="glass-panel" style={{ padding: '1.5rem', alignSelf: 'start', position: 'relative' }}>
-            <button 
-              type="button" 
-              className="sidebar-close-btn" 
-              onClick={() => setSidebarCollapsed(true)}
-            >
-              ✕
-            </button>
-            <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Seleccionar Curso / Grado</label>
-              <select className="form-select" value={selectedGrade} onChange={(e) => { setSelectedGrade(e.target.value); setActiveTab('grades'); setSidebarCollapsed(true); }}>
-                {teacherUniqueGrades.map(g => <option key={g} value={g}>{g}</option>)}
-              </select>
-            </div>
-
-            <div className="sidebar-nav">
+        <div className="sidebar-nav">
               <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
                 <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
               </div>
@@ -34256,6 +34190,132 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
           </aside>
 
+      <div className="app-main-content">
+        <header className="header" style={{ borderBottom: '2px solid var(--border-color)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              ☰
+            </button>
+            <div 
+              className="header-logo" 
+              onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+              title="Ir a Inicio"
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+                <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+              </div>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
+              <span 
+                style={{ 
+                  fontSize: '0.72rem', 
+                  padding: '0.2rem 0.5rem', 
+                  backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                  color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                  border: '1px solid currentColor', 
+                  borderRadius: '4px', 
+                  marginLeft: '0.4rem', 
+                  fontWeight: 'bold', 
+                  alignSelf: 'center',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem'
+                }}
+                title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+              >
+                <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+              </span>
+            </div>
+
+            {/* Selector Rápido de Curso (Grade Switcher) */}
+            <div 
+              className="header-course-switcher" 
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.25rem 0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.5rem' }}
+            >
+              <span style={{ fontSize: '0.9rem' }}>🏫</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
+              <select 
+                className="form-select" 
+                value={selectedGrade} 
+                onChange={(e) => handleCourseChange(e.target.value)}
+                style={{ padding: '0.25rem 0.5rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+              >
+                {teacherUniqueGrades.map(g => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <button 
+              type="button"
+              className="theme-toggle"
+              onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
+              title="Notificaciones de Reportes para Orientación"
+              style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+            >
+              <span style={{ fontSize: '1.15rem' }}>🔔</span>
+              {(() => {
+                const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
+                  ? currentUser.assignedGrades
+                  : grades;
+                const relevantLogs = alertLogs.filter(log => {
+                  if (currentUser?.role === 'admin') return true;
+                  if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
+                  return true;
+                });
+                const unreadLogs = relevantLogs.filter(log => !log.readByCounselor);
+                if (unreadLogs.length === 0) return null;
+                return (
+                  <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                    {unreadLogs.length > 99 ? '99+' : unreadLogs.length}
+                  </span>
+                );
+              })()}
+            </button>
+
+            <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
+              {theme === 'light' ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+              )}
+            </button>
+
+            <div 
+              onClick={() => setActiveTab('profile')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
+              title="Ver / Editar Mi Perfil"
+            >
+              {currentUser.avatar ? (
+                <img 
+                  src={currentUser.avatar} 
+                  alt={currentUser.name} 
+                  style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                />
+              ) : (
+                <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                  {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'US'}
+                </div>
+              )}
+              <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
+              </div>
+              <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
+            </div>
+          </div>
+        </header>
+
+        <main className="main-content animate-fade-in" style={{ padding: '2rem', flex: 1 }}>
           <section className="content-area" style={{ minWidth: 0 }}>
             {activeTab === 'dashboard' && (
               <div>
@@ -36460,7 +36520,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'planificacion' && renderPlanningTabContent()}
             {activeTab === 'profile' && renderProfileTabContent()}
           </section>
-        </div>
+        </main>
       </div>
 
       {/* PERSISTENT CRITERIA-LEVEL ASSESSMENT MODAL WINDOW */}

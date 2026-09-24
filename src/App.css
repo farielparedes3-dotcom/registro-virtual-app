@@ -16,13 +16,74 @@ input[type=number] {
   flex-direction: column;
 }
 
-.main-content {
-  flex: 1;
-  padding: 2rem;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
+/* Contenedor Principal de la App (Layout con Scroll Independiente) */
+.app-layout-container {
+  display: flex;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden; /* Evita el scroll global de toda la página */
+  width: 100vw;
   box-sizing: border-box;
+  background-color: var(--bg-primary);
+}
+
+/* Menú Lateral (Sidebar) */
+.app-sidebar {
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto; /* Scroll propio para el menú */
+  overflow-x: hidden;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+  transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  z-index: 95;
+  border-right: 1px solid var(--border-color);
+}
+
+.app-sidebar.sidebar-collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  border: none !important;
+}
+
+/* Área de Contenido Principal (Dashboard y Módulos) */
+.app-main-content {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto; /* Scroll propio para el contenido */
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+}
+
+@media (max-width: 968px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    width: 280px !important;
+    transform: translateX(0);
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    box-shadow: 10px 0 25px rgba(0,0,0,0.5);
+  }
+
+  .app-sidebar.sidebar-collapsed {
+    transform: translateX(-100%);
+    width: 280px !important;
+  }
 }
 
 .header {
