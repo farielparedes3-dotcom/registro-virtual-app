@@ -34345,8 +34345,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   </div>
                 </div>
 
-                {/* Minimalist 3-Hour Upcoming Bar Widget */}
-                <UpcomingThreeHoursBar 
+                {/* Minimalist 3-Hour Upcoming Bar Widget - Temporarily disabled for isolation */}
+                {/* <UpcomingThreeHoursBar 
                   currentUser={currentUser} 
                   onSelectCourse={(grado, materia) => {
                     const found = (currentUser?.assignments || []).find(a => a.grade === grado);
@@ -34359,29 +34359,30 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     setActiveTab('grades');
                     setSidebarCollapsed(true);
                   }} 
-                />
+                /> */}
 
                 <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
                 <div className="classroom-grid">
                   {(currentUser?.assignments || []).map((a, idx) => {
-                    const theme = getGradeThemeInfo(a.grade);
-                    const bannerBg = `linear-gradient(135deg, ${theme.color} 0%, ${theme.colorSecondary || theme.color} 100%)`;
-                    const subjectName = subjects[a.subject]?.name || a.subject;
+                    if (!a) return null;
+                    const theme = getGradeThemeInfo(a.grade) || { color: '#003876', colorSecondary: '#00224a' };
+                    const bannerBg = `linear-gradient(135deg, ${theme.color || '#003876'} 0%, ${theme.colorSecondary || theme.color || '#00224a'} 100%)`;
+                    const subjectName = (a.subject && subjects[a.subject]?.name) ? subjects[a.subject].name : (a.subject || 'Asignatura');
 
                     return (
                       <div 
-                        key={`${a.grade}_${a.subject}`} 
+                        key={`${a.grade || idx}_${a.subject || idx}`} 
                         className="classroom-card animate-fade-in" 
                         onClick={() => {
-                          setSelectedGrade(a.grade);
-                          setSelectedSubject(a.subject);
+                          if (a.grade) setSelectedGrade(a.grade);
+                          if (a.subject) setSelectedSubject(a.subject);
                           setActiveTab('grades');
                           setSidebarCollapsed(true);
                         }}
                       >
                         <div className="classroom-card-header" style={{ background: bannerBg }}>
                           <div className="classroom-card-pattern"></div>
-                          <h3 className="classroom-card-grade" style={{ fontSize: '1.25rem' }}>{a.grade} {subjectName}</h3>
+                          <h3 className="classroom-card-grade" style={{ fontSize: '1.25rem' }}>{a.grade || ''} {subjectName}</h3>
                           <span className="classroom-card-sub">Nivel Secundario</span>
                         </div>
                         <div className="classroom-card-body">

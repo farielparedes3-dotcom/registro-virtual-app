@@ -19,14 +19,11 @@ input[type=number] {
 /* Contenedor Principal de la App (Layout con Scroll Independiente) */
 .app-layout,
 .app-container,
-.app-layout-container,
-#root > div {
+.app-layout-container {
   display: flex !important;
   flex-direction: row !important;
   width: 100vw !important;
   height: 100vh !important;
-  max-width: 100vw !important;
-  overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
   box-sizing: border-box !important;
