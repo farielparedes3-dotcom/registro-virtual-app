@@ -1,28 +1,31 @@
-const CACHE_NAME = 'larc-registro-cache-v1.0.2';
+const CACHE_NAME = 'registro-minerd-v2.1.0';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/favicon.svg',
   '/dr_education_banner.png'
 ];
 
-// Install Event: cache static media assets
+// Install Event: cache static media assets and activate immediately
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[Service Worker] Pre-caching media assets');
       return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
-// Activate Event: IMMEDIATELY purge all old caches
+// Activate Event: IMMEDIATELY purge all old caches and claim clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
-          console.log('[Service Worker] Purging cache:', cache);
-          return caches.delete(cache);
+          if (cache !== CACHE_NAME) {
+            console.log('[Service Worker] Purging old cache:', cache);
+            return caches.delete(cache);
+          }
         })
       );
     }).then(() => self.clients.claim())

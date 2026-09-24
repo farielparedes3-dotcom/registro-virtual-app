@@ -20,20 +20,17 @@ if ('serviceWorker' in navigator) {
         console.log('⚡ Service Worker registered:', registration);
         registration.update();
         
-        // Listen for new service worker installation
-        registration.onupdatefound = () => {
-          const installingWorker = registration.installing;
-          if (installingWorker) {
-            installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed') {
-                if (navigator.serviceWorker.controller) {
-                  console.log('✨ New version found! Reloading for fresh update.');
-                  window.dispatchEvent(new CustomEvent('sw-update-available', { detail: registration }));
-                }
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('✨ New version installed! Reloading automatically.');
+                window.location.reload();
               }
-            };
+            });
           }
-        };
+        });
       })
       .catch((error) => {
         console.error('❌ Service Worker registration failed:', error);
