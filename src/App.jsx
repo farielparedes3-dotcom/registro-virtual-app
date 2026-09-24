@@ -34215,7 +34215,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
                 <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
               </div>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
               <span 
                 style={{ 
                   fontSize: '0.72rem', 
@@ -34298,20 +34298,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
               title="Ver / Editar Mi Perfil"
             >
-              {currentUser.avatar ? (
+              {currentUser?.avatar ? (
                 <img 
                   src={currentUser.avatar} 
-                  alt={currentUser.name} 
+                  alt={currentUser.name || 'Usuario'} 
                   style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
                 />
               ) : (
                 <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                  {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'US'}
+                  {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
                 </div>
               )}
               <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
+                <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
               </div>
               <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
             </div>
@@ -34326,7 +34326,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <div className="glass-panel welcome-banner-card-epic" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'relative', zIndex: 2 }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser.name}!</h2>
+                    <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
                     <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                       💡 {randomQuote || "Que hoy sea un día excelente para inspirar y educar con el corazón."}
                     </p>
