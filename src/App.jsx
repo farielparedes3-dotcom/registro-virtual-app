@@ -11,6 +11,7 @@ import { syncToIndexedDB, restoreFromIndexedDBIfEmpty, exportFullDatabaseBackup,
 import { extractTextFromPdf } from './services/pdfExtractor';
 import ClassTimelineDashboard from './components/ClassTimelineDashboard';
 import ScheduleTimeline from './components/dashboard/ScheduleTimeline';
+import UpcomingThreeHoursBar from './components/dashboard/UpcomingThreeHoursBar';
 
 // Global configuration
 const DEFAULT_SUBJECTS = {
@@ -31551,10 +31552,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </div>
                       </div>
 
-                      {/* Official Bell Schedule & Class Timeline Dashboard */}
-                      <ClassTimelineDashboard 
+                      {/* Minimalist 3-Hour Upcoming Bar Widget */}
+                      <UpcomingThreeHoursBar 
                         currentUser={currentUser} 
-                        onNavigateToGrade={(g) => setClassroomGrade(g)} 
+                        onSelectCourse={(g) => setClassroomGrade(g)} 
                       />
 
                       <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Grados y Aulas</h2>
@@ -34281,27 +34282,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   </div>
                 </div>
 
-                {/* Schedule Timeline Header Widget */}
-                <ScheduleTimeline 
+                {/* Minimalist 3-Hour Upcoming Bar Widget */}
+                <UpcomingThreeHoursBar 
                   currentUser={currentUser} 
-                  onSelectCourse={(grado) => {
+                  onSelectCourse={(grado, materia) => {
                     const found = (currentUser?.assignments || []).find(a => a.grade === grado);
                     setSelectedGrade(grado);
-                    if (found) {
-                      setSelectedSubject(found.subject);
-                    }
-                    setActiveTab('grades');
-                    setSidebarCollapsed(true);
-                  }} 
-                />
-
-                {/* Official Bell Schedule & Class Timeline Dashboard */}
-                <ClassTimelineDashboard 
-                  currentUser={currentUser} 
-                  onNavigateToGrade={(g) => {
-                    const found = (currentUser?.assignments || []).find(a => a.grade === g);
-                    setSelectedGrade(g);
-                    if (found) {
+                    if (materia) {
+                      setSelectedSubject(materia);
+                    } else if (found) {
                       setSelectedSubject(found.subject);
                     }
                     setActiveTab('grades');
