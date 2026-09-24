@@ -31549,8 +31549,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
           </header>
 
-          <main className="main-content animate-fade-in" style={{ padding: '2rem', flex: 1 }}>
-            <section className="content-area" style={{ minWidth: 0 }}>
+          <main className="main-content animate-fade-in" style={{ padding: '20px 28px', flex: 1, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+            <section className="content-area" style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
               {activeTab === 'dashboard' && (
                 <div>
                   {classroomGrade === null ? (
@@ -34121,6 +34121,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               {activeTab === 'planificacion' && renderPlanningTabContent()}
               {activeTab === 'profile' && renderProfileTabContent()}
             </section>
+            <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2rem', width: '100%' }}>
+              <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Administrador Activo.</p>
+            </footer>
           </main>
         </div>
       </div>
@@ -34315,8 +34318,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </div>
         </header>
 
-        <main className="main-content animate-fade-in" style={{ padding: '2rem', flex: 1 }}>
-          <section className="content-area" style={{ minWidth: 0 }}>
+        <main className="main-content animate-fade-in" style={{ padding: '20px 28px', flex: 1, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+          <section className="content-area" style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
             {activeTab === 'dashboard' && (
               <div>
                 {/* Greeting Card with flat illustration banner */}
@@ -36520,6 +36523,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {activeTab === 'planificacion' && renderPlanningTabContent()}
             {activeTab === 'profile' && renderProfileTabContent()}
           </section>
+          <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2rem', width: '100%' }}>
+            <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Ordenanza 04-2023 MINERD.</p>
+          </footer>
         </main>
       </div>
 

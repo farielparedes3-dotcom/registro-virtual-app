@@ -2509,4 +2509,45 @@ input[type=number] {
   }
 }
 
+/* ==========================================================================
+   Fluid Full-Width Layout (100% Expansion for Grades & Attendance Tables)
+   ========================================================================== */
+.app-main-content,
+.main-content,
+.content-area,
+.grades-container,
+.attendance-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1;
+  margin-right: 0 !important;
+  padding: 20px 28px !important;
+  box-sizing: border-box !important;
+}
+
+.grades-table-card,
+.grades-table,
+.grade-cover-banner,
+.custom-table-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.custom-table,
+.grades-table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+@media (max-width: 768px) {
+  .app-main-content,
+  .main-content,
+  .content-area,
+  .grades-container,
+  .attendance-container {
+    padding: 12px 16px !important;
+  }
+}
 
