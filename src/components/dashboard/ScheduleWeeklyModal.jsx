@@ -8,14 +8,17 @@ const DISPLAY_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 export default function ScheduleWeeklyModal({ currentUser, onClose, onSelectCourse }) {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
 
-  const teacherName = currentUser?.displayName || currentUser?.name || '';
-  const teacherEmail = currentUser?.email || '';
+  if (!currentUser || !docentesData) return null;
 
-  const teacherRecord = docentesData.find(d => 
-    (d.email && d.email.toLowerCase() === teacherEmail.toLowerCase()) ||
-    (teacherName && teacherName.toLowerCase().includes(d.docente.toLowerCase())) ||
-    (d.docente && teacherName && d.docente.toLowerCase().includes(teacherName.toLowerCase()))
-  ) || docentesData[1];
+  const teacherName = (currentUser?.displayName || currentUser?.name || '').toLowerCase();
+  const teacherEmail = (currentUser?.email || '').toLowerCase();
+
+  const teacherRecord = (Array.isArray(docentesData) ? docentesData : []).find(d => 
+    (d?.email && d.email.toLowerCase() === teacherEmail) ||
+    (teacherName && d?.docente && teacherName.includes(d.docente.toLowerCase())) ||
+    (d?.docente && teacherName && d.docente.toLowerCase().includes(teacherName)) ||
+    (teacherEmail.includes('mario') && d?.docente && d.docente.toLowerCase().includes('mario'))
+  ) || docentesData?.[0] || null;
 
   const currentDayKey = DAYS[selectedDayIndex];
   const daySchedule = teacherRecord?.horario?.[currentDayKey] || [];

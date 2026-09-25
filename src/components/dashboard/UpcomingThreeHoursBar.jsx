@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useUpcomingClasses } from '../../hooks/useUpcomingClasses';
 import ScheduleWeeklyModal from './ScheduleWeeklyModal';
+import docentesData from '../../data/docentesHorarios.json';
 
 export default function UpcomingThreeHoursBar({ currentUser, onSelectCourse }) {
   const [showWeeklyModal, setShowWeeklyModal] = useState(false);
 
-  if (!currentUser) return null;
+  if (!currentUser || !docentesData) return null;
 
   const upcomingSchedule = useUpcomingClasses(currentUser) || {};
   const visibleBlocks = upcomingSchedule.visibleBlocks || [];

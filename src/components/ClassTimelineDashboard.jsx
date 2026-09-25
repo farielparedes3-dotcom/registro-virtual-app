@@ -8,6 +8,8 @@ const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes
 const DISPLAY_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
 export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade }) {
+  if (!currentUser || !docentesHorariosData) return null;
+
   const [now, setNow] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(() => {
     const dayIdx = new Date().getDay();
@@ -17,7 +19,7 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
     return 'Lunes';
   });
   const [viewMode, setViewMode] = useState('timeline'); // 'timeline' | 'weekly'
-  const upcomingSchedule = useUpcomingClasses(currentUser);
+  const upcomingSchedule = useUpcomingClasses(currentUser) || {};
 
   // Update clock every 10 seconds
   useEffect(() => {
@@ -31,12 +33,12 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
   const currentEmail = (currentUser?.email || '').toLowerCase();
   const currentName = (currentUser?.name || '').toLowerCase();
 
-  const matchedTeacher = docentesHorariosData.find(t => 
-    (t.email && t.email.toLowerCase() === currentEmail) ||
-    (t.docente && t.docente.toLowerCase() === currentName) ||
-    (currentEmail.includes('lohany') && t.docente.includes('Lohany')) ||
-    (currentEmail.includes('mario') && t.docente.includes('Mario'))
-  ) || docentesHorariosData[1]; // Default to Lohany Mateo if no match
+  const matchedTeacher = (Array.isArray(docentesHorariosData) ? docentesHorariosData : []).find(t => 
+    (t?.email && t.email.toLowerCase() === currentEmail) ||
+    (t?.docente && t.docente.toLowerCase() === currentName) ||
+    (currentEmail.includes('lohany') && t?.docente && t.docente.includes('Lohany')) ||
+    (currentEmail.includes('mario') && t?.docente && t.docente.includes('Mario'))
+  ) || docentesHorariosData?.[0] || { docente: currentUser?.name || 'Docente', asignatura: 'Ciencias de la Naturaleza', horario: {} };
 
   // Get teacher schedule for a specific day
   const getTeacherDaySchedule = (dayKey) => {

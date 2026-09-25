@@ -34238,6 +34238,103 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const activeConfigs = evaluationConfigs[`${currentGrade}_${selectedSubject}_${activeBloque}`] || [];
 
+  const renderDashboardView = () => {
+    try {
+      return (
+        <div>
+          {/* Greeting Card with flat illustration banner */}
+          <div className="glass-panel welcome-banner-card-epic" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+              <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
+              <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                💡 {randomQuote || "Que hoy sea un día excelente para inspirar y educar con el corazón."}
+              </p>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+              <img 
+                src="/dr_education_banner.png" 
+                alt="Bienvenido" 
+                style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
+              />
+            </div>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+              <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
+              <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
+              <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
+            </div>
+          </div>
+
+          {/* Schedule Timeline Widget */}
+          <ScheduleTimeline 
+            currentUser={currentUser} 
+            onSelectCourse={(grado, materia) => {
+              const found = (Array.isArray(currentUser?.assignments) ? currentUser.assignments : []).find(a => a?.grade === grado);
+              if (grado) setSelectedGrade(grado);
+              if (materia) {
+                setSelectedSubject(materia);
+              } else if (found?.subject) {
+                setSelectedSubject(found.subject);
+              }
+              setActiveTab('grades');
+              setSidebarCollapsed(true);
+            }} 
+          />
+
+          <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
+          <div className="classroom-grid">
+            {(Array.isArray(displayAssignments) ? displayAssignments : []).map((a, idx) => {
+              if (!a) return null;
+              const gradeName = typeof a === 'string' ? a : (a.grade || '5AN');
+              const subjectKey = typeof a === 'string' ? 'ciencias_naturaleza' : (a.subject || 'ciencias_naturaleza');
+              const theme = getGradeThemeInfo(gradeName) || { color: '#003876', colorSecondary: '#00224a' };
+              const bannerBg = `linear-gradient(135deg, ${theme.color || '#003876'} 0%, ${theme.colorSecondary || theme.color || '#00224a'} 100%)`;
+              const subjectName = (subjectKey && subjects[subjectKey]?.name) ? subjects[subjectKey].name : (subjectKey || 'Asignatura');
+
+              return (
+                <div 
+                  key={`${gradeName || idx}_${subjectKey || idx}`} 
+                  className="classroom-card animate-fade-in" 
+                  onClick={() => {
+                    if (gradeName) setSelectedGrade(gradeName);
+                    if (subjectKey) setSelectedSubject(subjectKey);
+                    setActiveTab('grades');
+                    setSidebarCollapsed(true);
+                  }}
+                >
+                  <div className="classroom-card-header" style={{ background: bannerBg }}>
+                    <div className="classroom-card-pattern"></div>
+                    <h3 className="classroom-card-grade" style={{ fontSize: '1.25rem' }}>{gradeName} {subjectName}</h3>
+                    <span className="classroom-card-sub">Nivel Secundario</span>
+                  </div>
+                  <div className="classroom-card-body">
+                    <p className="classroom-card-info">
+                      Control de calificaciones, asistencia e instrumentos de evaluación para esta clase.
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
+                      <div className="classroom-card-action-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    } catch (err) {
+      console.error('Error rendering Teacher Dashboard View:', err);
+      return (
+        <div className="glass-panel welcome-banner-card-epic" style={{ padding: '2rem', marginBottom: '2rem', color: '#ffffff' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: '800' }}>¡Hola, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
+          <p style={{ fontSize: '0.95rem' }}>Bienvenido al Registro Digital Virtual MINERD.</p>
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="app-layout-container" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       {!sidebarCollapsed && (
@@ -34425,88 +34522,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
         <main className="main-content animate-fade-in" style={{ padding: '20px 28px', flex: 1, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
           <section className="content-area" style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
-            {activeTab === 'dashboard' && (
-              <div>
-                {/* Greeting Card with flat illustration banner */}
-                <div className="glass-panel welcome-banner-card-epic" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'relative', zIndex: 2 }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
-                    <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
-                      💡 {randomQuote || "Que hoy sea un día excelente para inspirar y educar con el corazón."}
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-                    <img 
-                      src="/dr_education_banner.png" 
-                      alt="Bienvenido" 
-                      style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
-                    />
-                  </div>
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
-                    <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
-                    <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
-                    <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
-                  </div>
-                </div>
-
-                {/* Minimalist 3-Hour Upcoming Bar Widget - Temporarily disabled for isolation */}
-                {/* <UpcomingThreeHoursBar 
-                  currentUser={currentUser} 
-                  onSelectCourse={(grado, materia) => {
-                    const found = (currentUser?.assignments || []).find(a => a.grade === grado);
-                    setSelectedGrade(grado);
-                    if (materia) {
-                      setSelectedSubject(materia);
-                    } else if (found) {
-                      setSelectedSubject(found.subject);
-                    }
-                    setActiveTab('grades');
-                    setSidebarCollapsed(true);
-                  }} 
-                /> */}
-
-                <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
-                <div className="classroom-grid">
-                  {displayAssignments.map((a, idx) => {
-                    if (!a) return null;
-                    const theme = getGradeThemeInfo(a.grade) || { color: '#003876', colorSecondary: '#00224a' };
-                    const bannerBg = `linear-gradient(135deg, ${theme.color || '#003876'} 0%, ${theme.colorSecondary || theme.color || '#00224a'} 100%)`;
-                    const subjectName = (a.subject && subjects[a.subject]?.name) ? subjects[a.subject].name : (a.subject || 'Asignatura');
-
-                    return (
-                      <div 
-                        key={`${a.grade || idx}_${a.subject || idx}`} 
-                        className="classroom-card animate-fade-in" 
-                        onClick={() => {
-                          if (a.grade) setSelectedGrade(a.grade);
-                          if (a.subject) setSelectedSubject(a.subject);
-                          setActiveTab('grades');
-                          setSidebarCollapsed(true);
-                        }}
-                      >
-                        <div className="classroom-card-header" style={{ background: bannerBg }}>
-                          <div className="classroom-card-pattern"></div>
-                          <h3 className="classroom-card-grade" style={{ fontSize: '1.25rem' }}>{a.grade || ''} {subjectName}</h3>
-                          <span className="classroom-card-sub">Nivel Secundario</span>
-                        </div>
-                        <div className="classroom-card-body">
-                          <p className="classroom-card-info">
-                            Control de calificaciones, asistencia e instrumentos de evaluación para esta clase.
-                          </p>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
-                            <div className="classroom-card-action-icon">
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            {activeTab === 'dashboard' && renderDashboardView()}
 
             {/* TEACHER: Tab Grades (Criteria Columns or Summary Mode) */}
             {activeTab === 'grades' && (
@@ -37337,10 +37353,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         signerRole={signatureModalRole}
         title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
       />
-
-      <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-        <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Docente Activo.</p>
-      </footer>
     </div>
   );
 }
