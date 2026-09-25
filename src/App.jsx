@@ -25372,6 +25372,40 @@ export default function App() {
     });
   };
 
+  // Rescate y protección de asistencia docente (Regla de Oro: Jamás sobreescribir con {} si existen datos en localStorage o IndexedDB)
+  useEffect(() => {
+    const recoverAttendanceData = async () => {
+      // 1. Prioridad: LocalStorage síncrono
+      const cached = localStorage.getItem('s_student_attendance_detail') || localStorage.getItem('s_attendance');
+      let localData = {};
+      try {
+        if (cached) localData = JSON.parse(cached);
+      } catch (e) {
+        console.warn("Error leyendo asistencia en localStorage:", e);
+      }
+
+      // 2. Comprobar IndexedDB si localData está incompleto
+      try {
+        const dbRecords = await restoreFromIndexedDBIfEmpty('student_attendance_detail') || await restoreFromIndexedDBIfEmpty('attendance');
+        if (dbRecords && typeof dbRecords === 'object' && Object.keys(dbRecords).length > 0) {
+          localData = { ...dbRecords, ...localData };
+        }
+      } catch (e) {
+        console.warn("Recuperación secundaria IndexedDB asistencia:", e);
+      }
+
+      // 3. Establecer estado sin sobreescribir con valores nulos
+      if (localData && Object.keys(localData).length > 0) {
+        setStudentAttendanceDetail(prev => (Object.keys(prev || {}).length > 0 ? { ...localData, ...prev } : localData));
+        try {
+          localStorage.setItem('s_student_attendance_detail', JSON.stringify(localData));
+        } catch (e) {}
+      }
+    };
+
+    recoverAttendanceData();
+  }, []);
+
   // --- Sync Effects ---
   useEffect(() => {
     if (window.innerWidth < 968) {
@@ -25465,7 +25499,7 @@ export default function App() {
     });
 
     const unsubStudentAttendance = dbService.subscribeStudentAttendance((data) => {
-      if (data && typeof data === 'object') {
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) {
         if (Date.now() - lastAttendanceEditTimeRef.current < 3000) {
           return;
         }

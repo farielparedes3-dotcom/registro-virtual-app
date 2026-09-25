@@ -17,129 +17,110 @@ input[type=number] {
 }
 
 /* Contenedor Principal de la App (Layout con Scroll Independiente) */
-.app-layout,
-.app-container,
 .app-layout-container {
-  display: flex !important;
-  flex-direction: row !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
+  display: flex;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+  box-sizing: border-box;
   background-color: var(--bg-primary);
 }
 
 /* 1. Menú Lateral Izquierdo (Sidebar) */
-.sidebar-container,
-.app-sidebar,
-.sidebar,
-aside {
-  width: 250px !important;
-  min-width: 250px !important;
-  max-width: 250px !important;
-  height: 100vh !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  flex-shrink: 0 !important;
-  background-color: var(--bg-secondary) !important;
-  border-right: 1px solid var(--border-color) !important;
-  box-sizing: border-box !important;
-  z-index: 95 !important;
+.app-sidebar {
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  scrollbar-width: thin;
+  box-sizing: border-box;
   transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  z-index: 95;
+  border-right: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
 }
 
-.app-sidebar.sidebar-collapsed,
-.sidebar-container.sidebar-collapsed {
+.app-sidebar.sidebar-collapsed {
   width: 0 !important;
   min-width: 0 !important;
-  max-width: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
   border: none !important;
 }
 
 @media (max-width: 968px) {
-  .app-sidebar,
-  .sidebar-container {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    z-index: 1000 !important;
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
     width: 280px !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
     transform: translateX(0);
     opacity: 1 !important;
     pointer-events: auto !important;
     box-shadow: 10px 0 25px rgba(0,0,0,0.5);
   }
 
-  .app-sidebar.sidebar-collapsed,
-  .sidebar-container.sidebar-collapsed {
+  .app-sidebar.sidebar-collapsed {
     transform: translateX(-100%);
     width: 280px !important;
   }
 }
 
 /* 2. Área de Contenido Principal (Derecha) */
-.main-content-area,
-.app-main-content,
-.main-wrapper {
-  flex: 1 1 0% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  height: 100vh !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  background-color: var(--bg-primary) !important;
-  box-sizing: border-box !important;
+.app-main-content {
+  flex: 1 1 0%;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: var(--bg-primary);
 }
 
 /* 3. Cabecera dentro del Área Principal */
-header,
-.header,
-.top-header,
-.app-header {
-  width: 100% !important;
-  min-height: 70px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  padding: 10px 24px !important;
-  background-color: var(--bg-secondary) !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  box-sizing: border-box !important;
-  flex-shrink: 0 !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 90 !important;
+.app-header,
+.header {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 100;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* 4. Contenedor de las Vistas (Dashboard, Calificaciones, etc.) */
-main,
-.main-content,
-.content-body,
-.dashboard-view,
-.grades-view,
-.content-area,
+/* 4. Contenedor de las Vistas */
 .dashboard-container,
 .grades-container,
-.attendance-container {
-  flex: 1 1 auto !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 24px !important;
-  box-sizing: border-box !important;
-  min-width: 0 !important;
+.attendance-container,
+.content-area {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 footer {
