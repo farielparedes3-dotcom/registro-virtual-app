@@ -301,6 +301,21 @@ const DEFAULT_USERS = [
   },
   {
     id: 't15',
+    name: 'Prof. Mario Paredes',
+    email: 'mario.paredes@docente.edu.do',
+    username: 'mario.paredes',
+    password: 'mario123',
+    role: 'teacher',
+    classroomGrade: '5AN',
+    assignedGrades: ['5AN'],
+    teachingLoad: [{ grade: '5AN', subject: 'ciencias_naturaleza' }],
+    assignments: [
+      { grade: '5AN', subject: 'ciencias_naturaleza' }
+    ],
+    active: true
+  },
+  {
+    id: 't16',
     name: 'Prof. Kareem Moreno',
     email: 'kareem.moreno@docente.edu.do',
     password: 'kareem123',
@@ -25069,25 +25084,6 @@ export default function App() {
   });
   const [selectedSubject, setSelectedSubject] = useState('math');
   const [classroomGrade, setClassroomGrade] = useState(null);
-
-  const handleCourseChange = (newCourseKey) => {
-    if (!newCourseKey) return;
-    setSelectedGrade(newCourseKey);
-    setClassroomGrade(newCourseKey);
-
-    if (currentUser && currentUser.assignments) {
-      const foundAssignment = currentUser.assignments.find(a => matchGrade(a.grade, newCourseKey));
-      if (foundAssignment) {
-        setSelectedSubject(foundAssignment.subject);
-      }
-    }
-
-    try {
-      localStorage.setItem('s_last_selected_course', newCourseKey);
-    } catch (e) {
-      console.error('Error persisting s_last_selected_course:', e);
-    }
-  };
   const [activeAdminGrade, setActiveAdminGrade] = useState(() => {
     try {
     const saved = localStorage.getItem('s_grades');
@@ -25698,14 +25694,50 @@ export default function App() {
     }
   }, [users]);
 
+  // Handler para cambiar de curso con actualización automática de asignatura activa
+  const handleCourseChange = (newGrade) => {
+    if (!newGrade) return;
+    const norm = normalizeGradeString(newGrade);
+    setSelectedGrade(norm);
+    setClassroomGrade(norm);
+    
+    const safeAssignments = Array.isArray(currentUser?.assignments) && currentUser.assignments.length > 0
+      ? currentUser.assignments
+      : (Array.isArray(currentUser?.teachingLoad) ? currentUser.teachingLoad : []);
+      
+    const matchedSubject = safeAssignments.find(a => a && matchGrade(typeof a === 'string' ? a : a.grade, norm))?.subject;
+    if (matchedSubject) {
+      setSelectedSubject(matchedSubject);
+    }
+    setSelectedBulletinStudentId('');
+    try {
+      localStorage.setItem('s_last_selected_course', norm);
+    } catch (e) {}
+  };
+
   // Set default selected grade/subject for teacher when logged in
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher') {
-      const uniqueGrades = [...new Set((currentUser.assignments || []).map(a => normalizeGradeString(a.grade)))];
+      const safeAssigned = Array.isArray(currentUser.assignedGrades) && currentUser.assignedGrades.length > 0
+        ? currentUser.assignedGrades
+        : (Array.isArray(currentUser.teachingLoad) && currentUser.teachingLoad.length > 0
+          ? currentUser.teachingLoad
+          : (Array.isArray(currentUser.assignments) && currentUser.assignments.length > 0
+            ? currentUser.assignments
+            : (currentUser.classroomGrade ? [currentUser.classroomGrade] : [])));
+
+      const uniqueGrades = [...new Set(
+        safeAssigned.map(a => typeof a === 'string' ? normalizeGradeString(a) : normalizeGradeString(a?.grade || ''))
+          .concat(currentUser.classroomGrade ? [normalizeGradeString(currentUser.classroomGrade)] : [])
+          .filter(Boolean)
+      )];
+
       if (uniqueGrades.length > 0) {
         if (!selectedGrade || !uniqueGrades.some(g => matchGrade(g, selectedGrade))) {
           setSelectedGrade(uniqueGrades[0]);
         }
+      } else {
+        setSelectedGrade('5AN');
       }
     }
   }, [currentUser]);
@@ -25713,9 +25745,15 @@ export default function App() {
   // When selectedGrade changes, automatically set selectedSubject
   useEffect(() => {
     if (currentUser && currentUser.role === 'teacher' && selectedGrade) {
-      const gradeSubjects = (currentUser.assignments || [])
-        .filter(a => matchGrade(a.grade, selectedGrade))
-        .map(a => a.subject);
+      const safeAssignments = Array.isArray(currentUser.assignments) && currentUser.assignments.length > 0
+        ? currentUser.assignments
+        : (Array.isArray(currentUser.teachingLoad) ? currentUser.teachingLoad : []);
+        
+      const gradeSubjects = safeAssignments
+        .filter(a => a && matchGrade(typeof a === 'string' ? a : a.grade, selectedGrade))
+        .map(a => typeof a === 'string' ? 'ciencias_naturaleza' : a.subject)
+        .filter(Boolean);
+        
       if (gradeSubjects.length > 0) {
         if (!selectedSubject || !gradeSubjects.includes(selectedSubject)) {
           setSelectedSubject(gradeSubjects[0]);
@@ -34165,7 +34203,40 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
   }
 
   // --- VIEW: Teacher Dashboard ---
-  const activeConfigs = evaluationConfigs[`${selectedGrade}_${selectedSubject}_${activeBloque}`] || [];
+  const safeAssignedGrades = Array.isArray(currentUser?.assignedGrades) && currentUser.assignedGrades.length > 0
+    ? currentUser.assignedGrades 
+    : (Array.isArray(currentUser?.teachingLoad) && currentUser.teachingLoad.length > 0
+      ? currentUser.teachingLoad 
+      : (Array.isArray(currentUser?.assignments) && currentUser.assignments.length > 0
+        ? currentUser.assignments 
+        : (currentUser?.classroomGrade ? [currentUser.classroomGrade] : [])));
+
+  const teacherDashUniqueGrades = [
+    ...new Set(
+      safeAssignedGrades
+        .map(a => typeof a === 'string' ? normalizeGradeString(a) : normalizeGradeString(a?.grade || ''))
+        .concat(currentUser?.classroomGrade ? [normalizeGradeString(currentUser.classroomGrade)] : [])
+        .filter(Boolean)
+    )
+  ];
+
+  if (teacherDashUniqueGrades.length === 0) {
+    teacherDashUniqueGrades.push('5AN');
+  }
+
+  const currentGrade = selectedGrade && teacherDashUniqueGrades.some(g => matchGrade(g, selectedGrade))
+    ? selectedGrade
+    : (teacherDashUniqueGrades[0] || '5AN');
+
+  const displayAssignments = (Array.isArray(currentUser?.assignments) && currentUser.assignments.length > 0)
+    ? currentUser.assignments
+    : (Array.isArray(currentUser?.teachingLoad) && currentUser.teachingLoad.length > 0
+      ? currentUser.teachingLoad
+      : (Array.isArray(currentUser?.assignedGrades) && currentUser.assignedGrades.length > 0
+        ? currentUser.assignedGrades.map(g => typeof g === 'string' ? { grade: g, subject: 'ciencias_naturaleza' } : g)
+        : (currentUser?.classroomGrade ? [{ grade: currentUser.classroomGrade, subject: 'ciencias_naturaleza' }] : [{ grade: '5AN', subject: 'ciencias_naturaleza' }])));
+
+  const activeConfigs = evaluationConfigs[`${currentGrade}_${selectedSubject}_${activeBloque}`] || [];
 
   return (
     <div className="app-layout-container" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
@@ -34182,7 +34253,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         </button>
         <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
           <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Seleccionar Curso / Grado</label>
-          <select className="form-select" value={selectedGrade} onChange={(e) => { handleCourseChange(e.target.value); setActiveTab('grades'); setSidebarCollapsed(true); }}>
+          <select className="form-select" value={currentGrade} onChange={(e) => { handleCourseChange(e.target.value); setActiveTab('grades'); setSidebarCollapsed(true); }}>
             {teacherUniqueGrades.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
         </div>
@@ -34280,11 +34351,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
               <select 
                 className="form-select" 
-                value={selectedGrade} 
+                value={currentGrade} 
                 onChange={(e) => handleCourseChange(e.target.value)}
                 style={{ padding: '0.25rem 0.5rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
               >
-                {teacherUniqueGrades.map(g => (
+                {teacherDashUniqueGrades.map(g => (
                   <option key={g} value={g}>{g}</option>
                 ))}
               </select>
@@ -34397,7 +34468,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
                 <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
                 <div className="classroom-grid">
-                  {(currentUser?.assignments || []).map((a, idx) => {
+                  {displayAssignments.map((a, idx) => {
                     if (!a) return null;
                     const theme = getGradeThemeInfo(a.grade) || { color: '#003876', colorSecondary: '#00224a' };
                     const bannerBg = `linear-gradient(135deg, ${theme.color || '#003876'} 0%, ${theme.colorSecondary || theme.color || '#00224a'} 100%)`;
