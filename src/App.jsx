@@ -31723,7 +31723,48 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <div>
                   {classroomGrade === null ? (
                     <>
-                      {/* Greeting Card with flat illustration banner */}
+                      {/* Compact Mobile Banner (< 768px) */}
+                      <div className="hero-compact-mobile" style={{
+                        background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+                        borderRadius: '14px',
+                        padding: '14px',
+                        color: '#ffffff',
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        marginBottom: '1rem'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                          <div>
+                            <span style={{ fontSize: '0.75rem', opacity: 0.85 }}>Liceo Ana Rosa Castillo</span>
+                            <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 700 }}>¡Hola, {currentUser?.name ? currentUser.name.split(' ')[0] : 'Docente'}! 👋</h2>
+                          </div>
+                          <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '12px' }}>
+                            {new Date().toLocaleDateString('es-DO', { weekday: 'short', day: 'numeric' })}
+                          </span>
+                        </div>
+
+                        {/* Widget compacto de Próxima Clase */}
+                        <div style={{
+                          background: 'rgba(0, 0, 0, 0.25)',
+                          borderRadius: '10px',
+                          padding: '8px 12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}>
+                          <div>
+                            <div style={{ fontSize: '0.7rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: 600 }}>⏱️ Próxima Clase</div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                              {upcomingScheduleData && upcomingScheduleData.length > 0 ? `${upcomingScheduleData[0].grade} - ${upcomingScheduleData[0].subject}` : 'Sin clases pendientes hoy'}
+                            </div>
+                          </div>
+                          <span style={{ fontSize: '0.7rem', background: '#10b981', color: '#fff', padding: '2px 8px', borderRadius: '8px', fontWeight: 700 }}>
+                            Hoy
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Desktop Greeting Card with flat illustration banner */}
                       <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', zIndex: 2 }}>
                           <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
