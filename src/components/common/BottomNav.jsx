@@ -1,48 +1,54 @@
 import React from 'react';
-import './BottomNav.css';
 
-const BottomNav = ({ activeTab, setActiveTab, currentUser, alertLogs = [], grades = [] }) => {
-  // Calculate unread incident alerts for guidance / counselor staff
-  const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
-    ? currentUser.assignedGrades
-    : grades;
-    
-  const relevantLogs = (alertLogs || []).filter(log => {
-    if (currentUser?.role === 'admin') return true;
-    if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
-    return true;
-  });
-  
-  const unreadCount = relevantLogs.filter(log => !log.readByCounselor).length;
-
+const BottomNav = ({ activeTab, setActiveTab }) => {
   const navItems = [
     { key: 'dashboard', label: 'Inicio', icon: '🏠' },
-    { key: 'classroom', label: 'Registros', icon: '📖' },
-    { key: 'counselor', label: 'Orientación', icon: '🧠' },
-    { key: 'incidents', label: 'Reportes', icon: '⚠️', badge: unreadCount },
-    { key: 'profile', label: 'Perfil', icon: '👤' },
+    { key: 'attendance', label: 'Asistencia', icon: '📅' },
+    { key: 'grades', label: 'Calificaciones', icon: '📊' },
+    { key: 'reports', label: 'Reportes', icon: '🚨' },
+    { key: 'planning', label: 'Planificación', icon: '📝' },
   ];
 
   return (
-    <nav className="mobile-bottom-nav">
+    <nav style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      width: '100vw',
+      height: '60px',
+      background: '#ffffff',
+      borderTop: '1px solid #E2E8F0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      zIndex: 9999,
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.06)'
+    }}>
       {navItems.map((item) => {
         const isActive = activeTab === item.key;
         return (
           <button
             key={item.key}
             type="button"
-            className={`bottom-nav-item ${isActive ? 'active' : ''}`}
             onClick={() => setActiveTab(item.key)}
+            style={{
+              background: 'none',
+              border: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+              height: '100%',
+              cursor: 'pointer',
+              color: isActive ? '#1D4ED8' : '#64748B',
+              padding: 0
+            }}
           >
-            <div className="bottom-nav-icon-wrapper">
-              <span className="bottom-nav-icon">{item.icon}</span>
-              {Boolean(item.badge && item.badge > 0) && (
-                <span className="bottom-nav-badge">
-                  {item.badge > 99 ? '99+' : item.badge}
-                </span>
-              )}
-            </div>
-            <span className="bottom-nav-label">{item.label}</span>
+            <span style={{ fontSize: '1.25rem', marginBottom: '2px' }}>{item.icon}</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: isActive ? 700 : 500 }}>
+              {item.label}
+            </span>
           </button>
         );
       })}

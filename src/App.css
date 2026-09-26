@@ -2660,5 +2660,20 @@ footer {
   .attendance-container {
     padding: 12px 16px !important;
   }
+
+  header.app-header,
+  .top-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .app-main-content {
+    padding-bottom: 70px !important; /* Espacio para que la barra inferior no tape el contenido */
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
 }
+
 
