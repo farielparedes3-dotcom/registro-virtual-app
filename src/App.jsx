@@ -27097,12 +27097,16 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
   };
 
   const renderReportsTabContent = () => {
-    const counselorAssignedGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
+    const userRoleLower = (currentUser?.role || currentUser?.rol || '').toLowerCase();
+    const isUserAdmin = userRoleLower === 'admin';
+    const isUserCounselor = userRoleLower === 'counselor' || userRoleLower === 'orientadora';
+
+    const counselorAssignedGrades = (isUserCounselor && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
       ? currentUser.assignedGrades
-      : grades;
+      : (grades || DEFAULT_GRADES);
 
     // For teachers: include ALL grades they teach + their classroomGrade
-    const teacherAllowedGrades = currentUser?.role === 'teacher'
+    const teacherAllowedGrades = (!isUserAdmin && !isUserCounselor)
       ? [
           ...new Set([
             ...(currentUser?.classroomGrade ? [normalizeGradeString(currentUser.classroomGrade)] : []),
@@ -27111,30 +27115,31 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
         ].filter(Boolean)
       : [];
 
-    const visibleGradesForExplorer = currentUser?.role === 'admin' 
-      ? grades 
-      : (currentUser?.role === 'counselor' ? counselorAssignedGrades : teacherAllowedGrades);
+    let visibleGradesForExplorer = isUserAdmin 
+      ? (grades && grades.length > 0 ? grades : DEFAULT_GRADES) 
+      : (isUserCounselor ? counselorAssignedGrades : teacherAllowedGrades);
 
-    const filteredAlertLogs = alertLogs.filter(log => {
-      if (currentUser?.role === 'admin') return true;
+    if (!Array.isArray(visibleGradesForExplorer) || visibleGradesForExplorer.length === 0) {
+      visibleGradesForExplorer = (grades && grades.length > 0) ? grades : DEFAULT_GRADES;
+    }
+
+    const filteredAlertLogs = (Array.isArray(alertLogs) ? alertLogs : []).filter(log => {
+      if (isUserAdmin) return true;
       return visibleGradesForExplorer.some(vg => matchGrade(vg, log.grade));
     });
 
-    const activeReportGrade = selectedManualReportGrade || currentGrade || (visibleGradesForExplorer[0] || '');
+    const activeReportGrade = selectedManualReportGrade || selectedGrade || (visibleGradesForExplorer[0] || '');
 
-    const filteredStudentsForReport = students.filter(s => {
-      if (!activeReportGrade) return false;
-      return matchGrade(s.grade, activeReportGrade) ||
-        s.grade === activeReportGrade || 
-        s.grado === activeReportGrade || 
-        s.seccion === activeReportGrade ||
-        s.cursoId === activeReportGrade;
+    const filteredStudentsForReport = (Array.isArray(students) ? students : []).filter(s => {
+      if (!s || !activeReportGrade) return false;
+      const stGrade = s.grade || s.grado || s.seccion || s.cursoId || '';
+      return matchGrade(stGrade, activeReportGrade) || stGrade === activeReportGrade;
     }).sort((a, b) => {
-      const nameA = a.name || `${a.nombres || ''} ${a.apellidos || ''}`.trim() || '';
-      const nameB = b.name || `${b.nombres || ''} ${b.apellidos || ''}`.trim() || '';
-      const lastNameA = a.apellidos || a.lastName || nameA;
-      const lastNameB = b.apellidos || b.lastName || nameB;
-      return lastNameA.localeCompare(lastNameB);
+      const nameA = a?.name || `${a?.nombres || ''} ${a?.apellidos || ''}`.trim() || '';
+      const nameB = b?.name || `${b?.nombres || ''} ${b?.apellidos || ''}`.trim() || '';
+      const lastNameA = a?.apellidos || a?.lastName || nameA;
+      const lastNameB = b?.apellidos || b?.lastName || nameB;
+      return lastNameA.localeCompare(lastNameB, 'es', { sensitivity: 'base' });
     });
 
     return (
