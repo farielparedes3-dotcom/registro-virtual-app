@@ -25149,6 +25149,7 @@ export default function App() {
 
   // Search Filter
   const [searchQuery, setSearchQuery] = useState('');
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
   // Form states
   const [studentForm, setStudentForm] = useState({ name: '', email: '' });
@@ -31599,123 +31600,161 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         </aside>
 
         <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
-          <header className="header" style={{ width: '100%', minHeight: '65px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <button 
-                type="button" 
-                className="sidebar-toggle-btn" 
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                ☰
-              </button>
-              <div 
-                className="header-logo" 
-                onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
-                title="Ir a Inicio"
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-                  <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-                  <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
-                  <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
-                </div>
-                <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
-                <span 
-                  style={{ 
-                    fontSize: '0.72rem', 
-                    padding: '0.2rem 0.5rem', 
-                    backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
-                    color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
-                    border: '1px solid currentColor', 
-                    borderRadius: '4px', 
-                    marginLeft: '0.4rem', 
-                    fontWeight: 'bold', 
-                    alignSelf: 'center',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.25rem'
-                  }}
-                  title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+          {!isHeaderCollapsed ? (
+            <header className="header app-header-compact" style={{ width: '100%', minHeight: '50px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <button 
+                  type="button" 
+                  className="sidebar-toggle-btn" 
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
-                </span>
-              </div>
-
-              {/* Selector Rápido de Curso (Grade Switcher en Admin) */}
-              <div 
-                className="header-course-switcher" 
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.25rem 0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.5rem' }}
-              >
-                <span style={{ fontSize: '0.9rem' }}>🏫</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
-                <select 
-                  className="form-select" 
-                  value={selectedGrade} 
-                  onChange={(e) => handleCourseChange(e.target.value)}
-                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                  ☰
+                </button>
+                <div 
+                  className="header-logo" 
+                  onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+                  title="Ir a Inicio"
                 >
-                  {(grades || []).map(g => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-              <button 
-                type="button"
-                className="theme-toggle"
-                onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
-                title="Notificaciones de Reportes para Orientación"
-                style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
-              >
-                <span style={{ fontSize: '1.15rem' }}>🔔</span>
-                {alertLogs.length > 0 && (
-                  <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                    {alertLogs.length > 99 ? '99+' : alertLogs.length}
-                  </span>
-                )}
-              </button>
-
-              <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
-                {theme === 'light' ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                  </svg>
-                )}
-              </button>
-
-              <div 
-                onClick={() => setActiveTab('profile')}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
-                title="Ver / Editar Mi Perfil"
-              >
-                {currentUser.avatar ? (
-                  <img 
-                    src={currentUser.avatar} 
-                    alt={currentUser.name} 
-                    style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-                  />
-                ) : (
-                  <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                    {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'AD'}
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                    <span className="header-digital-title" style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DIGITAL</span>
+                    <span className="header-school-name" style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+                    <span className="header-district-text" style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
                   </div>
-                )}
-                <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Administrador Principal</span>
+                  <span className="badge-docente" style={{ fontSize: '0.72rem', padding: '0.2rem 0.4rem', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', border: '1px solid var(--border-color)', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>Admin</span>
+                  <span 
+                    className="badge-cloud"
+                    style={{ 
+                      fontSize: '0.72rem', 
+                      padding: '0.2rem 0.5rem', 
+                      backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                      color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                      border: '1px solid currentColor', 
+                      borderRadius: '4px', 
+                      marginLeft: '0.4rem', 
+                      fontWeight: 'bold', 
+                      alignSelf: 'center',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
+                    }}
+                    title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+                  >
+                    <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+                  </span>
                 </div>
-                <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>
-                  Salir
+
+                {/* Selector Rápido de Curso (Grade Switcher en Admin) */}
+                <div 
+                  className="header-course-switcher" 
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.2rem 0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.25rem' }}
+                >
+                  <span style={{ fontSize: '0.9rem' }}>🏫</span>
+                  <span className="header-course-label" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
+                  <select 
+                    className="form-select" 
+                    value={selectedGrade} 
+                    onChange={(e) => handleCourseChange(e.target.value)}
+                    style={{ padding: '0.2rem 0.4rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                  >
+                    {(grades || []).map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {['orientador', 'orientadora', 'coordinador', 'coordinadora', 'admin'].includes((currentUser?.role || currentUser?.rol || '').toLowerCase()) && (
+                  <button 
+                    type="button"
+                    className="theme-toggle notification-bell-btn"
+                    onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
+                    title="Notificaciones de Reportes para Orientación"
+                    style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+                  >
+                    <span style={{ fontSize: '1.1rem' }}>🔔</span>
+                    {alertLogs.length > 0 && (
+                      <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                        {alertLogs.length > 99 ? '99+' : alertLogs.length}
+                      </span>
+                    )}
+                  </button>
+                )}
+
+                <button className="theme-toggle header-theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
+                  {theme === 'light' ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                    </svg>
+                  )}
+                </button>
+
+                <div 
+                  onClick={() => setActiveTab('profile')}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.75rem', cursor: 'pointer' }}
+                  title="Ver / Editar Mi Perfil"
+                >
+                  {currentUser.avatar ? (
+                    <img 
+                      src={currentUser.avatar} 
+                      alt={currentUser.name} 
+                      style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                    />
+                  ) : (
+                    <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                      {currentUser.name ? currentUser.name.slice(0,2).toUpperCase() : 'AD'}
+                    </div>
+                  )}
+                  <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser.name}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Administrador Principal</span>
+                  </div>
+                  <button className="btn-secondary header-logout-btn" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>
+                    Salir
+                  </button>
+                </div>
+
+                {/* Botón Minimizar Cabecera */}
+                <button 
+                  type="button"
+                  onClick={() => setIsHeaderCollapsed(true)}
+                  title="Ocultar barra para ver más espacio"
+                  style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '0.75rem', fontWeight: 650, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                >
+                  ▲ Ocultar
                 </button>
               </div>
-            </div>
-          </header>
+            </header>
+          ) : (
+            <button 
+              type="button"
+              onClick={() => setIsHeaderCollapsed(false)}
+              title="Mostrar menú de opciones"
+              style={{
+                position: 'fixed',
+                top: 0,
+                right: '20px',
+                background: '#1e3a8a',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '0 0 8px 8px',
+                padding: '4px 14px',
+                fontSize: '0.78rem',
+                fontWeight: 'bold',
+                zIndex: 9999,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
+            >
+              ▼ Mostrar Menú
+            </button>
+          )}
 
           <main className="main-content animate-fade-in" style={{ padding: '20px 28px', flex: 1, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
             <section className="content-area" style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
@@ -34626,177 +34665,214 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </aside>
 
       <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
-        <header className="header app-header" style={{ width: '100%', minHeight: '56px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              ☰
-            </button>
-            <div 
-              className="header-logo" 
-              onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
-              title="Ir a Inicio"
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-                <span className="header-minerd-text" style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-                <span className="header-school-name" style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
-                <span className="header-district-text" style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
-              </div>
-              <span className="header-badge-docente" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
-              <span 
-                className="header-db-badge"
-                style={{ 
-                  fontSize: '0.72rem', 
-                  padding: '0.2rem 0.5rem', 
-                  backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
-                  color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
-                  border: '1px solid currentColor', 
-                  borderRadius: '4px', 
-                  marginLeft: '0.4rem', 
-                  fontWeight: 'bold', 
-                  alignSelf: 'center',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.25rem'
-                }}
-                title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+        {!isHeaderCollapsed ? (
+          <header className="header app-header app-header-compact" style={{ width: '100%', minHeight: '50px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
+              <button 
+                type="button" 
+                className="sidebar-toggle-btn" 
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
-              </span>
-            </div>
-
-            {/* Selector Rápido de Curso (Grade Switcher) */}
-            <div 
-              className="header-course-switcher" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.2rem 0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.25rem' }}
-            >
-              <span style={{ fontSize: '0.9rem' }}>🏫</span>
-              <span className="header-course-label" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
-              <select 
-                className="form-select" 
-                value={currentGrade} 
-                onChange={(e) => handleCourseChange(e.target.value)}
-                style={{ padding: '0.2rem 0.4rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
-              >
-                {teacherDashUniqueGrades.map(g => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button 
-              type="button"
-              className="theme-toggle header-theme-toggle"
-              onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
-              title="Notificaciones de Reportes para Orientación"
-              style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
-            >
-              <span style={{ fontSize: '1.15rem' }}>🔔</span>
-              {(() => {
-                const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
-                  ? currentUser.assignedGrades
-                  : grades;
-                const relevantLogs = alertLogs.filter(log => {
-                  if (currentUser?.role === 'admin') return true;
-                  if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
-                  return true;
-                });
-                const unreadLogs = relevantLogs.filter(log => !log.readByCounselor);
-                if (unreadLogs.length === 0) return null;
-                return (
-                  <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                    {unreadLogs.length > 99 ? '99+' : unreadLogs.length}
-                  </span>
-                );
-              })()}
-            </button>
-
-            <button className="theme-toggle header-theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
-              {theme === 'light' ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
-              )}
-            </button>
-
-            <div style={{ position: 'relative' }}>
+                ☰
+              </button>
               <div 
-                onClick={() => {
-                  if (window.innerWidth <= 768) {
-                    setShowMobileProfileMenu(prev => !prev);
-                  } else {
-                    setActiveTab('profile');
-                  }
-                }}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.75rem', cursor: 'pointer' }}
-                title="Ver / Editar Mi Perfil"
+                className="header-logo" 
+                onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                title="Ir a Inicio"
               >
-                {currentUser?.avatar ? (
-                  <img 
-                    src={currentUser.avatar} 
-                    alt={currentUser.name || 'Usuario'} 
-                    style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-                  />
-                ) : (
-                  <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                    {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
-                  </div>
-                )}
-                <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                  <span className="header-minerd-text header-digital-title" style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DIGITAL</span>
+                  <span className="header-school-name" style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+                  <span className="header-district-text" style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
                 </div>
-                <button className="btn-secondary header-logout-btn" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
+                <span className="badge-docente header-badge-docente" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
+                <span 
+                  className="badge-cloud header-db-badge"
+                  style={{ 
+                    fontSize: '0.72rem', 
+                    padding: '0.2rem 0.5rem', 
+                    backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                    color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                    border: '1px solid currentColor', 
+                    borderRadius: '4px', 
+                    marginLeft: '0.4rem', 
+                    fontWeight: 'bold', 
+                    alignSelf: 'center',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                  title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+                >
+                  <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+                </span>
               </div>
 
-              {/* Mobile Touch Profile Dropdown Menu */}
-              {showMobileProfileMenu && (
-                <>
-                  <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setShowMobileProfileMenu(false)} />
-                  <div style={{
-                    position: 'absolute',
-                    top: '44px',
-                    right: '0',
-                    width: '210px',
-                    background: 'var(--card-bg, #ffffff)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
-                    padding: '12px',
-                    zIndex: 999,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                  }}>
-                    <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-                      <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.email || ''}</div>
-                    </div>
-                    <button 
-                      style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'none', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}
-                      onClick={() => { setActiveTab('profile'); setShowMobileProfileMenu(false); }}
-                    >
-                      <span>👤</span> Mi Perfil
-                    </button>
-                    <button 
-                      style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'rgba(220, 53, 69, 0.1)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '8px' }}
-                      onClick={() => { setShowMobileProfileMenu(false); handleLogout(); }}
-                    >
-                      <span>🚪</span> Cerrar Sesión
-                    </button>
-                  </div>
-                </>
-              )}
+              {/* Selector Rápido de Curso (Grade Switcher) */}
+              <div 
+                className="header-course-switcher" 
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.2rem 0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.25rem' }}
+              >
+                <span style={{ fontSize: '0.9rem' }}>🏫</span>
+                <span className="header-course-label" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
+                <select 
+                  className="form-select" 
+                  value={currentGrade} 
+                  onChange={(e) => handleCourseChange(e.target.value)}
+                  style={{ padding: '0.2rem 0.4rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                >
+                  {teacherDashUniqueGrades.map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
-        </header>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              {['orientador', 'orientadora', 'coordinador', 'coordinadora', 'admin'].includes((currentUser?.role || currentUser?.rol || '').toLowerCase()) && (
+                <button 
+                  type="button"
+                  className="theme-toggle header-theme-toggle notification-bell-btn"
+                  onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
+                  title="Notificaciones de Reportes para Orientación"
+                  style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+                >
+                  <span style={{ fontSize: '1.1rem' }}>🔔</span>
+                  {(() => {
+                    const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
+                      ? currentUser.assignedGrades
+                      : grades;
+                    const relevantLogs = alertLogs.filter(log => {
+                      if (currentUser?.role === 'admin') return true;
+                      if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
+                      return true;
+                    });
+                    const unreadLogs = relevantLogs.filter(log => !log.readByCounselor);
+                    if (unreadLogs.length === 0) return null;
+                    return (
+                      <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                        {unreadLogs.length > 99 ? '99+' : unreadLogs.length}
+                      </span>
+                    );
+                  })()}
+                </button>
+              )}
+
+              <button className="theme-toggle header-theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
+                {theme === 'light' ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+                )}
+              </button>
+
+              <div style={{ position: 'relative' }}>
+                <div 
+                  onClick={() => {
+                    if (window.innerWidth <= 768) {
+                      setShowMobileProfileMenu(prev => !prev);
+                    } else {
+                      setActiveTab('profile');
+                    }
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.75rem', cursor: 'pointer' }}
+                  title="Ver / Editar Mi Perfil"
+                >
+                  {currentUser?.avatar ? (
+                    <img 
+                      src={currentUser.avatar} 
+                      alt={currentUser.name || 'Usuario'} 
+                      style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                    />
+                  ) : (
+                    <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                      {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
+                    </div>
+                  )}
+                  <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
+                  </div>
+                  <button className="btn-secondary header-logout-btn" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
+                </div>
+
+                {/* Mobile Touch Profile Dropdown Menu */}
+                {showMobileProfileMenu && (
+                  <>
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setShowMobileProfileMenu(false)} />
+                    <div style={{
+                      position: 'absolute',
+                      top: '44px',
+                      right: '0',
+                      width: '210px',
+                      background: 'var(--card-bg, #ffffff)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+                      padding: '12px',
+                      zIndex: 999,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.email || ''}</div>
+                      </div>
+                      <button 
+                        style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'none', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        onClick={() => { setActiveTab('profile'); setShowMobileProfileMenu(false); }}
+                      >
+                        <span>👤</span> Mi Perfil
+                      </button>
+                      <button 
+                        style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'rgba(220, 53, 69, 0.1)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        onClick={() => { setShowMobileProfileMenu(false); handleLogout(); }}
+                      >
+                        <span>🚪</span> Cerrar Sesión
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Botón Minimizar Cabecera */}
+              <button 
+                type="button"
+                onClick={() => setIsHeaderCollapsed(true)}
+                title="Ocultar barra para ver más espacio"
+                style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '0.75rem', fontWeight: 650, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+              >
+                ▲ Ocultar
+              </button>
+            </div>
+          </header>
+        ) : (
+          <button 
+            type="button"
+            onClick={() => setIsHeaderCollapsed(false)}
+            title="Mostrar menú de opciones"
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: '20px',
+              background: '#1e3a8a',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '0 0 8px 8px',
+              padding: '4px 14px',
+              fontSize: '0.78rem',
+              fontWeight: 'bold',
+              zIndex: 9999,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+            }}
+          >
+            ▼ Mostrar Menú
+          </button>
+        )}
 
         <main className="main-content animate-fade-in" style={{ padding: '20px 28px', flex: 1, width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
           <section className="content-area" style={{ minWidth: 0, width: '100%', maxWidth: '100%' }}>
@@ -37648,15 +37724,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         onSave={handleSignatureModalSave}
         signerRole={signatureModalRole}
         title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
-      />
-
-      {/* Persistent Bottom Navigation Bar for Mobile Devices */}
-      <BottomNav 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        currentUser={currentUser} 
-        alertLogs={alertLogs} 
-        grades={grades} 
       />
     </div>
   );
