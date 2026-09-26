@@ -13,6 +13,19 @@ import ClassTimelineDashboard from './components/ClassTimelineDashboard';
 import ScheduleTimeline from './components/dashboard/ScheduleTimeline';
 import UpcomingThreeHoursBar from './components/dashboard/UpcomingThreeHoursBar';
 
+const TeacherFullScheduleView = ({ currentUser, onSelectCourse }) => {
+  return (
+    <ClassTimelineDashboard 
+      currentUser={currentUser} 
+      onNavigateToGrade={(grado, materia) => {
+        if (onSelectCourse) {
+          onSelectCourse(grado, materia);
+        }
+      }} 
+    />
+  );
+};
+
 // Global configuration
 const DEFAULT_SUBJECTS = {
   lengua_espanola: { name: 'Lengua Española', color: 'hsl(215, 80%, 45%)', bg: 'rgba(13, 110, 253, 0.08)' },
@@ -31478,17 +31491,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={() => { setActiveTab('students'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>🎒</span> Estudiantes por Grado
             </div>
-            <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📊</span> Control Calificaciones
-            </div>
             <div className={`nav-item ${activeTab === 'admin_attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_attendance'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>📅</span> Control Asistencia
             </div>
+            <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📊</span> Control Calificaciones
+            </div>
+            <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
+            </div>
+            <div className={`nav-item ${activeTab === 'schedule' ? 'active' : ''}`} onClick={() => { setActiveTab('schedule'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>⏰</span> Horario Escolar
+            </div>
             <div className={`nav-item ${activeTab === 'general_grades_registry' ? 'active' : ''}`} onClick={() => { setActiveTab('general_grades_registry'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>📋</span> Registro General
-            </div>
-            <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín Calificaciones
             </div>
             <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
@@ -31496,8 +31512,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
             </div>
-            <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
+            <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín Calificaciones
+            </div>
+            <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
+              <span style={{ fontSize: '1.1rem' }}>📖</span> Instructivo de Uso
             </div>
           </div>
         </aside>
@@ -34192,6 +34211,24 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
               {activeTab === 'planificacion' && renderPlanningTabContent()}
               {activeTab === 'profile' && renderProfileTabContent()}
+              {activeTab === 'schedule' && (
+                <div className="schedule-view-container" style={{ width: '100%', padding: '20px', minHeight: '80vh', boxSizing: 'border-box' }}>
+                  <TeacherFullScheduleView 
+                    currentUser={currentUser} 
+                    onSelectCourse={(grado, materia) => {
+                      const found = (Array.isArray(currentUser?.assignments) ? currentUser.assignments : []).find(a => a?.grade === grado);
+                      if (grado) setSelectedGrade(grado);
+                      if (materia) {
+                        setSelectedSubject(materia);
+                      } else if (found?.subject) {
+                        setSelectedSubject(found.subject);
+                      }
+                      setActiveTab('admin_grades');
+                      setSidebarCollapsed(true);
+                    }}
+                  />
+                </div>
+              )}
             </section>
             <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2rem', width: '100%' }}>
               <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Administrador Activo.</p>
@@ -34264,22 +34301,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
             </div>
           </div>
-
-          {/* Schedule Timeline Widget */}
-          <ScheduleTimeline 
-            currentUser={currentUser} 
-            onSelectCourse={(grado, materia) => {
-              const found = (Array.isArray(currentUser?.assignments) ? currentUser.assignments : []).find(a => a?.grade === grado);
-              if (grado) setSelectedGrade(grado);
-              if (materia) {
-                setSelectedSubject(materia);
-              } else if (found?.subject) {
-                setSelectedSubject(found.subject);
-              }
-              setActiveTab('grades');
-              setSidebarCollapsed(true);
-            }} 
-          />
 
           <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
           <div className="classroom-grid">
@@ -34356,43 +34377,46 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         </div>
 
         <div className="sidebar-nav">
-              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
-              </div>
-              <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>👤</span> Mi Perfil
-              </div>
-              <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>📊</span> Control de Calificaciones
-              </div>
-              <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
-                if (activeBloque === 'promedio_ce') {
-                  setActiveBloque('bloque1');
-                }
-                setActiveTab('instruments');
-                setSidebarCollapsed(true);
-              }}>
-                <span style={{ fontSize: '1.1rem' }}>📝</span> Instrumentos de Eval.
-              </div>
-              <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>📅</span> Control de Asistencia
-              </div>
-              <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín de Calificaciones
-              </div>
-              <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
-              </div>
-              <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>📖</span> Instructivo de Uso
-              </div>
-              <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
-              </div>
-              <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
-                <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
-              </div>
-            </div>
+          <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>🏠</span> Inicio
+          </div>
+          <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>👤</span> Mi Perfil
+          </div>
+          <div className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>📅</span> Control de Asistencia
+          </div>
+          <div className={`nav-item ${activeTab === 'grades' ? 'active' : ''}`} onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>📊</span> Control de Calificaciones
+          </div>
+          <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
+          </div>
+          <div className={`nav-item ${activeTab === 'schedule' ? 'active' : ''}`} onClick={() => { setActiveTab('schedule'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>⏰</span> Horario Escolar
+          </div>
+          <div className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => { setActiveTab('reports'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>🚨</span> Reportes e Incidencias
+          </div>
+          <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setActiveTab('calendar'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
+          </div>
+          <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín de Calificaciones
+          </div>
+          <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
+            if (activeBloque === 'promedio_ce') {
+              setActiveBloque('bloque1');
+            }
+            setActiveTab('instruments');
+            setSidebarCollapsed(true);
+          }}>
+            <span style={{ fontSize: '1.1rem' }}>📝</span> Instrumentos de Eval.
+          </div>
+          <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
+            <span style={{ fontSize: '1.1rem' }}>📖</span> Instructivo de Uso
+          </div>
+        </div>
           </aside>
 
       <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
@@ -36644,6 +36668,24 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
             {activeTab === 'planificacion' && renderPlanningTabContent()}
             {activeTab === 'profile' && renderProfileTabContent()}
+            {activeTab === 'schedule' && (
+              <div className="schedule-view-container" style={{ width: '100%', padding: '20px', minHeight: '80vh', boxSizing: 'border-box' }}>
+                <TeacherFullScheduleView 
+                  currentUser={currentUser} 
+                  onSelectCourse={(grado, materia) => {
+                    const found = (Array.isArray(currentUser?.assignments) ? currentUser.assignments : []).find(a => a?.grade === grado);
+                    if (grado) setSelectedGrade(grado);
+                    if (materia) {
+                      setSelectedSubject(materia);
+                    } else if (found?.subject) {
+                      setSelectedSubject(found.subject);
+                    }
+                    setActiveTab('grades');
+                    setSidebarCollapsed(true);
+                  }}
+                />
+              </div>
+            )}
           </section>
           <footer style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2rem', width: '100%' }}>
             <p>&copy; {new Date().getFullYear()} Control Académico - Registro Digital Virtual. Ordenanza 04-2023 MINERD.</p>
