@@ -24776,7 +24776,7 @@ export default function App() {
     } catch (e) { localStorage.removeItem('s_student_comments'); return {}; }
   });
   const [randomQuote, setRandomQuote] = useState('');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
@@ -31473,7 +31473,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         {!sidebarCollapsed && (
           <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
         )}
-        <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ width: sidebarCollapsed ? '0' : '250px', minWidth: sidebarCollapsed ? '0' : '250px', height: '100vh', overflowY: 'auto', flexShrink: 0, borderRight: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: sidebarCollapsed ? '0' : '1.5rem', position: 'relative' }}>
+        <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : 'open mobile-open'}`}>
           <button 
             type="button" 
             className="sidebar-close-btn" 
@@ -34444,7 +34444,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       {!sidebarCollapsed && (
         <div className="sidebar-mobile-backdrop" onClick={() => setSidebarCollapsed(true)}></div>
       )}
-      <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ width: sidebarCollapsed ? '0' : '250px', minWidth: sidebarCollapsed ? '0' : '250px', height: '100vh', overflowY: 'auto', flexShrink: 0, borderRight: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: sidebarCollapsed ? '0' : '1.5rem', position: 'relative' }}>
+      <aside className={`app-sidebar glass-panel ${sidebarCollapsed ? 'sidebar-collapsed' : 'open mobile-open'}`}>
         <button 
           type="button" 
           className="sidebar-close-btn" 
