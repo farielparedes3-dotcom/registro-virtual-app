@@ -34283,8 +34283,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       return (
         <div>
           {/* Greeting Card with flat illustration banner */}
-          <div className="glass-panel welcome-banner-card-epic" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 2 }}>
+          <div className="glass-panel welcome-banner-card-epic hero-welcome-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
+            <div className="hero-welcome-text" style={{ position: 'relative', zIndex: 2 }}>
               <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
               <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
               <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
