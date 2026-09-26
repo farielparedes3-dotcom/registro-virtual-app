@@ -12,6 +12,7 @@ import { extractTextFromPdf } from './services/pdfExtractor';
 import ClassTimelineDashboard from './components/ClassTimelineDashboard';
 import ScheduleTimeline from './components/dashboard/ScheduleTimeline';
 import UpcomingThreeHoursBar from './components/dashboard/UpcomingThreeHoursBar';
+import { useUpcomingClasses } from './hooks/useUpcomingClasses';
 
 const TeacherFullScheduleView = ({ currentUser, onSelectCourse }) => {
   return (
