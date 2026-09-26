@@ -29429,8 +29429,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             
             {/* Circular Official Emblem */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-              <div style={{ width: '105px', height: '105px', borderRadius: '50%', border: '3px solid #ffb300', boxShadow: '0 8px 18px rgba(0,0,0,0.35)', overflow: 'hidden', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/logo-liceo.png" alt="Sello Liceo Ana Rosa Castillo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '3px solid #ffb300', boxShadow: '0 8px 16px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <span style={{ fontSize: '2.5rem', zIndex: 2, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>🎓</span>
+                <span style={{ fontSize: '0.6rem', fontWeight: '900', color: '#ffb300', letterSpacing: '0.12em', marginTop: '0.15rem', zIndex: 2 }}>L.A.R.C.</span>
               </div>
             </div>
 
@@ -29512,8 +29513,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             
             {/* Mobile emblem header */}
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ width: '75px', height: '75px', borderRadius: '50%', border: '2.5px solid #ffb300', margin: '0 auto 0.75rem auto', overflow: 'hidden', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-                <img src="/logo-liceo.png" alt="Sello Liceo Ana Rosa Castillo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'radial-gradient(circle, #002244 0%, #003876 100%)', border: '2px solid #ffb300', margin: '0 auto 0.75rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '1.8rem' }}>🎓</span>
               </div>
               <h2 className="login-clean-title" style={{ margin: 0, fontSize: '1.75rem' }}>Acceso al Portal</h2>
               <p className="login-clean-subtitle" style={{ margin: '0.25rem 0 0 0' }}>Liceo Ana Rosa Castillo — Nagua 14-01</p>
@@ -31569,13 +31570,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <span style={{ fontSize: '1.1rem' }}>🎒</span> Estudiantes por Grado
             </div>
             <div className={`nav-item ${activeTab === 'admin_attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_attendance'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📅</span> Control de Asistencia
+              <span style={{ fontSize: '1.1rem' }}>📅</span> Control Asistencia
             </div>
             <div className={`nav-item ${activeTab === 'admin_grades' ? 'active' : ''}`} onClick={() => { setActiveTab('admin_grades'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📊</span> Control de Calificaciones
+              <span style={{ fontSize: '1.1rem' }}>📊</span> Control Calificaciones
             </div>
             <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📝</span> Planificación Curricular
+              <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
             </div>
             <div className={`nav-item ${activeTab === 'schedule' ? 'active' : ''}`} onClick={() => { setActiveTab('schedule'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>⏰</span> Horario Escolar
@@ -31590,7 +31591,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
             </div>
             <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
-              <span style={{ fontSize: '1.1rem' }}>📑</span> Boletín de Calificaciones
+              <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín Calificaciones
             </div>
             <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
               <span style={{ fontSize: '1.1rem' }}>📖</span> Instructivo de Uso
@@ -31805,7 +31806,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                       {/* Desktop Greeting Card with flat illustration banner */}
                       <div className="glass-panel welcome-banner-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, #003876 0%, #00224a 100%)', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', zIndex: 2 }}>
-                          <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>PLATAFORMA OFICIAL DE A.R.C.</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffc107', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
                           <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>Panel de Control: {currentUser.name}</h2>
                           <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0 }}>
                             Gestiona y supervisa las asignaciones de docentes, matrícula escolar de estudiantes de cada grado, y supervise el rendimiento general en tiempo real.
@@ -34438,7 +34439,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           {/* Greeting Card with flat illustration banner */}
           <div className="glass-panel welcome-banner-card-epic hero-welcome-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
             <div className="hero-welcome-text" style={{ position: 'relative', zIndex: 2 }}>
-              <span className="hero-minerd-badge" style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>PLATAFORMA OFICIAL DE A.R.C.</span>
+              <span className="hero-minerd-badge" style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
               <div className="hero-mobile-saludo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '8px' }}>
                 <h2 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#fff' }}>
                   ¡Hola, {currentUser?.name?.split(' ')[0] || currentUser?.displayName?.split(' ')[0] || 'Docente'}! 👋
@@ -34634,7 +34635,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <span style={{ fontSize: '1.1rem' }}>📊</span> Control de Calificaciones
           </div>
           <div className={`nav-item ${activeTab === 'planificacion' ? 'active' : ''}`} onClick={() => { setActiveTab('planificacion'); setSidebarCollapsed(true); }}>
-            <span style={{ fontSize: '1.1rem' }}>📝</span> Planificación Curricular
+            <span style={{ fontSize: '1.1rem' }}>📚</span> Planificación Curricular
           </div>
           <div className={`nav-item ${activeTab === 'schedule' ? 'active' : ''}`} onClick={() => { setActiveTab('schedule'); setSidebarCollapsed(true); }}>
             <span style={{ fontSize: '1.1rem' }}>⏰</span> Horario Escolar
@@ -34646,7 +34647,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <span style={{ fontSize: '1.1rem' }}>🗓️</span> Calendario Escolar
           </div>
           <div className={`nav-item ${activeTab === 'bulletin' ? 'active' : ''}`} onClick={() => { setActiveTab('bulletin'); setSidebarCollapsed(true); }}>
-            <span style={{ fontSize: '1.1rem' }}>📑</span> Boletín de Calificaciones
+            <span style={{ fontSize: '1.1rem' }}>📄</span> Boletín de Calificaciones
           </div>
           <div className={`nav-item ${activeTab === 'instruments' ? 'active' : ''}`} onClick={() => {
             if (activeBloque === 'promedio_ce') {
@@ -34655,7 +34656,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             setActiveTab('instruments');
             setSidebarCollapsed(true);
           }}>
-            <span style={{ fontSize: '1.1rem' }}>📐</span> Instrumentos de Eval.
+            <span style={{ fontSize: '1.1rem' }}>📝</span> Instrumentos de Eval.
           </div>
           <div className={`nav-item ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => { setActiveTab('instructions'); setSidebarCollapsed(true); }}>
             <span style={{ fontSize: '1.1rem' }}>📖</span> Instructivo de Uso

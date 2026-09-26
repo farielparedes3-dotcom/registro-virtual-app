@@ -343,10 +343,10 @@ footer {
   .login-feature-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem;
+    gap: 0.5rem;
     margin-top: 1.5rem;
     width: 100%;
-    max-width: 540px;
+    max-width: 520px;
   }
 
   .login-feature-card {
@@ -354,59 +354,23 @@ footer {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.09);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 12px;
-    padding: 0.65rem 0.25rem;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.6rem 0.2rem;
     color: #ffffff;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, border-color 0.2s, box-shadow 0.25s;
+    transition: transform 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
     cursor: pointer;
-    min-height: 72px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    min-height: 70px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
 
   .login-feature-card:hover {
-    transform: translateY(-4px);
-    background-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-3px);
+    background-color: rgba(255, 255, 255, 0.15);
     border-color: #ffb300;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25) !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
   }
-
-/* Marca de agua institucional de fondo para Hero Cards */
-.hero-welcome-card,
-.welcome-banner-card,
-.welcome-banner-card-epic {
-  position: relative !important;
-  overflow: hidden !important;
-  background: linear-gradient(135deg, #0d2352 0%, #173b7a 100%) !important;
-}
-
-.hero-welcome-card::after,
-.welcome-banner-card::after,
-.welcome-banner-card-epic::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 45%;
-  transform: translate(-50%, -50%);
-  width: 320px;
-  height: 320px;
-  background-image: url('/logo-liceo.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.hero-welcome-content,
-.hero-welcome-text,
-.hero-next-classes-card {
-  position: relative;
-  z-index: 2;
-}
 
   .login-left-illustration::before {
     content: '';
