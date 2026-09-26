@@ -4,19 +4,14 @@
   "description": "Plataforma oficial del Liceo Ana Rosa Castillo para control de calificaciones, asistencia e incidencias curriculares.",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
-    },
-    {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
+      "src": "/logo-liceo.png",
+      "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
+      "src": "/logo-liceo.png",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     }
