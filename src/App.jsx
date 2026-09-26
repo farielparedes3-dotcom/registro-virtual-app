@@ -23889,6 +23889,8 @@ export default function App() {
     }
   });
 
+  const upcomingScheduleData = useUpcomingClasses(currentUser);
+
   // Smart Merger: Merges saved browser data with official PDF 291 list preserving all teacher-entered grades/attendance
   const mergeStudentsPreservingData = (savedArray, defaultArray) => {
     const savedList = Array.isArray(savedArray) ? savedArray : [];
@@ -34289,11 +34291,91 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </p>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-              <img 
-                src="/dr_education_banner.png" 
-                alt="Bienvenido" 
-                style={{ width: '100%', maxWidth: '200px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} 
-              />
+              {(() => {
+                const pendingBlocks = (upcomingScheduleData?.pendingBlocksToday && upcomingScheduleData.pendingBlocksToday.length > 0)
+                  ? upcomingScheduleData.pendingBlocksToday
+                  : (upcomingScheduleData?.visibleBlocks || []);
+                const nextTwoBlocks = pendingBlocks.filter(b => !b?.isBreak);
+
+                return (
+                  <div className="hero-next-classes-card" style={{
+                    background: 'rgba(255, 255, 255, 0.12)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    borderRadius: '16px',
+                    padding: '16px',
+                    minWidth: '240px',
+                    maxWidth: '280px',
+                    color: '#fff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '6px' }}>
+                      <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
+                        ⏱️ Próximas Clases
+                      </span>
+                      <span style={{ fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
+                        Hoy
+                      </span>
+                    </div>
+
+                    {nextTwoBlocks.length === 0 ? (
+                      <div style={{ fontSize: '0.85rem', color: '#E2E8F0', padding: '8px 0', textAlign: 'center' }}>
+                        ✨ Sin clases pendientes por hoy
+                      </div>
+                    ) : (
+                      nextTwoBlocks.slice(0, 2).map((block, idx) => {
+                        const gradeVal = block.assignment?.grado || block.grado;
+                        const subjectVal = block.assignment?.materia || block.materia || block.label;
+                        const isLibre = !gradeVal || gradeVal === 'Libre';
+
+                        return (
+                          <div key={idx} style={{
+                            background: 'rgba(0, 0, 0, 0.2)',
+                            borderRadius: '10px',
+                            padding: '8px 12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                          }}>
+                            <div>
+                              <div style={{ fontSize: '0.7rem', color: '#CBD5E1' }}>{block.start} - {block.end} • {block.label}</div>
+                              <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{gradeVal || 'Libre'}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#93C5FD' }}>{subjectVal}</div>
+                            </div>
+                            {!isLibre && (
+                              <button 
+                                onClick={() => {
+                                  if (gradeVal) setSelectedGrade(gradeVal);
+                                  if (subjectVal && typeof subjectVal === 'string') {
+                                    const foundSub = Object.keys(subjects).find(k => subjects[k]?.name?.toLowerCase() === subjectVal.toLowerCase() || k === subjectVal);
+                                    if (foundSub) setSelectedSubject(foundSub);
+                                  }
+                                  setActiveTab('grades');
+                                  setSidebarCollapsed(true);
+                                }}
+                                style={{
+                                  background: '#3B82F6',
+                                  color: '#fff',
+                                  border: 'none',
+                                  padding: '6px 10px',
+                                  borderRadius: '6px',
+                                  fontSize: '0.75rem',
+                                  cursor: 'pointer',
+                                  fontWeight: 600
+                                }}
+                              >
+                                Ir
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
               <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
