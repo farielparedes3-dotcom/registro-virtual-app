@@ -27148,55 +27148,75 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
           </div>
         </div>
 
-        {/* Manual Report Trigger Panel with Hierarchical Grade & Student Filter */}
+        {/* Manual Report Trigger Panel with Dependent Hierarchical Fields */}
         <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <h4 style={{ margin: 0, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>⚡</span> Emitir Nuevo Reporte Manual
           </h4>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'end', flexWrap: 'wrap' }}>
-            {/* Step 1: Filter by Grade */}
-            <div className="form-group-compact" style={{ marginBottom: 0, minWidth: '180px', flex: 1 }}>
-              <label style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                1. Seleccionar Grado / Curso
+            
+            {/* 1. SELECTOR DE CURSO / GRADO */}
+            <div className="form-group" style={{ marginBottom: 0, flex: 1, minWidth: '220px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                Curso / Sección del Estudiante:
               </label>
-              <select 
-                className="form-select"
+              <select
                 value={activeReportGrade}
                 onChange={(e) => {
                   setSelectedManualReportGrade(e.target.value);
                   setSelectedManualReportStudentId('');
                 }}
-                style={{ width: '100%', padding: '0.45rem', fontWeight: 'bold' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.9rem',
+                  background: '#fff',
+                  color: '#1e293b',
+                  outline: 'none',
+                  fontWeight: 600
+                }}
               >
-                <option value="">-- Seleccionar Grado --</option>
-                {visibleGradesForExplorer.map(g => (
-                  <option key={g} value={g}>Grado {g}</option>
+                <option value="" disabled>-- Selecciona el Curso --</option>
+                {visibleGradesForExplorer.map((g, idx) => (
+                  <option key={idx} value={g}>
+                    Grado {g}
+                  </option>
                 ))}
               </select>
             </div>
 
-            {/* Step 2: Select Student from filtered list */}
-            <div className="form-group-compact" style={{ marginBottom: 0, flex: 1.5, minWidth: '240px' }}>
-              <label style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                2. Seleccionar Estudiante ({filteredStudentsForReport.length} en este grado)
+            {/* 2. SELECTOR DE ESTUDIANTE (FILTRADO) */}
+            <div className="form-group" style={{ marginBottom: 0, flex: 1.5, minWidth: '260px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                Estudiante:
               </label>
-              <select 
-                className="form-select"
+              <select
                 value={selectedManualReportStudentId}
                 onChange={(e) => setSelectedManualReportStudentId(e.target.value)}
-                disabled={!activeReportGrade}
-                style={{ width: '100%', padding: '0.45rem' }}
+                disabled={!activeReportGrade || filteredStudentsForReport.length === 0}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.9rem',
+                  background: !activeReportGrade ? '#F1F5F9' : '#fff',
+                  color: '#1e293b',
+                  outline: 'none'
+                }}
               >
                 <option value="">
                   {!activeReportGrade 
-                    ? '-- Primero seleccione un grado --' 
+                    ? '-- Primero selecciona un curso arriba --' 
                     : filteredStudentsForReport.length === 0 
-                      ? '-- No hay alumnos en este grado --' 
-                      : '-- Seleccionar alumno --'}
+                      ? 'No hay estudiantes registrados en este grado' 
+                      : '-- Selecciona al estudiante --'}
                 </option>
-                {filteredStudentsForReport.map(s => (
-                  <option key={s.id} value={s.id}>
-                    #{s.orderNumber || ''} - {s.name || `${s.nombres || ''} ${s.apellidos || ''}`.trim()}
+                {filteredStudentsForReport.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.orderNumber ? `#${st.orderNumber} - ` : ''}{st.apellidos ? `${st.apellidos}, ${st.nombres}` : (st.name || st.nombre)}
                   </option>
                 ))}
               </select>
@@ -27204,7 +27224,7 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
 
             <button 
               className="btn-primary" 
-              style={{ height: '38px', borderRadius: '6px', fontWeight: 'bold' }}
+              style={{ height: '42px', borderRadius: '8px', fontWeight: 'bold', padding: '0 1.25rem' }}
               onClick={handleLaunchManualReport}
               disabled={!selectedManualReportStudentId}
             >
