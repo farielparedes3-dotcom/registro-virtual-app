@@ -24134,6 +24134,7 @@ export default function App() {
   const [counselorForm, setCounselorForm] = useState({ name: '', email: '', password: '' });
   const [counselorToastMsg, setCounselorToastMsg] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showMobileProfileMenu, setShowMobileProfileMenu] = useState(false);
 
   // --- Planning Module States (Adecuación Curricular 2023) ---
   const [planningSubTab, setPlanningSubTab] = useState('pedagogical_engine');
@@ -34357,9 +34358,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           {/* Greeting Card with flat illustration banner */}
           <div className="glass-panel welcome-banner-card-epic hero-welcome-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
             <div className="hero-welcome-text" style={{ position: 'relative', zIndex: 2 }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-              <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
-              <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+              <span className="hero-minerd-badge" style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
+              <div className="hero-mobile-saludo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '8px' }}>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                  ¡Hola, {currentUser?.name?.split(' ')[0] || currentUser?.displayName?.split(' ')[0] || 'Docente'}! 👋
+                </h2>
+                <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '12px', color: '#fff', textTransform: 'capitalize' }}>
+                  {new Date().toLocaleDateString('es-DO', { weekday: 'short', day: 'numeric' })}
+                </span>
+              </div>
+              <h2 className="hero-desktop-saludo" style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
+              <p className="hero-quote-text" style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                 💡 {randomQuote || "Que hoy sea un día excelente para inspirar y educar con el corazón."}
               </p>
             </div>
@@ -34575,8 +34584,8 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           </aside>
 
       <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
-        <header className="header" style={{ width: '100%', minHeight: '65px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <header className="header app-header" style={{ width: '100%', minHeight: '56px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
@@ -34588,16 +34597,17 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             <div 
               className="header-logo" 
               onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
               title="Ir a Inicio"
             >
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-                <span style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
-                <span style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
-                <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
+                <span className="header-minerd-text" style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DE EVALUACIÓN DIGITAL</span>
+                <span className="header-school-name" style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
+                <span className="header-district-text" style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
               </div>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
+              <span className="header-badge-docente" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
               <span 
+                className="header-db-badge"
                 style={{ 
                   fontSize: '0.72rem', 
                   padding: '0.2rem 0.5rem', 
@@ -34621,15 +34631,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             {/* Selector Rápido de Curso (Grade Switcher) */}
             <div 
               className="header-course-switcher" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.25rem 0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.5rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.2rem 0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.25rem' }}
             >
               <span style={{ fontSize: '0.9rem' }}>🏫</span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
+              <span className="header-course-label" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
               <select 
                 className="form-select" 
                 value={currentGrade} 
                 onChange={(e) => handleCourseChange(e.target.value)}
-                style={{ padding: '0.25rem 0.5rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                style={{ padding: '0.2rem 0.4rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
               >
                 {teacherDashUniqueGrades.map(g => (
                   <option key={g} value={g}>{g}</option>
@@ -34638,10 +34648,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <button 
               type="button"
-              className="theme-toggle"
+              className="theme-toggle header-theme-toggle"
               onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
               title="Notificaciones de Reportes para Orientación"
               style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
@@ -34666,7 +34676,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               })()}
             </button>
 
-            <button className="theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
+            <button className="theme-toggle header-theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
               {theme === 'light' ? (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
               ) : (
@@ -34674,27 +34684,74 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               )}
             </button>
 
-            <div 
-              onClick={() => setActiveTab('profile')}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem', cursor: 'pointer' }}
-              title="Ver / Editar Mi Perfil"
-            >
-              {currentUser?.avatar ? (
-                <img 
-                  src={currentUser.avatar} 
-                  alt={currentUser.name || 'Usuario'} 
-                  style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-                />
-              ) : (
-                <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                  {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
+            <div style={{ position: 'relative' }}>
+              <div 
+                onClick={() => {
+                  if (window.innerWidth <= 768) {
+                    setShowMobileProfileMenu(prev => !prev);
+                  } else {
+                    setActiveTab('profile');
+                  }
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.75rem', cursor: 'pointer' }}
+                title="Ver / Editar Mi Perfil"
+              >
+                {currentUser?.avatar ? (
+                  <img 
+                    src={currentUser.avatar} 
+                    alt={currentUser.name || 'Usuario'} 
+                    style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                  />
+                ) : (
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                    {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
+                  </div>
+                )}
+                <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
                 </div>
-              )}
-              <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
+                <button className="btn-secondary header-logout-btn" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
               </div>
-              <button className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
+
+              {/* Mobile Touch Profile Dropdown Menu */}
+              {showMobileProfileMenu && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setShowMobileProfileMenu(false)} />
+                  <div style={{
+                    position: 'absolute',
+                    top: '44px',
+                    right: '0',
+                    width: '210px',
+                    background: 'var(--card-bg, #ffffff)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+                    padding: '12px',
+                    zIndex: 999,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.email || ''}</div>
+                    </div>
+                    <button 
+                      style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'none', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                      onClick={() => { setActiveTab('profile'); setShowMobileProfileMenu(false); }}
+                    >
+                      <span>👤</span> Mi Perfil
+                    </button>
+                    <button 
+                      style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'rgba(220, 53, 69, 0.1)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                      onClick={() => { setShowMobileProfileMenu(false); handleLogout(); }}
+                    >
+                      <span>🚪</span> Cerrar Sesión
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>
@@ -37549,6 +37606,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         onSave={handleSignatureModalSave}
         signerRole={signatureModalRole}
         title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
+      />
+
+      {/* Persistent Bottom Navigation Bar for Mobile Devices */}
+      <BottomNav 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        currentUser={currentUser} 
+        alertLogs={alertLogs} 
+        grades={grades} 
       />
     </div>
   );
