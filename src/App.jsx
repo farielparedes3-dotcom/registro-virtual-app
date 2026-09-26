@@ -24129,6 +24129,7 @@ export default function App() {
   const [folderExplorerGrade, setFolderExplorerGrade] = useState('');
   const [folderExplorerPeriod, setFolderExplorerPeriod] = useState('P1');
   const [folderExplorerStudentName, setFolderExplorerStudentName] = useState('');
+  const [selectedManualReportGrade, setSelectedManualReportGrade] = useState('');
   const [selectedManualReportStudentId, setSelectedManualReportStudentId] = useState('');
   const [counselorForm, setCounselorForm] = useState({ name: '', email: '', password: '' });
   const [counselorToastMsg, setCounselorToastMsg] = useState('');
@@ -27119,12 +27120,21 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       return visibleGradesForExplorer.some(vg => matchGrade(vg, log.grade));
     });
 
-    const visibleStudents = students.filter(s => {
-      if (currentUser?.role === 'admin') return true;
-      return visibleGradesForExplorer.some(vg => matchGrade(vg, s.grade));
+    const activeReportGrade = selectedManualReportGrade || currentGrade || (visibleGradesForExplorer[0] || '');
+
+    const filteredStudentsForReport = students.filter(s => {
+      if (!activeReportGrade) return false;
+      return matchGrade(s.grade, activeReportGrade) ||
+        s.grade === activeReportGrade || 
+        s.grado === activeReportGrade || 
+        s.seccion === activeReportGrade ||
+        s.cursoId === activeReportGrade;
     }).sort((a, b) => {
-      if (a.grade !== b.grade) return a.grade.localeCompare(b.grade);
-      return (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999);
+      const nameA = a.name || `${a.nombres || ''} ${a.apellidos || ''}`.trim() || '';
+      const nameB = b.name || `${b.nombres || ''} ${b.apellidos || ''}`.trim() || '';
+      const lastNameA = a.apellidos || a.lastName || nameA;
+      const lastNameB = b.apellidos || b.lastName || nameB;
+      return lastNameA.localeCompare(lastNameB);
     });
 
     return (
@@ -27138,28 +27148,65 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
           </div>
         </div>
 
-        {/* Manual Report Trigger Panel */}
+        {/* Manual Report Trigger Panel with Hierarchical Grade & Student Filter */}
         <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <h4 style={{ margin: 0, color: 'var(--primary)' }}>⚡ Emitir Nuevo Reporte Manual</h4>
+          <h4 style={{ margin: 0, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>⚡</span> Emitir Nuevo Reporte Manual
+          </h4>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'end', flexWrap: 'wrap' }}>
-            <div className="form-group-compact" style={{ marginBottom: 0, flex: 1, minWidth: '240px' }}>
-              <label>Seleccionar Estudiante ({visibleStudents.length} disponibles)</label>
+            {/* Step 1: Filter by Grade */}
+            <div className="form-group-compact" style={{ marginBottom: 0, minWidth: '180px', flex: 1 }}>
+              <label style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                1. Seleccionar Grado / Curso
+              </label>
+              <select 
+                className="form-select"
+                value={activeReportGrade}
+                onChange={(e) => {
+                  setSelectedManualReportGrade(e.target.value);
+                  setSelectedManualReportStudentId('');
+                }}
+                style={{ width: '100%', padding: '0.45rem', fontWeight: 'bold' }}
+              >
+                <option value="">-- Seleccionar Grado --</option>
+                {visibleGradesForExplorer.map(g => (
+                  <option key={g} value={g}>Grado {g}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Step 2: Select Student from filtered list */}
+            <div className="form-group-compact" style={{ marginBottom: 0, flex: 1.5, minWidth: '240px' }}>
+              <label style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                2. Seleccionar Estudiante ({filteredStudentsForReport.length} en este grado)
+              </label>
               <select 
                 className="form-select"
                 value={selectedManualReportStudentId}
                 onChange={(e) => setSelectedManualReportStudentId(e.target.value)}
+                disabled={!activeReportGrade}
                 style={{ width: '100%', padding: '0.45rem' }}
               >
-                <option value="">-- Buscar alumno --</option>
-                {visibleStudents.map(s => (
-                  <option key={s.id} value={s.id}>{s.name} ({s.grade} - #{s.orderNumber})</option>
+                <option value="">
+                  {!activeReportGrade 
+                    ? '-- Primero seleccione un grado --' 
+                    : filteredStudentsForReport.length === 0 
+                      ? '-- No hay alumnos en este grado --' 
+                      : '-- Seleccionar alumno --'}
+                </option>
+                {filteredStudentsForReport.map(s => (
+                  <option key={s.id} value={s.id}>
+                    #{s.orderNumber || ''} - {s.name || `${s.nombres || ''} ${s.apellidos || ''}`.trim()}
+                  </option>
                 ))}
               </select>
             </div>
+
             <button 
               className="btn-primary" 
               style={{ height: '38px', borderRadius: '6px', fontWeight: 'bold' }}
               onClick={handleLaunchManualReport}
+              disabled={!selectedManualReportStudentId}
             >
               🚨 Crear Reporte
             </button>
