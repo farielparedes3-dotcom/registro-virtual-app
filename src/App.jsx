@@ -1,3 +1,5 @@
+import { cleanTopicString, buildInstrumentSystemPrompt } from './services/aiService';
+import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
@@ -24554,37 +24556,55 @@ export default function App() {
       const phaseIdx = Math.min(phasesCount - 1, Math.floor((i / totalSessions) * phasesCount));
       const phaseName = phases[phaseIdx];
 
-      // Format Date String
       const formattedDate = currentDate.toLocaleDateString('es-DO', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
       let subTopic = `${topicTitle} - Módulo Secuencial ${sessionNum}`;
-      let intencionPedagogica = `Comprender y aplicar los conceptos de ${phaseName} orientados a ${topicTitle}.`;
+      let intencionPedagogica = `Comprender y aplicar los conceptos de ${phaseName} orientados a ${topicTitle} en situaciones reales.`;
 
-      // INICIO (5-10 min) with explicit teacher quote
-      let inicioText = `Inicio (5–10 min):\n` +
-        `• Consigna Textual del Docente: "${teacherNameStr}: '¡Buenos días a todos! Hoy en nuestra Sesión ${sessionNum} vamos a responder una gran pregunta sobre ${topicTitle}: ¿Cómo influye este concepto en nuestra vida diaria?'"\n` +
-        `• Actividades de Activación: Organización rápida del aula, recuperación de saberes previos mediante lluvia de ideas sobre la clase anterior y lectura guiada de la intención pedagógica del día en la pizarra.`;
+      // Formular Pregunta Situada del Entorno/Hogar
+      const situatedQuestion = generateSituatedQuestion(topicTitle, sessionNum, subName);
 
-      // DESARROLLO (25-30 min) with explicit group organization, numbered steps, teacher mediation
-      let desarrolloText = `Desarrollo (25–30 min):\n` +
-        `• Organización Grupal: Formación de equipos de trabajo colaborativo (4 estudiantes por grupo).\n` +
-        `• Pasos Numerados Detallados:\n` +
-        `   1. Lectura y Análisis: Los estudiantes leen la guía o fragmento del Libro Abierto MINERD correspondiente a la "${phaseName}".\n` +
-        `   2. Consigna Operativa Real: Cada equipo resuelve la Guía Práctica Nº ${sessionNum}, respondiendo 3 preguntas de debate crítico y completando el esquema de datos.\n` +
-        `   3. Elaboración de Avance: Redacción conjunta de conclusiones en el cuaderno o ficha de trabajo.\n` +
-        `• Rol de Mediación Docente: El profesor circula por los equipos, realiza preguntas socráticas para destrabar dudas y ofrece retroalimentación formativa inmediata.`;
+      // INICIO (5-10 min) - Redactado 100% en términos de las acciones del estudiante
+      let inicioText = `Inicio (5–10 min):
+` +
+        `• Activación y Rutina Inductiva: Los estudiantes se organizan en semicírculo y exploran la situación problema inicial sobre ${topicTitle} mediante la rutina de pensamiento 'Veo, Pienso, Me Pregunto'.
+` +
+        `• Pregunta Desafío Situada (Entorno y Hogar):
+   "${situatedQuestion}"
+` +
+        `• Exploración de la Intención: Los alumnos analizan y comentan la intención pedagógica del día anotada en la pizarra: "${intencionPedagogica}".`;
 
-      // CIERRE (5-10 min) with synthesis, metacognition questions, evidence collection
-      let cierreText = `Cierre (5–10 min):\n` +
-        `• Síntesis Colectiva: Un vocero por equipo comparte en 1 minuto su principal hallazgo.\n` +
-        `• Batería de Preguntas de Metacognición Textuales:\n` +
-        `   - ¿Qué aprendimos concretamente en la sesión de hoy?\n` +
-        `   - ¿Qué dificultad enfrentamos al trabajar en equipo y cómo la superamos?\n` +
-        `   - ¿De qué manera podemos aplicar lo aprendido en nuestra comunidad de Nagua?\n` +
-        `• Mecanismo de Recolección de Evidencia: Entrega de la Ficha de Avance o Ticket de Salida al docente antes de sonar el timbre.`;
+      // DESARROLLO (25-30 min) - Redactado 100% en términos de las acciones del estudiante
+      let desarrolloText = `Desarrollo (25–30 min):
+` +
+        `• Organización en Equipos: Los estudiantes forman equipos colaborativos de 4 integrantes y asignan roles (coordinador, secretario, vocero, gestor de materiales).
+` +
+        `• Pasos Operativos del Estudiante:
+` +
+        `   1. Investigación y Lectura: Los alumnos analizan los contenidos del Libro Abierto MINERD y clasifican materiales o muestras reales del entorno referentes a "${phaseName}".
+` +
+        `   2. Indagación y Experimentación: Cada equipo resuelve la Guía Práctica N.º ${sessionNum}, respondiendo preguntas reflexivas y manipulando recursos del contexto escolar/hogar.
+` +
+        `   3. Construcción de Evidencias: Los estudiantes sintetizan sus observaciones en un mapa conceptual/bitácora y redactan sus conclusiones en el cuaderno.
+` +
+        `• Acompañamiento Formativo: Reciben retroalimentación mediante preguntas socráticas durante el trabajo en equipo.`;
+
+      // CIERRE (5-10 min) - Redactado 100% en términos de las acciones del estudiante
+      let cierreText = `Cierre (5–10 min):
+` +
+        `• Socialización en Plenaria: Los alumnos presentan de manera sintética sus principales hallazgos mediante la intervención de un vocero por grupo.
+` +
+        `• Reflexión Metacognitiva Situada:
+` +
+        `   - ¿De qué manera comprobamos en nuestro hogar y comunidad los conceptos estudiados sobre ${topicTitle}?
+` +
+        `   - ¿Qué dificultades procedimentales enfrentamos en el equipo y cómo las superamos?
+` +
+        `• Evaluación Formativa y Entrega: Los estudiantes completan su matriz de coevaluación y entregan su Ticket de Salida antes de concluir la sesión.`;
 
       if (pedagogicalEngineConfig.customInputDoc && pedagogicalEngineConfig.customInputDoc.trim().length > 0) {
-        desarrolloText += `\n• Insumo Adicional PDF/Docente: ${pedagogicalEngineConfig.customInputDoc.substring(0, 100)}...`;
+        desarrolloText += `
+• Insumo Adicional del PDF Inyectado: ${pedagogicalEngineConfig.customInputDoc.substring(0, 120)}...`;
       }
 
       sessions.push({
@@ -24599,17 +24619,16 @@ export default function App() {
         desarrollo: desarrolloText,
         cierre: cierreText,
         evaluation: {
-          conocimiento: `Resumen sintético y respuesta a preguntas de la ${phaseName}`,
+          conocimiento: `Síntesis conceptual y respuesta a preguntas de indagación sobre ${phaseName}`,
           desempeno: `Trabajo colaborativo en equipos de 4 y participación dialógica`,
-          producto: `Guía Práctica Resuelta Nº ${sessionNum} / Ticket de Salida`,
+          producto: `Guía Práctica Resuelta N.º ${sessionNum} / Ticket de Salida`,
           momento: 'Formativa',
           agente: 'Heteroevaluación y Coevaluación en equipo',
           instrumento: 'Rúbrica Socioformativa y Lista de Cotejo de Desempeño',
-          recursos: 'Libro Abierto MINERD, Cuaderno de Trabajo, Pizarra Digital, Fichas Impresas'
+          recursos: 'Libro Abierto MINERD, Cuaderno de Trabajo, Materiales del Entorno, Fichas de Indagación'
         }
       });
 
-      // Increment date by 1-2 days for next session
       currentDate.setDate(currentDate.getDate() + (i % 2 === 0 ? 2 : 3));
     }
 
@@ -27867,10 +27886,13 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
     if (!aiTopicInput?.trim()) return;
     setIsGenerating(true);
     try {
-      const aiPrompt = aiTopicInput.trim();
-      const lowerPrompt = aiPrompt.toLowerCase();
+      const rawPrompt = aiTopicInput.trim();
+      const lowerPrompt = rawPrompt.toLowerCase();
       
-      // Smart detection of instrument type from user prompt
+      // Clean topic extraction: removes prompt commands like "haz una lista de...", "crea una rúbrica..."
+      const cleanTopic = cleanTopicString(rawPrompt);
+      
+      // Smart detection or preservation of instrument type
       const detectedType = lowerPrompt.includes('cotejo') ? 'lista_cotejo'
         : lowerPrompt.includes('estimativa') ? 'escala_estimativa'
         : (lowerPrompt.includes('sintetica') || lowerPrompt.includes('holistica')) ? 'rubrica_sintetica'
@@ -27881,71 +27903,92 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       const activeSubject = subjects[selectedSubject]?.name || selectedSubject || currentUser?.subject || 'Ciencias de la Naturaleza';
       const activeGradeStr = selectedGrade || '1ro A';
 
-      const payload = {
-        role: "Especialista en Evaluación Educativa MINERD (Ordenanza 04-2023)",
-        grade: activeGradeStr,
-        subject: activeSubject,
-        instrumentType: detectedType,
-        userInstruction: aiPrompt,
-        rules: "Genera los criterios observables, descriptores específicos e indicadores de logro curriculares correspondientes a este tipo de instrumento. Devuelve formato JSON estructurado listo para poblar las filas."
-      };
-
-      const competenceText = "Comprende, analiza y aplica críticamente los contenidos de " + activeSubject + " referentes a " + aiPrompt + " en " + activeGradeStr + " según Ordenanza 04-2023.";
-      const indicatorText = "Evalúa el desempeño conceptual, procedimental y actitudinal de los estudiantes en " + aiPrompt + ".";
+      const suggestedActivity = "Indagación y Evaluación de " + cleanTopic;
+      const competenceText = "Comprende, analiza y aplica críticamente los contenidos de " + activeSubject + " referentes a " + cleanTopic + " en " + activeGradeStr + " según Ordenanza 04-2023.";
+      const indicatorText = "Evalúa el desempeño conceptual, procedimental y actitudinal de los estudiantes en " + cleanTopic + ".";
 
       let generatedCriteria = [];
 
-      if (detectedType === 'lista_cotejo' || detectedType === 'lista') {
-        generatedCriteria = [
-          { name: "Identificación y precisión en " + aiPrompt, weight: 5, levels: { cumple: "Demuestra y aplica con precisión los elementos de " + aiPrompt + ".", nocumple: "No evidencia los conceptos requeridos.", observacion: "Verificar procedimiento." } },
-          { name: "Ejecución del procedimiento técnico", weight: 5, levels: { cumple: "Sigue los pasos e instrucciones correctamente.", nocumple: "Omite pasos esenciales del proceso.", observacion: "Dar seguimiento." } },
-          { name: "Argumentación y comunicación de resultados", weight: 5, levels: { cumple: "Expresa sus conclusiones con vocabulario técnico adecuado.", nocumple: "Dificultad para fundamentar sus respuestas.", observacion: "Reforzar expresión." } },
-          { name: "Trabajo colaborativo y responsabilidad", weight: 5, levels: { cumple: "Cumple a tiempo y colabora activamente en equipo.", nocumple: "Muestra desinterés o impuntualidad.", observacion: "Incentivar participación." } },
-          { name: "Autoevaluación y mejora continua", weight: 5, levels: { cumple: "Reflexiona sobre sus errores y realiza correcciones.", nocumple: "No aplica las sugerencias de mejora.", observacion: "Monitoreo individual." } }
-        ];
-      } else if (detectedType === 'escala_estimativa' || detectedType === 'escala') {
-        generatedCriteria = [
-          { name: "Dominio de contenidos sobre " + aiPrompt, weight: 5, levels: { excelente: "Excelente (100%): Domina completamente los contenidos.", muybueno: "Muy Bueno (80%): Comprensión clara de la mayoría de conceptos.", bueno: "Bueno (60%): Comprensión básica con algunas dudas.", insuficiente: "Insuficiente (40%): No demuestra dominio del tema." } },
-          { name: "Aplicación de procedimientos prácticos", weight: 5, levels: { excelente: "Excelente (100%): Aplica procedimientos con destreza e independencia.", muybueno: "Muy Bueno (80%): Realiza actividades con pocos errores.", bueno: "Bueno (60%): Requiere ayuda parcial en procedimientos.", insuficiente: "Insuficiente (40%): Presenta dificultades mayores." } },
-          { name: "Análisis reflexivo y pensamiento crítico", weight: 5, levels: { excelente: "Excelente (100%): Analiza y argumenta con rigor técnico.", muybueno: "Muy Bueno (80%): Justifica ideas de forma lógica.", bueno: "Bueno (60%): Argumentación sencilla.", insuficiente: "Insuficiente (40%): Respuestas memorísticas sin análisis." } },
-          { name: "Uso adecuado de vocabulario especializado", weight: 5, levels: { excelente: "Excelente (100%): Emplea terminología precisa del área.", muybueno: "Muy Bueno (80%): Utiliza términos adecuados al nivel.", bueno: "Bueno (60%): Usa vocabulario común ocasional.", insuficiente: "Insuficiente (40%): Uso incorrecto de términos." } },
-          { name: "Actitud y compromiso con el aprendizaje", weight: 5, levels: { excelente: "Excelente (100%): Muestra alta motivación y liderazgo.", muybueno: "Muy Bueno (80%): Participa de forma constante.", bueno: "Bueno (60%): Cumple cuando se le requiere.", insuficiente: "Insuficiente (40%): Falta de compromiso o desinterés." } }
-        ];
-      } else if (detectedType === 'rubrica_sintetica') {
-        generatedCriteria = [
-          { name: "Desempeño Destacado / Estratégico", weight: 25, levels: { descripcion: "Demuestra una comprensión holística e integral sobre " + aiPrompt + ". Integra de manera fluida los conocimientos teóricos con la práctica en " + activeSubject + " con creatividad y autonomía." } },
-          { name: "Desempeño En Proceso / Resolutivo", weight: 18, levels: { descripcion: "Comprende y ejecuta las tareas principales de " + aiPrompt + " cumpliendo los estándares curriculares básicos de " + activeSubject + "." } },
-          { name: "Desempeño Inicial / Receptivo", weight: 12, levels: { descripcion: "Identifica elementos aislados de " + aiPrompt + ", requiriendo acompañamiento cercano para completar las actividades." } }
-        ];
-      } else if (detectedType === 'guia_observacion') {
-        generatedCriteria = [
-          { name: "Participación activa e interés en " + aiPrompt, weight: 5, levels: { evidencia: "Aporta ideas y participa activamente en el desarrollo de " + aiPrompt + ".", valoracion: "Frecuentemente", observacion: "Muestra iniciativa en clase." } },
-          { name: "Cumplimiento de consignas y protocolos", weight: 5, levels: { evidencia: "Sigue las instrucciones del docente y respeta las normas.", valoracion: "Siempre", observacion: "Trabajo ordenado." } },
-          { name: "Manipulación y uso adecuado de materiales", weight: 5, levels: { evidencia: "Utiliza las herramientas y recursos con cuidado y precisión.", valoracion: "Siempre", observacion: "Mantiene limpio el área." } },
-          { name: "Interacción respetuosa y colaborativa", weight: 5, levels: { evidencia: "Escucha a sus compañeros y apoya el trabajo en equipo.", valoracion: "Frecuentemente", observacion: "Buena disposición." } },
-          { name: "Autorregulación y constancia en la tarea", weight: 5, levels: { evidencia: "Mantiene el enfoque durante las actividades programadas.", valoracion: "Frecuentemente", observacion: "Aprovecha bien el tiempo." } }
-        ];
-      } else {
-        // rubrica_analitica
-        generatedCriteria = [
-          { name: "Comprensión conceptual de " + aiPrompt, weight: 5, levels: { estrategico: "Demuestra dominio conceptual profundo sobre " + aiPrompt + " en " + activeGradeStr + ", aplicando los contenidos de " + activeSubject + " de forma rigurosa.", autonomo: "Explica con claridad los conceptos fundamentales de " + aiPrompt + " adecuadamente.", resolutivo: "Identifica elementos básicos de " + aiPrompt + " con mínima orientación.", receptivo: "Reconoce conceptos iniciales de " + aiPrompt + " con apoyo continuo." } },
-          { name: "Procedimiento y aplicación en " + aiPrompt, weight: 5, levels: { estrategico: "Ejecuta secuencias complejas y resuelve ejercicios de " + aiPrompt + " sin errores.", autonomo: "Aplica los pasos necesarios con autonomía aceptable.", resolutivo: "Requiere guía paso a paso para completar los procedimientos.", receptivo: "Presenta dificultades para aplicar los contenidos." } },
-          { name: "Pensamiento crítico y solución de problemas", weight: 5, levels: { estrategico: "Analiza situaciones diversas y propone soluciones innovadoras relacionadas con " + aiPrompt + ".", autonomo: "Justifica sus decisiones con lógica coherente.", resolutivo: "Resuelve problemas tipo con apoyo de ejemplos previos.", receptivo: "Responde con respuestas memorísticas simples." } },
-          { name: "Comunicación y uso del lenguaje técnico", weight: 5, levels: { estrategico: "Comunica hallazgos con vocabulario especializado de " + activeSubject + " y excelente claridad.", autonomo: "Utiliza terminología adecuada al tema.", resolutivo: "Expresa sus ideas con lenguaje cotidiano.", receptivo: "Le cuesta articular explicaciones sobre el tema." } },
-          { name: "Actitud, ética y trabajo en equipo", weight: 5, levels: { estrategico: "Promueve un ambiente de aprendizaje colaborativo, ético y responsable.", autonomo: "Muestra compromiso con sus responsabilidades académicas.", resolutivo: "Participa cuando se le requiere expresamente.", receptivo: "Requiere llamadas de atención para integrarse al trabajo." } }
-        ];
+      if (aiApiKey) {
+        try {
+          const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + aiApiKey;
+          const systemPrompt = buildInstrumentSystemPrompt(detectedType, activeSubject, activeGradeStr);
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + "\nPetición del docente: " + rawPrompt }] }] })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            rawText = rawText.replace(/\\`\\`\\`json/g, '').replace(/\\`\\`\\`/g, '').trim();
+            const parsed = JSON.parse(rawText);
+            if (parsed.criterios && Array.isArray(parsed.criterios)) {
+              generatedCriteria = parsed.criterios.map((c, i) => ({
+                name: c.criterio || ("Criterio " + (i + 1)),
+                weight: c.puntos || 5,
+                levels: c.descriptores || {}
+              }));
+            }
+          }
+        } catch (apiErr) {
+          console.warn("API Call fallback to structured engine:", apiErr);
+        }
+      }
+
+      if (!generatedCriteria || generatedCriteria.length === 0) {
+        if (detectedType === 'lista_cotejo' || detectedType === 'lista') {
+          generatedCriteria = [
+            { name: "Identificación y precisión en " + cleanTopic, weight: 5, levels: { cumple: "Demuestra y aplica con precisión los elementos de " + cleanTopic + ".", nocumple: "No evidencia los conceptos requeridos.", observacion: "Verificar procedimiento." } },
+            { name: "Ejecución del procedimiento técnico en " + cleanTopic, weight: 5, levels: { cumple: "Sigue los pasos e instrucciones correctamente.", nocumple: "Omite pasos esenciales del proceso.", observacion: "Dar seguimiento." } },
+            { name: "Argumentación y comunicación de resultados", weight: 5, levels: { cumple: "Expresa sus conclusiones con vocabulario técnico adecuado.", nocumple: "Dificultad para fundamentar sus respuestas.", observacion: "Reforzar expresión." } },
+            { name: "Trabajo colaborativo y responsabilidad", weight: 5, levels: { cumple: "Cumple a tiempo y colabora activamente en equipo.", nocumple: "Muestra desinterés o impuntualidad.", observacion: "Incentivar participación." } },
+            { name: "Autoevaluación y mejora continua", weight: 5, levels: { cumple: "Reflexiona sobre sus errores y realiza correcciones.", nocumple: "No aplica las sugerencias de mejora.", observacion: "Monitoreo individual." } }
+          ];
+        } else if (detectedType === 'escala_estimativa' || detectedType === 'escala') {
+          generatedCriteria = [
+            { name: "Dominio de contenidos sobre " + cleanTopic, weight: 5, levels: { excelente: "Excelente (100%): Domina completamente los contenidos.", muybueno: "Muy Bueno (80%): Comprensión clara de la mayoría de conceptos.", bueno: "Bueno (60%): Comprensión básica con algunas dudas.", insuficiente: "Insuficiente (40%): No demuestra dominio del tema." } },
+            { name: "Aplicación de procedimientos prácticos", weight: 5, levels: { excelente: "Excelente (100%): Aplica procedimientos con destreza e independencia.", muybueno: "Muy Bueno (80%): Realiza actividades con pocos errores.", bueno: "Bueno (60%): Requiere ayuda parcial en procedimientos.", insuficiente: "Insuficiente (40%): Presenta dificultades mayores." } },
+            { name: "Análisis reflexivo y pensamiento crítico", weight: 5, levels: { excelente: "Excelente (100%): Analiza y argumenta con rigor técnico.", muybueno: "Muy Bueno (80%): Justifica ideas de forma lógica.", bueno: "Bueno (60%): Argumentación sencilla.", insuficiente: "Insuficiente (40%): Respuestas memorísticas sin análisis." } },
+            { name: "Uso adecuado de vocabulario especializado", weight: 5, levels: { excelente: "Excelente (100%): Emplea terminología precisa del área.", muybueno: "Muy Bueno (80%): Utiliza términos adecuados al nivel.", bueno: "Bueno (60%): Usa vocabulario común ocasional.", insuficiente: "Insuficiente (40%): Uso incorrecto de términos." } },
+            { name: "Actitud y compromiso con el aprendizaje", weight: 5, levels: { excelente: "Excelente (100%): Muestra alta motivación y liderazgo.", muybueno: "Muy Bueno (80%): Participa de forma constante.", bueno: "Bueno (60%): Cumple cuando se le requiere.", insuficiente: "Insuficiente (40%): Falta de compromiso o desinterés." } }
+          ];
+        } else if (detectedType === 'rubrica_sintetica') {
+          generatedCriteria = [
+            { name: "Desempeño Destacado / Estratégico", weight: 25, levels: { descripcion: "Demuestra una comprensión holística e integral sobre " + cleanTopic + ". Integra de manera fluida los conocimientos teóricos con la práctica en " + activeSubject + " con creatividad y autonomía." } },
+            { name: "Desempeño En Proceso / Resolutivo", weight: 18, levels: { descripcion: "Comprende y ejecuta las tareas principales de " + cleanTopic + " cumpliendo los estándares curriculares básicos de " + activeSubject + "." } },
+            { name: "Desempeño Inicial / Receptivo", weight: 12, levels: { descripcion: "Identifica elementos aislados de " + cleanTopic + ", requiriendo acompañamiento cercano para completar las actividades." } }
+          ];
+        } else if (detectedType === 'guia_observacion') {
+          generatedCriteria = [
+            { name: "Participación activa e interés en " + cleanTopic, weight: 5, levels: { evidencia: "Aporta ideas y participa activamente en el desarrollo de " + cleanTopic + ".", valoracion: "Frecuentemente", observacion: "Muestra iniciativa en clase." } },
+            { name: "Cumplimiento de consignas y protocolos", weight: 5, levels: { evidencia: "Sigue las instrucciones del docente y respeta las normas.", valoracion: "Siempre", observacion: "Trabajo ordenado." } },
+            { name: "Manipulación y uso adecuado de materiales", weight: 5, levels: { evidencia: "Utiliza las herramientas y recursos con cuidado y precisión.", valoracion: "Siempre", observacion: "Mantiene limpio el área." } },
+            { name: "Interacción respetuosa y colaborativa", weight: 5, levels: { evidencia: "Escucha a sus compañeros y apoya el trabajo en equipo.", valoracion: "Frecuentemente", observacion: "Buena disposición." } },
+            { name: "Autorregulación y constancia en la tarea", weight: 5, levels: { evidencia: "Mantiene el enfoque durante las actividades programadas.", valoracion: "Frecuentemente", observacion: "Aprovecha bien el tiempo." } }
+          ];
+        } else {
+          // rubrica_analitica
+          generatedCriteria = [
+            { name: "Comprensión conceptual de " + cleanTopic, weight: 5, levels: { estrategico: "Demuestra dominio conceptual profundo sobre " + cleanTopic + " en " + activeGradeStr + ", aplicando los contenidos de " + activeSubject + " de forma rigurosa.", autonomo: "Explica con claridad los conceptos fundamentales de " + cleanTopic + " adecuadamente.", resolutivo: "Identifica elementos básicos de " + cleanTopic + " con mínima orientación.", receptivo: "Reconoce conceptos iniciales de " + cleanTopic + " con apoyo continuo." } },
+            { name: "Procedimiento y aplicación en " + cleanTopic, weight: 5, levels: { estrategico: "Ejecuta secuencias complejas y resuelve ejercicios de " + cleanTopic + " sin errores.", autonomo: "Aplica los pasos necesarios con autonomía aceptable.", resolutivo: "Requiere guía paso a paso para completar los procedimientos.", receptivo: "Presenta dificultades para aplicar los contenidos." } },
+            { name: "Pensamiento crítico y solución de problemas", weight: 5, levels: { estrategico: "Analiza situaciones diversas y propone soluciones innovadoras relacionadas con " + cleanTopic + ".", autonomo: "Justifica sus decisiones con lógica coherente.", resolutivo: "Resuelve problemas tipo con apoyo de ejemplos previos.", receptivo: "Responde con respuestas memorísticas simples." } },
+            { name: "Comunicación y uso del lenguaje técnico", weight: 5, levels: { estrategico: "Comunica hallazgos con vocabulario especializado de " + activeSubject + " y excelente claridad.", autonomo: "Utiliza terminología adecuada al tema.", resolutivo: "Expresa sus ideas con lenguaje cotidiano.", receptivo: "Le cuesta articular explicaciones sobre el tema." } },
+            { name: "Actitud, ética y trabajo en equipo", weight: 5, levels: { estrategico: "Promueve un ambiente de aprendizaje colaborativo, ético y responsable.", autonomo: "Muestra compromiso con sus responsabilidades académicas.", resolutivo: "Participa cuando se le requiere expresamente.", receptivo: "Requiere llamadas de atención para integrarse al trabajo." } }
+          ];
+        }
       }
 
       updateActiveInstrumentConfig({
-        topic: aiPrompt,
-        activity: instrumentEditState.activity || ("Evaluación de " + aiPrompt),
+        topic: cleanTopic,
+        activity: suggestedActivity,
         competence: competenceText,
         indicator: indicatorText,
         type: detectedType,
         criteria: generatedCriteria
       });
 
-      setCounselorToastMsg("✨ Criterios generados e insertados con éxito en la ventana de configuración.");
+      setCounselorToastMsg("✨ Criterios e instrumento contextualizado generados con éxito para: " + cleanTopic);
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
       console.error("Error al generar criterios con IA:", err);
