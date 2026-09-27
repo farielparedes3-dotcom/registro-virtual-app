@@ -27867,81 +27867,81 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
     if (!aiTopicInput?.trim()) return;
     setIsGenerating(true);
     try {
-      const topicText = aiTopicInput.trim();
-      const activeSub = subjects[selectedSubject]?.name || selectedSubject || 'Ciencias de la Naturaleza';
-      const activeG = selectedGrade || '1ro A';
+      const aiPrompt = aiTopicInput.trim();
+      const lowerPrompt = aiPrompt.toLowerCase();
+      
+      // Smart detection of instrument type from user prompt
+      const detectedType = lowerPrompt.includes('cotejo') ? 'lista_cotejo'
+        : lowerPrompt.includes('estimativa') ? 'escala_estimativa'
+        : (lowerPrompt.includes('sintetica') || lowerPrompt.includes('holistica')) ? 'rubrica_sintetica'
+        : lowerPrompt.includes('observacion') ? 'guia_observacion'
+        : lowerPrompt.includes('analitica') ? 'rubrica_analitica'
+        : (instrumentEditState.type || 'rubrica_analitica');
 
-      const competenceText = "Comprende, analiza y aplica críticamente los contenidos de " + activeSub + " referentes a " + topicText + " en " + activeG + ".";
-      const indicatorText = "Evalúa el desempeño conceptual, procedimental y actitudinal de los estudiantes en " + topicText + ".";
+      const activeSubject = subjects[selectedSubject]?.name || selectedSubject || currentUser?.subject || 'Ciencias de la Naturaleza';
+      const activeGradeStr = selectedGrade || '1ro A';
 
-      const generatedCriteria = [
-        {
-          name: "Comprensión conceptual de " + topicText,
-          weight: 5,
-          levels: {
-            estrategico: "Demuestra dominio conceptual profundo sobre " + topicText + " en " + activeG + ", aplicando los contenidos de " + activeSub + " de forma rigurosa.",
-            autonomo: "Explica con claridad los conceptos fundamentales de " + topicText + " adecuadamente.",
-            resolutivo: "Identifica elementos básicos de " + topicText + " con mínima orientación.",
-            receptivo: "Reconoce conceptos iniciales de " + topicText + " requiriendo acompañamiento.",
-            cumple: "Sí cumple con la comprensión conceptual de " + topicText + ".",
-            nocumple: "No cumple con la comprensión conceptual."
-          }
-        },
-        {
-          name: "Procedimientos y resolución práctica",
-          weight: 5,
-          levels: {
-            estrategico: "Ejecuta procedimientos complejos y resuelve problemas prácticos sobre " + topicText + " con precisión.",
-            autonomo: "Aplica los pasos procedimentales de " + topicText + " de forma limpia y correcta.",
-            resolutivo: "Sigue instrucciones procedimentales básicas con pequeñas omisiones.",
-            receptivo: "Muestra dificultad al realizar procedimientos de " + topicText + ".",
-            cumple: "Aplica el procedimiento correctamente.",
-            nocumple: "No ejecuta el procedimiento asignado."
-          }
-        },
-        {
-          name: "Argumentación y evidencia técnica",
-          weight: 5,
-          levels: {
-            estrategico: "Fundamenta sus conclusiones utilizando lenguaje técnico de " + activeSub + " y evidencias sólidas.",
-            autonomo: "Justifica sus respuestas con argumentos lógicos sobre " + topicText + ".",
-            resolutivo: "Expresa opiniones básicas sobre " + topicText + " con sustento elemental.",
-            receptivo: "Emite comentarios poco fundamentados sobre el tema.",
-            cumple: "Presenta evidencias claras en su trabajo.",
-            nocumple: "No aporta evidencias para justificar su trabajo."
-          }
-        },
-        {
-          name: "Actitud científica y colaboración",
-          weight: 5,
-          levels: {
-            estrategico: "Demuestra liderazgo ético, perseverancia y colaboración sobresaliente.",
-            autonomo: "Trabaja en equipo con responsabilidad y constante interés.",
-            resolutivo: "Cumple con sus tareas manteniendo actitud colaborativa.",
-            receptivo: "Requiere seguimiento para cumplir con las responsabilidades del equipo.",
-            cumple: "Demuestra actitud responsable y colaborativa.",
-            nocumple: "Muestra desinterés y falta de colaboración."
-          }
-        },
-        {
-          name: "Comunicación y presentación final",
-          weight: 5,
-          levels: {
-            estrategico: "Presenta los resultados sobre " + topicText + " de forma creativa, estructurada y sin errores.",
-            autonomo: "Comunica sus ideas con claridad y orden aceptable.",
-            resolutivo: "Entrega el trabajo completo con orden básico.",
-            receptivo: "Entrega el trabajo con desorden significativo.",
-            cumple: "Presenta los resultados en el formato establecido.",
-            nocumple: "No entrega en el formato establecido."
-          }
-        }
-      ];
+      const payload = {
+        role: "Especialista en Evaluación Educativa MINERD (Ordenanza 04-2023)",
+        grade: activeGradeStr,
+        subject: activeSubject,
+        instrumentType: detectedType,
+        userInstruction: aiPrompt,
+        rules: "Genera los criterios observables, descriptores específicos e indicadores de logro curriculares correspondientes a este tipo de instrumento. Devuelve formato JSON estructurado listo para poblar las filas."
+      };
+
+      const competenceText = "Comprende, analiza y aplica críticamente los contenidos de " + activeSubject + " referentes a " + aiPrompt + " en " + activeGradeStr + " según Ordenanza 04-2023.";
+      const indicatorText = "Evalúa el desempeño conceptual, procedimental y actitudinal de los estudiantes en " + aiPrompt + ".";
+
+      let generatedCriteria = [];
+
+      if (detectedType === 'lista_cotejo' || detectedType === 'lista') {
+        generatedCriteria = [
+          { name: "Identificación y precisión en " + aiPrompt, weight: 5, levels: { cumple: "Demuestra y aplica con precisión los elementos de " + aiPrompt + ".", nocumple: "No evidencia los conceptos requeridos.", observacion: "Verificar procedimiento." } },
+          { name: "Ejecución del procedimiento técnico", weight: 5, levels: { cumple: "Sigue los pasos e instrucciones correctamente.", nocumple: "Omite pasos esenciales del proceso.", observacion: "Dar seguimiento." } },
+          { name: "Argumentación y comunicación de resultados", weight: 5, levels: { cumple: "Expresa sus conclusiones con vocabulario técnico adecuado.", nocumple: "Dificultad para fundamentar sus respuestas.", observacion: "Reforzar expresión." } },
+          { name: "Trabajo colaborativo y responsabilidad", weight: 5, levels: { cumple: "Cumple a tiempo y colabora activamente en equipo.", nocumple: "Muestra desinterés o impuntualidad.", observacion: "Incentivar participación." } },
+          { name: "Autoevaluación y mejora continua", weight: 5, levels: { cumple: "Reflexiona sobre sus errores y realiza correcciones.", nocumple: "No aplica las sugerencias de mejora.", observacion: "Monitoreo individual." } }
+        ];
+      } else if (detectedType === 'escala_estimativa' || detectedType === 'escala') {
+        generatedCriteria = [
+          { name: "Dominio de contenidos sobre " + aiPrompt, weight: 5, levels: { excelente: "Excelente (100%): Domina completamente los contenidos.", muybueno: "Muy Bueno (80%): Comprensión clara de la mayoría de conceptos.", bueno: "Bueno (60%): Comprensión básica con algunas dudas.", insuficiente: "Insuficiente (40%): No demuestra dominio del tema." } },
+          { name: "Aplicación de procedimientos prácticos", weight: 5, levels: { excelente: "Excelente (100%): Aplica procedimientos con destreza e independencia.", muybueno: "Muy Bueno (80%): Realiza actividades con pocos errores.", bueno: "Bueno (60%): Requiere ayuda parcial en procedimientos.", insuficiente: "Insuficiente (40%): Presenta dificultades mayores." } },
+          { name: "Análisis reflexivo y pensamiento crítico", weight: 5, levels: { excelente: "Excelente (100%): Analiza y argumenta con rigor técnico.", muybueno: "Muy Bueno (80%): Justifica ideas de forma lógica.", bueno: "Bueno (60%): Argumentación sencilla.", insuficiente: "Insuficiente (40%): Respuestas memorísticas sin análisis." } },
+          { name: "Uso adecuado de vocabulario especializado", weight: 5, levels: { excelente: "Excelente (100%): Emplea terminología precisa del área.", muybueno: "Muy Bueno (80%): Utiliza términos adecuados al nivel.", bueno: "Bueno (60%): Usa vocabulario común ocasional.", insuficiente: "Insuficiente (40%): Uso incorrecto de términos." } },
+          { name: "Actitud y compromiso con el aprendizaje", weight: 5, levels: { excelente: "Excelente (100%): Muestra alta motivación y liderazgo.", muybueno: "Muy Bueno (80%): Participa de forma constante.", bueno: "Bueno (60%): Cumple cuando se le requiere.", insuficiente: "Insuficiente (40%): Falta de compromiso o desinterés." } }
+        ];
+      } else if (detectedType === 'rubrica_sintetica') {
+        generatedCriteria = [
+          { name: "Desempeño Destacado / Estratégico", weight: 25, levels: { descripcion: "Demuestra una comprensión holística e integral sobre " + aiPrompt + ". Integra de manera fluida los conocimientos teóricos con la práctica en " + activeSubject + " con creatividad y autonomía." } },
+          { name: "Desempeño En Proceso / Resolutivo", weight: 18, levels: { descripcion: "Comprende y ejecuta las tareas principales de " + aiPrompt + " cumpliendo los estándares curriculares básicos de " + activeSubject + "." } },
+          { name: "Desempeño Inicial / Receptivo", weight: 12, levels: { descripcion: "Identifica elementos aislados de " + aiPrompt + ", requiriendo acompañamiento cercano para completar las actividades." } }
+        ];
+      } else if (detectedType === 'guia_observacion') {
+        generatedCriteria = [
+          { name: "Participación activa e interés en " + aiPrompt, weight: 5, levels: { evidencia: "Aporta ideas y participa activamente en el desarrollo de " + aiPrompt + ".", valoracion: "Frecuentemente", observacion: "Muestra iniciativa en clase." } },
+          { name: "Cumplimiento de consignas y protocolos", weight: 5, levels: { evidencia: "Sigue las instrucciones del docente y respeta las normas.", valoracion: "Siempre", observacion: "Trabajo ordenado." } },
+          { name: "Manipulación y uso adecuado de materiales", weight: 5, levels: { evidencia: "Utiliza las herramientas y recursos con cuidado y precisión.", valoracion: "Siempre", observacion: "Mantiene limpio el área." } },
+          { name: "Interacción respetuosa y colaborativa", weight: 5, levels: { evidencia: "Escucha a sus compañeros y apoya el trabajo en equipo.", valoracion: "Frecuentemente", observacion: "Buena disposición." } },
+          { name: "Autorregulación y constancia en la tarea", weight: 5, levels: { evidencia: "Mantiene el enfoque durante las actividades programadas.", valoracion: "Frecuentemente", observacion: "Aprovecha bien el tiempo." } }
+        ];
+      } else {
+        // rubrica_analitica
+        generatedCriteria = [
+          { name: "Comprensión conceptual de " + aiPrompt, weight: 5, levels: { estrategico: "Demuestra dominio conceptual profundo sobre " + aiPrompt + " en " + activeGradeStr + ", aplicando los contenidos de " + activeSubject + " de forma rigurosa.", autonomo: "Explica con claridad los conceptos fundamentales de " + aiPrompt + " adecuadamente.", resolutivo: "Identifica elementos básicos de " + aiPrompt + " con mínima orientación.", receptivo: "Reconoce conceptos iniciales de " + aiPrompt + " con apoyo continuo." } },
+          { name: "Procedimiento y aplicación en " + aiPrompt, weight: 5, levels: { estrategico: "Ejecuta secuencias complejas y resuelve ejercicios de " + aiPrompt + " sin errores.", autonomo: "Aplica los pasos necesarios con autonomía aceptable.", resolutivo: "Requiere guía paso a paso para completar los procedimientos.", receptivo: "Presenta dificultades para aplicar los contenidos." } },
+          { name: "Pensamiento crítico y solución de problemas", weight: 5, levels: { estrategico: "Analiza situaciones diversas y propone soluciones innovadoras relacionadas con " + aiPrompt + ".", autonomo: "Justifica sus decisiones con lógica coherente.", resolutivo: "Resuelve problemas tipo con apoyo de ejemplos previos.", receptivo: "Responde con respuestas memorísticas simples." } },
+          { name: "Comunicación y uso del lenguaje técnico", weight: 5, levels: { estrategico: "Comunica hallazgos con vocabulario especializado de " + activeSubject + " y excelente claridad.", autonomo: "Utiliza terminología adecuada al tema.", resolutivo: "Expresa sus ideas con lenguaje cotidiano.", receptivo: "Le cuesta articular explicaciones sobre el tema." } },
+          { name: "Actitud, ética y trabajo en equipo", weight: 5, levels: { estrategico: "Promueve un ambiente de aprendizaje colaborativo, ético y responsable.", autonomo: "Muestra compromiso con sus responsabilidades académicas.", resolutivo: "Participa cuando se le requiere expresamente.", receptivo: "Requiere llamadas de atención para integrarse al trabajo." } }
+        ];
+      }
 
       updateActiveInstrumentConfig({
-        topic: topicText,
-        activity: instrumentEditState.activity || ("Evaluación de " + topicText),
+        topic: aiPrompt,
+        activity: instrumentEditState.activity || ("Evaluación de " + aiPrompt),
         competence: competenceText,
         indicator: indicatorText,
+        type: detectedType,
         criteria: generatedCriteria
       });
 
@@ -28143,19 +28143,34 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
 
   const handleAddCriterionRow = () => {
     const criteriaArray = instrumentEditState.criteria || [];
-    const isList = instrumentEditState.type === 'lista';
+    const type = instrumentEditState.type || 'rubrica_analitica';
     const instWeight = instrumentEditState.weight !== undefined ? Number(instrumentEditState.weight) : 25;
     const defaultWeight = Math.max(1, Math.round(instWeight / (criteriaArray.length + 1)));
+    
+    let levels = {};
+    if (type === 'lista_cotejo' || type === 'lista') {
+      levels = { cumple: "Sí cumple de forma observable", nocumple: "No evidencia el criterio", observacion: "Supervisar avance" };
+    } else if (type === 'escala_estimativa' || type === 'escala') {
+      levels = { excelente: "Excelente (100%)", muybueno: "Muy Bueno (80%)", bueno: "Bueno (60%)", insuficiente: "Insuficiente (40%)" };
+    } else if (type === 'rubrica_sintetica') {
+      levels = { descripcion: "Descripción holística del desempeño por nivel de logro..." };
+    } else if (type === 'guia_observacion') {
+      levels = { evidencia: "Registro de evidencia observable", valoracion: "Frecuentemente", observacion: "Observación pedagógica" };
+    } else {
+      levels = {
+        estrategico: "Descripción nivel estratégico (Excelente)",
+        autonomo: "Descripción nivel autónomo (Bueno)",
+        resolutivo: "Descripción nivel resolutivo (Aceptable)",
+        receptivo: "Descripción nivel receptivo (En proceso)"
+      };
+    }
+
     const newCrit = {
       name: `Criterio ${criteriaArray.length + 1}`,
       weight: defaultWeight,
-      levels: isList ? { cumple: "Sí cumple", nocumple: "No cumple" } : {
-        estrategico: "Descripción nivel estratégico (Excelente)",
-        autonomo: "Descripción nivel autónomo (Muy bueno)",
-        resolutivo: "Descripción nivel resolutivo (Bueno)",
-        receptivo: "Descripción nivel receptivo (Regular)"
-      }
+      levels: levels
     };
+
     updateActiveInstrumentConfig({
       criteria: [...criteriaArray, newCrit]
     });
@@ -36390,7 +36405,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             <span style={{ fontSize: '1.2rem' }}>✨</span>
                             <input
                               type="text"
-                              placeholder="Tema o contenido para generar criterios con IA (ej: Nomenclatura Química)..."
+                              placeholder="Describe el instrumento o tema (ej. 'Lista de cotejo para laboratorio de reacciones químicas')..."
                               value={aiTopicInput}
                               onChange={(e) => setAiTopicInput(e.target.value)}
                               style={{
@@ -36419,7 +36434,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               opacity: aiTopicInput?.trim() && !isGenerating ? 1 : 0.6
                             }}
                           >
-                            {isGenerating ? 'Generando...' : '✨ Generar Criterios con IA'}
+                            {isGenerating ? 'Generando...' : 'Generar Instrumento con IA'}
                           </button>
                         </div>
 
@@ -36539,13 +36554,23 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             <label style={{ margin: 0, fontWeight: 'bold' }}>Tipo de Instrumento:</label>
                             <select 
                               className="form-select"
-                              style={{ width: '220px', padding: '0.4rem' }}
-                              value={instrumentEditState.type}
+                              style={{
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                border: '1px solid #CBD5E1',
+                                fontSize: '0.9rem',
+                                background: '#fff',
+                                fontWeight: 600,
+                                color: '#1E293B'
+                              }}
+                              value={instrumentEditState.type || 'rubrica_analitica'}
                               onChange={(e) => updateActiveInstrumentConfig({ type: e.target.value })}
                             >
-                              <option value="rubrica">Rúbrica Matricial de Desempeño</option>
-                              <option value="lista">Lista de Cotejo (Sí/No)</option>
-                              <option value="escala">Escala Estimativa</option>
+                              <option value="rubrica_analitica">Rúbrica Analítica (4 Niveles de Dominio)</option>
+                              <option value="rubrica_sintetica">Rúbrica Sintética / Holística</option>
+                              <option value="lista_cotejo">Lista de Cotejo (Sí / No - Cumplimiento)</option>
+                              <option value="escala_estimativa">Escala Estimativa (Frecuencia / Grado)</option>
+                              <option value="guia_observacion">Guía de Observación Sistemática</option>
                             </select>
                           </div>
                           <button type="button" className="btn-secondary" onClick={handleAddCriterionRow}>
@@ -36558,12 +36583,37 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           <table className="rubric-matrix-table">
                             <thead>
                               <tr>
-                                <th style={{ width: '180px' }}>Criterio</th>
-                                <th style={{ width: '90px', textAlign: 'center' }}>Puntos (pts)</th>
-                                {instrumentEditState.type === 'lista' ? (
+                                <th style={{ width: (instrumentEditState.type === 'rubrica_sintetica') ? '220px' : '200px' }}>
+                                  {(instrumentEditState.type === 'lista_cotejo' || instrumentEditState.type === 'lista') ? 'Criterio / Indicador Observable' :
+                                   (instrumentEditState.type === 'escala_estimativa' || instrumentEditState.type === 'escala') ? 'Criterio de Evaluación' :
+                                   (instrumentEditState.type === 'rubrica_sintetica') ? 'Nivel de Logro / Criterio' :
+                                   (instrumentEditState.type === 'guia_observacion') ? 'Aspecto / Criterio a Observar' :
+                                   'Criterio / Indicador'}
+                                </th>
+                                <th style={{ width: '90px', textAlign: 'center' }}>Puntuación (pts)</th>
+
+                                {(instrumentEditState.type === 'lista_cotejo' || instrumentEditState.type === 'lista') ? (
                                   <>
                                     <th>Cumple (Sí)</th>
                                     <th>No Cumple (No)</th>
+                                    <th>Observación</th>
+                                  </>
+                                ) : (instrumentEditState.type === 'escala_estimativa' || instrumentEditState.type === 'escala') ? (
+                                  <>
+                                    <th>Excelente (100%)</th>
+                                    <th>Muy Bueno (80%)</th>
+                                    <th>Bueno (60%)</th>
+                                    <th>Insuficiente (40%)</th>
+                                  </>
+                                ) : (instrumentEditState.type === 'rubrica_sintetica') ? (
+                                  <>
+                                    <th>Descripción Holística / Global del Desempeño</th>
+                                  </>
+                                ) : (instrumentEditState.type === 'guia_observacion') ? (
+                                  <>
+                                    <th>Registro de Evidencia / Descriptores</th>
+                                    <th>Valoración / Frecuencia</th>
+                                    <th>Observaciones</th>
                                   </>
                                 ) : (
                                   <>
@@ -36610,12 +36660,12 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                     </td>
                                   
                                   {/* Levels textareas */}
-                                  {instrumentEditState.type === 'lista' ? (
+                                  {(instrumentEditState.type === 'lista_cotejo' || instrumentEditState.type === 'lista') ? (
                                     <>
                                       <td>
                                         <textarea 
                                           className="rubric-matrix-textarea"
-                                          value={crit.levels.cumple || ''}
+                                          value={crit.levels?.cumple || ''}
                                           onChange={(e) => handleEditCriterionLevel(critIdx, 'cumple', e.target.value)}
                                           placeholder="Sí cumple..."
                                         />
@@ -36623,9 +36673,91 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       <td>
                                         <textarea 
                                           className="rubric-matrix-textarea"
-                                          value={crit.levels.nocumple || ''}
+                                          value={crit.levels?.nocumple || ''}
                                           onChange={(e) => handleEditCriterionLevel(critIdx, 'nocumple', e.target.value)}
                                           placeholder="No cumple..."
+                                        />
+                                      </td>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.observacion || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'observacion', e.target.value)}
+                                          placeholder="Observación..."
+                                        />
+                                      </td>
+                                    </>
+                                  ) : (instrumentEditState.type === 'escala_estimativa' || instrumentEditState.type === 'escala') ? (
+                                    <>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.excelente || crit.levels?.estrategico || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'excelente', e.target.value)}
+                                          placeholder="Excelente (100%)..."
+                                        />
+                                      </td>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.muybueno || crit.levels?.autonomo || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'muybueno', e.target.value)}
+                                          placeholder="Muy Bueno (80%)..."
+                                        />
+                                      </td>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.bueno || crit.levels?.resolutivo || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'bueno', e.target.value)}
+                                          placeholder="Bueno (60%)..."
+                                        />
+                                      </td>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.insuficiente || crit.levels?.receptivo || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'insuficiente', e.target.value)}
+                                          placeholder="Insuficiente (40%)..."
+                                        />
+                                      </td>
+                                    </>
+                                  ) : (instrumentEditState.type === 'rubrica_sintetica') ? (
+                                    <>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          style={{ minHeight: '60px' }}
+                                          value={crit.levels?.descripcion || crit.levels?.estrategico || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'descripcion', e.target.value)}
+                                          placeholder="Descripción global del desempeño por nivel de logro..."
+                                        />
+                                      </td>
+                                    </>
+                                  ) : (instrumentEditState.type === 'guia_observacion') ? (
+                                    <>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.evidencia || crit.levels?.estrategico || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'evidencia', e.target.value)}
+                                          placeholder="Registro de evidencia..."
+                                        />
+                                      </td>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.valoracion || crit.levels?.autonomo || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'valoracion', e.target.value)}
+                                          placeholder="Siempre / Frecuentemente..."
+                                        />
+                                      </td>
+                                      <td>
+                                        <textarea 
+                                          className="rubric-matrix-textarea"
+                                          value={crit.levels?.observacion || crit.levels?.nocumple || ''}
+                                          onChange={(e) => handleEditCriterionLevel(critIdx, 'observacion', e.target.value)}
+                                          placeholder="Observaciones..."
                                         />
                                       </td>
                                     </>
@@ -36634,43 +36766,38 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                       <td>
                                         <textarea 
                                           className="rubric-matrix-textarea"
-                                          value={crit.levels.estrategico || ''}
+                                          value={crit.levels?.estrategico || ''}
                                           onChange={(e) => handleEditCriterionLevel(critIdx, 'estrategico', e.target.value)}
+                                          placeholder="Estratégico (4)..."
                                         />
                                       </td>
                                       <td>
                                         <textarea 
                                           className="rubric-matrix-textarea"
-                                          value={crit.levels.autonomo || ''}
+                                          value={crit.levels?.autonomo || ''}
                                           onChange={(e) => handleEditCriterionLevel(critIdx, 'autonomo', e.target.value)}
+                                          placeholder="Autónomo (3)..."
                                         />
                                       </td>
                                       <td>
                                         <textarea 
                                           className="rubric-matrix-textarea"
-                                          value={crit.levels.resolutivo || ''}
+                                          value={crit.levels?.resolutivo || ''}
                                           onChange={(e) => handleEditCriterionLevel(critIdx, 'resolutivo', e.target.value)}
+                                          placeholder="Resolutivo (2)..."
                                         />
                                       </td>
                                       <td>
                                         <textarea 
                                           className="rubric-matrix-textarea"
-                                          value={crit.levels.receptivo || ''}
+                                          value={crit.levels?.receptivo || ''}
                                           onChange={(e) => handleEditCriterionLevel(critIdx, 'receptivo', e.target.value)}
+                                          placeholder="Receptivo (1)..."
                                         />
                                       </td>
                                     </>
                                   )}
-                                  <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <button 
-                                      type="button" 
-                                      style={{ border: 'none', background: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
-                                      onClick={() => handleRemoveCriterionRow(critIdx)}
-                                    >
-                                      ✕
-                                    </button>
-                                  </td>
-                                </tr>
+                                  </tr>
                               );
                             })}
                               {instrumentEditState.criteria.length === 0 && (
