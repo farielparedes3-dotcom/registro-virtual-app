@@ -25441,7 +25441,6 @@ export default function App() {
         if (saved) localUsers = JSON.parse(saved);
       } catch(e) {}
 
-      let hasChanges = false;
       const normalizedList = rawList.map(remoteUser => {
         const localMatch = localUsers.find(l => 
           l.id === remoteUser.id || 
@@ -25464,12 +25463,10 @@ export default function App() {
 
         if (userToUse.role === 'teacher') {
           const normClassroom = normalizeGradeString(userToUse.classroomGrade || '');
-          const normAssignments = (userToUse.assignments || []).map(a => {
-            const normG = normalizeGradeString(a.grade);
-            if (normG !== a.grade) hasChanges = true;
-            return { ...a, grade: normG };
-          });
-          if (normClassroom !== (userToUse.classroomGrade || '')) hasChanges = true;
+          const normAssignments = (userToUse.assignments || []).map(a => ({
+            ...a,
+            grade: normalizeGradeString(a.grade)
+          }));
           return {
             ...userToUse,
             classroomGrade: normClassroom,
@@ -25481,9 +25478,6 @@ export default function App() {
 
       setUsers(normalizedList);
       try { localStorage.setItem('s_users', JSON.stringify(normalizedList)); } catch(e) {}
-      if (hasChanges) {
-        dbService.saveUsers(normalizedList);
-      }
     });
 
     const unsubStudents = dbService.subscribeStudents((data) => {
@@ -25492,7 +25486,6 @@ export default function App() {
       try {
         localStorage.setItem('s_students', JSON.stringify(merged));
       } catch(e) {}
-      dbService.saveStudents(merged);
     });
 
     const unsubEvents = dbService.subscribeEvents((data) => {
@@ -25550,16 +25543,12 @@ export default function App() {
             if (!mergedSubs[k]) mergedSubs[k] = DEFAULT_SUBJECTS[k];
           });
           setSubjects(mergedSubs);
-          if (Object.keys(mergedSubs).length !== Object.keys(data.subjects).length) {
-            dbService.saveSubjects(mergedSubs);
-          }
         }
         if (data.grades) {
           const needsMigration = data.grades.includes('10° A') || data.grades.length === 0 || !data.grades.includes('6AH') || !data.grades.includes('6AM') || !data.grades.includes('4AM');
           if (needsMigration) {
             const sortedDefaults = sortGrades(DEFAULT_GRADES);
             setGrades(sortedDefaults);
-            dbService.saveGrades(sortedDefaults);
           } else {
             setGrades(sortGrades(data.grades));
           }
@@ -26217,12 +26206,10 @@ export default function App() {
     alert('Docente registrado.');
   };
 
-  const updateTeacherAssignments = async (teacherId, newAssignments) => {
+    const updateTeacherAssignments = (teacherId, newAssignments) => {
     const uniqueGrades = Array.from(new Set((newAssignments || []).map(a => a.grade)));
     
-    const currentUsers = JSON.parse(localStorage.getItem('s_users') || '[]');
-    const baseUsers = currentUsers.length > 0 ? currentUsers : users;
-    const updatedUsers = baseUsers.map(u => {
+    setUsers(prev => prev.map(u => {
       if (u.id === teacherId || u.uid === teacherId) {
         return { 
           ...u, 
@@ -26233,34 +26220,16 @@ export default function App() {
         };
       }
       return u;
-    });
-
-    setUsersAndSave(updatedUsers);
+    }));
 
     if (currentUser && (currentUser.id === teacherId || currentUser.uid === teacherId)) {
-      const updatedCurrent = {
-        ...currentUser,
+      setCurrentUser(prev => ({
+        ...prev,
         assignments: newAssignments,
         assignedGrades: uniqueGrades,
         gradosAsignados: uniqueGrades,
         teachingLoad: newAssignments
-      };
-      setCurrentUser(updatedCurrent);
-      try { localStorage.setItem('s_current_user', JSON.stringify(updatedCurrent)); } catch(e) {}
-    }
-
-    if (typeof syncToIndexedDB === 'function') {
-      try { syncToIndexedDB('s_users', updatedUsers); } catch (e) {}
-    }
-    if (dbService?.updateUser) {
-      await dbService.updateUser(teacherId, { 
-        assignments: newAssignments, 
-        assignedGrades: uniqueGrades, 
-        gradosAsignados: uniqueGrades, 
-        teachingLoad: newAssignments 
-      });
-    } else if (dbService?.saveUsers) {
-      await dbService.saveUsers(updatedUsers);
+      }));
     }
   };
 
@@ -32691,82 +32660,14 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                               const isNowChecked = e.target.checked;
                                               const currentAssigned = Array.isArray(counselor.assignedGrades) 
                                                 ? counselor.assignedGrades 
-                                                : (Array.isArray(counselor.gradosAsignados) ? counselor.gradosAsignados : [...grades]);
+                                                : (Array.isArray(counselor.gradosAsignados) ? counselor.gradosAsignados : []);
                                               const updatedAssigned = isNowChecked
                                                 ? (currentAssigned.includes(g) ? currentAssigned : [...currentAssigned, g])
                                                 : currentAssigned.filter(x => x !== g);
 
-                                              // 1. Update user's assignedGrades & gradosAsignados
-                                              const updatedUsers = users.map(u => (u.id === counselor.id || u.email === counselor.email) 
+                                              setUsers(prev => prev.map(u => (u.id === counselor.id || u.email === counselor.email) 
                                                 ? { ...u, assignedGrades: updatedAssigned, gradosAsignados: updatedAssigned } 
-                                                : u);
-                                              setUsersAndSave(updatedUsers);
-
-                                              // 2. Build updatedStaff & gradeToCounselorMap
-                                              const cList = updatedUsers.filter(u => {
-                                                const r = (u.role || u.rol || '').toLowerCase();
-                                                const em = (u.email || '').toLowerCase();
-                                                return r === 'counselor' || r === 'orientadora' || em.includes('vianelvi') || em.includes('francina') || em.includes('nathaly') || em.includes('orientacion') || em.includes('psicologia');
-                                              });
-
-                                              const updatedStaff = cList.map(c => ({
-                                                id: c.id,
-                                                name: c.name,
-                                                email: c.email,
-                                                assignedGrades: Array.isArray(c.assignedGrades) ? c.assignedGrades : (Array.isArray(c.gradosAsignados) ? c.gradosAsignados : [])
-                                              }));
-
-                                              const gradeToCounselorMap = {};
-                                              updatedStaff.forEach(c => {
-                                                (c.assignedGrades || []).forEach(gradeKey => {
-                                                  gradeToCounselorMap[gradeKey] = {
-                                                    counselorId: c.id,
-                                                    counselorName: c.name,
-                                                    counselorEmail: c.email
-                                                  };
-                                                  ['A', 'B', 'C', 'D', 'E'].forEach(sec => {
-                                                    gradeToCounselorMap[`${gradeKey} ${sec}`] = {
-                                                      counselorId: c.id,
-                                                      counselorName: c.name,
-                                                      counselorEmail: c.email
-                                                    };
-                                                  });
-                                                });
-                                              });
-
-                                              localStorage.setItem('s_grade_staff', JSON.stringify(updatedStaff));
-                                              localStorage.setItem('s_grade_counselor_map', JSON.stringify(gradeToCounselorMap));
-                                              dbService.saveGradeStaff(updatedStaff, gradeToCounselorMap);
-
-                                              // 3. Sync with gradeStaffContacts
-                                              setGradeStaffAndSave(prevStaff => {
-                                                const nextStaff = { ...prevStaff };
-                                                const currentContact = nextStaff[g] || { coordinator: '', counselor: '' };
-                                                if (isNowChecked) {
-                                                  nextStaff[g] = { 
-                                                    ...currentContact, 
-                                                    counselor: counselor.email,
-                                                    counselorEmail: counselor.email,
-                                                    counselorName: counselor.name,
-                                                    counselorId: counselor.id,
-                                                    orientadorEmail: counselor.email 
-                                                  };
-                                                } else if (nextStaff[g]?.counselor === counselor.email || nextStaff[g]?.orientadorEmail === counselor.email) {
-                                                  nextStaff[g] = { 
-                                                    ...currentContact, 
-                                                    counselor: '',
-                                                    counselorEmail: '',
-                                                    counselorName: '',
-                                                    counselorId: '',
-                                                    orientadorEmail: '' 
-                                                  };
-                                                }
-                                                return nextStaff;
-                                              });
-
-                                              // 4. Show Toast Feedback
-                                              setCounselorToastMsg(`✅ Grados asignados y vinculados correctamente a ${counselor.name}`);
-                                              setTimeout(() => setCounselorToastMsg(''), 4000);
+                                                : u));
                                             }}
                                           />
                                           {g}

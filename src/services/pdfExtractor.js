@@ -3,41 +3,58 @@
  * Decodes compressed /FlateDecode streams using pdfjsLib (CDN/global) with native DecompressionStream fallback.
  */
 
-// Dynamic CDN loader for pdfjsLib if not bundled or in window
+// Dynamic loader for pdfjsLib (uses dynamic import first, then CDN script fallback)
 let pdfjsPromise = null;
-function getPdfJsLib() {
+async function getPdfJsLib() {
   if (typeof window !== 'undefined' && window.pdfjsLib) {
-    return Promise.resolve(window.pdfjsLib);
+    return window.pdfjsLib;
   }
   if (pdfjsPromise) return pdfjsPromise;
 
-  pdfjsPromise = new Promise((resolve, reject) => {
-    if (typeof document === 'undefined') return reject(new Error('No document context'));
-    const existing = document.getElementById('pdfjs-script');
-    if (existing) {
-      const check = setInterval(() => {
-        if (window.pdfjsLib) {
-          clearInterval(check);
-          resolve(window.pdfjsLib);
+  pdfjsPromise = (async () => {
+    try {
+      const moduleName = 'pdfjs-dist';
+      const pdfjs = await import(/* @vite-ignore */ moduleName);
+      if (pdfjs && (pdfjs.getDocument || pdfjs.default?.getDocument)) {
+        const lib = pdfjs.getDocument ? pdfjs : pdfjs.default;
+        if (lib.GlobalWorkerOptions && !lib.GlobalWorkerOptions.workerSrc) {
+          lib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${lib.version || '3.11.174'}/pdf.worker.min.js`;
         }
-      }, 50);
-      return;
+        return lib;
+      }
+    } catch (e) {
+      console.warn('[pdfExtractor] Dynamic module import fallback to CDN:', e);
     }
 
-    const script = document.createElement('script');
-    script.id = 'pdfjs-script';
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-    script.onload = () => {
-      if (window.pdfjsLib) {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(window.pdfjsLib);
-      } else {
-        reject(new Error('pdfjsLib initialization failed'));
-      }
-    };
-    script.onerror = (e) => reject(e);
-    document.head.appendChild(script);
-  });
+    if (typeof document === 'undefined') throw new Error('No document context');
+    const existing = document.getElementById('pdfjs-script');
+    if (existing) {
+      return new Promise((resolve) => {
+        const check = setInterval(() => {
+          if (window.pdfjsLib) {
+            clearInterval(check);
+            resolve(window.pdfjsLib);
+          }
+        }, 50);
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.id = 'pdfjs-script';
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload = () => {
+        if (window.pdfjsLib) {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          resolve(window.pdfjsLib);
+        } else {
+          reject(new Error('pdfjsLib initialization failed'));
+        }
+      };
+      script.onerror = (e) => reject(e);
+      document.head.appendChild(script);
+    });
+  })();
 
   return pdfjsPromise;
 }
