@@ -23133,7 +23133,7 @@ const DEFAULT_EVALUATION_CONFIGS = {
         competence: "Resolución de problemas cotidianos usando herramientas algebraicas.",
         indicator: "Resuelve ecuaciones lineales aplicando propiedades de la igualdad.",
         type: "rubrica",
-        weight: 100,
+        weight: '',
         criteria: INITIAL_CRITERIA_MATH
       }
     ],
@@ -23145,7 +23145,7 @@ const DEFAULT_EVALUATION_CONFIGS = {
         competence: "Pensamiento espacial y modelamiento geométrico.",
         indicator: "Calcula perímetros y áreas aplicando teoremas básicos.",
         type: "rubrica",
-        weight: 100,
+        weight: '',
         criteria: INITIAL_CRITERIA_MATH
       }
     ],
@@ -23157,7 +23157,7 @@ const DEFAULT_EVALUATION_CONFIGS = {
         competence: "Razonamiento cuantitativo y operaciones fraccionarias.",
         indicator: "Resuelve problemas de reparto aplicando sumas de fracciones.",
         type: "lista",
-        weight: 100,
+        weight: '',
         criteria: [
           { name: "Simplifica fracciones", levels: { cumple: "Sí simplifica", nocumple: "No simplifica" } },
           { name: "Suma con distinto denominador", levels: { cumple: "Sí suma", nocumple: "No suma" } },
@@ -23173,7 +23173,7 @@ const DEFAULT_EVALUATION_CONFIGS = {
         competence: "Estructuración lógica abstracta.",
         indicator: "Completa secuencias numéricas justificando la ley de cambio.",
         type: "rubrica",
-        weight: 100,
+        weight: '',
         criteria: INITIAL_CRITERIA_MATH
       }
     ]
@@ -25166,6 +25166,9 @@ export default function App() {
   const [excelImportText, setExcelImportText] = useState('');
 
   // Active evaluation parameter ('p1' | 'p2' | 'p3' | 'p4') and instrument ID in Instruments Tab
+  const [instrumentTopic, setInstrumentTopic] = useState('');
+  const [instrumentType, setInstrumentType] = useState('rubrica');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [activePKey, setActivePKey] = useState('p1');
   const [activeInstrumentId, setActiveInstrumentId] = useState('');
   const [expandedBlocks, setExpandedBlocks] = useState({ bloque1: true, bloque2: false, bloque3: false, bloque4: false });
@@ -25179,7 +25182,7 @@ export default function App() {
     competence: '',
     indicator: '',
     type: 'rubrica',
-    weight: 100,
+    weight: '',
     criteria: [] // Array of criteria objects
   });
 
@@ -27715,6 +27718,150 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
     });
   };
 
+  const handleGenerateInstrumentAI = async () => {
+    if (!instrumentTopic.trim()) return;
+    setIsGenerating(true);
+    try {
+      const activeSubject = subjects[selectedSubject]?.name || selectedSubject || currentUser?.subject || 'Ciencias de la Naturaleza';
+      const activeGradeStr = selectedGrade || '1ro A';
+
+      const promptPayload = {
+        role: "Especialista en Evaluación Educativa MINERD",
+        context: {
+          grade: activeGradeStr,
+          subject: activeSubject,
+          topic: instrumentTopic,
+          type: instrumentType
+        },
+        instruction: "Genera una matriz técnica de evaluación (" + instrumentType + ") adaptada estrictamente al nivel " + activeGradeStr + " y la asignatura " + activeSubject + " según el currículo dominicano para el tema \"" + instrumentTopic + "\". Incluye criterios observables, indicadores de logro y escala de valoración sin descripciones genéricas."
+      };
+
+      let generatedData = null;
+
+      if (aiApiKey) {
+        try {
+          const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + aiApiKey;
+          const instructionsPrompt = promptPayload.instruction + "\n\nResponde ÚNICAMENTE con un objeto JSON válido con este esquema exacto:\n{" +
+            '"activity": "Evaluación de ' + instrumentTopic + '","' +
+            '"topic": "' + instrumentTopic + '","' +
+            '"competence": "Competencia específica de ' + activeSubject + '","' +
+            '"indicator": "Indicador de logro para ' + instrumentTopic + '","' +
+            '"type": "' + (instrumentType === "lista_cotejo" ? "lista" : instrumentType === "escala_estimativa" ? "escala" : "rubrica") + '","' +
+            '"weight": 25,' +
+            '"criteria": [{"name":"Criterio 1","weight":5,"levels":{"estrategico":"Estratégico","autonomo":"Autónomo","resolutivo":"Resolutivo","receptivo":"Receptivo","cumple":"Sí","nocumple":"No"}}]';
+
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: instructionsPrompt }] }] })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            generatedData = JSON.parse(rawText);
+          }
+        } catch (err) {
+          console.warn('[handleGenerateInstrumentAI] API fetch fallback to local MINERD generator:', err);
+        }
+      }
+
+      if (!generatedData) {
+        const typeKey = instrumentType === 'lista_cotejo' ? 'lista' : instrumentType === 'escala_estimativa' ? 'escala' : 'rubrica';
+        const criteriaList = [
+          {
+            name: 'Comprensión conceptual de ' + instrumentTopic,
+            weight: 5,
+            levels: {
+              estrategico: 'Demuestra dominio conceptual profundo de ' + instrumentTopic + ' en ' + activeGradeStr + ', aplicando principios de ' + activeSubject + ' de forma crítica.',
+              autonomo: 'Explica los conceptos clave de ' + instrumentTopic + ' de manera clara y precisa según los contenidos de ' + activeSubject + '.',
+              resolutivo: 'Identifica las ideas fundamentales de ' + instrumentTopic + ' adecuadamente con asistencia mínima.',
+              receptivo: 'Reconoce elementos básicos de ' + instrumentTopic + ' pero requiere orientación constante.',
+              cumple: 'Demuestra comprensión adecuada de ' + instrumentTopic + '.',
+              nocumple: 'No demuestra comprensión de ' + instrumentTopic + '.'
+            }
+          },
+          {
+            name: 'Aplicación procedimental y resolución',
+            weight: 5,
+            levels: {
+              estrategico: 'Resuelve problemas complejos de ' + instrumentTopic + ' aplicando metodologías científicas y rigurosas.',
+              autonomo: 'Aplica los procedimientos requeridos para ' + instrumentTopic + ' de forma autónoma y correcta.',
+              resolutivo: 'Sigue los pasos procedimentales básicos de ' + instrumentTopic + ' con pocas omisiones.',
+              receptivo: 'Muestra dificultad en la ejecución de los procedimientos de ' + instrumentTopic + '.',
+              cumple: 'Aplica el procedimiento de forma correcta.',
+              nocumple: 'No ejecuta el procedimiento asignado.'
+            }
+          },
+          {
+            name: 'Argumentación y evidencias curriculares',
+            weight: 5,
+            levels: {
+              estrategico: 'Argumenta con fuentes válidas y lenguaje técnico de ' + activeSubject + ' todas sus conclusiones.',
+              autonomo: 'Fundamenta sus respuestas utilizando evidencias coherentes sobre ' + instrumentTopic + '.',
+              resolutivo: 'Presenta argumentos básicos aunque con justificaciones limitadas.',
+              receptivo: 'Emite opiniones sin sustento técnico sobre el tema.',
+              cumple: 'Aporta evidencias claras en su trabajo.',
+              nocumple: 'No aporta evidencias para justificar su trabajo.'
+            }
+          },
+          {
+            name: 'Actitud científica y colaboración',
+            weight: 5,
+            levels: {
+              estrategico: 'Muestra perseverancia, sentido ético y liderazgo colaborativo ejemplar.',
+              autonomo: 'Muestra responsabilidad y trabajo cooperativo constante durante la actividad.',
+              resolutivo: 'Cumple con sus asignaciones manteniendo actitud receptiva.',
+              receptivo: 'Requiere llamadas de atención para integrarse a la tarea.',
+              cumple: 'Muestra actitud responsable y colaborativa.',
+              nocumple: 'Muestra desinterés y falta de colaboración.'
+            }
+          },
+          {
+            name: 'Presentación y comunicación de hallazgos',
+            weight: 5,
+            levels: {
+              estrategico: 'Comunica sus hallazgos sobre ' + instrumentTopic + ' con sintaxis, formato y creatividad sobresalientes.',
+              autonomo: 'Presenta sus resultados de forma organizada, limpia y comprensible.',
+              resolutivo: 'Entrega el trabajo completo con orden aceptable.',
+              receptivo: 'Presenta el trabajo incompleto o con desorden significativo.',
+              cumple: 'Presenta los resultados en el formato indicado.',
+              nocumple: 'No cumple con el formato ni presentación.'
+            }
+          }
+        ];
+
+        generatedData = {
+          activity: 'Evaluación de ' + instrumentTopic,
+          topic: instrumentTopic,
+          competence: 'Comprende y aplica los principios fundamentales de ' + activeSubject + ' para ' + activeGradeStr + '.',
+          indicator: 'Evalúa el desempeño conceptual, procedimental y actitudinal en el tema "' + instrumentTopic + '".',
+          type: typeKey,
+          weight: 25,
+          criteria: criteriaList
+        };
+      }
+
+      setInstrumentEditState({
+        activity: generatedData.activity || ('Evaluación de ' + instrumentTopic),
+        topic: generatedData.topic || instrumentTopic,
+        competence: generatedData.competence || ('Competencia curricular de ' + activeSubject),
+        indicator: generatedData.indicator || ('Indicador de logro para ' + instrumentTopic),
+        type: generatedData.type || (instrumentType === 'lista_cotejo' ? 'lista' : instrumentType === 'escala_estimativa' ? 'escala' : 'rubrica'),
+        weight: Number(generatedData.weight) || 25,
+        criteria: generatedData.criteria || []
+      });
+
+      setCounselorToastMsg("✨ Instrumento generado con éxito por la IA y cargado en el panel.");
+      setTimeout(() => setCounselorToastMsg(''), 4000);
+    } catch (err) {
+      console.error('Error al generar instrumento:', err);
+      alert('❌ Error al generar instrumento con IA: ' + (err.message || err));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSaveInstrument = (e) => {
     if (e) e.preventDefault();
     if (!selectedGrade || !selectedSubject) return;
@@ -27737,7 +27884,7 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       competence: instrumentEditState.competence,
       indicator: instrumentEditState.indicator,
       type: instrumentEditState.type,
-      weight: Number(instrumentEditState.weight) || 100,
+      weight: Number(instrumentEditState.weight) || 0,
       criteria: instrumentEditState.criteria.length > 0 ? instrumentEditState.criteria : [
         {
           name: "Criterio General",
@@ -36183,7 +36330,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               className="form-input"
                               min="1"
                               max="100"
-                              value={instrumentEditState.weight !== undefined ? instrumentEditState.weight : 25}
+                              value={instrumentEditState.weight}
+                              onFocus={(e) => {
+                                if (e.target.value === '0' || e.target.value === 0) {
+                                  updateActiveInstrumentConfig({ weight: '' });
+                                }
+                              }}
+                              style={{
+                                width: '90px',
+                                padding: '8px 10px',
+                                borderRadius: '8px',
+                                border: '1px solid #CBD5E1',
+                                fontSize: '0.95rem',
+                                outline: 'none'
+                              }}
                               onChange={(e) => {
                                 const val = e.target.value === '' ? '' : Number(e.target.value);
                                 updateActiveInstrumentConfig({ weight: val === '' ? 0 : Math.min(100, Math.max(0, val)) });
