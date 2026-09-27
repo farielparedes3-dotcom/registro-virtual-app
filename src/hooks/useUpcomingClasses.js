@@ -115,7 +115,7 @@ export function useUpcomingClasses(currentUser) {
     updateTimeline();
     const interval = setInterval(updateTimeline, 20000);
     return () => clearInterval(interval);
-  }, [currentUser]);
+  }, [currentUser?.uid, currentUser?.email]);
 
   if (!currentUser || !docentesData) {
     return null;

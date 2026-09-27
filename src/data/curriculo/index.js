@@ -153,6 +153,23 @@ export function filterOfficialCompetencies(gradeStr, subjectKey, selectedFundame
 }
 
 /**
+ * Get Indicators for a given Grade and Subject for AI contextualization
+ */
+export function getIndicatorsForGradeAndSubject(gradeStr, subjectKey) {
+  const { indicators, competencies } = filterOfficialCompetencies(gradeStr, subjectKey);
+  if (indicators && indicators.length > 0) {
+    return indicators.map(i => {
+      if (typeof i === 'string') return i;
+      return i.descripcion || i.nombre || i.codigo || JSON.stringify(i);
+    }).filter(Boolean);
+  }
+  if (competencies && competencies.length > 0) {
+    return competencies.map(c => c.nombre || c.descripcion || '').filter(Boolean);
+  }
+  return ["Evalúa el aprendizaje conceptual y la aplicación práctica del tema."];
+}
+
+/**
  * Legacy alias for 1ro
  */
 export function filterOfficialCompetencies1ro(subjectKey, selectedFundamental) {

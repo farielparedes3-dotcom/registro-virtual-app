@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
-import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData, getOfficialEjesTransversales, validateAndHarmonizeParityMatrix } from './data/curriculo/index.js';
+import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData, getOfficialEjesTransversales, validateAndHarmonizeParityMatrix, getIndicatorsForGradeAndSubject } from './data/curriculo/index.js';
 // Vercel deployment trigger
 
 import { dbService } from './db';
@@ -24845,6 +24845,7 @@ export default function App() {
     name: '',
     username: '',
     email: '',
+    institutionalEmail: '',
     password: '',
     avatar: '',
     teacherSignature: '',
@@ -24871,6 +24872,7 @@ export default function App() {
         name: currentUser.name || '',
         username: currentUser.username || (currentUser.email ? currentUser.email.split('@')[0] : ''),
         email: currentUser.email || '',
+        institutionalEmail: currentUser.institutionalEmail || currentUser.email || '',
         password: currentUser.password || '',
         avatar: currentUser.avatar || '',
         teacherSignature: currentUser.teacherSignature || '',
@@ -24979,12 +24981,15 @@ export default function App() {
 
     const newEmail = profileForm.email.trim();
     const oldEmail = currentUser?.email || '';
+    const instEmail = (profileForm.institutionalEmail || '').trim() || newEmail;
 
     const updatedUser = {
       ...currentUser,
       name: profileForm.name.trim(),
       username: profileForm.username.trim() || newEmail.split('@')[0],
       email: newEmail,
+      institutionalEmail: instEmail,
+      exportFolderEmail: instEmail,
       password: profileForm.password,
       avatar: profileForm.avatar,
       teacherSignature: profileForm.teacherSignature,
@@ -29717,6 +29722,20 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))} 
                   placeholder="usuario@school.edu" 
                   required 
+                />
+              </div>
+
+              {/* Correo Institucional / Exportación */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  Correo Institucional (MINERD / Carpetas Drive)
+                </label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  value={profileForm.institutionalEmail} 
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, institutionalEmail: e.target.value }))} 
+                  placeholder="docente@educacion.edu.do" 
                 />
               </div>
 
