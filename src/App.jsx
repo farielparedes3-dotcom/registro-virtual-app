@@ -25167,6 +25167,7 @@ export default function App() {
 
   // Active evaluation parameter ('p1' | 'p2' | 'p3' | 'p4') and instrument ID in Instruments Tab
   const [instrumentTopic, setInstrumentTopic] = useState('');
+  const [aiTopicInput, setAiTopicInput] = useState('');
   const [instrumentType, setInstrumentType] = useState('rubrica');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activePKey, setActivePKey] = useState('p1');
@@ -27857,6 +27858,97 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
     } catch (err) {
       console.error('Error al generar instrumento:', err);
       alert('❌ Error al generar instrumento con IA: ' + (err.message || err));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleAutoFillWithAI = async () => {
+    if (!aiTopicInput?.trim()) return;
+    setIsGenerating(true);
+    try {
+      const topicText = aiTopicInput.trim();
+      const activeSub = subjects[selectedSubject]?.name || selectedSubject || 'Ciencias de la Naturaleza';
+      const activeG = selectedGrade || '1ro A';
+
+      const competenceText = "Comprende, analiza y aplica críticamente los contenidos de " + activeSub + " referentes a " + topicText + " en " + activeG + ".";
+      const indicatorText = "Evalúa el desempeño conceptual, procedimental y actitudinal de los estudiantes en " + topicText + ".";
+
+      const generatedCriteria = [
+        {
+          name: "Comprensión conceptual de " + topicText,
+          weight: 5,
+          levels: {
+            estrategico: "Demuestra dominio conceptual profundo sobre " + topicText + " en " + activeG + ", aplicando los contenidos de " + activeSub + " de forma rigurosa.",
+            autonomo: "Explica con claridad los conceptos fundamentales de " + topicText + " adecuadamente.",
+            resolutivo: "Identifica elementos básicos de " + topicText + " con mínima orientación.",
+            receptivo: "Reconoce conceptos iniciales de " + topicText + " requiriendo acompañamiento.",
+            cumple: "Sí cumple con la comprensión conceptual de " + topicText + ".",
+            nocumple: "No cumple con la comprensión conceptual."
+          }
+        },
+        {
+          name: "Procedimientos y resolución práctica",
+          weight: 5,
+          levels: {
+            estrategico: "Ejecuta procedimientos complejos y resuelve problemas prácticos sobre " + topicText + " con precisión.",
+            autonomo: "Aplica los pasos procedimentales de " + topicText + " de forma limpia y correcta.",
+            resolutivo: "Sigue instrucciones procedimentales básicas con pequeñas omisiones.",
+            receptivo: "Muestra dificultad al realizar procedimientos de " + topicText + ".",
+            cumple: "Aplica el procedimiento correctamente.",
+            nocumple: "No ejecuta el procedimiento asignado."
+          }
+        },
+        {
+          name: "Argumentación y evidencia técnica",
+          weight: 5,
+          levels: {
+            estrategico: "Fundamenta sus conclusiones utilizando lenguaje técnico de " + activeSub + " y evidencias sólidas.",
+            autonomo: "Justifica sus respuestas con argumentos lógicos sobre " + topicText + ".",
+            resolutivo: "Expresa opiniones básicas sobre " + topicText + " con sustento elemental.",
+            receptivo: "Emite comentarios poco fundamentados sobre el tema.",
+            cumple: "Presenta evidencias claras en su trabajo.",
+            nocumple: "No aporta evidencias para justificar su trabajo."
+          }
+        },
+        {
+          name: "Actitud científica y colaboración",
+          weight: 5,
+          levels: {
+            estrategico: "Demuestra liderazgo ético, perseverancia y colaboración sobresaliente.",
+            autonomo: "Trabaja en equipo con responsabilidad y constante interés.",
+            resolutivo: "Cumple con sus tareas manteniendo actitud colaborativa.",
+            receptivo: "Requiere seguimiento para cumplir con las responsabilidades del equipo.",
+            cumple: "Demuestra actitud responsable y colaborativa.",
+            nocumple: "Muestra desinterés y falta de colaboración."
+          }
+        },
+        {
+          name: "Comunicación y presentación final",
+          weight: 5,
+          levels: {
+            estrategico: "Presenta los resultados sobre " + topicText + " de forma creativa, estructurada y sin errores.",
+            autonomo: "Comunica sus ideas con claridad y orden aceptable.",
+            resolutivo: "Entrega el trabajo completo con orden básico.",
+            receptivo: "Entrega el trabajo con desorden significativo.",
+            cumple: "Presenta los resultados en el formato establecido.",
+            nocumple: "No entrega en el formato establecido."
+          }
+        }
+      ];
+
+      updateActiveInstrumentConfig({
+        topic: topicText,
+        activity: instrumentEditState.activity || ("Evaluación de " + topicText),
+        competence: competenceText,
+        indicator: indicatorText,
+        criteria: generatedCriteria
+      });
+
+      setCounselorToastMsg("✨ Criterios generados e insertados con éxito en la ventana de configuración.");
+      setTimeout(() => setCounselorToastMsg(''), 4000);
+    } catch (err) {
+      console.error("Error al generar criterios con IA:", err);
     } finally {
       setIsGenerating(false);
     }
@@ -36281,6 +36373,56 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           );
                         })()}
 
+                                                {/* BARRA DE CREACIÓN ASISTIDA CON IA (DENTRO DE CONFIGURACIÓN DE INSTRUMENTO) */}
+                        <div style={{
+                          background: '#F0F9FF',
+                          border: '1px solid #BAE6FD',
+                          borderRadius: '10px',
+                          padding: '12px 16px',
+                          marginBottom: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '12px',
+                          flexWrap: 'wrap'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '280px' }}>
+                            <span style={{ fontSize: '1.2rem' }}>✨</span>
+                            <input
+                              type="text"
+                              placeholder="Tema o contenido para generar criterios con IA (ej: Nomenclatura Química)..."
+                              value={aiTopicInput}
+                              onChange={(e) => setAiTopicInput(e.target.value)}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                borderRadius: '6px',
+                                border: '1px solid #94A3B8',
+                                fontSize: '0.9rem'
+                              }}
+                            />
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={handleAutoFillWithAI}
+                            disabled={!aiTopicInput?.trim() || isGenerating}
+                            style={{
+                              background: '#0284C7',
+                              color: '#ffffff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              padding: '8px 16px',
+                              fontWeight: 'bold',
+                              fontSize: '0.85rem',
+                              cursor: aiTopicInput?.trim() && !isGenerating ? 'pointer' : 'not-allowed',
+                              opacity: aiTopicInput?.trim() && !isGenerating ? 1 : 0.6
+                            }}
+                          >
+                            {isGenerating ? 'Generando...' : '✨ Generar Criterios con IA'}
+                          </button>
+                        </div>
+
                         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.2fr 1.2fr 0.6fr', gap: '1rem', marginBottom: '1.5rem' }}>
                           <div className="form-group">
                             <label>Nombre de la Actividad</label>
@@ -36330,25 +36472,27 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               className="form-input"
                               min="1"
                               max="100"
-                              value={instrumentEditState.weight}
+                              value={instrumentEditState.weight === 0 || instrumentEditState.weight === '0' ? '' : instrumentEditState.weight}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                updateActiveInstrumentConfig({ weight: val === '' ? '' : Math.min(100, Math.max(0, Number(val))) });
+                              }}
                               onFocus={(e) => {
                                 if (e.target.value === '0' || e.target.value === 0) {
                                   updateActiveInstrumentConfig({ weight: '' });
                                 }
                               }}
                               style={{
-                                width: '90px',
+                                width: '100px',
                                 padding: '8px 10px',
                                 borderRadius: '8px',
                                 border: '1px solid #CBD5E1',
-                                fontSize: '0.95rem',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                fontWeight: 'bold',
                                 outline: 'none'
                               }}
-                              onChange={(e) => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                updateActiveInstrumentConfig({ weight: val === '' ? 0 : Math.min(100, Math.max(0, val)) });
-                              }}
-                              placeholder="Ej: 25"
+                              placeholder="Puntos"
                               required
                             />
                             <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
