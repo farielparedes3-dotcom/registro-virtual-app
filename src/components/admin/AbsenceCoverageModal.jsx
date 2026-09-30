@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { TEACHERS_SCHEDULE_DATA, PERIODS } from '../../data/officialMasterSchedule';
 
+const SPECIAL_ROLE_TEACHER_IDS = [
+  'mario_paredes',     // Coordinación Pedagógica
+  'nathaly_stevez',    // Orientación y Psicología
+  'francina_minaya',   // Orientación y Psicología
+  'emiliana_espinal'   // Encargada de Alimentación Escolar
+];
+
 const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [selectedDay, setSelectedDay] = useState('Lu');
@@ -19,11 +26,52 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
       return !block || block.type === 'free' || block.type === 'register' || block.type === 'planning';
     }).map(t => {
       const block = t.schedule?.[selectedDay]?.[periodIndex];
+      const isSpecialRole = SPECIAL_ROLE_TEACHER_IDS.includes(t.id);
       const statusLabel = block?.type === 'register' ? 'Hora de Registro'
         : block?.type === 'planning' ? 'Planificación'
         : 'Hora Libre';
-      return { id: t.id, name: t.name, status: statusLabel };
+      return { id: t.id, name: t.name, status: statusLabel, isSpecialRole };
     });
+  };
+
+  const autoAssignSubstitutes = (day, blocks) => {
+    const targetDay = day || selectedDay;
+    const targetBlocks = blocks || teacherBlocks;
+
+    const newAssignments = {};
+    const usageCount = {}; // Control de rotación equitativa
+
+    targetBlocks.forEach((block, idx) => {
+      if (block?.type !== 'class') return;
+
+      // 1. Obtener todos los docentes libres en este día y bloque
+      const available = TEACHERS_SCHEDULE_DATA.filter(t => {
+        if (t.id === selectedTeacherId) return false;
+        const tBlock = t.schedule?.[targetDay]?.[idx];
+        return !tBlock || tBlock.type === 'free' || tBlock.type === 'register' || tBlock.type === 'planning';
+      });
+
+      // 2. Separar docentes regulares de los de último recurso
+      const regularTeachers = available.filter(t => !SPECIAL_ROLE_TEACHER_IDS.includes(t.id));
+      const fallbackTeachers = available.filter(t => SPECIAL_ROLE_TEACHER_IDS.includes(t.id));
+
+      // 3. Seleccionar de regularTeachers con menor carga; si está vacío, usar fallbackTeachers
+      let chosenTeacher = null;
+      if (regularTeachers.length > 0) {
+        regularTeachers.sort((a, b) => (usageCount[a.id] || 0) - (usageCount[b.id] || 0));
+        chosenTeacher = regularTeachers[0];
+      } else if (fallbackTeachers.length > 0) {
+        fallbackTeachers.sort((a, b) => (usageCount[a.id] || 0) - (usageCount[b.id] || 0));
+        chosenTeacher = fallbackTeachers[0];
+      }
+
+      if (chosenTeacher) {
+        newAssignments[idx] = chosenTeacher.id;
+        usageCount[chosenTeacher.id] = (usageCount[chosenTeacher.id] || 0) + 1;
+      }
+    });
+
+    setCoverageAssignments(newAssignments);
   };
 
   const handleSelectSubstitute = (periodIndex, subTeacherId) => {
@@ -61,17 +109,18 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
       <head>
         <title>Circular de Sustitución Docente - Liceo Ana Rosa Castillo</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }
-          .header { text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 16px; margin-bottom: 24px; }
-          .school-title { font-size: 18px; font-weight: bold; color: #1e3a8a; margin: 0; text-transform: uppercase; }
-          .school-sub { font-size: 13px; color: #64748b; margin: 4px 0 0 0; }
-          .doc-title { font-size: 15px; font-weight: bold; margin-top: 15px; text-decoration: underline; }
-          .statement { font-size: 14px; text-align: justify; margin: 20px 0; }
-          table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-          th, td { border: 1px solid #cbd5e1; padding: 10px 12px; font-size: 13px; text-align: left; }
-          th { background-color: #f1f5f9; color: #334155; }
+          body { font-family: Arial, sans-serif; padding: 40px; color: #0f172a; line-height: 1.6; background: #ffffff; }
+          .header { text-align: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 16px; margin-bottom: 24px; }
+          .school-title { font-size: 20px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+          .school-sub { font-size: 13px; color: #475569; margin: 4px 0 0 0; font-weight: 600; }
+          .doc-title { font-size: 15px; font-weight: 800; margin-top: 15px; text-decoration: underline; color: #0f172a; }
+          .statement { font-size: 14px; text-align: justify; margin: 20px 0; color: #1e293b; }
+          table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+          th, td { border: 1px solid #94a3b8; padding: 10px 14px; font-size: 13px; text-align: left; }
+          th { background-color: #1e3a8a; color: #ffffff; font-weight: 800; text-transform: uppercase; font-size: 12px; }
+          tr:nth-child(even) { background-color: #f8fafc; }
           .signatures { margin-top: 60px; display: flex; justify-content: space-around; }
-          .sign-line { border-top: 1px solid #334155; width: 220px; text-align: center; font-size: 12px; padding-top: 6px; }
+          .sign-line { border-top: 1.5px solid #0f172a; width: 220px; text-align: center; font-size: 12px; padding-top: 8px; color: #0f172a; }
           @media print {
             body { padding: 20px; }
             button { display: none; }
@@ -85,7 +134,7 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
           <div class="doc-title">CIRCULAR INTERNA: ASIGNACIÓN DE COLABORACIÓN Y COBERTURA DOCENTE</div>
         </div>
 
-        <p style="font-size: 13px; font-weight: bold;">Fecha: ${dateFormatted}</p>
+        <p style="font-size: 13px; font-weight: 800; color: #1e293b;">Fecha: ${dateFormatted}</p>
 
         <div class="statement">
           Por medio de la presente se hace de público conocimiento al equipo docente que, debido a situaciones de causa mayor y ajenas a su voluntad, el/la docente <strong>${currentTeacher?.name || 'Docente Ausente'}</strong> no podrá presentarse al centro educativo en la jornada correspondiente.
@@ -121,7 +170,7 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
           </tbody>
         </table>
 
-        <div class="statement" style="font-size: 12px; font-style: italic; margin-top: 25px;">
+        <div class="statement" style="font-size: 12px; font-style: italic; margin-top: 25px; color: #475569;">
           Agradecemos el compromiso y el sentido de solidaridad institucional de cada uno de los compañeros docentes al brindar su apoyo en el resguardo de nuestros estudiantes.
         </div>
 
@@ -149,6 +198,14 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
     printWindow.document.close();
   };
 
+  const dayLabels = {
+    Lu: 'Lunes',
+    Ma: 'Martes',
+    Mi: 'Miércoles',
+    Ju: 'Jueves',
+    Vi: 'Viernes'
+  };
+
   return (
     <div style={{
       position: 'fixed',
@@ -167,8 +224,8 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
         background: '#ffffff',
         borderRadius: '16px',
         width: '100%',
-        maxWidth: '850px',
-        maxHeight: '90vh',
+        maxWidth: '880px',
+        maxHeight: '92vh',
         display: 'flex',
         flexDirection: 'column',
         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)'
@@ -180,7 +237,7 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
               Planilla de Ajuste de Horario por Ausencia
             </h2>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>
-              Detecta automáticamente aulas sin profesor y asigna a docentes en horas libres, registro o planificación.
+              Detecta automáticamente aulas sin profesor y asigna a docentes en horas libres respetando prioridades de roles especiales.
             </p>
           </div>
           <button 
@@ -191,13 +248,17 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
           </button>
         </div>
 
-        {/* Filtros */}
-        <div style={{ padding: '16px 24px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        {/* Filtros y Botón de Auto-Asignación */}
+        <div style={{ padding: '16px 24px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '220px' }}>
             <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Docente Ausente</label>
             <select
               value={selectedTeacherId}
-              onChange={(e) => { setSelectedTeacherId(e.target.value); setCoverageAssignments({}); }}
+              onChange={(e) => {
+                const newId = e.target.value;
+                setSelectedTeacherId(newId);
+                setCoverageAssignments({});
+              }}
               style={{ width: '100%', marginTop: '4px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', fontWeight: 600 }}
             >
               <option value="">-- Seleccionar Docente Ausente --</option>
@@ -207,11 +268,15 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
             </select>
           </div>
 
-          <div style={{ width: '160px' }}>
+          <div style={{ width: '150px' }}>
             <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Día de la Semana</label>
             <select
               value={selectedDay}
-              onChange={(e) => { setSelectedDay(e.target.value); setCoverageAssignments({}); }}
+              onChange={(e) => {
+                const newDay = e.target.value;
+                setSelectedDay(newDay);
+                setCoverageAssignments({});
+              }}
               style={{ width: '100%', marginTop: '4px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', fontWeight: 600 }}
             >
               <option value="Lu">Lunes</option>
@@ -221,9 +286,31 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
               <option value="Vi">Viernes</option>
             </select>
           </div>
+
+          <button
+            type="button"
+            onClick={() => autoAssignSubstitutes(selectedDay, teacherBlocks)}
+            disabled={!selectedTeacherId}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              background: selectedTeacherId ? '#4F46E5' : '#CBD5E1',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: selectedTeacherId ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: selectedTeacherId ? '0 2px 4px rgba(79, 70, 229, 0.25)' : 'none'
+            }}
+          >
+            ⚡ Asignar Automáticamente
+          </button>
         </div>
 
-        {/* Tabla de Bloques */}
+        {/* Tabla / Vista para Captura (#printable-circular) */}
         <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
           {!selectedTeacherId ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94A3B8' }}>
@@ -231,90 +318,111 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
               <p style={{ margin: 0, fontWeight: 600 }}>Seleccione un docente ausente para ver los bloques horarios a cubrir.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {PERIODS.map((period, idx) => {
-                const block = teacherBlocks[idx] || { type: 'free', label: 'Libre' };
-                const isClass = block.type === 'class';
-                const availableSubstitutes = getAvailableSubstitutes(idx);
-                const assignedSubId = coverageAssignments[idx] || '';
+            <div id="printable-circular" style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+              {/* Encabezado formal visible para captura */}
+              <div style={{ textAlign: 'center', borderBottom: '2px solid #1E3A8A', paddingBottom: '12px', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#1E3A8A', fontWeight: 900, textTransform: 'uppercase' }}>
+                  Liceo Ana Rosa Castillo
+                </h3>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#475569', fontWeight: 600 }}>
+                  Distrito Educativo 14-01, Nagua | Cobertura Docente por Ausencia
+                </p>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, marginTop: '8px', color: '#0F172A', textDecoration: 'underline' }}>
+                  CIRCULAR INTERNA: ASIGNACIÓN DE SUSTITUCIONES ({dayLabels[selectedDay]?.toUpperCase()})
+                </div>
+              </div>
 
-                return (
-                  <div key={period.id} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '16px',
-                    padding: '12px 16px',
-                    borderRadius: '10px',
-                    border: '1px solid #E2E8F0',
-                    background: isClass ? '#FEF2F2' : '#F8FAFC'
-                  }}>
-                    {/* Hora y Periodo */}
-                    <div style={{ minWidth: '120px' }}>
-                      <span style={{ fontWeight: 800, color: '#1E293B', fontSize: '0.9rem', display: 'block' }}>
-                        {period.label}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-                        {period.time}
-                      </span>
-                    </div>
+              {/* Leyenda de Docente y Motivo */}
+              <div style={{ background: '#F1F5F9', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', borderLeft: '4px solid #1E3A8A', fontSize: '0.85rem', color: '#1E293B' }}>
+                Docente Ausente: <strong>{currentTeacher?.name}</strong> | Cobertura Pedagógica Planificada
+              </div>
 
-                    {/* Actividad Programada del Docente Ausente */}
-                    <div style={{ flex: 1, minWidth: '160px' }}>
-                      {isClass ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{
-                            background: '#EF4444',
-                            color: '#FFFFFF',
-                            padding: '3px 8px',
-                            borderRadius: '6px',
-                            fontSize: '0.75rem',
-                            fontWeight: 800
-                          }}>
-                            {block.grade}
-                          </span>
-                          <span style={{ fontWeight: 700, color: '#991B1B', fontSize: '0.88rem' }}>
-                            Asignatura: {block.subject}
-                          </span>
-                        </div>
-                      ) : (
-                        <span style={{ fontSize: '0.85rem', color: '#64748B', fontStyle: 'italic' }}>
-                          {block.label || (block.type === 'register' ? 'Registro' : block.type === 'planning' ? 'Planificación' : 'Libre')}
+              {/* Filas estilizadas de alto contraste */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {PERIODS.map((period, idx) => {
+                  const block = teacherBlocks[idx] || { type: 'free', label: 'Libre' };
+                  const isClass = block.type === 'class';
+                  const availableSubstitutes = getAvailableSubstitutes(idx);
+                  const assignedSubId = coverageAssignments[idx] || '';
+
+                  return (
+                    <div key={period.id} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '12px',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      border: isClass ? '1.5px solid #FCA5A5' : '1px solid #E2E8F0',
+                      background: isClass ? '#FEF2F2' : '#F8FAFC'
+                    }}>
+                      {/* Hora y Bloque */}
+                      <div style={{ minWidth: '130px' }}>
+                        <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.88rem', display: 'block' }}>
+                          {period.label}
                         </span>
-                      )}
-                    </div>
+                        <span style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 600 }}>
+                          {period.time}
+                        </span>
+                      </div>
 
-                    {/* Selector de Sustituto Disponible */}
-                    <div style={{ flex: 1.2, minWidth: '220px' }}>
-                      {isClass ? (
-                        <select
-                          value={assignedSubId}
-                          onChange={(e) => handleSelectSubstitute(idx, e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '6px 10px',
-                            borderRadius: '6px',
-                            border: `1px solid ${assignedSubId ? '#22C55E' : '#CBD5E1'}`,
-                            background: assignedSubId ? '#F0FDF4' : '#FFFFFF',
-                            fontSize: '0.82rem',
-                            fontWeight: 600,
-                            color: assignedSubId ? '#15803D' : '#334155'
-                          }}
-                        >
-                          <option value="">-- Asignar Sustituto ({availableSubstitutes.length} disponibles) --</option>
-                          {availableSubstitutes.map(sub => (
-                            <option key={sub.id} value={sub.id}>
-                              {sub.name} ({sub.status})
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>No requiere cobertura</span>
-                      )}
+                      {/* Actividad / Curso */}
+                      <div style={{ flex: 1, minWidth: '160px' }}>
+                        {isClass ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{
+                              background: '#DC2626',
+                              color: '#FFFFFF',
+                              padding: '2px 8px',
+                              borderRadius: '5px',
+                              fontSize: '0.78rem',
+                              fontWeight: 900
+                            }}>
+                              {block.grade}
+                            </span>
+                            <span style={{ fontWeight: 800, color: '#991B1B', fontSize: '0.88rem' }}>
+                              {block.subject}
+                            </span>
+                          </div>
+                        ) : (
+                          <span style={{ fontSize: '0.82rem', color: '#64748B', fontStyle: 'italic' }}>
+                            {block.label || (block.type === 'register' ? 'Hora de Registro' : block.type === 'planning' ? 'Planificación' : 'Libre')}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Selector de Docente Sustituto */}
+                      <div style={{ flex: 1.3, minWidth: '220px' }}>
+                        {isClass ? (
+                          <select
+                            value={assignedSubId}
+                            onChange={(e) => handleSelectSubstitute(idx, e.target.value)}
+                            style={{
+                              width: '100%',
+                              padding: '6px 10px',
+                              borderRadius: '6px',
+                              border: `1.5px solid ${assignedSubId ? '#16A34A' : '#94A3B8'}`,
+                              background: assignedSubId ? '#F0FDF4' : '#FFFFFF',
+                              fontSize: '0.82rem',
+                              fontWeight: 700,
+                              color: assignedSubId ? '#15803D' : '#1E293B'
+                            }}
+                          >
+                            <option value="">-- Asignar Sustituto ({availableSubstitutes.length} dispon.) --</option>
+                            {availableSubstitutes.map(sub => (
+                              <option key={sub.id} value={sub.id}>
+                                {sub.name} {sub.isSpecialRole ? '⚠️ (Rol Especial)' : ''} ({sub.status})
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span style={{ fontSize: '0.78rem', color: '#94A3B8', fontWeight: 600 }}>Sin requerimiento</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
