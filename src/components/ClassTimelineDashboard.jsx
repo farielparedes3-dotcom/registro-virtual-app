@@ -1,3 +1,4 @@
+import AbsenceCoverageModal from './admin/AbsenceCoverageModal';
 import React, { useState, useEffect } from 'react';
 import { OFFICIAL_BELL_SCHEDULE, getCurrentBlockInfo, parseTimeToMinutes } from '../config/scheduleConfig';
 import docentesHorariosData from '../data/docentesHorarios.json';
@@ -18,6 +19,7 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
     }
     return 'Lunes';
   });
+  const [isAbsenceModalOpen, setIsAbsenceModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState('timeline'); // 'timeline' | 'weekly'
   const upcomingSchedule = useUpcomingClasses(currentUser) || {};
 
@@ -163,6 +165,23 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
                 onClick={() => setViewMode('timeline')}
               >
                 📅 Timeline de Hoy
+              </button>
+              <button
+                type="button"
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 'bold',
+                  borderRadius: '7px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: '#0284C7',
+                  color: '#fff',
+                  marginLeft: '0.4rem'
+                }}
+                onClick={() => setIsAbsenceModalOpen(true)}
+              >
+                📋 Cobertura por Ausencia
               </button>
               <button
                 type="button"
@@ -522,6 +541,8 @@ export default function ClassTimelineDashboard({ currentUser, onNavigateToGrade 
           </table>
         </div>
       )}
+    
+      <AbsenceCoverageModal isOpen={isAbsenceModalOpen} onClose={() => setIsAbsenceModalOpen(false)} />
     </div>
   );
 }
