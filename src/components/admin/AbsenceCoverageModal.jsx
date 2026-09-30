@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import { TEACHERS_SCHEDULE_DATA, PERIODS } from '../../data/officialMasterSchedule';
-
-const SPECIAL_ROLE_TEACHER_IDS = [
-  'mario_paredes',     // Coordinación Pedagógica
-  'nathaly_stevez',    // Orientación y Psicología
-  'francina_minaya',   // Orientación y Psicología
-  'emiliana_espinal'   // Encargada de Alimentación Escolar
-];
+import { TEACHERS_SCHEDULE_DATA, PERIODS, SPECIAL_ROLE_TEACHER_IDS } from '../../data/officialMasterSchedule';
 
 const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
@@ -306,7 +299,7 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
               boxShadow: selectedTeacherId ? '0 2px 4px rgba(79, 70, 229, 0.25)' : 'none'
             }}
           >
-            ⚡ Asignar Automáticamente
+            ⚡ Generar Cobertura Automática
           </button>
         </div>
 
