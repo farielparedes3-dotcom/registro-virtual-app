@@ -322,24 +322,24 @@ const AbsenceCoverageModal = ({ isOpen, onClose, onSaveSubstitutions }) => {
         {/* Botones del Pie */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <button
+            type="button"
             onClick={handlePrintCircular}
             disabled={!selectedTeacherId || Object.keys(coverageAssignments).length === 0}
             style={{
+              background: '#047857',
+              color: '#ffffff',
+              border: 'none',
               padding: '8px 16px',
               borderRadius: '8px',
-              border: '1px solid #0284C7',
-              background: '#F0F9FF',
-              color: '#0284C7',
               fontWeight: 700,
               fontSize: '0.85rem',
               cursor: (!selectedTeacherId || Object.keys(coverageAssignments).length === 0) ? 'not-allowed' : 'pointer',
-              opacity: (!selectedTeacherId || Object.keys(coverageAssignments).length === 0) ? 0.5 : 1,
               display: 'flex',
               alignItems: 'center',
               gap: '6px'
             }}
           >
-            📥 Descargar Circular de Sustitución (PDF / Imprimir)
+            📥 Imprimir / Guardar Circular en PDF
           </button>
 
           <div style={{ display: 'flex', gap: '12px' }}>
