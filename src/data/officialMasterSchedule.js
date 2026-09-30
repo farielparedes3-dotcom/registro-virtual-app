@@ -39,8 +39,8 @@ export const TEACHERS_SCHEDULE_DATA = [
       Mi: [
         { type: 'class', grade: '2B', subject: 'LE' },
         { type: 'class', grade: '4AH', subject: 'LE' },
-        { type: 'register', label: 'Registro' },
         { type: 'class', grade: '4AH', subject: 'LE' },
+        { type: 'register', label: 'Registro' },
         { type: 'class', grade: '2A', subject: 'LE' },
         { type: 'class', grade: '2A', subject: 'TGO' },
         { type: 'class', grade: '2B', subject: 'TGO' },
@@ -376,7 +376,7 @@ export const TEACHERS_SCHEDULE_DATA = [
         { type: 'class', grade: '6A-M/H', subject: 'CN' },
         { type: 'register', label: 'Registro' },
         { type: 'class', grade: '5A-N', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '5A-N', subject: 'CN' },
         { type: 'planning', label: 'Planificación' },
         { type: 'free', label: 'Libre' },
         { type: 'free', label: 'Libre' },
@@ -386,7 +386,7 @@ export const TEACHERS_SCHEDULE_DATA = [
         { type: 'class', grade: '6A-M/H', subject: 'CN' },
         { type: 'planning', label: 'Planificación' },
         { type: 'class', grade: '4M', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '4M', subject: 'CN' },
         { type: 'register', label: 'Registro' },
         { type: 'free', label: 'Libre' },
         { type: 'free', label: 'Libre' },
@@ -396,7 +396,7 @@ export const TEACHERS_SCHEDULE_DATA = [
         { type: 'class', grade: '4M', subject: 'CN' },
         { type: 'register', label: 'Registro' },
         { type: 'class', grade: '5A-M', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '5A-M', subject: 'CN' },
         { type: 'register', label: 'Registro' },
         { type: 'class', grade: '4AH', subject: 'CN' },
         { type: 'free', label: 'Libre' },
@@ -406,7 +406,7 @@ export const TEACHERS_SCHEDULE_DATA = [
         { type: 'class', grade: '5A-N', subject: 'CN' },
         { type: 'planning', label: 'Planificación' },
         { type: 'class', grade: '4AH', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '4AH', subject: 'CN' },
         { type: 'planning', label: 'Planificación' },
         { type: 'class', grade: '4M', subject: 'CN' },
         { type: 'free', label: 'Libre' },
@@ -431,38 +431,38 @@ export const TEACHERS_SCHEDULE_DATA = [
       Lu: [
         { type: 'class', grade: '2B', subject: 'CN' },
         { type: 'class', grade: '3C', subject: 'CN' },
+        { type: 'class', grade: '3C', subject: 'CN' },
         { type: 'class', grade: '2A', subject: 'CN' },
         { type: 'register', label: 'Registro' },
         { type: 'class', grade: '2B', subject: 'CN' },
         { type: 'class', grade: '3B', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
-        { type: 'free', label: 'Libre' }
+        { type: 'class', grade: '3B', subject: 'CN' }
       ],
       Ma: [
         { type: 'class', grade: '3A', subject: 'CN' },
         { type: 'register', label: 'Registro' },
         { type: 'class', grade: '3C', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '3C', subject: 'CN' },
         { type: 'class', grade: '2A', subject: 'CN' },
         { type: 'planning', label: 'Planificación' },
         { type: 'class', grade: '2B', subject: 'CN' },
-        { type: 'free', label: 'Libre' }
+        { type: 'class', grade: '2B', subject: 'CN' }
       ],
       Mi: [
         { type: 'class', grade: '3B', subject: 'CN' },
+        { type: 'class', grade: '3B', subject: 'CN' },
         { type: 'class', grade: '2A', subject: 'CN' },
         { type: 'register', label: 'Registro' },
-        { type: 'register', label: 'Registro' },
+        { type: 'class', grade: '3A', subject: 'CN' },
         { type: 'class', grade: '3A', subject: 'CN' },
         { type: 'class', grade: '2B', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
         { type: 'free', label: 'Libre' }
       ],
       Ju: [
         { type: 'class', grade: '3C', subject: 'CN' },
         { type: 'class', grade: '2A', subject: 'CN' },
+        { type: 'class', grade: '2A', subject: 'CN' },
         { type: 'class', grade: '3B', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
         { type: 'class', grade: '2B', subject: 'CN' },
         { type: 'planning', label: 'Planificación' },
         { type: 'planning', label: 'Planificación' },
@@ -475,7 +475,7 @@ export const TEACHERS_SCHEDULE_DATA = [
         { type: 'planning', label: 'Planificación' },
         { type: 'class', grade: '3A', subject: 'CN' },
         { type: 'class', grade: '2A', subject: 'CN' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '2A', subject: 'CN' },
         { type: 'free', label: 'Libre' }
       ]
     }
@@ -497,9 +497,9 @@ export const TEACHERS_SCHEDULE_DATA = [
       Ma: [
         { type: 'class', grade: '4M', subject: 'M' },
         { type: 'class', grade: '3C', subject: 'M' },
+        { type: 'class', grade: '3C', subject: 'M' },
         { type: 'register', label: 'Registro' },
         { type: 'class', grade: '3A', subject: 'M' },
-        { type: 'free', label: 'Libre' },
         { type: 'class', grade: '3B', subject: 'M' },
         { type: 'class', grade: '3C', subject: 'M' },
         { type: 'planning', label: 'Planificación' }
@@ -517,8 +517,8 @@ export const TEACHERS_SCHEDULE_DATA = [
       Ju: [
         { type: 'class', grade: '3B', subject: 'M' },
         { type: 'class', grade: '4M', subject: 'M' },
-        { type: 'class', grade: '3A', subject: 'M' },
         { type: 'class', grade: '4M', subject: 'M' },
+        { type: 'class', grade: '3A', subject: 'M' },
         { type: 'planning', label: 'Planificación' },
         { type: 'class', grade: '3C', subject: 'M' },
         { type: 'free', label: 'Libre' },
@@ -526,7 +526,7 @@ export const TEACHERS_SCHEDULE_DATA = [
       ],
       Vi: [
         { type: 'class', grade: '3A', subject: 'M' },
-        { type: 'free', label: 'Libre' },
+        { type: 'class', grade: '3A', subject: 'M' },
         { type: 'class', grade: '3B', subject: 'M' },
         { type: 'free', label: 'Libre' },
         { type: 'class', grade: '4M', subject: 'M' },
