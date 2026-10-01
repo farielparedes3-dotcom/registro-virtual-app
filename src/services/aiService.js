@@ -55,3 +55,64 @@ Devuelve estrictamente un objeto JSON con este formato:
 }
 `;
 };
+
+export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType, grade, subject }) => {
+  const cleanTopic = cleanTopicString(topic);
+  const apiKey = localStorage.getItem('s_ai_api_key');
+  const provider = localStorage.getItem('s_ai_provider') || 'gemini';
+
+  const systemPrompt = buildInstrumentSystemPrompt(instrumentType, subject, grade);
+  const userPrompt = `Genera un instrumento de evaluación del tipo "${instrumentType}" para el grado "${grade}" y asignatura "${subject}" sobre el tema/actividad: "${cleanTopic}".`;
+
+  if (provider === 'gemini' && apiKey) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }]
+        })
+      });
+      const data = await response.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return {
+          cleanTopic: parsed.cleanTopic || cleanTopic,
+          activityName: parsed.suggestedActivity || cleanTopic,
+          criteria: (parsed.criterios || []).map(c => ({
+            name: c.criterio,
+            weight: c.puntos || 5,
+            levels: c.descriptores || {}
+          }))
+        };
+      }
+    } catch (e) {
+      console.warn('Fallo llamada Gemini API real, usando generador determinista:', e);
+    }
+  }
+
+  // Fallback deterministic generator
+  const criteriaNames = [
+    `Comprensión y aplicación de conceptos clave en ${cleanTopic}`,
+    `Ejecución procedimental y metodología en la actividad`,
+    `Análisis crítico y resolución de problemas situados`,
+    `Presentación, calidad y rigor del producto final`
+  ];
+
+  return {
+    cleanTopic,
+    activityName: `Evaluación de ${cleanTopic}`,
+    criteria: criteriaNames.map(name => ({
+      name,
+      weight: 25,
+      levels: {
+        estrategico: `Demuestra excelencia estratégica y dominio completo en ${name.toLowerCase()}`,
+        autonomo: `Demuestra autonomía y lógica consistente en ${name.toLowerCase()}`,
+        resolutivo: `Resuelve adecuadamente los aspectos básicos de ${name.toLowerCase()}`,
+        receptivo: `Muestra comprensión inicial y receptiva de ${name.toLowerCase()}`
+      }
+    }))
+  };
+};

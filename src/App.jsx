@@ -1,5 +1,7 @@
 import { cleanTopicString, buildInstrumentSystemPrompt } from './services/aiService';
 import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
+import { extractTextFromDocument } from './services/docExtractorService';
+import { generateCurricularInstrument } from './services/multiAiOrchestrator';
 import React, { useState, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
@@ -25187,6 +25189,10 @@ export default function App() {
   // Active evaluation parameter ('p1' | 'p2' | 'p3' | 'p4') and instrument ID in Instruments Tab
   const [instrumentTopic, setInstrumentTopic] = useState('');
   const [aiTopicInput, setAiTopicInput] = useState('');
+  const [uploadedPlanFileName, setUploadedPlanFileName] = useState('');
+  const [isExtractingDoc, setIsExtractingDoc] = useState(false);
+  const [extractedPlanText, setExtractedPlanText] = useState('');
+  const [targetActivityInput, setTargetActivityInput] = useState('');
   const [instrumentType, setInstrumentType] = useState('rubrica');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activePKey, setActivePKey] = useState('p1');
@@ -27992,6 +27998,91 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
       console.error("Error al generar criterios con IA:", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleFileUploadForPlan = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsExtractingDoc(true);
+    setUploadedPlanFileName(file.name);
+    try {
+      let text = '';
+      if (file.name.endsWith('.pdf')) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += content.items.map(item => item.str).join(' ') + '\n';
+        }
+      } else if (file.name.endsWith('.docx')) {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        text = result.value || '';
+      } else {
+        text = await file.text();
+      }
+
+      setExtractedPlanText(text);
+      if (text.length > 50) {
+        // Extract topic suggestion
+        const sampleText = text.substring(0, 1500);
+        const lines = sampleText.split('\n').map(l => l.trim()).filter(Boolean);
+        const topicMatch = lines.find(l => l.toLowerCase().includes('tema') || l.toLowerCase().includes('unidad') || l.toLowerCase().includes('situación')) || lines[0] || file.name;
+        if (!aiTopicInput) setAiTopicInput(topicMatch.substring(0, 80));
+      }
+    } catch (err) {
+      console.error('Error procesando archivo de planificación:', err);
+      alert('⚠️ No se pudo extraer texto del documento: ' + err.message);
+    } finally {
+      setIsExtractingDoc(false);
+    }
+  };
+
+  const handleGenerateFromPlanDoc = async () => {
+    if (!extractedPlanText && !aiTopicInput) {
+      alert('⚠️ Por favor escribe un tema o sube una planificación en PDF/Word.');
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const activeParamObj = evaluationParameters?.[activePKey] || {};
+      const gradeSubjectCtx = {
+        grade: selectedGrade || '4to Secundaria',
+        subject: selectedSubject || 'Lengua Española',
+        pKey: activePKey,
+        parameterName: activeParamObj.title || activePKey.toUpperCase()
+      };
+
+      const result = await generateInstrumentFromPlanDoc({
+        docText: extractedPlanText || '',
+        topicInput: aiTopicInput || '',
+        targetActivity: targetActivityInput || '',
+        instrumentType: instrumentType || 'rubrica',
+        gradeSubjectCtx
+      });
+
+      if (result) {
+        if (result.topic) {
+          setInstrumentTopic(result.topic);
+          setEditingInstForm(prev => ({ ...prev, topic: result.topic }));
+        }
+        if (result.maxScore) {
+          setEditingInstForm(prev => ({ ...prev, maxScore: result.maxScore.toString() }));
+        }
+        if (result.criteria && Array.isArray(result.criteria)) {
+          setEditingInstForm(prev => ({
+            ...prev,
+            criteria: result.criteria
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('Error al generar desde planificación:', err);
+      alert('❌ Error al procesar documento con IA: ' + (err.message || err));
     } finally {
       setIsGenerating(false);
     }
