@@ -1,4 +1,4 @@
-import { cleanTopicString, buildInstrumentSystemPrompt } from './services/aiService';
+import { cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI } from './services/aiService';
 import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
 import { extractTextFromDocument } from './services/docExtractorService';
 import { generateCurricularInstrument } from './services/multiAiOrchestrator';
@@ -25147,6 +25147,33 @@ export default function App() {
   const [activeAssessment, setActiveAssessment] = useState(null); // { studentId, subjectKey, evalIdx, config, studentName }
   const [tempCriteriaRatings, setTempCriteriaRatings] = useState({}); // { [criterionName]: 'autonomo' | ... }
 
+  // --- Teacher AI Preferences & Universal AI Engine States ---
+  const [preferredAI, setPreferredAI] = useState(() => {
+    return localStorage.getItem('docente_ai_pref') || localStorage.getItem('s_ai_provider') || 'copilot';
+  });
+  const [userApiKey, setUserApiKey] = useState(() => {
+    return localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
+  });
+
+  const handleSaveAISettings = () => {
+    localStorage.setItem('docente_ai_pref', preferredAI);
+    localStorage.setItem('docente_ai_key', userApiKey);
+    localStorage.setItem('s_ai_provider', preferredAI);
+    localStorage.setItem('s_ai_api_key', userApiKey);
+
+    if (currentUser) {
+      const updatedUser = {
+        ...currentUser,
+        preferredAI,
+        userApiKey
+      };
+      setCurrentUser(updatedUser);
+      setUsersAndSave(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    }
+
+    alert('⚙️ Preferencias de Inteligencia Artificial guardadas con éxito.');
+  };
+
   // --- Real AI Integration Credentials ---
   const [aiProvider, setAiProvider] = useState(() => {
     return localStorage.getItem('s_ai_provider') || 'gemini';
@@ -27895,10 +27922,8 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       const rawPrompt = aiTopicInput.trim();
       const lowerPrompt = rawPrompt.toLowerCase();
       
-      // Clean topic extraction: removes prompt commands like "haz una lista de...", "crea una rúbrica..."
       const cleanTopic = cleanTopicString(rawPrompt);
       
-      // Smart detection or preservation of instrument type
       const detectedType = lowerPrompt.includes('cotejo') ? 'lista_cotejo'
         : lowerPrompt.includes('estimativa') ? 'escala_estimativa'
         : (lowerPrompt.includes('sintetica') || lowerPrompt.includes('holistica')) ? 'rubrica_sintetica'
@@ -27913,88 +27938,26 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       const competenceText = "Comprende, analiza y aplica críticamente los contenidos de " + activeSubject + " referentes a " + cleanTopic + " en " + activeGradeStr + " según Ordenanza 04-2023.";
       const indicatorText = "Evalúa el desempeño conceptual, procedimental y actitudinal de los estudiantes en " + cleanTopic + ".";
 
-      let generatedCriteria = [];
-
-      if (aiApiKey) {
-        try {
-          const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + aiApiKey;
-          const systemPrompt = buildInstrumentSystemPrompt(detectedType, activeSubject, activeGradeStr);
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + "\nPetición del docente: " + rawPrompt }] }] })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            rawText = rawText.replace(/\\`\\`\\`json/g, '').replace(/\\`\\`\\`/g, '').trim();
-            const parsed = JSON.parse(rawText);
-            if (parsed.criterios && Array.isArray(parsed.criterios)) {
-              generatedCriteria = parsed.criterios.map((c, i) => ({
-                name: c.criterio || ("Criterio " + (i + 1)),
-                weight: c.puntos || 5,
-                levels: c.descriptores || {}
-              }));
-            }
-          }
-        } catch (apiErr) {
-          console.warn("API Call fallback to structured engine:", apiErr);
-        }
-      }
-
-      if (!generatedCriteria || generatedCriteria.length === 0) {
-        if (detectedType === 'lista_cotejo' || detectedType === 'lista') {
-          generatedCriteria = [
-            { name: "Identificación y precisión en " + cleanTopic, weight: 5, levels: { cumple: "Demuestra y aplica con precisión los elementos de " + cleanTopic + ".", nocumple: "No evidencia los conceptos requeridos.", observacion: "Verificar procedimiento." } },
-            { name: "Ejecución del procedimiento técnico en " + cleanTopic, weight: 5, levels: { cumple: "Sigue los pasos e instrucciones correctamente.", nocumple: "Omite pasos esenciales del proceso.", observacion: "Dar seguimiento." } },
-            { name: "Argumentación y comunicación de resultados", weight: 5, levels: { cumple: "Expresa sus conclusiones con vocabulario técnico adecuado.", nocumple: "Dificultad para fundamentar sus respuestas.", observacion: "Reforzar expresión." } },
-            { name: "Trabajo colaborativo y responsabilidad", weight: 5, levels: { cumple: "Cumple a tiempo y colabora activamente en equipo.", nocumple: "Muestra desinterés o impuntualidad.", observacion: "Incentivar participación." } },
-            { name: "Autoevaluación y mejora continua", weight: 5, levels: { cumple: "Reflexiona sobre sus errores y realiza correcciones.", nocumple: "No aplica las sugerencias de mejora.", observacion: "Monitoreo individual." } }
-          ];
-        } else if (detectedType === 'escala_estimativa' || detectedType === 'escala') {
-          generatedCriteria = [
-            { name: "Dominio de contenidos sobre " + cleanTopic, weight: 5, levels: { excelente: "Excelente (100%): Domina completamente los contenidos.", muybueno: "Muy Bueno (80%): Comprensión clara de la mayoría de conceptos.", bueno: "Bueno (60%): Comprensión básica con algunas dudas.", insuficiente: "Insuficiente (40%): No demuestra dominio del tema." } },
-            { name: "Aplicación de procedimientos prácticos", weight: 5, levels: { excelente: "Excelente (100%): Aplica procedimientos con destreza e independencia.", muybueno: "Muy Bueno (80%): Realiza actividades con pocos errores.", bueno: "Bueno (60%): Requiere ayuda parcial en procedimientos.", insuficiente: "Insuficiente (40%): Presenta dificultades mayores." } },
-            { name: "Análisis reflexivo y pensamiento crítico", weight: 5, levels: { excelente: "Excelente (100%): Analiza y argumenta con rigor técnico.", muybueno: "Muy Bueno (80%): Justifica ideas de forma lógica.", bueno: "Bueno (60%): Argumentación sencilla.", insuficiente: "Insuficiente (40%): Respuestas memorísticas sin análisis." } },
-            { name: "Uso adecuado de vocabulario especializado", weight: 5, levels: { excelente: "Excelente (100%): Emplea terminología precisa del área.", muybueno: "Muy Bueno (80%): Utiliza términos adecuados al nivel.", bueno: "Bueno (60%): Usa vocabulario común ocasional.", insuficiente: "Insuficiente (40%): Uso incorrecto de términos." } },
-            { name: "Actitud y compromiso con el aprendizaje", weight: 5, levels: { excelente: "Excelente (100%): Muestra alta motivación y liderazgo.", muybueno: "Muy Bueno (80%): Participa de forma constante.", bueno: "Bueno (60%): Cumple cuando se le requiere.", insuficiente: "Insuficiente (40%): Falta de compromiso o desinterés." } }
-          ];
-        } else if (detectedType === 'rubrica_sintetica') {
-          generatedCriteria = [
-            { name: "Desempeño Destacado / Estratégico", weight: 25, levels: { descripcion: "Demuestra una comprensión holística e integral sobre " + cleanTopic + ". Integra de manera fluida los conocimientos teóricos con la práctica en " + activeSubject + " con creatividad y autonomía." } },
-            { name: "Desempeño En Proceso / Resolutivo", weight: 18, levels: { descripcion: "Comprende y ejecuta las tareas principales de " + cleanTopic + " cumpliendo los estándares curriculares básicos de " + activeSubject + "." } },
-            { name: "Desempeño Inicial / Receptivo", weight: 12, levels: { descripcion: "Identifica elementos aislados de " + cleanTopic + ", requiriendo acompañamiento cercano para completar las actividades." } }
-          ];
-        } else if (detectedType === 'guia_observacion') {
-          generatedCriteria = [
-            { name: "Participación activa e interés en " + cleanTopic, weight: 5, levels: { evidencia: "Aporta ideas y participa activamente en el desarrollo de " + cleanTopic + ".", valoracion: "Frecuentemente", observacion: "Muestra iniciativa en clase." } },
-            { name: "Cumplimiento de consignas y protocolos", weight: 5, levels: { evidencia: "Sigue las instrucciones del docente y respeta las normas.", valoracion: "Siempre", observacion: "Trabajo ordenado." } },
-            { name: "Manipulación y uso adecuado de materiales", weight: 5, levels: { evidencia: "Utiliza las herramientas y recursos con cuidado y precisión.", valoracion: "Siempre", observacion: "Mantiene limpio el área." } },
-            { name: "Interacción respetuosa y colaborativa", weight: 5, levels: { evidencia: "Escucha a sus compañeros y apoya el trabajo en equipo.", valoracion: "Frecuentemente", observacion: "Buena disposición." } },
-            { name: "Autorregulación y constancia en la tarea", weight: 5, levels: { evidencia: "Mantiene el enfoque durante las actividades programadas.", valoracion: "Frecuentemente", observacion: "Aprovecha bien el tiempo." } }
-          ];
-        } else {
-          // rubrica_analitica
-          generatedCriteria = [
-            { name: "Comprensión conceptual de " + cleanTopic, weight: 5, levels: { estrategico: "Demuestra dominio conceptual profundo sobre " + cleanTopic + " en " + activeGradeStr + ", aplicando los contenidos de " + activeSubject + " de forma rigurosa.", autonomo: "Explica con claridad los conceptos fundamentales de " + cleanTopic + " adecuadamente.", resolutivo: "Identifica elementos básicos de " + cleanTopic + " con mínima orientación.", receptivo: "Reconoce conceptos iniciales de " + cleanTopic + " con apoyo continuo." } },
-            { name: "Procedimiento y aplicación en " + cleanTopic, weight: 5, levels: { estrategico: "Ejecuta secuencias complejas y resuelve ejercicios de " + cleanTopic + " sin errores.", autonomo: "Aplica los pasos necesarios con autonomía aceptable.", resolutivo: "Requiere guía paso a paso para completar los procedimientos.", receptivo: "Presenta dificultades para aplicar los contenidos." } },
-            { name: "Pensamiento crítico y solución de problemas", weight: 5, levels: { estrategico: "Analiza situaciones diversas y propone soluciones innovadoras relacionadas con " + cleanTopic + ".", autonomo: "Justifica sus decisiones con lógica coherente.", resolutivo: "Resuelve problemas tipo con apoyo de ejemplos previos.", receptivo: "Responde con respuestas memorísticas simples." } },
-            { name: "Comunicación y uso del lenguaje técnico", weight: 5, levels: { estrategico: "Comunica hallazgos con vocabulario especializado de " + activeSubject + " y excelente claridad.", autonomo: "Utiliza terminología adecuada al tema.", resolutivo: "Expresa sus ideas con lenguaje cotidiano.", receptivo: "Le cuesta articular explicaciones sobre el tema." } },
-            { name: "Actitud, ética y trabajo en equipo", weight: 5, levels: { estrategico: "Promueve un ambiente de aprendizaje colaborativo, ético y responsable.", autonomo: "Muestra compromiso con sus responsabilidades académicas.", resolutivo: "Participa cuando se le requiere expresamente.", receptivo: "Requiere llamadas de atención para integrarse al trabajo." } }
-          ];
-        }
-      }
+      const resAI = await generateEvaluationInstrumentWithAI({
+        topic: rawPrompt,
+        instrumentType: detectedType,
+        grade: activeGradeStr,
+        subject: activeSubject,
+        preferredProvider: preferredAI,
+        customApiKey: userApiKey || aiApiKey
+      });
 
       updateActiveInstrumentConfig({
-        topic: cleanTopic,
-        activity: suggestedActivity,
+        topic: resAI.cleanTopic || cleanTopic,
+        activity: resAI.activityName || suggestedActivity,
         competence: competenceText,
         indicator: indicatorText,
         type: detectedType,
-        criteria: generatedCriteria
+        criteria: resAI.criteria
       });
 
-      setCounselorToastMsg("✨ Criterios e instrumento contextualizado generados con éxito para: " + cleanTopic);
+      const providerLabel = preferredAI === 'copilot' ? 'Copilot Institucional' : preferredAI.toUpperCase();
+      setCounselorToastMsg(`✨ Criterios e instrumento contextualizado generados con éxito con ${providerLabel} para: ` + (resAI.cleanTopic || cleanTopic));
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
       console.error("Error al generar criterios con IA:", err);
@@ -30122,6 +30085,66 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 </div>
               </div>
 
+            </div>
+
+            {/* ⚙️ AI Settings Card */}
+            <div className="ai-settings-card" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '16px', marginTop: '16px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>⚙️</span> Proveedor de Inteligencia Artificial Pedagógica
+              </h4>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 12px 0' }}>
+                Elige el motor con el que deseas generar tus planificaciones e instrumentos. Puedes usar tu cuenta institucional de Microsoft Copilot o tu clave personal.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginBottom: '14px' }}>
+                {[
+                  { id: 'copilot', name: 'Microsoft Copilot', desc: 'Correo Institucional MINERD' },
+                  { id: 'gemini', name: 'Google Gemini', desc: 'Google AI Studio / API' },
+                  { id: 'chatgpt', name: 'OpenAI (ChatGPT)', desc: 'GPT-4o / gpt-3.5' },
+                  { id: 'claude', name: 'Anthropic (Claude)', desc: 'Claude 3.5 Sonnet' }
+                ].map(provider => (
+                  <div 
+                    key={provider.id}
+                    onClick={() => setPreferredAI(provider.id)}
+                    style={{
+                      border: preferredAI === provider.id ? '2px solid #2563EB' : '1px solid var(--border-color)',
+                      background: preferredAI === provider.id ? 'rgba(37, 99, 235, 0.08)' : 'var(--bg-secondary)',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{provider.name}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{provider.desc}</div>
+                  </div>
+                ))}
+              </div>
+
+              {preferredAI !== 'copilot' ? (
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>API Key Personal / Token del Docente:</label>
+                  <input
+                    type="password"
+                    placeholder={`Introduce tu clave de ${preferredAI.toUpperCase()}`}
+                    value={userApiKey}
+                    onChange={(e) => setUserApiKey(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-color)', marginTop: '4px', fontSize: '0.85rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+              ) : (
+                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem', color: '#065F46' }}>
+                  ✓ Conectado mediante sesión institucional de Microsoft 365 / Copilot del docente.
+                </div>
+              )}
+
+              <button 
+                type="button"
+                onClick={handleSaveAISettings}
+                style={{ marginTop: '12px', background: '#2563EB', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Guardar Preferencia de IA
+              </button>
             </div>
 
             {/* Foto de Perfil & Presets */}
@@ -36552,6 +36575,32 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             />
                           </div>
 
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#0369A1' }}>Motor:</label>
+                            <select
+                              value={preferredAI}
+                              onChange={(e) => {
+                                const newMotor = e.target.value;
+                                setPreferredAI(newMotor);
+                                localStorage.setItem('docente_ai_pref', newMotor);
+                              }}
+                              style={{
+                                padding: '8px 12px',
+                                borderRadius: '6px',
+                                border: '1px solid #0284C7',
+                                background: '#ffffff',
+                                fontWeight: 'bold',
+                                fontSize: '0.85rem',
+                                color: '#0369A1'
+                              }}
+                            >
+                              <option value="copilot">Microsoft Copilot (Institucional)</option>
+                              <option value="gemini">Google Gemini</option>
+                              <option value="chatgpt">ChatGPT (OpenAI)</option>
+                              <option value="claude">Claude (Anthropic)</option>
+                            </select>
+                          </div>
+
                           <button
                             type="button"
                             onClick={handleAutoFillWithAI}
@@ -36568,7 +36617,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               opacity: aiTopicInput?.trim() && !isGenerating ? 1 : 0.6
                             }}
                           >
-                            {isGenerating ? 'Generando...' : 'Generar Instrumento con IA'}
+                            {isGenerating ? 'Generando...' : `✨ Generar Evaluación con ${preferredAI === 'copilot' ? 'Copilot' : preferredAI === 'gemini' ? 'Gemini' : preferredAI === 'chatgpt' ? 'ChatGPT' : 'Claude'}`}
                           </button>
                         </div>
 
@@ -37137,202 +37186,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     Por favor selecciona un Grado y Asignatura en la barra lateral.
                   </div>
                 )}
-              {/* Gemini Floating Chatbot Assistant */}
-              {!aiChatOpen && (
-                <button
-                  type="button"
-                  className="gemini-chat-fab"
-                  onClick={() => setAiChatOpen(true)}
-                  style={{
-                    position: 'fixed',
-                    bottom: '2rem',
-                    right: '2rem',
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #9b72cb 0%, #4285f4 30%, #d96570 70%, #ffca28 100%)',
-                    color: '#fff',
-                    border: 'none',
-                    boxShadow: '0 4px 16px rgba(66, 133, 244, 0.4)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                  }}
-                  title="Asistente de Rúbricas Gemini"
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22c0-5.523 4.477-10 10-10-5.477 0-10-4.477-10-10C12 7.523 7.523 12 2 12c5.523 0 10 4.477 10 10Z" fill="#ffffff"/>
-                    <path d="M6 6c0-2.209 1.791-4 4-4-2.209 0-4 1.791-4 4C6 3.791 4.209 2 2 2c2.209 0 4 1.791 4 4Z" fill="#ffffff"/>
-                  </svg>
-                </button>
-              )}
-
-              {aiChatOpen && (
-                <div
-                  className="gemini-floating-chat glass-panel animate-fade-in"
-                  style={{
-                    position: 'fixed',
-                    bottom: '2rem',
-                    right: '2rem',
-                    width: '380px',
-                    height: aiChatMinimized ? '48px' : '520px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    zIndex: 1000,
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                    border: '1px solid rgba(66, 133, 244, 0.2)',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    backgroundColor: 'var(--bg-secondary)'
-                  }}
-                >
-                  {/* Chat Header */}
-                  <div
-                    style={{
-                      padding: '0.75rem 1rem',
-                      background: 'linear-gradient(135deg, #9b72cb 0%, #4285f4 30%, #d96570 70%, #ffca28 100%)',
-                      color: '#fff',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      userSelect: 'none'
-                    }}
-                    onClick={() => setAiChatMinimized(!aiChatMinimized)}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22c0-5.523 4.477-10 10-10-5.477 0-10-4.477-10-10C12 7.523 7.523 12 2 12c5.523 0 10 4.477 10 10Z" fill="#ffffff"/>
-                        <path d="M6 6c0-2.209 1.791-4 4-4-2.209 0-4 1.791-4 4C6 3.791 4.209 2 2 2c2.209 0 4 1.791 4 4Z" fill="#ffffff"/>
-                      </svg>
-                      <strong style={{ fontSize: '0.88rem' }}>Asistente Gemini</strong>
-                      <span style={{ fontSize: '0.7rem', opacity: 0.9 }}>
-                        {aiApiKey ? '(En Línea)' : '(Simulador)'}
-                      </span>
-                    </div>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
-                      <button
-                        type="button"
-                        onClick={() => setAiChatMinimized(!aiChatMinimized)}
-                        style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1rem', cursor: 'pointer', padding: '0.25rem' }}
-                        title="Minimizar"
-                      >
-                        {aiChatMinimized ? '▲' : '▼'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setAiChatOpen(false)}
-                        style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.1rem', cursor: 'pointer', padding: '0.25rem', fontWeight: 'bold' }}
-                        title="Cerrar"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Chat Body */}
-                  {!aiChatMinimized && (
-                    <>
-                      {/* AI Config link button */}
-                      <div style={{ padding: '0.4rem 0.85rem', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Configuración de Clave API</span>
-                        <button
-                          type="button"
-                          style={{ background: 'none', border: 'none', color: '#4285f4', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.72rem' }}
-                          onClick={() => setShowAiConfig(!showAiConfig)}
-                        >
-                          {showAiConfig ? 'Ocultar 🔧' : 'Configurar 🔧'}
-                        </button>
-                      </div>
-
-                      {/* Collapsible API config section inside float */}
-                      {showAiConfig && (
-                        <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)' }}>
-                          <form onSubmit={saveAiCredentials} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                              <div style={{ flex: 1 }}>
-                                <label style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Proveedor</label>
-                                <select className="form-select" style={{ padding: '0.25rem', fontSize: '0.75rem' }} value={aiProvider} onChange={(e) => setAiProvider(e.target.value)}>
-                                  <option value="gemini">Google Gemini</option>
-                                  <option value="copilot">Microsoft Copilot</option>
-                                </select>
-                              </div>
-                              <div style={{ flex: 1.5 }}>
-                                <label style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>API Key</label>
-                                <input 
-                                  type="password" 
-                                  className="form-input" 
-                                  style={{ padding: '0.25rem', fontSize: '0.75rem' }}
-                                  placeholder="Ingresa clave..." 
-                                  value={aiApiKey} 
-                                  onChange={(e) => setAiApiKey(e.target.value)} 
-                                />
-                              </div>
-                            </div>
-                            <button type="submit" className="btn-primary" style={{ padding: '0.35rem', fontSize: '0.75rem', backgroundColor: '#4285f4' }}>Guardar</button>
-                          </form>
-                        </div>
-                      )}
-
-                      {/* Chat Messages */}
-                      <div className="ai-chat-messages" style={{ flex: 1, padding: '0.75rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        {aiChatHistory.map((msg, idx) => (
-                          <div key={idx} className={`ai-chat-bubble ${msg.sender}`} style={{ alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
-                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', marginBottom: '0.15rem', color: msg.sender === 'ai' ? '#4285f4' : 'var(--primary)' }}>
-                              {msg.sender === 'ai' ? 'Gemini' : 'Tú'}
-                            </span>
-                            <div style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{msg.text}</div>
-                          </div>
-                        ))}
-
-                        {aiIsTyping && (
-                          <div className="ai-chat-bubble ai" style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
-                            <span style={{ display: 'block', fontSize: '0.66rem', fontWeight: 'bold', color: '#4285f4' }}>Gemini</span>
-                            <div className="ai-typing-effect" style={{ fontSize: '0.8rem' }}>Generando instrumento...</div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Applied instrument preview inside chat */}
-                      {latestAiGeneratedInstrument && (
-                        <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'rgba(66, 133, 244, 0.08)', borderTop: '1px solid rgba(66, 133, 244, 0.15)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                          <div style={{ fontSize: '0.72rem', color: 'var(--text-primary)' }}>
-                            Instrumento listo: <strong>{latestAiGeneratedInstrument.activity}</strong>
-                          </div>
-                          <button className="ai-chat-apply-btn" onClick={handleApplyAiInstrument} style={{ padding: '0.35rem', fontSize: '0.75rem', width: '100%', background: 'linear-gradient(135deg, #9b72cb 0%, #4285f4 50%, #d96570 100%)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                            ⚡ Aplicar Instrumento
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Chat Input form */}
-                      <form onSubmit={handleSendAiMessage} className="ai-chat-input-row" style={{ display: 'flex', borderTop: '1px solid var(--border-color)', padding: '0.5rem', gap: '0.35rem', backgroundColor: 'var(--bg-primary)' }}>
-                        <input 
-                          type="text" 
-                          className="ai-chat-input"
-                          value={aiPrompt}
-                          onChange={(e) => setAiPrompt(e.target.value)}
-                          placeholder="Pídele una rúbrica a Gemini..."
-                          disabled={aiIsTyping}
-                          style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-                        />
-                        <button type="submit" className="btn-primary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', backgroundColor: '#7c3aed' }} disabled={aiIsTyping}>
-                          Enviar
-                        </button>
-                      </form>
-                    </>
-                  )}
-                </div>
-              )}
-
               </div>
             )}
-
-            {/* TEACHER: Tab Instructions */}
+              {/* TEACHER: Tab Instructions */}
             {activeTab === 'instructions' && (
               <div>
                 <h2>Manual del Docente</h2>
