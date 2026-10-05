@@ -1,9 +1,9 @@
 /**
  * multiAiOrchestrator.js
- * Multi-AI reasoning engine with chained fallback for MINERD 04-2023 evaluation instruments.
+ * Real Multi-AI Engine Orchestrator with verified user credential enforcement for MINERD 04-2023.
  */
 
-import { generateEvaluationInstrumentWithAI } from './aiService';
+import { generateEvaluationInstrumentWithAI, validateAiCredentials } from './aiService';
 
 export const generateCurricularInstrument = async ({
   grade,
@@ -50,117 +50,106 @@ export const generateCurricularInstrument = async ({
     ${documentText.slice(0, 4000)}
   `;
 
-  const providers = ['gemini', 'openai', 'claude', 'copilot'];
+  const userPref = localStorage.getItem('docente_ai_pref') || 'copilot';
+  const providers = [userPref, 'copilot', 'gemini', 'openai', 'claude'].filter((v, i, a) => a.indexOf(v) === i);
+
+  let lastError = null;
 
   for (const provider of providers) {
     try {
-      console.log(`Intentando generación pedagógica con motor: ${provider}`);
+      console.log(`Ejecutando llamada real a motor pedagógico: ${provider}`);
       const result = await executeAiCall(provider, systemPrompt, userPayload, { grade, subject, instrumentType, targetActivity, documentText });
       if (result && result.criterios && Array.isArray(result.criterios) && result.criterios.length > 0) {
         return result;
       }
     } catch (error) {
-      console.warn(`Fallo con el motor ${provider}, alternando al siguiente...`, error);
+      console.warn(`Fallo con el motor real ${provider}:`, error.message);
+      lastError = error;
     }
   }
 
-  throw new Error("No fue posible procesar el instrumento con ninguno de los motores de IA configurados.");
+  throw new Error(lastError ? lastError.message : "No fue posible procesar el instrumento. Por favor verifica tus credenciales de IA en 'Mi Perfil'.");
 };
 
 const executeAiCall = async (provider, systemPrompt, userPayload, context) => {
-  switch (provider) {
-    case 'gemini':
-      return await callGeminiEngine(systemPrompt, userPayload, context);
-    case 'openai':
-      return await callOpenAiEngine(systemPrompt, userPayload);
-    case 'claude':
-      return await callClaudeEngine(systemPrompt, userPayload);
-    case 'copilot':
-      return await callCopilotEngine(systemPrompt, userPayload);
-    default:
-      throw new Error(`Proveedor no soportado: ${provider}`);
+  const userApiKey = localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
+
+  if (provider === 'gemini') {
+    return await callGeminiEngine(systemPrompt, userPayload, context, userApiKey);
+  } else if (provider === 'openai') {
+    return await callOpenAiEngine(systemPrompt, userPayload, userApiKey);
+  } else if (provider === 'claude') {
+    return await callClaudeEngine(systemPrompt, userPayload, userApiKey);
+  } else if (provider === 'copilot') {
+    return await callCopilotEngine(systemPrompt, userPayload, userApiKey);
   }
+  throw new Error(`Proveedor no soportado: ${provider}`);
 };
 
-const callGeminiEngine = async (systemPrompt, userPayload, context) => {
-  // Use existing primary Gemini engine
+const callGeminiEngine = async (systemPrompt, userPayload, context, userApiKey) => {
   const topicPrompt = `${context.targetActivity || 'Actividad de planificación'}: ${context.documentText.slice(0, 500)}`;
-  try {
-    const rawResult = await generateEvaluationInstrumentWithAI({
-      topic: topicPrompt,
-      instrumentType: context.instrumentType,
-      grade: context.grade,
-      subject: context.subject
-    });
-
-    if (rawResult && rawResult.criteria) {
-      return {
-        cleanTopic: rawResult.cleanTopic || context.targetActivity || 'Evaluación Curricular',
-        activityName: rawResult.activityName || context.targetActivity || 'Actividad Evaluada',
-        criterios: rawResult.criteria.map(c => ({
-          criterio: c.name || c.criterio,
-          puntos: c.weight || c.puntos || 25,
-          descriptores: c.descriptors || c.descriptores || {}
-        }))
-      };
-    }
-  } catch (err) {
-    console.warn("Gemini engine direct call error:", err);
-  }
-
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY;
-  if (!apiKey) throw new Error("VITE_GEMINI_API_KEY no configurada");
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{ text: `${systemPrompt}\n\n${userPayload}` }]
-      }]
-    })
+  
+  const rawResult = await generateEvaluationInstrumentWithAI({
+    topic: topicPrompt,
+    instrumentType: context.instrumentType,
+    grade: context.grade,
+    subject: context.subject,
+    preferredProvider: 'gemini',
+    customApiKey: userApiKey
   });
 
-  const data = await response.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  return parseJsonFromResponse(rawText);
+  if (rawResult && rawResult.criteria) {
+    return {
+      cleanTopic: rawResult.cleanTopic || context.targetActivity || 'Evaluación Curricular',
+      activityName: rawResult.activityName || context.targetActivity || 'Actividad Evaluada',
+      criterios: rawResult.criteria.map(c => ({
+        criterio: c.name || c.criterio,
+        puntos: c.weight || c.puntos || 25,
+        descriptores: c.descriptors || c.descriptores || {}
+      }))
+    };
+  }
+  throw new Error("Respuesta inválida de Gemini.");
 };
 
-const callOpenAiEngine = async (systemPrompt, userPayload) => {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-  if (!apiKey) throw new Error("VITE_OPENAI_API_KEY no configurada");
+const callOpenAiEngine = async (systemPrompt, userPayload, userApiKey) => {
+  const apiKey = userApiKey || import.meta.env.VITE_OPENAI_API_KEY;
+  if (!apiKey) throw new Error("Falta API Key de OpenAI. Ingresa tu clave en 'Mi Perfil'.");
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
+      'Authorization': `Bearer ${apiKey.trim()}`
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPayload }
-      ],
-      response_format: { type: 'json_object' }
+      ]
     })
   });
 
   const data = await response.json();
+  if (!response.ok || data.error) {
+    throw new Error(`OpenAI Error (${response.status}): ${data.error?.message || 'Error de autenticación'}`);
+  }
   const rawText = data?.choices?.[0]?.message?.content;
   return parseJsonFromResponse(rawText);
 };
 
-const callClaudeEngine = async (systemPrompt, userPayload) => {
-  const apiKey = import.meta.env.VITE_CLAUDE_API_KEY;
-  if (!apiKey) throw new Error("VITE_CLAUDE_API_KEY no configurada");
+const callClaudeEngine = async (systemPrompt, userPayload, userApiKey) => {
+  const apiKey = userApiKey || import.meta.env.VITE_CLAUDE_API_KEY;
+  if (!apiKey) throw new Error("Falta API Key de Anthropic Claude. Ingresa tu clave en 'Mi Perfil'.");
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
+      'x-api-key': apiKey.trim(),
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerously-allow-browser': 'true'
     },
     body: JSON.stringify({
       model: 'claude-3-haiku-20240307',
@@ -171,22 +160,30 @@ const callClaudeEngine = async (systemPrompt, userPayload) => {
   });
 
   const data = await response.json();
+  if (!response.ok || data.error) {
+    throw new Error(`Anthropic Claude Error (${response.status}): ${data.error?.message || 'Error de autenticación'}`);
+  }
   const rawText = data?.content?.[0]?.text;
   return parseJsonFromResponse(rawText);
 };
 
-const callCopilotEngine = async (systemPrompt, userPayload) => {
-  const endpoint = import.meta.env.VITE_COPILOT_ENDPOINT;
-  const apiKey = import.meta.env.VITE_COPILOT_API_KEY;
-  if (!endpoint) throw new Error("VITE_COPILOT_ENDPOINT no configurada");
+const callCopilotEngine = async (systemPrompt, userPayload, userApiKey) => {
+  const token = localStorage.getItem('minerd_copilot_token');
+  const endpoint = import.meta.env.VITE_COPILOT_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
+  const apiKey = userApiKey || import.meta.env.VITE_COPILOT_API_KEY;
+
+  if (!token && !apiKey) {
+    throw new Error("Se requiere iniciar sesión en Microsoft 365 Copilot Institucional.");
+  }
 
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(apiKey ? { 'api-key': apiKey } : {})
+      'Authorization': `Bearer ${apiKey || token}`
     },
     body: JSON.stringify({
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPayload }
@@ -195,16 +192,16 @@ const callCopilotEngine = async (systemPrompt, userPayload) => {
   });
 
   const data = await response.json();
+  if (!response.ok || data.error) {
+    throw new Error(`Copilot Error (${response.status}): ${data.error?.message || 'Fallo de conexión'}`);
+  }
   const rawText = data?.choices?.[0]?.message?.content;
   return parseJsonFromResponse(rawText);
 };
 
 const parseJsonFromResponse = (rawText) => {
   if (!rawText) throw new Error("Respuesta de IA vacía.");
-
   const jsonMatch = rawText.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error("Formato JSON no encontrado en respuesta.");
-
-  const parsed = JSON.parse(jsonMatch[0]);
-  return parsed;
+  return JSON.parse(jsonMatch[0]);
 };

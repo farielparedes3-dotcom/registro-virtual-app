@@ -1,4 +1,4 @@
-import { cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI } from './services/aiService';
+import { cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI, validateAiCredentials, loginMicrosoftCopilotPopup } from './services/aiService';
 import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
 import { extractTextFromDocument } from './services/docExtractorService';
 import { generateCurricularInstrument } from './services/multiAiOrchestrator';
@@ -25154,24 +25154,40 @@ export default function App() {
   const [userApiKey, setUserApiKey] = useState(() => {
     return localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
   });
+  const [aiStatusMsg, setAiStatusMsg] = useState({ text: '', type: '' });
+  const [isVerifyingAI, setIsVerifyingAI] = useState(false);
 
-  const handleSaveAISettings = () => {
-    localStorage.setItem('docente_ai_pref', preferredAI);
-    localStorage.setItem('docente_ai_key', userApiKey);
-    localStorage.setItem('s_ai_provider', preferredAI);
-    localStorage.setItem('s_ai_api_key', userApiKey);
+  const handleSaveAISettings = async () => {
+    setIsVerifyingAI(true);
+    setAiStatusMsg({ text: '⏳ Verificando credenciales directamente con la API oficial...', type: 'info' });
 
-    if (currentUser) {
-      const updatedUser = {
-        ...currentUser,
-        preferredAI,
-        userApiKey
-      };
-      setCurrentUser(updatedUser);
-      setUsersAndSave(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    try {
+      const val = await validateAiCredentials({ provider: preferredAI, apiKey: userApiKey });
+      if (val.success) {
+        localStorage.setItem('docente_ai_pref', preferredAI);
+        localStorage.setItem('docente_ai_key', userApiKey);
+        localStorage.setItem('s_ai_provider', preferredAI);
+        localStorage.setItem('s_ai_api_key', userApiKey);
+
+        if (currentUser) {
+          const updatedUser = {
+            ...currentUser,
+            preferredAI,
+            userApiKey
+          };
+          setCurrentUser(updatedUser);
+          setUsersAndSave(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+        }
+
+        setAiStatusMsg({ text: val.message, type: 'success' });
+      } else {
+        setAiStatusMsg({ text: val.message, type: 'error' });
+      }
+    } catch (err) {
+      setAiStatusMsg({ text: '❌ Error de red al verificar credenciales: ' + err.message, type: 'error' });
+    } finally {
+      setIsVerifyingAI(false);
     }
-
-    alert('⚙️ Preferencias de Inteligencia Artificial guardadas con éxito.');
   };
 
   // --- Real AI Integration Credentials ---
@@ -30105,7 +30121,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 ].map(provider => (
                   <div 
                     key={provider.id}
-                    onClick={() => setPreferredAI(provider.id)}
+                    onClick={() => {
+                      setPreferredAI(provider.id);
+                      setAiStatusMsg({ text: '', type: '' });
+                    }}
                     style={{
                       border: preferredAI === provider.id ? '2px solid #2563EB' : '1px solid var(--border-color)',
                       background: preferredAI === provider.id ? 'rgba(37, 99, 235, 0.08)' : 'var(--bg-secondary)',
@@ -30126,24 +30145,57 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>API Key Personal / Token del Docente:</label>
                   <input
                     type="password"
-                    placeholder={`Introduce tu clave de ${preferredAI.toUpperCase()}`}
+                    placeholder={"Introduce tu clave de " + preferredAI.toUpperCase()}
                     value={userApiKey}
                     onChange={(e) => setUserApiKey(e.target.value)}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-color)', marginTop: '4px', fontSize: '0.85rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
                   />
                 </div>
               ) : (
-                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem', color: '#065F46' }}>
-                  ✓ Conectado mediante sesión institucional de Microsoft 365 / Copilot del docente.
+                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#065F46', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div>✓ Conectado mediante sesión institucional de Microsoft 365 / Copilot del docente.</div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsVerifyingAI(true);
+                      try {
+                        const res = await loginMicrosoftCopilotPopup();
+                        setAiStatusMsg({ text: "✅ Autenticado con éxito en MSAL como " + res.user, type: 'success' });
+                      } catch (err) {
+                        setAiStatusMsg({ text: "❌ Error de login MSAL: " + err.message, type: 'error' });
+                      } finally {
+                        setIsVerifyingAI(false);
+                      }
+                    }}
+                    style={{ alignSelf: 'flex-start', background: '#059669', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'pointer' }}
+                  >
+                    🔐 Re-autenticar con Microsoft 365
+                  </button>
+                </div>
+              )}
+
+              {aiStatusMsg.text && (
+                <div style={{
+                  marginTop: '10px',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  background: aiStatusMsg.type === 'success' ? '#DEF7EC' : aiStatusMsg.type === 'error' ? '#FDE8E8' : '#E1EFFE',
+                  color: aiStatusMsg.type === 'success' ? '#03543F' : aiStatusMsg.type === 'error' ? '#9B1C1C' : '#1E429F',
+                  border: '1px solid ' + (aiStatusMsg.type === 'success' ? '#84E1BC' : aiStatusMsg.type === 'error' ? '#F8B4B4' : '#A4CAFE')
+                }}>
+                  {aiStatusMsg.text}
                 </div>
               )}
 
               <button 
                 type="button"
                 onClick={handleSaveAISettings}
-                style={{ marginTop: '12px', background: '#2563EB', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+                disabled={isVerifyingAI}
+                style={{ marginTop: '12px', background: isVerifyingAI ? '#93C5FD' : '#2563EB', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: isVerifyingAI ? 'not-allowed' : 'pointer' }}
               >
-                Guardar Preferencia de IA
+                {isVerifyingAI ? '⏳ Verificando Credencial...' : 'Verificar y Guardar Credencial de IA'}
               </button>
             </div>
 
