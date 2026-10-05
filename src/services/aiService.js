@@ -4,21 +4,45 @@ import { parseUniversalAIResponse } from './aiUniversalParser';
  * Real Multi-AI Authentication & Pedagogy Service for MINERD Ordenanza 04-2023
  */
 
-// 1. MSAL / Microsoft OAuth 2.0 PKCE Helper for MINERD Copilot
+// 0. Purge simulated/fake tokens from localStorage
+export const purgeFakeAiTokens = () => {
+  try {
+    const token = localStorage.getItem('minerd_copilot_token');
+    if (token && (token.includes('MINERD_COPILOT_TOKEN_') || token.includes('MINERD_TOKEN_VERIFIED_'))) {
+      localStorage.removeItem('minerd_copilot_token');
+      localStorage.removeItem('minerd_copilot_user');
+      if (localStorage.getItem('docente_ai_pref') === 'copilot') {
+        localStorage.setItem('docente_ai_pref', 'gemini');
+        localStorage.setItem('s_ai_provider', 'gemini');
+      }
+    }
+  } catch (e) {
+    console.warn('Error purging fake tokens:', e);
+  }
+};
+
+// Immediately execute token cleanup on import
+purgeFakeAiTokens();
+
+// 1. MSAL / Microsoft OAuth 2.0 PKCE Helper for MINERD Copilot (Strict Azure Client ID requirement)
 export const loginMicrosoftCopilotPopup = () => {
   return new Promise((resolve, reject) => {
-    const clientId = '00000000-0000-0000-0000-000000000000'; // Default OAuth Client ID or Tenant
+    const azureClientId = import.meta.env.VITE_AZURE_CLIENT_ID;
+
+    if (!azureClientId || azureClientId.startsWith('00000000')) {
+      return reject(new Error("La integración directa con Microsoft Copilot requiere un Client ID de Azure registrado oficialmente en Microsoft Entra ID. Utiliza tu clave de Google Gemini o ChatGPT."));
+    }
+
     const redirectUri = window.location.origin;
     const scope = encodeURIComponent('openid profile email User.Read');
     
-    // Generate PKCE code verifier and challenge
     const verifier = Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
       .map(b => b.toString(16).padStart(2, '0')).join('');
     
     localStorage.setItem('minerd_msal_verifier', verifier);
 
     const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?` +
-      `client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `client_id=${azureClientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&scope=${scope}&response_mode=fragment`;
 
     const width = 520;
@@ -33,12 +57,7 @@ export const loginMicrosoftCopilotPopup = () => {
     );
 
     if (!popup) {
-      // Direct simulation if popup blocker is active
-      const simulatedToken = 'MINERD_COPILOT_TOKEN_' + Date.now();
-      const simulatedUser = 'docente.institucional@educacion.gob.do';
-      localStorage.setItem('minerd_copilot_token', simulatedToken);
-      localStorage.setItem('minerd_copilot_user', simulatedUser);
-      return resolve({ token: simulatedToken, user: simulatedUser });
+      return reject(new Error("El navegador bloqueó la ventana emergente de autenticación de Microsoft. Permite las ventanas emergentes para iniciar sesión."));
     }
 
     const timer = setInterval(() => {
@@ -46,43 +65,38 @@ export const loginMicrosoftCopilotPopup = () => {
         if (popup.closed) {
           clearInterval(timer);
           const token = localStorage.getItem('minerd_copilot_token');
-          const user = localStorage.getItem('minerd_copilot_user') || 'docente.institucional@educacion.gob.do';
-          if (token) {
+          const user = localStorage.getItem('minerd_copilot_user');
+          if (token && user) {
             resolve({ token, user });
           } else {
-            // Register authenticated MINERD session on popup close
-            const defaultToken = 'MINERD_TOKEN_VERIFIED_' + Date.now();
-            const defaultUser = 'docente.minerd@educacion.gob.do';
-            localStorage.setItem('minerd_copilot_token', defaultToken);
-            localStorage.setItem('minerd_copilot_user', defaultUser);
-            resolve({ token: defaultToken, user: defaultUser });
+            reject(new Error("Sesión de Microsoft cancelada por el usuario o no completada."));
           }
         }
       } catch (err) {
-        // Cross-origin check catch
+        // Cross-origin polling catch
       }
     }, 500);
   });
 };
 
-// 2. Real Live API Key Verification Endpoint Inspector
-export const validateAiCredentials = async ({ provider, apiKey }) => {
+// 2. Real Live API Key Verification Endpoint Inspector (Google Gemini prioritized by default)
+export const validateAiCredentials = async ({ provider = 'gemini', apiKey }) => {
   if (provider === 'copilot') {
     const existingToken = localStorage.getItem('minerd_copilot_token');
     const existingUser = localStorage.getItem('minerd_copilot_user');
-    if (existingToken && existingUser) {
+    if (existingToken && existingUser && !existingToken.includes('MINERD_')) {
       return { success: true, user: existingUser, message: `✅ Sesión activa verificada para ${existingUser}` };
     }
     try {
       const res = await loginMicrosoftCopilotPopup();
       return { success: true, user: res.user, message: `✅ Autenticado con éxito como ${res.user}` };
     } catch (err) {
-      return { success: false, message: `❌ Error de autenticación en Microsoft 365 / Copilot: ${err.message}` };
+      return { success: false, message: `❌ ${err.message}` };
     }
   }
 
   if (!apiKey || !apiKey.trim()) {
-    return { success: false, message: `❌ Debes ingresar una API Key para ${provider.toUpperCase()}` };
+    return { success: false, message: `❌ Debes ingresar tu API Key de ${provider === 'gemini' ? 'Google AI Studio (Gemini)' : provider.toUpperCase()}` };
   }
 
   const cleanKey = apiKey.trim();
@@ -94,7 +108,7 @@ export const validateAiCredentials = async ({ provider, apiKey }) => {
       if (res.ok && !data.error) {
         return { success: true, message: `✅ Conexión verificada con éxito en Google Gemini API (modelos activos)` };
       }
-      return { success: false, message: `❌ Error Google Gemini (${res.status}): ${data.error?.message || 'Credencial rechazada'}` };
+      return { success: false, message: `❌ Error Google Gemini (${res.status}): ${data.error?.message || 'API Key de Gemini rechazada'}` };
     }
 
     if (provider === 'chatgpt') {
@@ -190,11 +204,12 @@ Devuelve estrictamente un objeto JSON con este formato:
 `;
 };
 
-// 5. Real Multi-AI Instrument Generator (Strict live fetch execution)
+// 5. Real Multi-AI Instrument Generator (Strict live fetch execution, default Gemini)
 export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType, grade, subject, preferredProvider, customApiKey }) => {
+  purgeFakeAiTokens();
   const cleanTopic = cleanTopicString(topic);
-  const provider = preferredProvider || localStorage.getItem('docente_ai_pref') || 'copilot';
-  const apiKey = customApiKey || localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
+  const provider = preferredProvider || localStorage.getItem('docente_ai_pref') || 'gemini';
+  const apiKey = customApiKey || localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || import.meta.env.VITE_GEMINI_API_KEY || '';
 
   const systemPrompt = buildInstrumentSystemPrompt(instrumentType, subject, grade);
   const userPrompt = `Genera un instrumento de evaluación del tipo "${instrumentType}" para el grado "${grade}" y asignatura "${subject}" sobre el tema/actividad: "${cleanTopic}".`;
@@ -203,7 +218,7 @@ export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType
   let httpError = null;
 
   if (provider !== 'copilot' && (!apiKey || !apiKey.trim())) {
-    throw new Error(`❌ No has ingresado una API Key para ${provider.toUpperCase()}. Configúrala en tu Perfil de docente.`);
+    throw new Error(`❌ No has ingresado una API Key para ${provider === 'gemini' ? 'Google Gemini' : provider.toUpperCase()}. Configura tu clave gratuita de Google AI Studio en tu Perfil de docente.`);
   }
 
   try {
@@ -215,7 +230,7 @@ export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType
       });
       const data = await response.json();
       if (!response.ok || data.error) {
-        throw new Error(`Google Gemini Error (${response.status}): ${data.error?.message || 'Fallo de autenticación o cuota.'}`);
+        throw new Error(`Google Gemini Error (${response.status}): ${data.error?.message || 'API Key no válida o cuota excedida.'}`);
       }
       rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     } else if (provider === 'chatgpt') {
@@ -260,37 +275,37 @@ export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType
       }
       rawText = data?.content?.[0]?.text || '';
     } else if (provider === 'copilot') {
-      const token = localStorage.getItem('minerd_copilot_token');
-      const user = localStorage.getItem('minerd_copilot_user');
-      
-      if (!token) {
-        const auth = await loginMicrosoftCopilotPopup();
-        console.log('Autenticado en Copilot Institucional:', auth.user);
+      const azureClientId = import.meta.env.VITE_AZURE_CLIENT_ID;
+      if (!azureClientId || azureClientId.startsWith('00000000')) {
+        throw new Error("La integración directa con Microsoft Copilot requiere un Client ID de Azure configurado por el administrador del centro. Selecciona Google Gemini o ChatGPT.");
       }
 
-      // Live request to MINERD Copilot endpoint or Azure OpenAI proxy
-      const copilotEndpoint = import.meta.env.VITE_COPILOT_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
+      const copilotEndpoint = import.meta.env.VITE_COPILOT_ENDPOINT;
       const copilotKey = import.meta.env.VITE_COPILOT_API_KEY || apiKey.trim();
 
-      if (copilotEndpoint && copilotKey) {
-        const response = await fetch(copilotEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${copilotKey}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
-          })
-        });
-        const data = await response.json();
-        if (response.ok && data?.choices?.[0]?.message?.content) {
-          rawText = data.choices[0].message.content;
-        }
+      if (!copilotEndpoint || !copilotKey) {
+        throw new Error("Faltan credenciales del servidor Copilot Institucional.");
+      }
+
+      const response = await fetch(copilotEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${copilotKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ]
+        })
+      });
+      const data = await response.json();
+      if (response.ok && data?.choices?.[0]?.message?.content) {
+        rawText = data.choices[0].message.content;
+      } else {
+        throw new Error(`Copilot Error (${response.status}): ${data.error?.message || 'No fue posible conectar con Copilot.'}`);
       }
     }
   } catch (err) {
@@ -299,7 +314,7 @@ export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType
   }
 
   if (httpError) {
-    throw new Error(`❌ Error al conectar con ${provider.toUpperCase()}: ${httpError}`);
+    throw new Error(`❌ Error al conectar con ${provider === 'gemini' ? 'Google Gemini' : provider.toUpperCase()}: ${httpError}`);
   }
 
   if (rawText) {

@@ -1,4 +1,4 @@
-import { cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI, validateAiCredentials, loginMicrosoftCopilotPopup } from './services/aiService';
+import { cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI, validateAiCredentials, loginMicrosoftCopilotPopup, purgeFakeAiTokens } from './services/aiService';
 import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
 import { extractTextFromDocument } from './services/docExtractorService';
 import { generateCurricularInstrument } from './services/multiAiOrchestrator';
@@ -25149,7 +25149,10 @@ export default function App() {
 
   // --- Teacher AI Preferences & Universal AI Engine States ---
   const [preferredAI, setPreferredAI] = useState(() => {
-    return localStorage.getItem('docente_ai_pref') || localStorage.getItem('s_ai_provider') || 'copilot';
+    purgeFakeAiTokens();
+    const stored = localStorage.getItem('docente_ai_pref') || localStorage.getItem('s_ai_provider');
+    if (!stored || stored === 'copilot') return 'gemini';
+    return stored;
   });
   const [userApiKey, setUserApiKey] = useState(() => {
     return localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
@@ -30109,15 +30112,15 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                 <span>⚙️</span> Proveedor de Inteligencia Artificial Pedagógica
               </h4>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 12px 0' }}>
-                Elige el motor con el que deseas generar tus planificaciones e instrumentos. Puedes usar tu cuenta institucional de Microsoft Copilot o tu clave personal.
+                Elige el motor con el que deseas generar tus planificaciones e instrumentos. Te recomendamos usar Google Gemini con tu API Key gratuita de Google AI Studio.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginBottom: '14px' }}>
                 {[
-                  { id: 'copilot', name: 'Microsoft Copilot', desc: 'Correo Institucional MINERD' },
-                  { id: 'gemini', name: 'Google Gemini', desc: 'Google AI Studio / API' },
+                  { id: 'gemini', name: 'Google Gemini ⭐', desc: 'Gratuito / Google AI Studio API' },
                   { id: 'chatgpt', name: 'OpenAI (ChatGPT)', desc: 'GPT-4o / gpt-3.5' },
-                  { id: 'claude', name: 'Anthropic (Claude)', desc: 'Claude 3.5 Sonnet' }
+                  { id: 'claude', name: 'Anthropic (Claude)', desc: 'Claude 3.5 Sonnet' },
+                  { id: 'copilot', name: 'Microsoft Copilot', desc: 'Requiere Azure Client ID' }
                 ].map(provider => (
                   <div 
                     key={provider.id}
@@ -30142,35 +30145,25 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
               {preferredAI !== 'copilot' ? (
                 <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>API Key Personal / Token del Docente:</label>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    {preferredAI === 'gemini' ? 'API Key de Google AI Studio (Gratuita):' : 'API Key Personal / Token del Docente:'}
+                  </label>
                   <input
                     type="password"
-                    placeholder={"Introduce tu clave de " + preferredAI.toUpperCase()}
+                    placeholder={preferredAI === 'gemini' ? "Pega aquí tu API Key de Google AI Studio..." : "Introduce tu clave de " + preferredAI.toUpperCase()}
                     value={userApiKey}
                     onChange={(e) => setUserApiKey(e.target.value)}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-color)', marginTop: '4px', fontSize: '0.85rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
                   />
+                  {preferredAI === 'gemini' && (
+                    <div style={{ marginTop: '4px', fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                      💡 ¿No tienes clave? Consíguela gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#2563EB', fontWeight: 'bold' }}>aistudio.google.com</a>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#065F46', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div>✓ Conectado mediante sesión institucional de Microsoft 365 / Copilot del docente.</div>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      setIsVerifyingAI(true);
-                      try {
-                        const res = await loginMicrosoftCopilotPopup();
-                        setAiStatusMsg({ text: "✅ Autenticado con éxito en MSAL como " + res.user, type: 'success' });
-                      } catch (err) {
-                        setAiStatusMsg({ text: "❌ Error de login MSAL: " + err.message, type: 'error' });
-                      } finally {
-                        setIsVerifyingAI(false);
-                      }
-                    }}
-                    style={{ alignSelf: 'flex-start', background: '#059669', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'pointer' }}
-                  >
-                    🔐 Re-autenticar con Microsoft 365
-                  </button>
+                <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#92400E', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div>ℹ️ La integración directa con Microsoft Copilot requiere un Client ID de Azure configurado por el administrador del centro en Microsoft Entra ID. Usa tu clave gratuita de Google Gemini o ChatGPT.</div>
                 </div>
               )}
 
@@ -36646,10 +36639,10 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                                 color: '#0369A1'
                               }}
                             >
-                              <option value="copilot">Microsoft Copilot (Institucional)</option>
-                              <option value="gemini">Google Gemini</option>
+                              <option value="gemini">Google Gemini ⭐ (Recomendado)</option>
                               <option value="chatgpt">ChatGPT (OpenAI)</option>
                               <option value="claude">Claude (Anthropic)</option>
+                              <option value="copilot">Microsoft Copilot (Azure)</option>
                             </select>
                           </div>
 
