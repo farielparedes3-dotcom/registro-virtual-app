@@ -25160,6 +25160,61 @@ export default function App() {
   const [aiStatusMsg, setAiStatusMsg] = useState({ text: '', type: '' });
   const [isVerifyingAI, setIsVerifyingAI] = useState(false);
 
+  // --- AI Interceptor Modal States & Handler ---
+  const [showAiAuthModal, setShowAiAuthModal] = useState(false);
+  const [modalTargetProvider, setModalTargetProvider] = useState('gemini');
+  const [modalInputKey, setModalInputKey] = useState('');
+  const [modalAuthStatus, setModalAuthStatus] = useState({ text: '', type: '' });
+  const [isModalVerifying, setIsModalVerifying] = useState(false);
+
+  const handleAIProviderChange = (newProvider) => {
+    const savedKey = localStorage.getItem('ai_key_' + newProvider) || (newProvider === preferredAI ? userApiKey : '') || localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
+
+    if (newProvider !== 'copilot' && (!savedKey || !savedKey.trim())) {
+      setModalTargetProvider(newProvider);
+      setModalInputKey('');
+      setModalAuthStatus({ text: '', type: '' });
+      setShowAiAuthModal(true);
+    } else {
+      setPreferredAI(newProvider);
+      localStorage.setItem('docente_ai_pref', newProvider);
+      localStorage.setItem('s_ai_provider', newProvider);
+    }
+  };
+
+  const handleValidateModalKey = async () => {
+    if (!modalInputKey?.trim()) {
+      setModalAuthStatus({ text: '❌ Por favor ingresa una API Key válida.', type: 'error' });
+      return;
+    }
+    setIsModalVerifying(true);
+    setModalAuthStatus({ text: '⏳ Verificando credencial directamente con la API oficial...', type: 'info' });
+
+    try {
+      const val = await validateAiCredentials({ provider: modalTargetProvider, apiKey: modalInputKey.trim() });
+      if (val.success) {
+        const key = modalInputKey.trim();
+        setPreferredAI(modalTargetProvider);
+        setUserApiKey(key);
+        localStorage.setItem('docente_ai_pref', modalTargetProvider);
+        localStorage.setItem('docente_ai_key', key);
+        localStorage.setItem('s_ai_provider', modalTargetProvider);
+        localStorage.setItem('s_ai_api_key', key);
+        localStorage.setItem('ai_key_' + modalTargetProvider, key);
+
+        setShowAiAuthModal(false);
+        setCounselorToastMsg('✅ ' + modalTargetProvider.toUpperCase() + ' activado y verificado con éxito.');
+        setTimeout(() => setCounselorToastMsg(''), 4000);
+      } else {
+        setModalAuthStatus({ text: val.message, type: 'error' });
+      }
+    } catch (err) {
+      setModalAuthStatus({ text: '❌ Error de red al verificar credencial: ' + err.message, type: 'error' });
+    } finally {
+      setIsModalVerifying(false);
+    }
+  };
+
   const handleSaveAISettings = async () => {
     setIsVerifyingAI(true);
     setAiStatusMsg({ text: '⏳ Verificando credenciales directamente con la API oficial...', type: 'info' });
@@ -36620,15 +36675,11 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             />
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#0369A1' }}>Motor:</label>
                             <select
                               value={preferredAI}
-                              onChange={(e) => {
-                                const newMotor = e.target.value;
-                                setPreferredAI(newMotor);
-                                localStorage.setItem('docente_ai_pref', newMotor);
-                              }}
+                              onChange={(e) => handleAIProviderChange(e.target.value)}
                               style={{
                                 padding: '8px 12px',
                                 borderRadius: '6px',
@@ -36644,162 +36695,49 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                               <option value="claude">Claude (Anthropic)</option>
                               <option value="copilot">Microsoft Copilot (Azure)</option>
                             </select>
-                          </div>
 
-                          <button
-                            type="button"
-                            onClick={handleAutoFillWithAI}
-                            disabled={!aiTopicInput?.trim() || isGenerating}
-                            style={{
-                              background: '#0284C7',
-                              color: '#ffffff',
-                              border: 'none',
-                              borderRadius: '6px',
-                              padding: '8px 16px',
-                              fontWeight: 'bold',
-                              fontSize: '0.85rem',
-                              cursor: aiTopicInput?.trim() && !isGenerating ? 'pointer' : 'not-allowed',
-                              opacity: aiTopicInput?.trim() && !isGenerating ? 1 : 0.6
-                            }}
-                          >
-                            {isGenerating ? 'Generando...' : `✨ Generar Evaluación con ${preferredAI === 'copilot' ? 'Copilot' : preferredAI === 'gemini' ? 'Gemini' : preferredAI === 'chatgpt' ? 'ChatGPT' : 'Claude'}`}
-                          </button>
-                        </div>
+                            {/* Estado Visual de IA */}
+                            {(() => {
+                              const activeKey = localStorage.getItem('ai_key_' + preferredAI) || (preferredAI === 'gemini' ? (userApiKey || localStorage.getItem('docente_ai_key')) : '');
+                              const isVerified = preferredAI === 'copilot' ? false : Boolean(activeKey && activeKey.trim());
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.2fr 1.2fr 0.6fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                          <div className="form-group">
-                            <label>Nombre de la Actividad</label>
-                            <input 
-                              type="text" 
-                              className="form-input"
-                              value={instrumentEditState.activity}
-                              onChange={(e) => updateActiveInstrumentConfig({ activity: e.target.value })}
-                              required
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Tema / Contenido</label>
-                            <input 
-                              type="text" 
-                              className="form-input"
-                              value={instrumentEditState.topic || ''}
-                              onChange={(e) => updateActiveInstrumentConfig({ topic: e.target.value })}
-                              placeholder="e.g. Ecuaciones lineales"
-                              required
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Competencia a Evaluar</label>
-                            <input 
-                              type="text" 
-                              className="form-input"
-                              value={instrumentEditState.competence}
-                              onChange={(e) => updateActiveInstrumentConfig({ competence: e.target.value })}
-                              required
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Indicador de Logro</label>
-                            <input 
-                              type="text" 
-                              className="form-input"
-                              value={instrumentEditState.indicator}
-                              onChange={(e) => updateActiveInstrumentConfig({ indicator: e.target.value })}
-                              required
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Puntuación Máxima del Instrumento (pts)</label>
-                            <input 
-                              type="number" 
-                              className="form-input"
-                              min="1"
-                              max="100"
-                              value={instrumentEditState.weight === 0 || instrumentEditState.weight === '0' ? '' : instrumentEditState.weight}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                updateActiveInstrumentConfig({ weight: val === '' ? '' : Math.min(100, Math.max(0, Number(val))) });
-                              }}
-                              onFocus={(e) => {
-                                if (e.target.value === '0' || e.target.value === 0) {
-                                  updateActiveInstrumentConfig({ weight: '' });
-                                }
-                              }}
-                              style={{
-                                width: '100px',
-                                padding: '8px 10px',
-                                borderRadius: '8px',
-                                border: '1px solid #CBD5E1',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                                outline: 'none'
-                              }}
-                              placeholder="Puntos"
-                              required
-                            />
-                            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                              Puntuación máxima total del instrumento
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* SUMMARY AND EQUAL DISTRIBUTION BANNER */}
-                        {(() => {
-                          const instWeight = instrumentEditState.weight !== undefined ? Number(instrumentEditState.weight) : 25;
-                          const criteriaList = instrumentEditState.criteria || [];
-                          const sumCriteriaPoints = criteriaList.reduce((acc, c) => acc + (c.weight !== undefined ? Number(c.weight) : Math.max(1, Math.round(instWeight / (criteriaList.length || 1)))), 0);
-                          const isMatch = sumCriteriaPoints === instWeight;
-
-                          return (
-                            <div className="glass-panel" style={{ padding: '0.75rem 1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', backgroundColor: isMatch ? 'rgba(40, 167, 69, 0.08)' : 'rgba(255, 193, 7, 0.12)', border: `1px solid ${isMatch ? 'var(--success)' : '#ffc107'}`, borderRadius: '8px' }}>
-                              <div style={{ fontSize: '0.85rem' }}>
-                                <strong style={{ color: 'var(--text-primary)' }}>Distribución de Puntuación:</strong>{' '}
-                                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold', color: isMatch ? 'var(--success)' : '#d39e00' }}>
-                                  Suma Criterios ({sumCriteriaPoints} pts) / Puntuación Máxima ({instWeight} pts)
+                              return isVerified ? (
+                                <span style={{
+                                  background: '#DEF7EC',
+                                  color: '#03543F',
+                                  border: '1px solid #84E1BC',
+                                  borderRadius: '20px',
+                                  padding: '3px 10px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 'bold',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }}>
+                                  🟢 {preferredAI.toUpperCase()} Activo y Verificado
                                 </span>
-                                {!isMatch && (
-                                  <div style={{ fontSize: '0.75rem', color: '#b78103', marginTop: '2px' }}>
-                                    ⚠️ La suma de los puntos de los criterios no coincide con la puntuación máxima del instrumento.
-                                  </div>
-                                )}
-                              </div>
-                              <button 
-                                type="button" 
-                                className="btn-secondary" 
-                                style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem', borderRadius: '6px', fontWeight: 'bold', backgroundColor: 'var(--bg-primary)' }}
-                                onClick={handleDistributeCriteriaPointsEqually}
-                                title="Dividir los puntos del instrumento equitativamente entre los criterios"
-                              >
-                                ✨ Distribuir Equitativamente
-                              </button>
-                            </div>
-                          );
-                        })()}
-
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                          <div className="form-group" style={{ marginBottom: 0, display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                            <label style={{ margin: 0, fontWeight: 'bold' }}>Tipo de Instrumento:</label>
-                            <select 
-                              className="form-select"
-                              style={{
-                                padding: '8px 12px',
-                                borderRadius: '8px',
-                                border: '1px solid #CBD5E1',
-                                fontSize: '0.9rem',
-                                background: '#fff',
-                                fontWeight: 600,
-                                color: '#1E293B'
-                              }}
-                              value={instrumentEditState.type || 'rubrica_analitica'}
-                              onChange={(e) => updateActiveInstrumentConfig({ type: e.target.value })}
-                            >
-                              <option value="rubrica_analitica">Rúbrica Analítica (4 Niveles de Dominio)</option>
-                              <option value="rubrica_sintetica">Rúbrica Sintética / Holística</option>
-                              <option value="lista_cotejo">Lista de Cotejo (Sí / No - Cumplimiento)</option>
-                              <option value="escala_estimativa">Escala Estimativa (Frecuencia / Grado)</option>
-                              <option value="guia_observacion">Guía de Observación Sistemática</option>
-                            </select>
+                              ) : (
+                                <span 
+                                  onClick={() => handleAIProviderChange(preferredAI)}
+                                  style={{
+                                    background: '#FDE8E8',
+                                    color: '#9B1C1C',
+                                    border: '1px solid #F8B4B4',
+                                    borderRadius: '20px',
+                                    padding: '3px 10px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 'bold',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    cursor: 'pointer'
+                                  }}
+                                  title="Haz clic para configurar credenciales"
+                                >
+                                  🔴 Sin Configurar (Clic para autenticar)
+                                </span>
+                              );
+                            })()}
                           </div>
                           <button type="button" className="btn-secondary" onClick={handleAddCriterionRow}>
                             ＋ Agregar Criterio (Fila)
@@ -38111,6 +38049,126 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         signerRole={signatureModalRole}
         title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
       />
-    </div>
+    
+      {/* 🔑 MODAL INTERCEPTOR DE AUTENTICACIÓN DE IA */}
+      {showAiAuthModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            width: '100%',
+            maxWidth: '460px',
+            padding: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: '1px solid #E2E8F0'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>🔑</span> Conectar con {modalTargetProvider === 'gemini' ? 'Google Gemini' : modalTargetProvider === 'chatgpt' ? 'ChatGPT (OpenAI)' : modalTargetProvider === 'claude' ? 'Anthropic Claude' : modalTargetProvider.toUpperCase()}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setShowAiAuthModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#64748B' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '14px', lineHeight: '1.4' }}>
+              Para activar este motor de IA necesitas ingresar tu API Key oficial. La clave se verificará en tiempo real antes de guardar.
+            </p>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                Introduce tu API Key para continuar:
+              </label>
+              <input
+                type="password"
+                placeholder={modalTargetProvider === 'gemini' ? "Pega aquí tu API Key de Google AI Studio..." : "Clave API de " + modalTargetProvider.toUpperCase()}
+                value={modalInputKey}
+                onChange={(e) => setModalInputKey(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #94A3B8',
+                  fontSize: '0.9rem',
+                  color: '#0F172A'
+                }}
+              />
+              {modalTargetProvider === 'gemini' && (
+                <div style={{ marginTop: '6px', fontSize: '0.75rem', color: '#64748B' }}>
+                  💡 ¿Sin clave? Obtén una gratuita en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#2563EB', fontWeight: 'bold' }}>aistudio.google.com</a>
+                </div>
+              )}
+            </div>
+
+            {modalAuthStatus.text && (
+              <div style={{
+                marginBottom: '16px',
+                padding: '10px 12px',
+                borderRadius: '6px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                background: modalAuthStatus.type === 'success' ? '#DEF7EC' : modalAuthStatus.type === 'error' ? '#FDE8E8' : '#E1EFFE',
+                color: modalAuthStatus.type === 'success' ? '#03543F' : modalAuthStatus.type === 'error' ? '#9B1C1C' : '#1E429F',
+                border: '1px solid ' + (modalAuthStatus.type === 'success' ? '#84E1BC' : modalAuthStatus.type === 'error' ? '#F8B4B4' : '#A4CAFE')
+              }}>
+                {modalAuthStatus.text}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setShowAiAuthModal(false)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #CBD5E1',
+                  background: '#F8FAFC',
+                  color: '#475569',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={handleValidateModalKey}
+                disabled={isModalVerifying}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: isModalVerifying ? '#93C5FD' : '#2563EB',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: isModalVerifying ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isModalVerifying ? '⏳ Verificando...' : 'Validar y Activar Motor'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+</div>
   );
 }
