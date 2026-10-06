@@ -25180,7 +25180,33 @@ export default function App() {
       setCounselorToastMsg("🏢 Conectado con éxito con tu Correo Institucional MINERD (Copilot).");
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
-      setModalAuthStatus({ text: err.message, type: 'error' });
+      setModalAuthStatus({
+        text: (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left', padding: '4px' }}>
+            <div style={{ fontSize: '0.82rem', lineHeight: '1.4' }}>
+              La conexión directa con la nube de Microsoft 365 requiere autorización del distrito. Puedes generar tus instrumentos de inmediato usando la Licencia Oficial del Liceo.
+            </div>
+            <button
+              type="button"
+              onClick={handleUseSchoolLicense}
+              style={{
+                alignSelf: 'flex-start',
+                padding: '6px 14px',
+                borderRadius: '6px',
+                border: 'none',
+                background: '#1E3A8A',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '0.8rem',
+                cursor: 'pointer'
+              }}
+            >
+              🏛️ Conectar con Licencia del Liceo
+            </button>
+          </div>
+        ),
+        type: 'info'
+      });
     } finally {
       setIsModalVerifying(false);
     }
@@ -25196,14 +25222,24 @@ export default function App() {
   };
 
   const handleUseSchoolLicense = () => {
-    const schoolKey = import.meta.env.VITE_GEMINI_API_KEY || 'LICENCIA_OFICIAL_LICEO_ANA_ROSA_CASTILLO';
-    setPreferredAI('gemini');
-    setUserApiKey(schoolKey);
-    localStorage.setItem('docente_ai_pref', 'gemini');
-    localStorage.setItem('docente_ai_key', schoolKey);
-    localStorage.setItem('s_ai_provider', 'gemini');
-    localStorage.setItem('s_ai_api_key', schoolKey);
-    localStorage.setItem('ai_key_gemini', schoolKey);
+    // 1. Establecer el proveedor por defecto como la licencia institucional (Gemini)
+    localStorage.setItem('docente_ai_pref', 'school_license');
+    localStorage.setItem('s_ai_provider', 'school_license');
+    setPreferredAI('school_license');
+
+    // 2. Usar la clave central de entorno configurada en Vercel/Vite
+    const schoolKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+    if (schoolKey) {
+      localStorage.setItem('docente_ai_key', schoolKey);
+      localStorage.setItem('s_ai_api_key', schoolKey);
+      localStorage.setItem('ai_key_school_license', schoolKey);
+      setUserApiKey(schoolKey);
+    }
+
+    // 3. Notificación positiva inmediata y cierre
+    if (setAiStatusMsg) {
+      setAiStatusMsg({ text: '✅ Conectado a la Licencia Oficial del Liceo Ana Rosa Castillo', type: 'success' });
+    }
     setShowAiAuthModal(false);
     setCounselorToastMsg("🏛️ Licencia Oficial del Liceo Ana Rosa Castillo activada con éxito.");
     setTimeout(() => setCounselorToastMsg(''), 4000);

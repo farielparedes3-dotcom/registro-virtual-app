@@ -102,7 +102,11 @@ export const validateAiCredentials = async ({ provider = 'gemini', apiKey }) => 
   const cleanKey = apiKey.trim();
 
   try {
-    if (provider === 'gemini') {
+    if (provider === 'gemini' || provider === 'school_license') {
+      const activeKey = apiKey.trim() || import.meta.env.VITE_GEMINI_API_KEY || '';
+      if (!activeKey && provider !== 'school_license') {
+        throw new Error("❌ No se encontró la clave de API. Por favor activa la Licencia Oficial del Liceo.");
+      }
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
       const data = await res.json();
       if (res.ok && !data.error) {
@@ -223,7 +227,8 @@ export const generateEvaluationInstrumentWithAI = async ({ topic, instrumentType
 
   try {
     if (provider === 'gemini') {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`, {
+      const activeKey = apiKey.trim() || import.meta.env.VITE_GEMINI_API_KEY || '';
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }] })
