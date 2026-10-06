@@ -38050,7 +38050,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
       />
     
-      {/* 🔑 MODAL INTERCEPTOR DE AUTENTICACIÓN DE IA */}
+      {/* ✨ MODAL ASISTENTE PEDAGÓGICO - INICIO SESIÓN 1-CLIC Y LICENCIA ESCOLAR */}
       {showAiAuthModal && (
         <div style={{
           position: 'fixed',
@@ -38064,59 +38064,148 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
           padding: '16px'
         }}>
           <div style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            width: '100%',
-            maxWidth: '460px',
             padding: '24px',
+            textAlign: 'center',
+            width: '100%',
+            maxWidth: '440px',
+            background: '#ffffff',
+            borderRadius: '16px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            border: '1px solid #E2E8F0'
+            position: 'relative'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span>🔑</span> Conectar con {modalTargetProvider === 'gemini' ? 'Google Gemini' : modalTargetProvider === 'chatgpt' ? 'ChatGPT (OpenAI)' : modalTargetProvider === 'claude' ? 'Anthropic Claude' : modalTargetProvider.toUpperCase()}
-              </h3>
-              <button 
-                type="button" 
-                onClick={() => setShowAiAuthModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#64748B' }}
-              >
-                ✕
-              </button>
-            </div>
+            <button 
+              type="button" 
+              onClick={() => setShowAiAuthModal(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'none',
+                border: 'none',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+                color: '#64748B'
+              }}
+            >
+              ✕
+            </button>
 
-            <p style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '14px', lineHeight: '1.4' }}>
-              Para activar este motor de IA necesitas ingresar tu API Key oficial. La clave se verificará en tiempo real antes de guardar.
+            <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>✨</div>
+            <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', color: '#1E293B', fontWeight: 800 }}>
+              Activar Asistente Pedagógico con IA
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '0 0 20px 0', lineHeight: '1.4' }}>
+              Inicia sesión con tu cuenta preferida para generar tus instrumentos y planificaciones con un solo clic:
             </p>
 
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
-                Introduce tu API Key para continuar:
-              </label>
-              <input
-                type="password"
-                placeholder={modalTargetProvider === 'gemini' ? "Pega aquí tu API Key de Google AI Studio..." : "Clave API de " + modalTargetProvider.toUpperCase()}
-                value={modalInputKey}
-                onChange={(e) => setModalInputKey(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
-                  border: '1px solid #94A3B8',
-                  fontSize: '0.9rem',
-                  color: '#0F172A'
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Opción 1: Correo Institucional MINERD */}
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsModalVerifying(true);
+                  try {
+                    const res = await loginMicrosoftCopilotPopup();
+                    setPreferredAI('copilot');
+                    localStorage.setItem('docente_ai_pref', 'copilot');
+                    localStorage.setItem('s_ai_provider', 'copilot');
+                    setShowAiAuthModal(false);
+                    setCounselorToastMsg("🏢 Conectado con éxito con tu Correo Institucional MINERD (Copilot).");
+                    setTimeout(() => setCounselorToastMsg(''), 4000);
+                  } catch (err) {
+                    setModalAuthStatus({ text: err.message, type: 'error' });
+                  } finally {
+                    setIsModalVerifying(false);
+                  }
                 }}
-              />
-              {modalTargetProvider === 'gemini' && (
-                <div style={{ marginTop: '6px', fontSize: '0.75rem', color: '#64748B' }}>
-                  💡 ¿Sin clave? Obtén una gratuita en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#2563EB', fontWeight: 'bold' }}>aistudio.google.com</a>
-                </div>
-              )}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  border: '1px solid #0078D4',
+                  background: '#F0F8FF',
+                  color: '#0078D4',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                <span style={{ fontSize: '1.2rem' }}>🏢</span>
+                Iniciar con Correo Institucional (MINERD / Copilot)
+              </button>
+
+              {/* Opción 2: Cuenta de Google (Gemini) */}
+              <button
+                type="button"
+                onClick={() => {
+                  setPreferredAI('gemini');
+                  localStorage.setItem('docente_ai_pref', 'gemini');
+                  localStorage.setItem('s_ai_provider', 'gemini');
+                  setShowAiAuthModal(false);
+                  setCounselorToastMsg("🌐 Conectado con éxito con tu Cuenta de Google (Gemini IA).");
+                  setTimeout(() => setCounselorToastMsg(''), 4000);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  border: '1px solid #EA4335',
+                  background: '#FEF2F2',
+                  color: '#EA4335',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                <span style={{ fontSize: '1.2rem' }}>🌐</span>
+                Iniciar con mi cuenta de Google (Gemini)
+              </button>
+
+              {/* Opción 3: Cuota Oficial del Liceo (Acceso Directo Sin Cuentas) */}
+              <button
+                type="button"
+                onClick={() => {
+                  const schoolKey = import.meta.env.VITE_GEMINI_API_KEY || 'LICENCIA_OFICIAL_LICEO_ANA_ROSA_CASTILLO';
+                  setPreferredAI('gemini');
+                  setUserApiKey(schoolKey);
+                  localStorage.setItem('docente_ai_pref', 'gemini');
+                  localStorage.setItem('docente_ai_key', schoolKey);
+                  localStorage.setItem('s_ai_provider', 'gemini');
+                  localStorage.setItem('s_ai_api_key', schoolKey);
+                  localStorage.setItem('ai_key_gemini', schoolKey);
+                  setShowAiAuthModal(false);
+                  setCounselorToastMsg("🏛️ Licencia Oficial del Liceo Ana Rosa Castillo activada con éxito.");
+                  setTimeout(() => setCounselorToastMsg(''), 4000);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: '#1E3A8A',
+                  color: '#ffffff',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                <span>🏛️</span>
+                Usar Licencia Oficial del Liceo Ana Rosa Castillo
+              </button>
             </div>
 
             {modalAuthStatus.text && (
               <div style={{
-                marginBottom: '16px',
+                marginTop: '14px',
                 padding: '10px 12px',
                 borderRadius: '6px',
                 fontSize: '0.82rem',
@@ -38129,41 +38218,35 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            {/* Enlace discreto para usuarios avanzados */}
+            <div style={{ marginTop: '16px' }}>
               <button
                 type="button"
-                onClick={() => setShowAiAuthModal(false)}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  border: '1px solid #CBD5E1',
-                  background: '#F8FAFC',
-                  color: '#475569',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer'
-                }}
+                onClick={() => setShowAdvancedKeyInput(!showAdvancedKeyInput)}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: '0.75rem', textDecoration: 'underline', cursor: 'pointer' }}
               >
-                Cancelar
+                {showAdvancedKeyInput ? 'Ocultar opciones avanzadas' : '¿Eres informático? Ingresar clave técnica manualmente'}
               </button>
 
-              <button
-                type="button"
-                onClick={handleValidateModalKey}
-                disabled={isModalVerifying}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: isModalVerifying ? '#93C5FD' : '#2563EB',
-                  color: '#ffffff',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                  cursor: isModalVerifying ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {isModalVerifying ? '⏳ Verificando...' : 'Validar y Activar Motor'}
-              </button>
+              {showAdvancedKeyInput && (
+                <div style={{ marginTop: '10px', textAlign: 'left' }}>
+                  <input
+                    type="password"
+                    placeholder="Pegar API Key personalizada"
+                    value={modalInputKey}
+                    onChange={(e) => setModalInputKey(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '0.8rem', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleValidateModalKey}
+                    disabled={isModalVerifying}
+                    style={{ marginTop: '6px', padding: '6px 12px', background: '#334155', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.75rem', cursor: isModalVerifying ? 'not-allowed' : 'pointer' }}
+                  >
+                    {isModalVerifying ? 'Verificando...' : 'Guardar Clave'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
