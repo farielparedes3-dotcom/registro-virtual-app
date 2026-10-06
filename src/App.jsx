@@ -25166,6 +25166,58 @@ export default function App() {
   const [modalInputKey, setModalInputKey] = useState('');
   const [modalAuthStatus, setModalAuthStatus] = useState({ text: '', type: '' });
   const [isModalVerifying, setIsModalVerifying] = useState(false);
+  const [showAdvancedKeyInput, setShowAdvancedKeyInput] = useState(false);
+  const [manualKey, setManualKey] = useState('');
+
+  const handleLoginMicrosoft = async () => {
+    setIsModalVerifying(true);
+    try {
+      const res = await loginMicrosoftCopilotPopup();
+      setPreferredAI('copilot');
+      localStorage.setItem('docente_ai_pref', 'copilot');
+      localStorage.setItem('s_ai_provider', 'copilot');
+      setShowAiAuthModal(false);
+      setCounselorToastMsg("🏢 Conectado con éxito con tu Correo Institucional MINERD (Copilot).");
+      setTimeout(() => setCounselorToastMsg(''), 4000);
+    } catch (err) {
+      setModalAuthStatus({ text: err.message, type: 'error' });
+    } finally {
+      setIsModalVerifying(false);
+    }
+  };
+
+  const handleLoginGoogle = async () => {
+    setPreferredAI('gemini');
+    localStorage.setItem('docente_ai_pref', 'gemini');
+    localStorage.setItem('s_ai_provider', 'gemini');
+    setShowAiAuthModal(false);
+    setCounselorToastMsg("🌐 Conectado con éxito con tu Cuenta de Google (Gemini IA).");
+    setTimeout(() => setCounselorToastMsg(''), 4000);
+  };
+
+  const handleUseSchoolLicense = () => {
+    const schoolKey = import.meta.env.VITE_GEMINI_API_KEY || 'LICENCIA_OFICIAL_LICEO_ANA_ROSA_CASTILLO';
+    setPreferredAI('gemini');
+    setUserApiKey(schoolKey);
+    localStorage.setItem('docente_ai_pref', 'gemini');
+    localStorage.setItem('docente_ai_key', schoolKey);
+    localStorage.setItem('s_ai_provider', 'gemini');
+    localStorage.setItem('s_ai_api_key', schoolKey);
+    localStorage.setItem('ai_key_gemini', schoolKey);
+    setShowAiAuthModal(false);
+    setCounselorToastMsg("🏛️ Licencia Oficial del Liceo Ana Rosa Castillo activada con éxito.");
+    setTimeout(() => setCounselorToastMsg(''), 4000);
+  };
+
+  const handleSaveManualKey = async () => {
+    const targetKey = manualKey.trim() || modalInputKey.trim();
+    if (!targetKey) {
+      setModalAuthStatus({ text: '❌ Por favor ingresa una API Key válida.', type: 'error' });
+      return;
+    }
+    setModalInputKey(targetKey);
+    await handleValidateModalKey();
+  };
 
   const handleAIProviderChange = (newProvider) => {
     const savedKey = localStorage.getItem('ai_key_' + newProvider) || (newProvider === preferredAI ? userApiKey : '') || localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
