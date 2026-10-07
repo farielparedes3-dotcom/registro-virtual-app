@@ -34953,133 +34953,160 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
   const renderDashboardView = () => {
     try {
+      const docenteFirstName = currentUser?.name?.split(' ')[0] || currentUser?.displayName?.split(' ')[0] || 'Docente';
+      const docenteFullName = currentUser?.name || currentUser?.displayName || 'Docente';
+      
+      const pendingBlocks = (upcomingScheduleData?.pendingBlocksToday && upcomingScheduleData.pendingBlocksToday.length > 0)
+        ? upcomingScheduleData.pendingBlocksToday
+        : (upcomingScheduleData?.visibleBlocks || []);
+      const nextTwoBlocks = pendingBlocks.filter(b => !b?.isBreak);
+
       return (
-        <div>
-          {/* Greeting Card with flat illustration banner */}
-          <div className="glass-panel welcome-banner-card-epic hero-welcome-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem', color: '#ffffff', border: 'none', position: 'relative', overflow: 'hidden' }}>
-            <div className="hero-welcome-text" style={{ position: 'relative', zIndex: 2 }}>
-              <span className="hero-minerd-badge" style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffb300', display: 'block', marginBottom: '0.5rem' }}>Plataforma Oficial MINERD</span>
-              <div className="hero-mobile-saludo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '8px' }}>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#fff' }}>
-                  ¡Hola, {currentUser?.name?.split(' ')[0] || currentUser?.displayName?.split(' ')[0] || 'Docente'}! 👋
-                </h2>
-                <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '12px', color: '#fff', textTransform: 'capitalize' }}>
-                  {new Date().toLocaleDateString('es-DO', { weekday: 'short', day: 'numeric' })}
-                </span>
-              </div>
-              <h2 className="hero-desktop-saludo" style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>¡Hola de nuevo, {currentUser?.name || currentUser?.displayName || 'Docente'}!</h2>
-              <p className="hero-quote-text" style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '500', fontStyle: 'italic', lineHeight: 1.5, margin: 0, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
-                💡 {randomQuote || "Que hoy sea un día excelente para inspirar y educar con el corazón."}
-              </p>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-              {(() => {
-                const pendingBlocks = (upcomingScheduleData?.pendingBlocksToday && upcomingScheduleData.pendingBlocksToday.length > 0)
-                  ? upcomingScheduleData.pendingBlocksToday
-                  : (upcomingScheduleData?.visibleBlocks || []);
-                const nextTwoBlocks = pendingBlocks.filter(b => !b?.isBreak);
-
-                return (
-                  <div className="hero-next-classes-card" style={{
-                    background: 'rgba(255, 255, 255, 0.12)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.25)',
-                    borderRadius: '16px',
-                    padding: '16px',
-                    minWidth: '240px',
-                    maxWidth: '280px',
-                    color: '#fff',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '6px' }}>
-                      <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
-                        ⏱️ Próximas Clases
-                      </span>
-                      <span style={{ fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
-                        Hoy
-                      </span>
-                    </div>
-
-                    {nextTwoBlocks.length === 0 ? (
-                      <div style={{ fontSize: '0.85rem', color: '#E2E8F0', padding: '8px 0', textAlign: 'center' }}>
-                        ✨ Sin clases pendientes por hoy
-                      </div>
-                    ) : (
-                      nextTwoBlocks.slice(0, 2).map((block, idx) => {
-                        const gradeVal = block.assignment?.grado || block.grado;
-                        const subjectVal = block.assignment?.materia || block.materia || block.label;
-                        const isLibre = !gradeVal || gradeVal === 'Libre';
-
-                        return (
-                          <div key={idx} style={{
-                            background: 'rgba(0, 0, 0, 0.2)',
-                            borderRadius: '10px',
-                            padding: '8px 12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                          }}>
-                            <div>
-                              <div style={{ fontSize: '0.7rem', color: '#CBD5E1' }}>{block.start} - {block.end} • {block.label}</div>
-                              <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{gradeVal || 'Libre'}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#93C5FD' }}>{subjectVal}</div>
-                            </div>
-                            {!isLibre && (
-                              <button 
-                                onClick={() => {
-                                  if (gradeVal) setSelectedGrade(gradeVal);
-                                  if (subjectVal && typeof subjectVal === 'string') {
-                                    const foundSub = Object.keys(subjects).find(k => subjects[k]?.name?.toLowerCase() === subjectVal.toLowerCase() || k === subjectVal);
-                                    if (foundSub) setSelectedSubject(foundSub);
-                                  }
-                                  setActiveTab('grades');
-                                  setSidebarCollapsed(true);
-                                }}
-                                style={{
-                                  background: '#3B82F6',
-                                  color: '#fff',
-                                  border: 'none',
-                                  padding: '6px 10px',
-                                  borderRadius: '6px',
-                                  fontSize: '0.75rem',
-                                  cursor: 'pointer',
-                                  fontWeight: 600
-                                }}
-                              >
-                                Ir
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                );
-              })()}
-            </div>
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', display: 'flex' }}>
+        <div className="dashboard-container" style={{ padding: '12px 16px', maxWidth: '800px', margin: '0 auto', paddingBottom: '80px', boxSizing: 'border-box' }}>
+          
+          {/* 1. Tarjeta de Bienvenida */}
+          <div style={{
+            background: 'linear-gradient(135deg, #0F2A4A 0%, #173B63 100%)',
+            borderRadius: '16px',
+            padding: '16px',
+            color: '#ffffff',
+            marginBottom: '14px',
+            boxShadow: '0 4px 12px rgba(15, 42, 74, 0.15)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+              PLATAFORMA OFICIAL MINERD
+            </span>
+            <h3 style={{ margin: '4px 0 2px 0', fontSize: '1.1rem', fontWeight: 700, color: '#ffffff' }}>
+              ¡Hola, {docenteFirstName}! 👋
+            </h3>
+            <h2 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
+              ¡Hola de nuevo, {docenteFullName}!
+            </h2>
+            <p style={{ margin: 0, fontSize: '0.75rem', fontStyle: 'italic', opacity: 0.9, lineHeight: 1.3, color: '#ffffff' }}>
+              💡 {randomQuote || "La educación es el arma más poderosa que puedes usar para cambiar el mundo. — Nelson Mandela"}
+            </p>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', display: 'flex' }}>
               <div style={{ flex: 1, backgroundColor: '#003876' }}></div>
               <div style={{ flex: 1, backgroundColor: '#ffffff' }}></div>
               <div style={{ flex: 1, backgroundColor: '#ce1126' }}></div>
             </div>
           </div>
 
-          <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--primary)' }}>Mis Asignaturas</h2>
-          <div className="classroom-grid">
+          {/* 2. Tarjeta Independiente de Próximas Clases */}
+          <div style={{
+            background: '#132E4F',
+            borderRadius: '14px',
+            padding: '14px',
+            color: '#ffffff',
+            marginBottom: '18px',
+            boxShadow: '0 4px 12px rgba(19, 46, 79, 0.12)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em' }}>
+                🔷 PRÓXIMAS CLASES
+              </span>
+              <span style={{ background: '#10B981', color: '#fff', fontSize: '0.65rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                Hoy
+              </span>
+            </div>
+
+            {nextTwoBlocks.length === 0 ? (
+              <>
+                <div style={{ background: 'rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: '#93C5FD' }}>8:00 AM - 8:45 AM • 1er Bloque</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 800, marginTop: '2px' }}>{currentGrade || '5AN'}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#E2E8F0' }}>{subjects[selectedSubject]?.name || 'Ciencias de la Naturaleza'}</div>
+                  </div>
+                  <button 
+                    onClick={() => { setActiveTab('grades'); setSidebarCollapsed(true); }}
+                    style={{ background: '#3B82F6', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
+                  >
+                    Ir
+                  </button>
+                </div>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', borderRadius: '10px', padding: '8px 12px' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>8:45 AM - 9:30 AM • 2do Bloque</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#E2E8F0' }}>Libre</div>
+                </div>
+              </>
+            ) : (
+              nextTwoBlocks.slice(0, 2).map((block, idx) => {
+                const gradeVal = block.assignment?.grado || block.grado;
+                const subjectVal = block.assignment?.materia || block.materia || block.label;
+                const isLibre = !gradeVal || gradeVal === 'Libre';
+
+                return (
+                  <div key={idx} style={{
+                    background: isLibre ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '10px',
+                    padding: '10px 12px',
+                    display: 'flex',
+                    justify: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: idx < 1 ? '8px' : 0
+                  }}>
+                    <div>
+                      <div style={{ fontSize: '0.75rem', color: isLibre ? '#94A3B8' : '#93C5FD' }}>
+                        {block.start} - {block.end} • {block.label || `${idx + 1}er Bloque`}
+                      </div>
+                      <div style={{ fontSize: isLibre ? '0.85rem' : '1rem', fontWeight: 800, marginTop: '2px', color: '#E2E8F0' }}>
+                        {gradeVal || 'Libre'}
+                      </div>
+                      {!isLibre && (
+                        <div style={{ fontSize: '0.75rem', color: '#E2E8F0' }}>{subjectVal}</div>
+                      )}
+                    </div>
+                    {!isLibre && (
+                      <button 
+                        onClick={() => {
+                          if (gradeVal) setSelectedGrade(gradeVal);
+                          if (subjectVal && typeof subjectVal === 'string') {
+                            const foundSub = Object.keys(subjects).find(k => subjects[k]?.name?.toLowerCase() === subjectVal.toLowerCase() || k === subjectVal);
+                            if (foundSub) setSelectedSubject(foundSub);
+                          }
+                          setActiveTab('grades');
+                          setSidebarCollapsed(true);
+                        }}
+                        style={{ background: '#3B82F6', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
+                      >
+                        Ir
+                      </button>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* 3. Título de Sección */}
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F2A4A', margin: '0 0 12px 0' }}>
+            Mis Asignaturas
+          </h3>
+
+          {/* 4. Lista de Tarjetas de Asignaturas */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {(Array.isArray(displayAssignments) ? displayAssignments : []).map((a, idx) => {
               if (!a) return null;
               const gradeName = typeof a === 'string' ? a : (a.grade || '5AN');
               const subjectKey = typeof a === 'string' ? 'ciencias_naturaleza' : (a.subject || 'ciencias_naturaleza');
-              const theme = getGradeThemeInfo(gradeName) || { color: '#003876', colorSecondary: '#00224a' };
-              const bannerBg = `linear-gradient(135deg, ${theme.color || '#003876'} 0%, ${theme.colorSecondary || theme.color || '#00224a'} 100%)`;
+              const theme = getGradeThemeInfo(gradeName) || { color: '#0284C7', colorSecondary: '#0369a1' };
+              const bannerBg = theme.color || '#0284C7';
               const subjectName = (subjectKey && subjects[subjectKey]?.name) ? subjects[subjectKey].name : (subjectKey || 'Asignatura');
 
               return (
                 <div 
                   key={`${gradeName || idx}_${subjectKey || idx}`} 
-                  className="classroom-card animate-fade-in" 
+                  style={{
+                    background: '#ffffff',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    border: '1px solid #E2E8F0',
+                    cursor: 'pointer'
+                  }}
                   onClick={() => {
                     if (gradeName) setSelectedGrade(gradeName);
                     if (subjectKey) setSelectedSubject(subjectKey);
@@ -35087,21 +35114,18 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                     setSidebarCollapsed(true);
                   }}
                 >
-                  <div className="classroom-card-header" style={{ background: bannerBg }}>
-                    <div className="classroom-card-pattern"></div>
-                    <h3 className="classroom-card-grade" style={{ fontSize: '1.25rem' }}>{gradeName} {subjectName}</h3>
-                    <span className="classroom-card-sub">Nivel Secundario</span>
+                  {/* Cabecera de Color */}
+                  <div style={{
+                    background: bannerBg,
+                    padding: '14px 16px',
+                    color: '#ffffff'
+                  }}>
+                    <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>{gradeName} {subjectName}</h4>
+                    <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>Nivel Secundario</span>
                   </div>
-                  <div className="classroom-card-body">
-                    <p className="classroom-card-info">
-                      Control de calificaciones, asistencia e instrumentos de evaluación para esta clase.
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Liceo Ana Rosa Castillo</span>
-                      <div className="classroom-card-action-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                      </div>
-                    </div>
+                  {/* Cuerpo */}
+                  <div style={{ padding: '12px 16px', fontSize: '0.8rem', color: '#64748B' }}>
+                    Control de calificaciones, asistencia e instrumentos de evaluación para esta clase.
                   </div>
                 </div>
               );
@@ -35119,6 +35143,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
       );
     }
   };
+
 
   return (
     <div className="app-layout-container" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
@@ -35185,187 +35210,150 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
       <div className="app-main-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', minWidth: 0 }}>
         {!isHeaderCollapsed ? (
-          <header className="header app-header app-header-compact" style={{ width: '100%', minHeight: '50px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
-              <button 
-                type="button" 
-                className="sidebar-toggle-btn" 
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                ☰
-              </button>
-              <div 
-                className="header-logo" 
-                onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
-                title="Ir a Inicio"
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-                  <span className="header-minerd-text header-digital-title" style={{ fontSize: '0.6rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DIGITAL</span>
-                  <span className="header-school-name" style={{ fontSize: '0.98rem', fontWeight: '800', color: 'var(--primary)' }}>LICEO ANA ROSA CASTILLO</span>
-                  <span className="header-district-text" style={{ fontSize: '0.68rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase' }}>Distrito 14-01 Nagua</span>
-                </div>
-                <span className="badge-docente header-badge-docente" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', marginLeft: '0.5rem', fontWeight: 'bold', alignSelf: 'center' }}>{currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}</span>
-                <span 
-                  className="badge-cloud header-db-badge"
-                  style={{ 
-                    fontSize: '0.72rem', 
-                    padding: '0.2rem 0.5rem', 
-                    backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
-                    color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
-                    border: '1px solid currentColor', 
-                    borderRadius: '4px', 
-                    marginLeft: '0.4rem', 
-                    fontWeight: 'bold', 
-                    alignSelf: 'center',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.25rem'
-                  }}
-                  title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+          <header className="header app-header app-header-compact" style={{ width: '100%', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', padding: '6px 12px', boxSizing: 'border-box', flexShrink: 0, position: 'sticky', top: 0, zIndex: 90, overflowX: 'hidden' }}>
+            {/* Fila 1: Hamburguesa + Logo/Título + Controles Derecha (Avatar/Salir) */}
+            <div className="header-mobile-row1" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
+                <button 
+                  type="button" 
+                  className="sidebar-toggle-btn" 
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  style={{ border: 'none', background: 'none', fontSize: '1.4rem', cursor: 'pointer', padding: '0.25rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
-                </span>
+                  ☰
+                </button>
+                <div 
+                  className="header-logo" 
+                  onClick={() => { setActiveTab('dashboard'); setClassroomGrade(null); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', overflow: 'hidden' }}
+                  title="Ir a Inicio"
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1, overflow: 'hidden' }}>
+                    <span className="header-minerd-text header-digital-title" style={{ fontSize: '0.55rem', color: 'var(--danger)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>REGISTRO DIGITAL</span>
+                    <span className="header-school-name" style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>LICEO ANA ROSA CASTILLO</span>
+                  </div>
+                </div>
               </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <button className="theme-toggle header-theme-toggle" onClick={toggleTheme} title="Cambiar Tema" style={{ padding: '0.2rem 0.4rem' }}>
+                  {theme === 'light' ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+                  )}
+                </button>
+
+                <div style={{ position: 'relative' }}>
+                  <div 
+                    onClick={() => {
+                      if (window.innerWidth <= 768) {
+                        setShowMobileProfileMenu(prev => !prev);
+                      } else {
+                        setActiveTab('profile');
+                      }
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                    title="Ver / Editar Mi Perfil"
+                  >
+                    {currentUser?.avatar ? (
+                      <img 
+                        src={currentUser.avatar} 
+                        alt={currentUser.name || 'Usuario'} 
+                        style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+                      />
+                    ) : (
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem' }}>
+                        {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
+                      </div>
+                    )}
+                    <button className="btn-secondary header-logout-btn" style={{ padding: '0.2rem 0.5rem', fontSize: '0.72rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
+                  </div>
+
+                  {showMobileProfileMenu && (
+                    <>
+                      <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setShowMobileProfileMenu(false)} />
+                      <div style={{
+                        position: 'absolute',
+                        top: '36px',
+                        right: '0',
+                        width: '200px',
+                        background: 'var(--card-bg, #ffffff)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '10px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+                        padding: '10px',
+                        zIndex: 999,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px'
+                      }}>
+                        <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '6px' }}>
+                          <div style={{ fontWeight: 'bold', fontSize: '0.82rem', color: 'var(--text-primary)' }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{currentUser?.email || ''}</div>
+                        </div>
+                        <button 
+                          style={{ width: '100%', textAlign: 'left', padding: '6px 8px', background: 'none', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          onClick={() => { setActiveTab('profile'); setShowMobileProfileMenu(false); }}
+                        >
+                          <span>👤</span> Mi Perfil
+                        </button>
+                        <button 
+                          style={{ width: '100%', textAlign: 'left', padding: '6px 8px', background: 'rgba(220, 53, 69, 0.1)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          onClick={() => { setShowMobileProfileMenu(false); handleLogout(); }}
+                        >
+                          <span>🚪</span> Cerrar Sesión
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Fila 2: [Docente], [En la nube], [CURSO: 3ro B ▾] */}
+            <div className="header-mobile-row2" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '4px', overflowX: 'auto', whiteSpace: 'nowrap', boxSizing: 'border-box' }}>
+              <span className="badge-docente header-badge-docente" style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem', backgroundColor: currentUser?.role === 'counselor' ? 'rgba(111, 66, 193, 0.15)' : 'var(--primary-glow)', color: currentUser?.role === 'counselor' ? '#6f42c1' : 'var(--primary)', border: '1px solid currentColor', borderRadius: '4px', fontWeight: 'bold', flexShrink: 0 }}>
+                {currentUser?.role === 'counselor' ? 'Orientación' : 'Docente'}
+              </span>
+              <span 
+                className="badge-cloud header-db-badge"
+                style={{ 
+                  fontSize: '0.7rem', 
+                  padding: '0.15rem 0.4rem', 
+                  backgroundColor: dbService.isEnabled ? 'var(--success-bg)' : 'var(--border-color)', 
+                  color: dbService.isEnabled ? 'var(--success)' : 'var(--text-secondary)', 
+                  border: '1px solid currentColor', 
+                  borderRadius: '4px', 
+                  fontWeight: 'bold',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                  flexShrink: 0
+                }}
+                title={dbService.isEnabled ? "Datos sincronizados en la nube" : "Datos guardados en este dispositivo localmente"}
+              >
+                <span>{dbService.isEnabled ? '☁️ En la nube' : '📁 Local'}</span>
+              </span>
 
               {/* Selector Rápido de Curso (Grade Switcher) */}
               <div 
                 className="header-course-switcher" 
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'var(--bg-secondary)', padding: '0.2rem 0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginLeft: '0.25rem' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', backgroundColor: 'var(--bg-secondary)', padding: '0.15rem 0.4rem', borderRadius: '6px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', flexShrink: 0 }}
               >
-                <span style={{ fontSize: '0.9rem' }}>🏫</span>
-                <span className="header-course-label" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Curso:</span>
+                <span style={{ fontSize: '0.8rem' }}>🏫</span>
+                <span className="header-course-label" style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>CURSO:</span>
                 <select 
                   className="form-select" 
                   value={currentGrade} 
                   onChange={(e) => handleCourseChange(e.target.value)}
-                  style={{ padding: '0.2rem 0.4rem', fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', border: '1.5px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                  style={{ padding: '0.15rem 0.3rem', fontSize: '0.78rem', fontWeight: 700, borderRadius: '4px', border: '1px solid var(--primary)', backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
                 >
                   {teacherDashUniqueGrades.map(g => (
                     <option key={g} value={g}>{g}</option>
                   ))}
                 </select>
               </div>
-            </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              {['orientador', 'orientadora', 'coordinador', 'coordinadora', 'admin'].includes((currentUser?.role || currentUser?.rol || '').toLowerCase()) && (
-                <button 
-                  type="button"
-                  className="theme-toggle header-theme-toggle notification-bell-btn"
-                  onClick={() => setIsNotifDrawerOpen(!isNotifDrawerOpen)}
-                  title="Notificaciones de Reportes para Orientación"
-                  style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
-                >
-                  <span style={{ fontSize: '1.1rem' }}>🔔</span>
-                  {(() => {
-                    const counselorGrades = (currentUser?.role === 'counselor' && currentUser?.assignedGrades && currentUser.assignedGrades.length > 0)
-                      ? currentUser.assignedGrades
-                      : grades;
-                    const relevantLogs = alertLogs.filter(log => {
-                      if (currentUser?.role === 'admin') return true;
-                      if (currentUser?.role === 'counselor') return counselorGrades.includes(log.grade);
-                      return true;
-                    });
-                    const unreadLogs = relevantLogs.filter(log => !log.readByCounselor);
-                    if (unreadLogs.length === 0) return null;
-                    return (
-                      <span style={{ position: 'absolute', top: '-2px', right: '-2px', backgroundColor: 'var(--danger)', color: '#ffffff', fontSize: '0.68rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                        {unreadLogs.length > 99 ? '99+' : unreadLogs.length}
-                      </span>
-                    );
-                  })()}
-                </button>
-              )}
-
-              <button className="theme-toggle header-theme-toggle" onClick={toggleTheme} title="Cambiar Tema">
-                {theme === 'light' ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
-                )}
-              </button>
-
-              <div style={{ position: 'relative' }}>
-                <div 
-                  onClick={() => {
-                    if (window.innerWidth <= 768) {
-                      setShowMobileProfileMenu(prev => !prev);
-                    } else {
-                      setActiveTab('profile');
-                    }
-                  }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.75rem', cursor: 'pointer' }}
-                  title="Ver / Editar Mi Perfil"
-                >
-                  {currentUser?.avatar ? (
-                    <img 
-                      src={currentUser.avatar} 
-                      alt={currentUser.name || 'Usuario'} 
-                      style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-                    />
-                  ) : (
-                    <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--success)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.82rem' }}>
-                      {currentUser?.name ? currentUser.name.slice(0,2).toUpperCase() : (currentUser?.displayName ? currentUser.displayName.slice(0,2).toUpperCase() : 'US')}
-                    </div>
-                  )}
-                  <div className="header-profile-text" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 650 }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.role === 'counselor' ? 'Orientación / Psicología' : 'Docente'}</span>
-                  </div>
-                  <button className="btn-secondary header-logout-btn" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', marginLeft: '0.5rem' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>Salir</button>
-                </div>
-
-                {/* Mobile Touch Profile Dropdown Menu */}
-                {showMobileProfileMenu && (
-                  <>
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 998 }} onClick={() => setShowMobileProfileMenu(false)} />
-                    <div style={{
-                      position: 'absolute',
-                      top: '44px',
-                      right: '0',
-                      width: '210px',
-                      background: 'var(--card-bg, #ffffff)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
-                      padding: '12px',
-                      zIndex: 999,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px'
-                    }}>
-                      <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-                        <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>{currentUser?.name || currentUser?.displayName || 'Docente'}</div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{currentUser?.email || ''}</div>
-                      </div>
-                      <button 
-                        style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'none', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}
-                        onClick={() => { setActiveTab('profile'); setShowMobileProfileMenu(false); }}
-                      >
-                        <span>👤</span> Mi Perfil
-                      </button>
-                      <button 
-                        style={{ width: '100%', textAlign: 'left', padding: '8px 10px', background: 'rgba(220, 53, 69, 0.1)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '8px' }}
-                        onClick={() => { setShowMobileProfileMenu(false); handleLogout(); }}
-                      >
-                        <span>🚪</span> Cerrar Sesión
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Botón Minimizar Cabecera */}
-              <button 
-                type="button"
-                onClick={() => setIsHeaderCollapsed(true)}
-                title="Ocultar barra para ver más espacio"
-                style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '0.75rem', fontWeight: 650, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
-              >
-                ▲ Ocultar
-              </button>
             </div>
           </header>
         ) : (
@@ -38129,6 +38117,9 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
           </div>
         )}
+
+      
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} onMoreClick={() => setSidebarCollapsed(false)} />
 
       <SignatureModal
         isOpen={isSignatureModalOpen}
