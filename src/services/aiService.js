@@ -14,7 +14,7 @@ REGLAS DE ORO:
    - 'guia_observacion': Registro de aspectos observados y nivel de logro.
 3. SUJETO: Criterios centrados en desempeños y evidencias reales observables en el estudiante.
 
-Devuelve estrictamente un objeto JSON con este esquema:
+Devuelve strictly un objeto JSON con este esquema:
 {
   "cleanTopic": "Nombre curricular del contenido",
   "activityName": "Nombre pedagógico de la actividad",
@@ -33,18 +33,40 @@ Devuelve estrictamente un objeto JSON con este esquema:
 }
 `;
 
+export const getActiveApiKey = () => {
+  return (
+    import.meta.env.VITE_GEMINI_API_KEY ||
+    localStorage.getItem('s_ai_api_key') ||
+    localStorage.getItem('docente_ai_key') ||
+    ''
+  );
+};
+
 export const generateEvaluationInstrument = async ({ topic, instrumentType, grade, subject, documentContext = '' }) => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+  let apiKey = getActiveApiKey();
 
   if (!apiKey) {
-    throw new Error("No se ha configurado la clave institucional (VITE_GEMINI_API_KEY) en las variables de entorno.");
+    if (typeof window !== 'undefined' && window.prompt) {
+      const inputKey = window.prompt("🔑 Configuración inicial: Introduce la clave de Google Gemini para la Licencia Institucional del Liceo (se guardará de forma segura en este navegador):");
+      if (inputKey && inputKey.trim()) {
+        apiKey = inputKey.trim();
+        localStorage.setItem('s_ai_api_key', apiKey);
+      }
+    }
   }
+
+  if (!apiKey) {
+    throw new Error("Se requiere configurar la clave de Google Gemini para usar el asistente.");
+  }
+
+  const topicCleaned = cleanTopicString(topic || '');
 
   const userPrompt = `
 Grado: ${grade || 'Secundaria'}
 Asignatura: ${subject || 'Tronco Común'}
 Tipo de Instrumento: ${instrumentType || 'rubrica_analitica'}
 Instrucción / Tema del Docente: ${topic || 'Contenido Curricular'}
+Tema Curricular Limpio: ${topicCleaned}
 ${documentContext ? `Contexto extraído de la planificación/secuencia:\n${documentContext.slice(0, 3000)}` : ''}
 `;
 
@@ -74,9 +96,11 @@ ${documentContext ? `Contexto extraído de la planificación/secuencia:\n${docum
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     const parsed = parseUniversalAIResponse(rawText, instrumentType);
 
+    const finalCleanTopic = parsed.cleanTopic ? cleanTopicString(parsed.cleanTopic) : (topicCleaned || topic);
+
     return {
-      cleanTopic: parsed.cleanTopic || topic,
-      activityName: parsed.activityName || `Evaluación de ${topic}`,
+      cleanTopic: finalCleanTopic,
+      activityName: parsed.activityName || `Evaluación de ${finalCleanTopic}`,
       criteria: (parsed.criterios || []).map(c => ({
         name: c.criterio,
         weight: c.puntos || 5,
@@ -96,10 +120,12 @@ export const cleanTopicString = (rawPrompt) => {
   const patterns = [
     /^(haz|crea|genera|elabora|construye|diseña|has|dame|realiza|redacta)\s+(una|un|el|la|los|las)?\s*(lista de cotejo|rúbrica analítica|rúbrica sintética|rúbrica holística|rúbrica|escala estimativa|guía de observación|instrumento de evaluación|instrumento)?\s*(para|sobre|de|del|en relación a|referente a|con el tema|del tema)?/i,
     /^(lista de cotejo|rúbrica analítica|rúbrica sintética|rúbrica holística|rúbrica|escala estimativa|guía de observación|instrumento de evaluación|instrumento)\s+(para|sobre|de|del|en relación a)?/i,
-    /^(para el tema de|sobre el tema de|del tema de|para la|para el|sobre la|sobre el|tema:?)/i
+    /^(para el tema de|sobre el tema de|del tema de|el tema de|para la|para el|sobre la|sobre el|tema:?)/i
   ];
-  for (const p of patterns) {
-    str = str.replace(p, '').trim();
+  for (let i = 0; i < 3; i++) {
+    for (const p of patterns) {
+      str = str.replace(p, '').trim();
+    }
   }
   if (str.length > 0) {
     str = str.charAt(0).toUpperCase() + str.slice(1);
@@ -124,3 +150,4 @@ export const loginMicrosoftCopilotPopup = async () => ({
 });
 
 export const purgeFakeAiTokens = () => {};
+
