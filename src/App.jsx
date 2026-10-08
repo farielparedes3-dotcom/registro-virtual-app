@@ -26293,20 +26293,22 @@ export default function App() {
   };
 
   // --- Admin Student Registration ---
-  const handleAddStudent = (e) => {
+  const handleAddStudent = async (e) => {
     e.preventDefault();
-    if (currentUser.role !== 'admin') return;
+    if (currentUser?.role !== 'admin') return;
 
-    if (!studentForm.name || !studentForm.email) {
-      alert('Por favor llene los campos.');
+    if (!studentForm.name || !studentForm.name.trim() || !studentForm.email || !studentForm.email.trim()) {
+      alert('Por favor llene todos los campos obligatorios.');
       return;
     }
 
     const created = {
-      id: 's_' + Date.now().toString(),
-      name: studentForm.name,
-      email: studentForm.email,
-      grade: activeAdminGrade,
+      id: 'std_' + Date.now().toString(),
+      name: studentForm.name.trim(),
+      email: studentForm.email.trim(),
+      grade: activeAdminGrade || '5AN',
+      active: true,
+      createdAt: new Date().toISOString(),
       grades: {
         math: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
         science: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
@@ -26317,19 +26319,28 @@ export default function App() {
       total: 20
     };
 
-    setStudentsAndSave(prev => [...prev, created]);
-    setStudentForm({ name: '', email: '' });
+    try {
+      await dbService.addStudent(created);
+      setStudents(prev => [...prev, created]);
+      setStudentForm({ name: '', email: '' });
+      alert("✅ Estudiante registrado y guardado con éxito.");
+    } catch (err) {
+      console.error("Error al guardar estudiante:", err);
+      alert("❌ No se pudo guardar el estudiante: " + err.message);
+    }
   };
 
-  const handleDeleteStudent = (id) => {
-    if (currentUser.role !== 'admin') return;
+  const handleDeleteStudent = async (id) => {
+    if (currentUser?.role !== 'admin') return;
     if (window.confirm('¿Está seguro de eliminar este alumno?')) {
-      setStudentsAndSave(prev => prev.filter(s => s.id !== id));
+      const nextList = students.filter(s => s.id !== id);
+      setStudents(nextList);
+      await dbService.saveStudents(nextList);
     }
   };
 
   // --- Admin: Bulk Students Importer ---
-  const parseAndAddStudents = (textData) => {
+  const parseAndAddStudents = async (textData) => {
     const lines = textData.split('\n');
     const addedStudents = [];
 
@@ -26347,10 +26358,12 @@ export default function App() {
         }
 
         addedStudents.push({
-          id: 's_' + Math.random().toString(36).substr(2, 9),
+          id: 'std_' + Math.random().toString(36).substr(2, 9),
           name: name,
           email: email,
-          grade: activeAdminGrade,
+          grade: activeAdminGrade || '5AN',
+          active: true,
+          createdAt: new Date().toISOString(),
           grades: {
             math: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
             science: { bloque1: [0, 0, 0, 0], bloque2: [0, 0, 0, 0], bloque3: [0, 0, 0, 0], bloque4: [0, 0, 0, 0] },
@@ -26364,8 +26377,14 @@ export default function App() {
     });
 
     if (addedStudents.length > 0) {
-      setStudentsAndSave(prev => [...prev, ...addedStudents]);
-      alert(`Se importaron con éxito ${addedStudents.length} alumnos al grado ${activeAdminGrade}.`);
+      try {
+        await Promise.all(addedStudents.map(s => dbService.addStudent(s)));
+        setStudents(prev => [...prev, ...addedStudents]);
+        alert(`✅ Se importaron y guardaron con éxito ${addedStudents.length} alumnos en ${activeAdminGrade}.`);
+      } catch (err) {
+        console.error("Error importando alumnos:", err);
+        alert("⚠️ Hubo un error al guardar algunos estudiantes importados.");
+      }
     } else {
       alert('No se pudo encontrar ningún dato de alumno válido. Formato: Nombre, Correo');
     }
@@ -29654,9 +29673,18 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
     ? (currentUser.assignments || []).filter(a => matchGrade(a.grade, selectedGrade)).map(a => a.subject)
     : [];
 
-  const studentsFilteredByGrade = selectedGrade
-    ? students.filter(s => matchGrade(s.grade, selectedGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999))
-    : students;
+  const studentsFilteredByGrade = useMemo(() => {
+    return selectedGrade
+      ? students.filter(s => matchGrade(s.grade, selectedGrade)).sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999))
+      : students;
+  }, [students, selectedGrade]);
+
+  const adminStudentsFilteredByGrade = useMemo(() => {
+    if (!activeAdminGrade) return [];
+    return students
+      .filter(s => matchGrade(s.grade, activeAdminGrade))
+      .sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+  }, [students, activeAdminGrade]);
 
   const toggleUserActive = (id) => {
     setUsersAndSave(prev => prev.map(u => {
@@ -33617,9 +33645,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                         </thead>
                         <tbody>
                           {(() => {
-                            const sortedList = students
-                              .filter(s => s.grade === activeAdminGrade)
-                              .sort((a, b) => (Number(a.orderNumber) || 999) - (Number(b.orderNumber) || 999));
+                            const sortedList = adminStudentsFilteredByGrade;
                             
                             if (sortedList.length === 0) {
                               return (

@@ -197,11 +197,61 @@ export const dbService = {
       snapshot.forEach(docItem => {
         studentsList.push({ id: docItem.id, ...docItem.data() });
       });
-      remoteCache['students'] = JSON.stringify(studentsList);
-      localStorage.setItem('s_students', JSON.stringify(studentsList));
-      callback(studentsList);
+      if (hasChanged('students', studentsList)) {
+        localStorage.setItem('s_students', JSON.stringify(studentsList));
+        callback(studentsList);
+      }
     });
   },
+
+  async addStudent(student) {
+    if (!student || !student.id) return;
+    const cleanStudent = sanitizeFirestoreData(student);
+    if (!cleanStudent.id) cleanStudent.id = student.id;
+    cleanStudent.active = cleanStudent.active !== undefined ? cleanStudent.active : true;
+    cleanStudent.createdAt = cleanStudent.createdAt || new Date().toISOString();
+
+    let current = [];
+    try {
+      current = JSON.parse(localStorage.getItem('s_students') || '[]');
+    } catch (e) {
+      current = [];
+    }
+    
+    const index = current.findIndex(s => s.id === cleanStudent.id);
+    let updated;
+    if (index >= 0) {
+      updated = [...current];
+      updated[index] = cleanStudent;
+    } else {
+      updated = [...current, cleanStudent];
+    }
+    
+    localStorage.setItem('s_students', JSON.stringify(updated));
+    remoteCache['students'] = JSON.stringify(updated);
+    triggerFallbackUpdate('students', updated);
+
+    if (typeof window !== 'undefined' && window.syncToIndexedDB) {
+      try {
+        await window.syncToIndexedDB('students', updated);
+      } catch (err) {
+        console.warn('IndexedDB sync warning:', err);
+      }
+    }
+
+    if (isFirebaseEnabled) {
+      try {
+        const { id, ...data } = cleanStudent;
+        await setDoc(doc(firestore, 'students', id), data, { merge: true });
+        console.log('⚡ Estudiante guardado con éxito en Firestore:', id);
+      } catch (err) {
+        console.error('Error al guardar estudiante en Firestore:', err);
+        throw err;
+      }
+    }
+    return cleanStudent;
+  },
+
   async saveStudents(studentsList) {
     if (!hasChanged('students', studentsList)) return;
     localStorage.setItem('s_students', JSON.stringify(studentsList));
