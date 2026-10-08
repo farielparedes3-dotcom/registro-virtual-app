@@ -1,4 +1,4 @@
-import { cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI, validateAiCredentials, loginMicrosoftCopilotPopup, purgeFakeAiTokens } from './services/aiService';
+import { generateEvaluationInstrument, cleanTopicString, buildInstrumentSystemPrompt, generateEvaluationInstrumentWithAI, validateAiCredentials, purgeFakeAiTokens } from './services/aiService';
 import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
 import { extractTextFromDocument } from './services/docExtractorService';
 import { generateCurricularInstrument } from './services/multiAiOrchestrator';
@@ -30277,90 +30277,13 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
 
             </div>
 
-            {/* ⚙️ AI Settings Card */}
-            <div className="ai-settings-card" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '16px', marginTop: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span>⚙️</span> Proveedor de Inteligencia Artificial Pedagógica
-              </h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 12px 0' }}>
-                Elige el motor con el que deseas generar tus planificaciones e instrumentos. Te recomendamos usar Google Gemini con tu API Key gratuita de Google AI Studio.
-              </p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginBottom: '14px' }}>
-                {[
-                  { id: 'gemini', name: 'Google Gemini ⭐', desc: 'Gratuito / Google AI Studio API' },
-                  { id: 'chatgpt', name: 'OpenAI (ChatGPT)', desc: 'GPT-4o / gpt-3.5' },
-                  { id: 'claude', name: 'Anthropic (Claude)', desc: 'Claude 3.5 Sonnet' },
-                  { id: 'copilot', name: 'Microsoft Copilot', desc: 'Requiere Azure Client ID' }
-                ].map(provider => (
-                  <div 
-                    key={provider.id}
-                    onClick={() => {
-                      setPreferredAI(provider.id);
-                      setAiStatusMsg({ text: '', type: '' });
-                    }}
-                    style={{
-                      border: preferredAI === provider.id ? '2px solid #2563EB' : '1px solid var(--border-color)',
-                      background: preferredAI === provider.id ? 'rgba(37, 99, 235, 0.08)' : 'var(--bg-secondary)',
-                      borderRadius: '8px',
-                      padding: '10px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{provider.name}</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{provider.desc}</div>
-                  </div>
-                ))}
+            {/* 🏛️ Institutional AI Status Badge */}
+            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '12px 16px', borderRadius: '10px', marginTop: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '1.2rem' }}>🏛️</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#166534' }}>Asistente Pedagógico Activo</div>
+                <div style={{ fontSize: '0.75rem', color: '#15803D' }}>Conectado a la Licencia Oficial del Liceo Ana Rosa Castillo (MINERD 04-2023).</div>
               </div>
-
-              {preferredAI !== 'copilot' ? (
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                    {preferredAI === 'gemini' ? 'API Key de Google AI Studio (Gratuita):' : 'API Key Personal / Token del Docente:'}
-                  </label>
-                  <input
-                    type="password"
-                    placeholder={preferredAI === 'gemini' ? "Pega aquí tu API Key de Google AI Studio..." : "Introduce tu clave de " + preferredAI.toUpperCase()}
-                    value={userApiKey}
-                    onChange={(e) => setUserApiKey(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-color)', marginTop: '4px', fontSize: '0.85rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
-                  />
-                  {preferredAI === 'gemini' && (
-                    <div style={{ marginTop: '4px', fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                      💡 ¿No tienes clave? Consíguela gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#2563EB', fontWeight: 'bold' }}>aistudio.google.com</a>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#92400E', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div>ℹ️ La integración directa con Microsoft Copilot requiere un Client ID de Azure configurado por el administrador del centro en Microsoft Entra ID. Usa tu clave gratuita de Google Gemini o ChatGPT.</div>
-                </div>
-              )}
-
-              {aiStatusMsg.text && (
-                <div style={{
-                  marginTop: '10px',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  background: aiStatusMsg.type === 'success' ? '#DEF7EC' : aiStatusMsg.type === 'error' ? '#FDE8E8' : '#E1EFFE',
-                  color: aiStatusMsg.type === 'success' ? '#03543F' : aiStatusMsg.type === 'error' ? '#9B1C1C' : '#1E429F',
-                  border: '1px solid ' + (aiStatusMsg.type === 'success' ? '#84E1BC' : aiStatusMsg.type === 'error' ? '#F8B4B4' : '#A4CAFE')
-                }}>
-                  {aiStatusMsg.text}
-                </div>
-              )}
-
-              <button 
-                type="button"
-                onClick={handleSaveAISettings}
-                disabled={isVerifyingAI}
-                style={{ marginTop: '12px', background: isVerifyingAI ? '#93C5FD' : '#2563EB', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: isVerifyingAI ? 'not-allowed' : 'pointer' }}
-              >
-                {isVerifyingAI ? '⏳ Verificando Credencial...' : 'Verificar y Guardar Credencial de IA'}
-              </button>
             </div>
 
             {/* Foto de Perfil & Presets */}
@@ -36778,68 +36701,40 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#0369A1' }}>Motor:</label>
-                            <select
-                              value={preferredAI}
-                              onChange={(e) => handleAIProviderChange(e.target.value)}
+                            <span style={{
+                              background: '#F0FDF4',
+                              color: '#166534',
+                              border: '1px solid #BBF7D0',
+                              borderRadius: '20px',
+                              padding: '4px 12px',
+                              fontSize: '0.8rem',
+                              fontWeight: 'bold',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}>
+                              🏛️ Licencia Oficial Liceo Ana Rosa Castillo
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleAutoFillWithAI}
+                              disabled={isGenerating}
                               style={{
-                                padding: '8px 12px',
+                                background: isGenerating ? '#93C5FD' : '#2563EB',
+                                color: '#ffffff',
+                                border: 'none',
+                                padding: '8px 16px',
                                 borderRadius: '6px',
-                                border: '1px solid #0284C7',
-                                background: '#ffffff',
                                 fontWeight: 'bold',
                                 fontSize: '0.85rem',
-                                color: '#0369A1'
+                                cursor: isGenerating ? 'not-allowed' : 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px'
                               }}
                             >
-                              <option value="gemini">Google Gemini ⭐ (Recomendado)</option>
-                              <option value="chatgpt">ChatGPT (OpenAI)</option>
-                              <option value="claude">Claude (Anthropic)</option>
-                              <option value="copilot">Microsoft Copilot (Azure)</option>
-                            </select>
-
-                            {/* Estado Visual de IA */}
-                            {(() => {
-                              const activeKey = localStorage.getItem('ai_key_' + preferredAI) || (preferredAI === 'gemini' ? (userApiKey || localStorage.getItem('docente_ai_key')) : '');
-                              const isVerified = preferredAI === 'copilot' ? false : Boolean(activeKey && activeKey.trim());
-
-                              return isVerified ? (
-                                <span style={{
-                                  background: '#DEF7EC',
-                                  color: '#03543F',
-                                  border: '1px solid #84E1BC',
-                                  borderRadius: '20px',
-                                  padding: '3px 10px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: 'bold',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px'
-                                }}>
-                                  🟢 {preferredAI.toUpperCase()} Activo y Verificado
-                                </span>
-                              ) : (
-                                <span 
-                                  onClick={() => handleAIProviderChange(preferredAI)}
-                                  style={{
-                                    background: '#FDE8E8',
-                                    color: '#9B1C1C',
-                                    border: '1px solid #F8B4B4',
-                                    borderRadius: '20px',
-                                    padding: '3px 10px',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    cursor: 'pointer'
-                                  }}
-                                  title="Haz clic para configurar credenciales"
-                                >
-                                  🔴 Sin Configurar (Clic para autenticar)
-                                </span>
-                              );
-                            })()}
+                              {isGenerating ? '⏳ Generando...' : '✨ Generar Instrumento'}
+                            </button>
                           </div>
                           <button type="button" className="btn-secondary" onClick={handleAddCriterionRow}>
                             ＋ Agregar Criterio (Fila)
@@ -38155,207 +38050,7 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
         title={signatureModalTarget === 'profile' ? "Firma Digital Oficial del Maestro" : "Firma Digital de la Orientadora / Psicóloga"}
       />
     
-      {/* ✨ MODAL ASISTENTE PEDAGÓGICO - INICIO SESIÓN 1-CLIC Y LICENCIA ESCOLAR */}
-      {showAiAuthModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 99999,
-          padding: '16px'
-        }}>
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
-            width: '100%',
-            maxWidth: '440px',
-            background: '#ffffff',
-            borderRadius: '16px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            position: 'relative'
-          }}>
-            <button 
-              type="button" 
-              onClick={() => setShowAiAuthModal(false)}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'none',
-                border: 'none',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-                color: '#64748B'
-              }}
-            >
-              ✕
-            </button>
 
-            <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>✨</div>
-            <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', color: '#1E293B', fontWeight: 800 }}>
-              Activar Asistente Pedagógico con IA
-            </h3>
-            <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '0 0 20px 0', lineHeight: '1.4' }}>
-              Inicia sesión con tu cuenta preferida para generar tus instrumentos y planificaciones con un solo clic:
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Opción 1: Correo Institucional MINERD */}
-              <button
-                type="button"
-                onClick={async () => {
-                  setIsModalVerifying(true);
-                  try {
-                    const res = await loginMicrosoftCopilotPopup();
-                    setPreferredAI('copilot');
-                    localStorage.setItem('docente_ai_pref', 'copilot');
-                    localStorage.setItem('s_ai_provider', 'copilot');
-                    setShowAiAuthModal(false);
-                    setCounselorToastMsg("🏢 Conectado con éxito con tu Correo Institucional MINERD (Copilot).");
-                    setTimeout(() => setCounselorToastMsg(''), 4000);
-                  } catch (err) {
-                    setModalAuthStatus({ text: err.message, type: 'error' });
-                  } finally {
-                    setIsModalVerifying(false);
-                  }
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  padding: '12px 16px',
-                  borderRadius: '10px',
-                  border: '1px solid #0078D4',
-                  background: '#F0F8FF',
-                  color: '#0078D4',
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                <span style={{ fontSize: '1.2rem' }}>🏢</span>
-                Iniciar con Correo Institucional (MINERD / Copilot)
-              </button>
-
-              {/* Opción 2: Cuenta de Google (Gemini) */}
-              <button
-                type="button"
-                onClick={() => {
-                  setPreferredAI('gemini');
-                  localStorage.setItem('docente_ai_pref', 'gemini');
-                  localStorage.setItem('s_ai_provider', 'gemini');
-                  setShowAiAuthModal(false);
-                  setCounselorToastMsg("🌐 Conectado con éxito con tu Cuenta de Google (Gemini IA).");
-                  setTimeout(() => setCounselorToastMsg(''), 4000);
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  padding: '12px 16px',
-                  borderRadius: '10px',
-                  border: '1px solid #EA4335',
-                  background: '#FEF2F2',
-                  color: '#EA4335',
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                <span style={{ fontSize: '1.2rem' }}>🌐</span>
-                Iniciar con mi cuenta de Google (Gemini)
-              </button>
-
-              {/* Opción 3: Cuota Oficial del Liceo (Acceso Directo Sin Cuentas) */}
-              <button
-                type="button"
-                onClick={() => {
-                  const schoolKey = import.meta.env.VITE_GEMINI_API_KEY || 'LICENCIA_OFICIAL_LICEO_ANA_ROSA_CASTILLO';
-                  setPreferredAI('gemini');
-                  setUserApiKey(schoolKey);
-                  localStorage.setItem('docente_ai_pref', 'gemini');
-                  localStorage.setItem('docente_ai_key', schoolKey);
-                  localStorage.setItem('s_ai_provider', 'gemini');
-                  localStorage.setItem('s_ai_api_key', schoolKey);
-                  localStorage.setItem('ai_key_gemini', schoolKey);
-                  setShowAiAuthModal(false);
-                  setCounselorToastMsg("🏛️ Licencia Oficial del Liceo Ana Rosa Castillo activada con éxito.");
-                  setTimeout(() => setCounselorToastMsg(''), 4000);
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  padding: '12px 16px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: '#1E3A8A',
-                  color: '#ffffff',
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                <span>🏛️</span>
-                Usar Licencia Oficial del Liceo Ana Rosa Castillo
-              </button>
-            </div>
-
-            {modalAuthStatus.text && (
-              <div style={{
-                marginTop: '14px',
-                padding: '10px 12px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                background: modalAuthStatus.type === 'success' ? '#DEF7EC' : modalAuthStatus.type === 'error' ? '#FDE8E8' : '#E1EFFE',
-                color: modalAuthStatus.type === 'success' ? '#03543F' : modalAuthStatus.type === 'error' ? '#9B1C1C' : '#1E429F',
-                border: '1px solid ' + (modalAuthStatus.type === 'success' ? '#84E1BC' : modalAuthStatus.type === 'error' ? '#F8B4B4' : '#A4CAFE')
-              }}>
-                {modalAuthStatus.text}
-              </div>
-            )}
-
-            {/* Enlace discreto para usuarios avanzados */}
-            <div style={{ marginTop: '16px' }}>
-              <button
-                type="button"
-                onClick={() => setShowAdvancedKeyInput(!showAdvancedKeyInput)}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: '0.75rem', textDecoration: 'underline', cursor: 'pointer' }}
-              >
-                {showAdvancedKeyInput ? 'Ocultar opciones avanzadas' : '¿Eres informático? Ingresar clave técnica manualmente'}
-              </button>
-
-              {showAdvancedKeyInput && (
-                <div style={{ marginTop: '10px', textAlign: 'left' }}>
-                  <input
-                    type="password"
-                    placeholder="Pegar API Key personalizada"
-                    value={modalInputKey}
-                    onChange={(e) => setModalInputKey(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', fontSize: '0.8rem', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleValidateModalKey}
-                    disabled={isModalVerifying}
-                    style={{ marginTop: '6px', padding: '6px 12px', background: '#334155', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.75rem', cursor: isModalVerifying ? 'not-allowed' : 'pointer' }}
-                  >
-                    {isModalVerifying ? 'Verificando...' : 'Guardar Clave'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
 </div>
   );
