@@ -38,14 +38,20 @@ export const cleanApiKeyString = (key) => {
   return key.trim().replace(/^["']|["']$/g, '').trim();
 };
 
+export const isValidGeminiKeyFormat = (key) => {
+  if (!key || typeof key !== 'string') return false;
+  const cleaned = cleanApiKeyString(key);
+  return cleaned.startsWith('AIza') || cleaned.startsWith('AQ');
+};
+
 export const getActiveApiKey = () => {
   const envKey = import.meta.env.VITE_GEMINI_API_KEY ? cleanApiKeyString(import.meta.env.VITE_GEMINI_API_KEY) : '';
   const localKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('s_ai_api_key')) : '';
   const docKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('docente_ai_key')) : '';
 
-  if (envKey && envKey.startsWith('AIza')) return envKey;
-  if (localKey && localKey.startsWith('AIza')) return localKey;
-  if (docKey && docKey.startsWith('AIza')) return docKey;
+  if (envKey && isValidGeminiKeyFormat(envKey)) return envKey;
+  if (localKey && isValidGeminiKeyFormat(localKey)) return localKey;
+  if (docKey && isValidGeminiKeyFormat(docKey)) return docKey;
 
   return envKey || localKey || docKey || '';
 };
@@ -53,24 +59,24 @@ export const getActiveApiKey = () => {
 export const generateEvaluationInstrument = async ({ topic, instrumentType, grade, subject, documentContext = '' }) => {
   let activeKey = cleanApiKeyString(getActiveApiKey());
 
-  if (!activeKey || !activeKey.startsWith('AIza')) {
+  if (!isValidGeminiKeyFormat(activeKey)) {
     if (typeof window !== 'undefined' && window.prompt) {
-      const inputKey = window.prompt("🔑 Introduce tu clave válida de Google AI Studio (comienza con 'AIza...'):");
-      if (inputKey) {
+      const inputKey = window.prompt("🔑 Introduce tu clave de Google AI Studio (formato 'AIza...' o 'AQ...'):");
+      if (inputKey && isValidGeminiKeyFormat(cleanApiKeyString(inputKey))) {
         activeKey = cleanApiKeyString(inputKey);
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('s_ai_api_key', activeKey);
         }
       } else {
-        throw new Error("Se requiere una API Key válida de Google Gemini.");
+        throw new Error("Se requiere una API Key con formato válido de Google Gemini.");
       }
     } else {
-      throw new Error("Se requiere una API Key válida de Google Gemini.");
+      throw new Error("Se requiere una API Key con formato válido de Google Gemini.");
     }
   }
 
-  if (!activeKey || !activeKey.startsWith('AIza')) {
-    throw new Error("Se requiere una API Key válida de Google Gemini (comienza con 'AIza...').");
+  if (!isValidGeminiKeyFormat(activeKey)) {
+    throw new Error("Se requiere una API Key con formato válido de Google Gemini.");
   }
 
   const topicCleaned = cleanTopicString(topic || '');
