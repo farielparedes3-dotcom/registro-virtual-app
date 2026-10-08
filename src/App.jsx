@@ -25378,11 +25378,16 @@ export default function App() {
   // Active evaluation parameter ('p1' | 'p2' | 'p3' | 'p4') and instrument ID in Instruments Tab
   const [instrumentTopic, setInstrumentTopic] = useState('');
   const [aiTopicInput, setAiTopicInput] = useState('');
+  const [chatPrompt, setChatPrompt] = useState('');
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [fileBase64, setFileBase64] = useState('');
+  const [extractedDocumentText, setExtractedDocumentText] = useState('');
+  const recognitionRef = useRef(null);
   const [uploadedPlanFileName, setUploadedPlanFileName] = useState('');
   const [isExtractingDoc, setIsExtractingDoc] = useState(false);
   const [extractedPlanText, setExtractedPlanText] = useState('');
   const [targetActivityInput, setTargetActivityInput] = useState('');
-  const [instrumentType, setInstrumentType] = useState('rubrica');
+  const [instrumentType, setInstrumentType] = useState('rubrica_analitica');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activePKey, setActivePKey] = useState('p1');
   const [activeInstrumentId, setActiveInstrumentId] = useState('');
@@ -28142,6 +28147,103 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
       console.error("Error al generar criterios con IA:", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleToggleVoiceRecording = () => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Tu navegador no soporta dictado por voz. Usa Google Chrome o Microsoft Edge.");
+      return;
+    }
+    if (!recognitionRef.current) {
+      const recog = new SpeechRecognition();
+      recog.lang = 'es-DO';
+      recog.continuous = false;
+      recog.interimResults = false;
+      recog.onresult = (event) => {
+        const speechText = event.results[0]?.[0]?.transcript || '';
+        setChatPrompt(prev => prev ? `${prev} ${speechText}` : speechText);
+        setAiTopicInput(prev => prev ? `${prev} ${speechText}` : speechText);
+        setIsRecordingVoice(false);
+      };
+      recog.onerror = () => setIsRecordingVoice(false);
+      recog.onend = () => setIsRecordingVoice(false);
+      recognitionRef.current = recog;
+    }
+
+    if (isRecordingVoice) {
+      try { recognitionRef.current.stop(); } catch(e) {}
+      setIsRecordingVoice(false);
+    } else {
+      setIsRecordingVoice(true);
+      try { recognitionRef.current.start(); } catch(e) { setIsRecordingVoice(false); }
+    }
+  };
+
+  const handleFileAttachment = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAttachedFile(file);
+
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => setFileBase64(uploadEvent.target.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    } else if (file.name.endsWith('.pdf')) {
+      try {
+        const text = await extractTextFromPdf(file);
+        setExtractedDocumentText(text.slice(0, 4000));
+      } catch (err) {
+        const text = await file.text().catch(() => '');
+        setExtractedDocumentText(text.slice(0, 4000));
+      }
+    } else {
+      try {
+        const text = await extractTextFromDocument(file);
+        setExtractedDocumentText(text.slice(0, 4000));
+      } catch (err) {
+        const text = await file.text().catch(() => '');
+        setExtractedDocumentText(text.slice(0, 4000));
+      }
+    }
+  };
+
+  const handleExecuteGenerate = async () => {
+    setIsGenerating(true);
+    try {
+      const rawPrompt = chatPrompt.trim() || aiTopicInput.trim() || instrumentTopic.trim() || 'Evaluación pedagógica';
+      const activeSubject = subjects[selectedSubject]?.name || selectedSubject || currentUser?.subject || 'Ciencias de la Naturaleza';
+      const activeGradeStr = selectedGrade || '1ro A';
+      const currentInstType = instrumentEditState.type || instrumentType || 'rubrica_analitica';
+
+      const resAI = await generateEvaluationInstrument({
+        topic: rawPrompt,
+        instrumentType: currentInstType,
+        grade: activeGradeStr,
+        subject: activeSubject,
+        documentContext: extractedDocumentText
+      });
+
+      const topicClean = resAI.cleanTopic || cleanTopicString(rawPrompt);
+      setAiTopicInput(topicClean);
+      setInstrumentTopic(topicClean);
+
+      updateActiveInstrumentConfig({
+        topic: topicClean,
+        activity: resAI.activityName || (`Evaluación de ${topicClean}`),
+        type: currentInstType,
+        criteria: resAI.criteria || []
+      });
+
+      setCounselorToastMsg(`✨ Instrumento generado con éxito por la IA (${currentInstType}) para: ${topicClean}`);
+      setTimeout(() => setCounselorToastMsg(''), 4000);
+    } catch (error) {
+      console.error("Error al generar instrumento con Gemini:", error);
+      alert("❌ Error al generar instrumento: " + (error.message || error));
     } finally {
       setIsGenerating(false);
     }
