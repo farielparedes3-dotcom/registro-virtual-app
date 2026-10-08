@@ -2,7 +2,7 @@ import { generateEvaluationInstrument, cleanTopicString, buildInstrumentSystemPr
 import { planningPedagogicalRules, generateSituatedQuestion } from './services/planningService';
 import { extractTextFromDocument } from './services/docExtractorService';
 import { generateCurricularInstrument } from './services/multiAiOrchestrator';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
 import { getCurriculumUnits, getUnitById, filterOfficialCompetencies, getOfficialSubjectData, getOfficialEjesTransversales, validateAndHarmonizeParityMatrix, getIndicatorsForGradeAndSubject } from './data/curriculo/index.js';
