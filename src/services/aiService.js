@@ -56,66 +56,113 @@ export const getActiveApiKey = () => {
   return envKey || localKey || docKey || '';
 };
 
+export const getAvailableGeminiModels = async (apiKey) => {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await res.json();
+    if (res.ok && Array.isArray(data.models)) {
+      const dynamicModels = data.models
+        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+        .map(m => ({ ver: 'v1beta', name: m.name.replace(/^models\//, '') }));
+      if (dynamicModels.length > 0) {
+        return dynamicModels;
+      }
+    }
+  } catch (e) {
+    console.warn("No se pudo listar modelos dinámicamente:", e);
+  }
+  return [];
+};
+
 export const callGeminiWithModelFallback = async (apiKey, systemInstruction, userPrompt) => {
-  const modelsToTry = [
-    { ver: 'v1beta', name: 'gemini-1.5-flash-latest' },
-    { ver: 'v1beta', name: 'gemini-1.5-flash' },
-    { ver: 'v1',     name: 'gemini-1.5-flash' },
+  const dynamicModels = await getAvailableGeminiModels(apiKey);
+
+  const staticModels = [
+    { ver: 'v1beta', name: 'gemini-2.5-flash' },
     { ver: 'v1beta', name: 'gemini-2.0-flash' },
+    { ver: 'v1beta', name: 'gemini-1.5-flash' },
+    { ver: 'v1beta', name: 'gemini-1.5-flash-8b' },
+    { ver: 'v1beta', name: 'gemini-1.5-pro' },
+    { ver: 'v1beta', name: 'gemini-2.0-flash-exp' },
+    { ver: 'v1beta', name: 'gemini-1.0-pro' },
+    { ver: 'v1',     name: 'gemini-1.5-flash' },
+    { ver: 'v1',     name: 'gemini-1.0-pro' },
     { ver: 'v1beta', name: 'gemini-pro' }
   ];
+
+  // Combinar evitando duplicados
+  const modelsToTry = [...dynamicModels];
+  for (const s of staticModels) {
+    if (!modelsToTry.some(m => m.name === s.name && m.ver === s.ver)) {
+      modelsToTry.push(s);
+    }
+  }
 
   let lastError = null;
 
   for (const target of modelsToTry) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/${target.ver}/models/${target.name}:generateContent?key=${apiKey}`;
+    // Intentar con y sin responseMimeType
+    const mimeConfigs = [
+      { temperature: 0.2, responseMimeType: "application/json" },
+      { temperature: 0.2 }
+    ];
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: `${systemInstruction}\n\n${userPrompt}` }
-            ]
-          }],
-          generationConfig: {
-            temperature: 0.2,
-            responseMimeType: "application/json"
-          }
-        })
-      });
+    for (const config of mimeConfigs) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/${target.ver}/models/${target.name}:generateContent?key=${apiKey}`;
 
-      const data = await response.json();
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: `${systemInstruction}\n\n${userPrompt}` }
+              ]
+            }],
+            generationConfig: config
+          })
+        });
 
-      if (response.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
-        return data.candidates[0].content.parts[0].text;
-      }
+        const data = await response.json();
 
-      if (data.error) {
-        if (data.error?.message?.includes('API key not valid') || (response.status === 400 && data.error?.message?.includes('API key'))) {
-          if (typeof localStorage !== 'undefined') {
-            localStorage.removeItem('s_ai_api_key');
-            localStorage.removeItem('docente_ai_key');
-          }
-          throw new Error(data.error.message || "API key not valid");
+        if (response.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+          return data.candidates[0].content.parts[0].text;
         }
-        if (data.error.message?.includes('not found') || data.error.message?.includes('is not supported') || response.status === 404) {
-          console.warn(`Modelo ${target.name} (${target.ver}) no encontrado/soportado, probando siguiente...`);
-          lastError = data.error.message;
-          continue;
-        }
-        throw new Error(data.error?.message || `HTTP ${response.status}`);
-      }
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (err) {
-      lastError = err.message;
-      if (err.message?.includes('API key not valid')) {
-        throw err;
+        if (data.error) {
+          const msg = data.error.message || '';
+
+          if (msg.includes('API key not valid') || (response.status === 400 && msg.includes('API key'))) {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.removeItem('s_ai_api_key');
+              localStorage.removeItem('docente_ai_key');
+            }
+            throw new Error(msg || "API key not valid");
+          }
+
+          if (msg.includes('not found') || msg.includes('is not supported') || response.status === 404) {
+            console.warn(`Modelo ${target.name} (${target.ver}) con config ${JSON.stringify(config)} no disponible: ${msg}`);
+            lastError = msg;
+            // Si el error es por mimeType, el inner loop intentará sin mimeType. Si es not found, saldrá al siguiente modelo.
+            if (msg.includes('responseMimeType') || msg.includes('mime')) {
+              continue; // prueba sin mimeType
+            } else {
+              break; // prueba siguiente modelo
+            }
+          }
+
+          throw new Error(msg || `HTTP ${response.status}`);
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (err) {
+        lastError = err.message;
+        if (err.message?.includes('API key not valid')) {
+          throw err;
+        }
       }
     }
   }
