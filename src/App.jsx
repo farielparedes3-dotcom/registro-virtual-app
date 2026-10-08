@@ -36772,75 +36772,167 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                           );
                         })()}
 
-                                                {/* BARRA DE CREACIÓN ASISTIDA CON IA (DENTRO DE CONFIGURACIÓN DE INSTRUMENTO) */}
-                        <div style={{
-                          background: '#F0F9FF',
-                          border: '1px solid #BAE6FD',
-                          borderRadius: '10px',
-                          padding: '12px 16px',
-                          marginBottom: '16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '12px',
-                          flexWrap: 'wrap'
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '280px' }}>
-                            <span style={{ fontSize: '1.2rem' }}>✨</span>
+                                                {/* SELECTOR DE TIPO DE INSTRUMENTO Y TEMA */}
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap' }}>
+                          <div style={{ flex: '1', minWidth: '220px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                              Tipo de Instrumento:
+                            </label>
+                            <select
+                              value={instrumentEditState.type || instrumentType || 'rubrica_analitica'}
+                              onChange={(e) => {
+                                const newType = e.target.value;
+                                setInstrumentType(newType);
+                                updateActiveInstrumentConfig({ type: newType });
+                              }}
+                              style={{
+                                width: '100%',
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                border: '1px solid #CBD5E1',
+                                fontWeight: 600,
+                                fontSize: '0.85rem',
+                                background: '#fff'
+                              }}
+                            >
+                              <option value="rubrica_analitica">Rúbrica Analítica (4 Niveles MINERD)</option>
+                              <option value="lista_cotejo">Lista de Cotejo (Sí / No)</option>
+                              <option value="escala_estimativa">Escala Estimativa (Gradual)</option>
+                              <option value="guia_observacion">Guía de Observación</option>
+                              <option value="rubrica_sintetica">Rúbrica Sintética / Holística</option>
+                            </select>
+                          </div>
+
+                          <div style={{ flex: '2', minWidth: '240px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                              Tema / Contenido Curricular:
+                            </label>
                             <input
                               type="text"
-                              placeholder="Describe el instrumento o tema (ej. 'Lista de cotejo para laboratorio de reacciones químicas')..."
-                              value={aiTopicInput}
-                              onChange={(e) => setAiTopicInput(e.target.value)}
+                              placeholder="Ej: La célula y sus organelos"
+                              value={instrumentEditState.topic || instrumentTopic || aiTopicInput || ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setAiTopicInput(val);
+                                setInstrumentTopic(val);
+                                updateActiveInstrumentConfig({ topic: val });
+                              }}
                               style={{
-                                flex: 1,
+                                width: '100%',
                                 padding: '8px 12px',
-                                borderRadius: '6px',
-                                border: '1px solid #94A3B8',
-                                fontSize: '0.9rem'
+                                borderRadius: '8px',
+                                border: '1px solid #CBD5E1',
+                                fontSize: '0.85rem'
                               }}
                             />
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <span style={{
-                              background: '#F0FDF4',
-                              color: '#166534',
-                              border: '1px solid #BBF7D0',
-                              borderRadius: '20px',
-                              padding: '4px 12px',
-                              fontSize: '0.8rem',
-                              fontWeight: 'bold',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '6px'
-                            }}>
-                              🏛️ Licencia Oficial Liceo Ana Rosa Castillo
+                          {/* Insignia discreta en esquina y Agregar Criterio */}
+                          <div style={{ alignSelf: 'flex-end', paddingBottom: '2px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '0.75rem', color: '#166534', background: '#DCFCE7', padding: '6px 10px', borderRadius: '6px', fontWeight: 600 }}>
+                              🏛️ Licencia Oficial Activa
                             </span>
+                            <button type="button" className="btn-secondary" onClick={handleAddCriterionRow} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                              ＋ Agregar Criterio
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* BARRA DE ENTRADA MULTIMODAL ESTILO CHAT (ADJUNTOS + VOZ + GENERADOR GEMINI) */}
+                        <div style={{
+                          background: '#F8FAFC',
+                          border: '1px solid #CBD5E1',
+                          borderRadius: '14px',
+                          padding: '10px 14px',
+                          marginBottom: '18px',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+                        }}>
+                          {/* Previsualización de archivo adjunto si existe */}
+                          {attachedFile && (
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#E2E8F0', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', marginBottom: '8px' }}>
+                              <span>📎 {attachedFile.name}</span>
+                              <button type="button" onClick={() => { setAttachedFile(null); setExtractedDocumentText(''); setFileBase64(''); }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+                            </div>
+                          )}
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {/* Botón Adjuntar Archivo (PDF, Word, Imagen) */}
+                            <input
+                              type="file"
+                              id="instrumentMediaUpload"
+                              accept=".pdf,.docx,.txt,image/*"
+                              onChange={handleFileAttachment}
+                              style={{ display: 'none' }}
+                            />
+                            <label
+                              htmlFor="instrumentMediaUpload"
+                              title="Adjuntar planificación, rúbrica previa o imagen"
+                              style={{ cursor: 'pointer', padding: '8px', borderRadius: '8px', background: '#E2E8F0', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              📎
+                            </label>
+
+                            {/* Botón Dictado de Voz (Web Speech API) */}
                             <button
                               type="button"
-                              onClick={handleAutoFillWithAI}
+                              onClick={handleToggleVoiceRecording}
+                              title={isRecordingVoice ? 'Detener grabación' : 'Dictar por voz'}
+                              style={{
+                                border: 'none',
+                                background: isRecordingVoice ? '#EF4444' : '#E2E8F0',
+                                color: isRecordingVoice ? '#fff' : '#1E293B',
+                                padding: '8px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              🎤
+                            </button>
+
+                            {/* Input de texto flexible */}
+                            <textarea
+                              rows="2"
+                              placeholder="Escribe la instrucción o describe la actividad del documento (ej. 'Elabora la lista de cotejo para la actividad 1 sobre organelos celulares')..."
+                              value={chatPrompt}
+                              onChange={(e) => setChatPrompt(e.target.value)}
+                              style={{
+                                flex: 1,
+                                border: 'none',
+                                background: 'transparent',
+                                resize: 'none',
+                                outline: 'none',
+                                fontSize: '0.85rem',
+                                fontFamily: 'inherit',
+                                padding: '4px 8px'
+                              }}
+                            />
+
+                            {/* Botón Principal de Envío */}
+                            <button
+                              type="button"
+                              onClick={handleExecuteGenerate}
                               disabled={isGenerating}
                               style={{
-                                background: isGenerating ? '#93C5FD' : '#2563EB',
-                                color: '#ffffff',
+                                background: isGenerating ? '#94A3B8' : '#2563EB',
+                                color: '#FFFFFF',
                                 border: 'none',
-                                padding: '8px 16px',
-                                borderRadius: '6px',
-                                fontWeight: 'bold',
+                                borderRadius: '10px',
+                                padding: '10px 18px',
+                                fontWeight: 700,
                                 fontSize: '0.85rem',
                                 cursor: isGenerating ? 'not-allowed' : 'pointer',
-                                display: 'inline-flex',
+                                display: 'flex',
                                 alignItems: 'center',
                                 gap: '6px'
                               }}
                             >
-                              {isGenerating ? '⏳ Generando...' : '✨ Generar Instrumento'}
+                              {isGenerating ? '⏳ Procesando...' : '✨ Generar'}
                             </button>
                           </div>
-                          <button type="button" className="btn-secondary" onClick={handleAddCriterionRow}>
-                            ＋ Agregar Criterio (Fila)
-                          </button>
                         </div>
 
                         {/* EDITABLE TABLE MATRIX */}
