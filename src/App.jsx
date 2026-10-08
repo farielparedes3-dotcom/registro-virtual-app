@@ -30380,12 +30380,34 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
             </div>
 
             {/* 🏛️ Institutional AI Status Badge */}
-            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '12px 16px', borderRadius: '10px', marginTop: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.2rem' }}>🏛️</span>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#166534' }}>Asistente Pedagógico Activo</div>
-                <div style={{ fontSize: '0.75rem', color: '#15803D' }}>Conectado a la Licencia Oficial del Liceo Ana Rosa Castillo (MINERD 04-2023).</div>
+            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '12px 16px', borderRadius: '10px', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '1.2rem' }}>🏛️</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#166534' }}>Asistente Pedagógico Activo</div>
+                  <div style={{ fontSize: '0.75rem', color: '#15803D' }}>Conectado a la Licencia Oficial del Liceo Ana Rosa Castillo (MINERD 04-2023).</div>
+                </div>
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.removeItem('s_ai_api_key');
+                  localStorage.removeItem('docente_ai_key');
+                  alert("🔄 Credenciales de IA restablecidas. Al generar un instrumento podrás ingresar tu nueva clave.");
+                }}
+                style={{
+                  background: '#DCFCE7',
+                  border: '1px solid #86EFAC',
+                  color: '#166534',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                ⚙️ Restablecer Clave IA
+              </button>
             </div>
 
             {/* Foto de Perfil & Presets */}
@@ -36832,6 +36854,26 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             <span style={{ fontSize: '0.75rem', color: '#166534', background: '#DCFCE7', padding: '6px 10px', borderRadius: '6px', fontWeight: 600 }}>
                               🏛️ Licencia Oficial Activa
                             </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                localStorage.removeItem('s_ai_api_key');
+                                localStorage.removeItem('docente_ai_key');
+                                alert("🔄 Credenciales de IA restablecidas. Al pulsar Generar Instrumento podrás ingresar tu nueva clave.");
+                              }}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#64748B',
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                                textDecoration: 'underline',
+                                padding: '2px 4px'
+                              }}
+                              title="Limpiar clave guardada"
+                            >
+                              ⚙️ Cambiar Clave
+                            </button>
                             <button type="button" className="btn-secondary" onClick={handleAddCriterionRow} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
                               ＋ Agregar Criterio
                             </button>
