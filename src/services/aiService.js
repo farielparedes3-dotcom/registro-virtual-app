@@ -42,6 +42,11 @@ export const getActiveApiKey = () => {
   const envKey = import.meta.env.VITE_GEMINI_API_KEY ? cleanApiKeyString(import.meta.env.VITE_GEMINI_API_KEY) : '';
   const localKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('s_ai_api_key')) : '';
   const docKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('docente_ai_key')) : '';
+
+  if (envKey && envKey.startsWith('AIza')) return envKey;
+  if (localKey && localKey.startsWith('AIza')) return localKey;
+  if (docKey && docKey.startsWith('AIza')) return docKey;
+
   return envKey || localKey || docKey || '';
 };
 
@@ -56,7 +61,11 @@ export const generateEvaluationInstrument = async ({ topic, instrumentType, grad
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('s_ai_api_key', activeKey);
         }
+      } else {
+        throw new Error("Se requiere una API Key válida de Google Gemini.");
       }
+    } else {
+      throw new Error("Se requiere una API Key válida de Google Gemini.");
     }
   }
 
