@@ -33,30 +33,35 @@ Devuelve strictly un objeto JSON con este esquema:
 }
 `;
 
+export const cleanApiKeyString = (key) => {
+  if (!key) return '';
+  return key.trim().replace(/^["']|["']$/g, '').trim();
+};
+
 export const getActiveApiKey = () => {
-  return (
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    localStorage.getItem('s_ai_api_key') ||
-    localStorage.getItem('docente_ai_key') ||
-    ''
-  );
+  const envKey = import.meta.env.VITE_GEMINI_API_KEY ? cleanApiKeyString(import.meta.env.VITE_GEMINI_API_KEY) : '';
+  const localKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('s_ai_api_key')) : '';
+  const docKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('docente_ai_key')) : '';
+  return envKey || localKey || docKey || '';
 };
 
 export const generateEvaluationInstrument = async ({ topic, instrumentType, grade, subject, documentContext = '' }) => {
-  let apiKey = getActiveApiKey();
+  let activeKey = cleanApiKeyString(getActiveApiKey());
 
-  if (!apiKey) {
+  if (!activeKey || !activeKey.startsWith('AIza')) {
     if (typeof window !== 'undefined' && window.prompt) {
-      const inputKey = window.prompt("🔑 Configuración inicial: Introduce la clave de Google Gemini para la Licencia Institucional del Liceo (se guardará de forma segura en este navegador):");
-      if (inputKey && inputKey.trim()) {
-        apiKey = inputKey.trim();
-        localStorage.setItem('s_ai_api_key', apiKey);
+      const inputKey = window.prompt("🔑 Introduce tu clave válida de Google AI Studio (comienza con 'AIza...'):");
+      if (inputKey) {
+        activeKey = cleanApiKeyString(inputKey);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('s_ai_api_key', activeKey);
+        }
       }
     }
   }
 
-  if (!apiKey) {
-    throw new Error("Se requiere configurar la clave de Google Gemini para usar el asistente.");
+  if (!activeKey || !activeKey.startsWith('AIza')) {
+    throw new Error("Se requiere una API Key válida de Google Gemini (comienza con 'AIza...').");
   }
 
   const topicCleaned = cleanTopicString(topic || '');
@@ -71,7 +76,7 @@ ${documentContext ? `Contexto extraído de la planificación/secuencia:\n${docum
 `;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -90,7 +95,13 @@ ${documentContext ? `Contexto extraído de la planificación/secuencia:\n${docum
     const data = await response.json();
 
     if (!response.ok || data.error) {
-      throw new Error(data.error?.message || "Error al conectar con el servidor institucional.");
+      if (data.error?.message?.includes('API key not valid') || response.status === 400) {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('s_ai_api_key');
+          localStorage.removeItem('docente_ai_key');
+        }
+      }
+      throw new Error(data.error?.message || "Fallo en la llamada a Gemini");
     }
 
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
