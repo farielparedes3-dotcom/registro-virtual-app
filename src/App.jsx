@@ -25150,191 +25150,13 @@ export default function App() {
   // --- Teacher AI Preferences & Universal AI Engine States ---
   const [preferredAI, setPreferredAI] = useState(() => {
     purgeFakeAiTokens();
-    const stored = localStorage.getItem('docente_ai_pref') || localStorage.getItem('s_ai_provider');
-    if (!stored || stored === 'copilot') return 'gemini';
-    return stored;
+    return 'gemini';
   });
   const [userApiKey, setUserApiKey] = useState(() => {
-    return localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
+    return import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
   });
   const [aiStatusMsg, setAiStatusMsg] = useState({ text: '', type: '' });
   const [isVerifyingAI, setIsVerifyingAI] = useState(false);
-
-  // --- AI Interceptor Modal States & Handler ---
-  const [showAiAuthModal, setShowAiAuthModal] = useState(false);
-  const [modalTargetProvider, setModalTargetProvider] = useState('gemini');
-  const [modalInputKey, setModalInputKey] = useState('');
-  const [modalAuthStatus, setModalAuthStatus] = useState({ text: '', type: '' });
-  const [isModalVerifying, setIsModalVerifying] = useState(false);
-  const [showAdvancedKeyInput, setShowAdvancedKeyInput] = useState(false);
-  const [manualKey, setManualKey] = useState('');
-
-  const handleLoginMicrosoft = async () => {
-    setIsModalVerifying(true);
-    try {
-      const res = await loginMicrosoftCopilotPopup();
-      setPreferredAI('copilot');
-      localStorage.setItem('docente_ai_pref', 'copilot');
-      localStorage.setItem('s_ai_provider', 'copilot');
-      setShowAiAuthModal(false);
-      setCounselorToastMsg("🏢 Conectado con éxito con tu Correo Institucional MINERD (Copilot).");
-      setTimeout(() => setCounselorToastMsg(''), 4000);
-    } catch (err) {
-      setModalAuthStatus({
-        text: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left', padding: '4px' }}>
-            <div style={{ fontSize: '0.82rem', lineHeight: '1.4' }}>
-              La conexión directa con la nube de Microsoft 365 requiere autorización del distrito. Puedes generar tus instrumentos de inmediato usando la Licencia Oficial del Liceo.
-            </div>
-            <button
-              type="button"
-              onClick={handleUseSchoolLicense}
-              style={{
-                alignSelf: 'flex-start',
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: 'none',
-                background: '#1E3A8A',
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '0.8rem',
-                cursor: 'pointer'
-              }}
-            >
-              🏛️ Conectar con Licencia del Liceo
-            </button>
-          </div>
-        ),
-        type: 'info'
-      });
-    } finally {
-      setIsModalVerifying(false);
-    }
-  };
-
-  const handleLoginGoogle = async () => {
-    setPreferredAI('gemini');
-    localStorage.setItem('docente_ai_pref', 'gemini');
-    localStorage.setItem('s_ai_provider', 'gemini');
-    setShowAiAuthModal(false);
-    setCounselorToastMsg("🌐 Conectado con éxito con tu Cuenta de Google (Gemini IA).");
-    setTimeout(() => setCounselorToastMsg(''), 4000);
-  };
-
-  const handleUseSchoolLicense = () => {
-    // 1. Establecer el proveedor por defecto como la licencia institucional (Gemini)
-    localStorage.setItem('docente_ai_pref', 'school_license');
-    localStorage.setItem('s_ai_provider', 'school_license');
-    setPreferredAI('school_license');
-
-    // 2. Usar la clave central de entorno configurada en Vercel/Vite
-    const schoolKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-    if (schoolKey) {
-      localStorage.setItem('docente_ai_key', schoolKey);
-      localStorage.setItem('s_ai_api_key', schoolKey);
-      localStorage.setItem('ai_key_school_license', schoolKey);
-      setUserApiKey(schoolKey);
-    }
-
-    // 3. Notificación positiva inmediata y cierre
-    if (setAiStatusMsg) {
-      setAiStatusMsg({ text: '✅ Conectado a la Licencia Oficial del Liceo Ana Rosa Castillo', type: 'success' });
-    }
-    setShowAiAuthModal(false);
-    setCounselorToastMsg("🏛️ Licencia Oficial del Liceo Ana Rosa Castillo activada con éxito.");
-    setTimeout(() => setCounselorToastMsg(''), 4000);
-  };
-
-  const handleSaveManualKey = async () => {
-    const targetKey = manualKey.trim() || modalInputKey.trim();
-    if (!targetKey) {
-      setModalAuthStatus({ text: '❌ Por favor ingresa una API Key válida.', type: 'error' });
-      return;
-    }
-    setModalInputKey(targetKey);
-    await handleValidateModalKey();
-  };
-
-  const handleAIProviderChange = (newProvider) => {
-    const savedKey = localStorage.getItem('ai_key_' + newProvider) || (newProvider === preferredAI ? userApiKey : '') || localStorage.getItem('docente_ai_key') || localStorage.getItem('s_ai_api_key') || '';
-
-    if (newProvider !== 'copilot' && (!savedKey || !savedKey.trim())) {
-      setModalTargetProvider(newProvider);
-      setModalInputKey('');
-      setModalAuthStatus({ text: '', type: '' });
-      setShowAiAuthModal(true);
-    } else {
-      setPreferredAI(newProvider);
-      localStorage.setItem('docente_ai_pref', newProvider);
-      localStorage.setItem('s_ai_provider', newProvider);
-    }
-  };
-
-  const handleValidateModalKey = async () => {
-    if (!modalInputKey?.trim()) {
-      setModalAuthStatus({ text: '❌ Por favor ingresa una API Key válida.', type: 'error' });
-      return;
-    }
-    setIsModalVerifying(true);
-    setModalAuthStatus({ text: '⏳ Verificando credencial directamente con la API oficial...', type: 'info' });
-
-    try {
-      const val = await validateAiCredentials({ provider: modalTargetProvider, apiKey: modalInputKey.trim() });
-      if (val.success) {
-        const key = modalInputKey.trim();
-        setPreferredAI(modalTargetProvider);
-        setUserApiKey(key);
-        localStorage.setItem('docente_ai_pref', modalTargetProvider);
-        localStorage.setItem('docente_ai_key', key);
-        localStorage.setItem('s_ai_provider', modalTargetProvider);
-        localStorage.setItem('s_ai_api_key', key);
-        localStorage.setItem('ai_key_' + modalTargetProvider, key);
-
-        setShowAiAuthModal(false);
-        setCounselorToastMsg('✅ ' + modalTargetProvider.toUpperCase() + ' activado y verificado con éxito.');
-        setTimeout(() => setCounselorToastMsg(''), 4000);
-      } else {
-        setModalAuthStatus({ text: val.message, type: 'error' });
-      }
-    } catch (err) {
-      setModalAuthStatus({ text: '❌ Error de red al verificar credencial: ' + err.message, type: 'error' });
-    } finally {
-      setIsModalVerifying(false);
-    }
-  };
-
-  const handleSaveAISettings = async () => {
-    setIsVerifyingAI(true);
-    setAiStatusMsg({ text: '⏳ Verificando credenciales directamente con la API oficial...', type: 'info' });
-
-    try {
-      const val = await validateAiCredentials({ provider: preferredAI, apiKey: userApiKey });
-      if (val.success) {
-        localStorage.setItem('docente_ai_pref', preferredAI);
-        localStorage.setItem('docente_ai_key', userApiKey);
-        localStorage.setItem('s_ai_provider', preferredAI);
-        localStorage.setItem('s_ai_api_key', userApiKey);
-
-        if (currentUser) {
-          const updatedUser = {
-            ...currentUser,
-            preferredAI,
-            userApiKey
-          };
-          setCurrentUser(updatedUser);
-          setUsersAndSave(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
-        }
-
-        setAiStatusMsg({ text: val.message, type: 'success' });
-      } else {
-        setAiStatusMsg({ text: val.message, type: 'error' });
-      }
-    } catch (err) {
-      setAiStatusMsg({ text: '❌ Error de red al verificar credenciales: ' + err.message, type: 'error' });
-    } finally {
-      setIsVerifyingAI(false);
-    }
-  };
 
   // --- Real AI Integration Credentials ---
   const [aiProvider, setAiProvider] = useState(() => {
@@ -25350,7 +25172,7 @@ export default function App() {
   const [aiChatHistory, setAiChatHistory] = useState([
     {
       sender: 'ai',
-      text: '¡Hola! Soy tu asistente de Inteligencia Artificial (Gemini/Copilot). Escríbeme qué instrumento necesitas, la materia, la actividad y qué criterios te gustaría incluir, y yo diseñaré la configuración perfecta para ti.'
+      text: '¡Hola! Soy tu Asistente Pedagógico con IA. Escríbeme qué instrumento necesitas, la materia, la actividad y qué criterios te gustaría incluir, y yo diseñaré la configuración perfecta para ti.'
     }
   ]);
   const [aiIsTyping, setAiIsTyping] = useState(false);
@@ -28142,8 +27964,7 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
         criteria: resAI.criteria
       });
 
-      const providerLabel = preferredAI === 'copilot' ? 'Copilot Institucional' : preferredAI.toUpperCase();
-      setCounselorToastMsg(`✨ Criterios e instrumento contextualizado generados con éxito con ${providerLabel} para: ` + (resAI.cleanTopic || cleanTopic));
+      setCounselorToastMsg('✨ Criterios e instrumento contextualizado generados con éxito con el Asistente Pedagógico para: ' + (resAI.cleanTopic || cleanTopic));
       setTimeout(() => setCounselorToastMsg(''), 4000);
     } catch (err) {
       console.error("Error al generar criterios con IA:", err);
@@ -28232,11 +28053,14 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
       setAiTopicInput(topicClean);
       setInstrumentTopic(topicClean);
 
+      const slicedCriteria = (resAI.criteria || []).slice(0, 5);
+
       updateActiveInstrumentConfig({
         topic: topicClean,
+        indicator: resAI.indicadorLogro || '',
         activity: resAI.activityName || (`Evaluación de ${topicClean}`),
         type: currentInstType,
-        criteria: resAI.criteria || []
+        criteria: slicedCriteria
       });
 
       setCounselorToastMsg(`✨ Instrumento generado con éxito por la IA (${currentInstType}) para: ${topicClean}`);
@@ -28567,6 +28391,13 @@ INSTRUCCIONES CRÍTICAS DE REDACCIÓN:
     const criteriaArray = instrumentEditState.criteria || [];
     const nextList = [...criteriaArray];
     nextList[idx] = { ...nextList[idx], name: nameVal };
+    updateActiveInstrumentConfig({ criteria: nextList });
+  };
+
+  const handleEditCriterionIndicator = (idx, indicatorVal) => {
+    const criteriaArray = instrumentEditState.criteria || [];
+    const nextList = [...criteriaArray];
+    nextList[idx] = { ...nextList[idx], indicator: indicatorVal };
     updateActiveInstrumentConfig({ criteria: nextList });
   };
 
@@ -30388,26 +30219,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   <div style={{ fontSize: '0.75rem', color: '#15803D' }}>Conectado a la Licencia Oficial del Liceo Ana Rosa Castillo (MINERD 04-2023).</div>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  localStorage.removeItem('s_ai_api_key');
-                  localStorage.removeItem('docente_ai_key');
-                  alert("🔄 Credenciales de IA restablecidas. Al generar un instrumento podrás ingresar tu nueva clave.");
-                }}
-                style={{
-                  background: '#DCFCE7',
-                  border: '1px solid #86EFAC',
-                  color: '#166534',
-                  padding: '4px 10px',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                ⚙️ Restablecer Clave IA
-              </button>
             </div>
 
             {/* Foto de Perfil & Presets */}
@@ -30449,6 +30260,46 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                   placeholder="https://ejemplo.com/mi-foto.jpg" 
                   style={{ fontSize: '0.82rem' }}
                 />
+              </div>
+            </div>
+
+            {/* Asistente Pedagógico con IA (Licencia Oficial Institucional) */}
+            <div style={{
+              marginTop: '0.5rem',
+              backgroundColor: '#F0FDF4',
+              padding: '1.25rem',
+              borderRadius: '12px',
+              border: '1.5px solid #BBF7D0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <span style={{ fontSize: '2rem' }}>✨</span>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#166534' }}>
+                    Asistente Pedagógico con IA Activo
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#15803D' }}>
+                    Conectado automáticamente con la Licencia Institucional Oficial del Liceo Ana Rosa Castillo (MINERD Ordenanza 04-2023).
+                  </p>
+                </div>
+              </div>
+              <div style={{
+                backgroundColor: '#DCFCE7',
+                color: '#166534',
+                padding: '0.4rem 0.85rem',
+                borderRadius: '20px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                border: '1px solid #86EFAC',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <span>🏛️</span> Licencia Institucional Conectada
               </div>
             </div>
 
@@ -36854,26 +36705,6 @@ Haz clic en el botón **"Aplicar este instrumento"** para cargarlo en tu panel m
                             <span style={{ fontSize: '0.75rem', color: '#166534', background: '#DCFCE7', padding: '6px 10px', borderRadius: '6px', fontWeight: 600 }}>
                               🏛️ Licencia Oficial Activa
                             </span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                localStorage.removeItem('s_ai_api_key');
-                                localStorage.removeItem('docente_ai_key');
-                                alert("🔄 Credenciales de IA restablecidas. Al pulsar Generar Instrumento podrás ingresar tu nueva clave.");
-                              }}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#64748B',
-                                fontSize: '0.75rem',
-                                cursor: 'pointer',
-                                textDecoration: 'underline',
-                                padding: '2px 4px'
-                              }}
-                              title="Limpiar clave guardada"
-                            >
-                              ⚙️ Cambiar Clave
-                            </button>
                             <button type="button" className="btn-secondary" onClick={handleAddCriterionRow} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
                               ＋ Agregar Criterio
                             </button>

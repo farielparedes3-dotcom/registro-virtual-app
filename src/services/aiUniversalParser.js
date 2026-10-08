@@ -17,9 +17,12 @@ export const parseUniversalAIResponse = (rawResponseText, instrumentType) => {
     return (
       lower.includes('cleantopic') ||
       lower.includes('activityname') ||
+      lower.includes('indicadorlogro') ||
       lower.includes('instrumenttype') ||
       lower.includes('criterios:') ||
       lower.includes('array of') ||
+      lower.includes('only valid') ||
+      lower.includes('parseable j') ||
       lower.includes('grade:') ||
       lower.includes('subject:') ||
       lower.includes('instrucción') ||
@@ -47,9 +50,10 @@ export const parseUniversalAIResponse = (rawResponseText, instrumentType) => {
         if (validCriteria.length > 0) {
           return {
             cleanTopic: data.cleanTopic || data.tema || data.topic || data.titulo || '',
+            indicadorLogro: data.indicadorLogro || data.indicador || data.indicador_logro || '',
             activityName: data.activityName || data.actividad || data.activity || data.nombreActividad || '',
             maxScore: data.maxScore || data.puntajeMaximo || data.totalScore || 0,
-            criterios: validCriteria.map(c => ({
+            criterios: validCriteria.slice(0, 5).map(c => ({
               criterio: typeof c === 'string' ? c : (c.criterio || c.nombre || c.name || c.title || ''),
               puntos: typeof c === 'object' ? Number(c.puntos || c.weight || c.points || c.score || 5) || 5 : 5,
               descriptores: typeof c === 'object' && c.descriptores && typeof c.descriptores === 'object' ? c.descriptores : {}

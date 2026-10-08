@@ -45,14 +45,16 @@ export const isValidGeminiKeyFormat = (key) => {
 
 export const getActiveApiKey = () => {
   const envKey = import.meta.env.VITE_GEMINI_API_KEY ? cleanApiKeyString(import.meta.env.VITE_GEMINI_API_KEY) : '';
+  const firebaseKey = import.meta.env.VITE_FIREBASE_API_KEY ? cleanApiKeyString(import.meta.env.VITE_FIREBASE_API_KEY) : '';
   const localKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('s_ai_api_key')) : '';
   const docKey = typeof localStorage !== 'undefined' ? cleanApiKeyString(localStorage.getItem('docente_ai_key')) : '';
 
   if (envKey && isValidGeminiKeyFormat(envKey)) return envKey;
   if (localKey && isValidGeminiKeyFormat(localKey)) return localKey;
   if (docKey && isValidGeminiKeyFormat(docKey)) return docKey;
+  if (firebaseKey && isValidGeminiKeyFormat(firebaseKey)) return firebaseKey;
 
-  return envKey || localKey || docKey || '';
+  return envKey || localKey || docKey || firebaseKey || '';
 };
 
 export const getAvailableGeminiModels = async (apiKey) => {
@@ -143,11 +145,10 @@ export const callGeminiWithModelFallback = async (apiKey, systemInstruction, use
           if (msg.includes('not found') || msg.includes('is not supported') || response.status === 404) {
             console.warn(`Modelo ${target.name} (${target.ver}) con config ${JSON.stringify(config)} no disponible: ${msg}`);
             lastError = msg;
-            // Si el error es por mimeType, el inner loop intentará sin mimeType. Si es not found, saldrá al siguiente modelo.
             if (msg.includes('responseMimeType') || msg.includes('mime')) {
-              continue; // prueba sin mimeType
+              continue;
             } else {
-              break; // prueba siguiente modelo
+              break;
             }
           }
 
@@ -169,55 +170,67 @@ export const callGeminiWithModelFallback = async (apiKey, systemInstruction, use
   throw new Error(`Ningún modelo de Gemini respondió con éxito: ${lastError}`);
 };
 
+export const buildCleanInstrumentPrompt = (instrumentType, subject, grade, userInstruction) => {
+  return `
+Eres un asesor pedagógico del MINERD de República Dominicana (Ordenanza 04-2023).
+Diseña un instrumento de evaluación tipo "${instrumentType}" para ${grade} en la asignatura ${subject}.
+
+TEMA / INSTRUCCIÓN DEL DOCENTE:
+"${userInstruction}"
+
+REGLAS OBLIGATORIAS:
+1. 'indicadorLogro': Redacta UN SOLO indicador de logro claro y alineado al currículo oficial.
+2. 'cleanTopic': Nombre formal y limpio del contenido curricular (ej: "La célula").
+3. 'criterios': Genera entre 3 y MÁXIMO 5 criterios de evaluación observables. NUNCA generes más de 5.
+4. En cada criterio, el campo 'criterio' debe ser una frase corta y precisa del desempeño (ej: "Identificación de estructuras celulares", "Explicación de funciones metabólicas"). NUNCA devuelvas fragmentos de código, texto en inglés ni instrucciones del sistema.
+5. Puntos: Distribuye el puntaje de manera equitativa entre los criterios generados (ej: si son 4 criterios, 5 pts cada uno para sumar 20 pts).
+6. Si es 'rubrica_analitica', redacta los descriptores en español para los 4 niveles MINERD: Estratégico, Autónomo, Resolutivo, Receptivo.
+
+Devuelve EXCLUSIVAMENTE este objeto JSON:
+{
+  "cleanTopic": "Nombre formal del contenido",
+  "indicadorLogro": "Texto del indicador de logro oficial",
+  "criterios": [
+    {
+      "criterio": "Criterio 1 observable",
+      "puntos": 5,
+      "descriptores": {
+        "estrategico": "Excelente...",
+        "autonomo": "Muy bueno...",
+        "resolutivo": "Aceptable...",
+        "receptivo": "En inicio..."
+      }
+    }
+  ]
+}
+`;
+};
+
 export const generateEvaluationInstrument = async ({ topic, instrumentType, grade, subject, documentContext = '' }) => {
   let activeKey = cleanApiKeyString(getActiveApiKey());
-
-  if (!isValidGeminiKeyFormat(activeKey)) {
-    if (typeof window !== 'undefined' && window.prompt) {
-      const inputKey = window.prompt("🔑 Introduce tu clave de Google AI Studio (formato 'AIza...' o 'AQ...'):");
-      if (inputKey && isValidGeminiKeyFormat(cleanApiKeyString(inputKey))) {
-        activeKey = cleanApiKeyString(inputKey);
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('s_ai_api_key', activeKey);
-        }
-      } else {
-        throw new Error("Se requiere una API Key con formato válido de Google Gemini.");
-      }
-    } else {
-      throw new Error("Se requiere una API Key con formato válido de Google Gemini.");
-    }
-  }
 
   if (!isValidGeminiKeyFormat(activeKey)) {
     throw new Error("Se requiere una API Key con formato válido de Google Gemini.");
   }
 
   const topicCleaned = cleanTopicString(topic || '');
-
-  const userPrompt = `
-Genera un instrumento de evaluación en JSON para:
-- Grado: ${grade || 'Secundaria'}
-- Asignatura: ${subject || 'Tronco Común'}
-- Tipo de Instrumento: ${instrumentType || 'rubrica_analitica'}
-- Tema Curricular Principal: ${topicCleaned || topic || 'Contenido Curricular'}
-- Indicación Completa del Docente: ${topic || 'Contenido Curricular'}
-${documentContext ? `- Contexto del Documento Adjunto:\n${documentContext.slice(0, 3000)}` : ''}
-
-REQUERIMIENTO: Redacta entre 4 y 6 criterios pedagógicos específicos sobre "${topicCleaned || topic}" con descriptores detallados para los 4 niveles MINERD (estrategico, autonomo, resolutivo, receptivo). Responde SOLAMENTE con el objeto JSON.
-`;
+  const userInstruction = `${topic || topicCleaned}${documentContext ? `\n\nContexto del documento:\n${documentContext.slice(0, 3000)}` : ''}`;
+  const systemPrompt = buildCleanInstrumentPrompt(instrumentType || 'rubrica_analitica', subject || 'General', grade || 'Secundaria', userInstruction);
 
   try {
-    const rawText = await callGeminiWithModelFallback(activeKey, SYSTEM_PROMPT_MINERD, userPrompt);
+    const rawText = await callGeminiWithModelFallback(activeKey, systemPrompt, "Devuelve EXCLUSIVAMENTE el objeto JSON.");
     const parsed = parseUniversalAIResponse(rawText, instrumentType);
 
     const finalCleanTopic = parsed.cleanTopic ? cleanTopicString(parsed.cleanTopic) : (topicCleaned || topic);
+    const slicedCriteria = (parsed.criterios || []).slice(0, 5);
 
     return {
       cleanTopic: finalCleanTopic,
+      indicadorLogro: parsed.indicadorLogro || `Identifica y aplica los conceptos clave de ${finalCleanTopic} según las competencias del MINERD.`,
       activityName: parsed.activityName || `Evaluación de ${finalCleanTopic}`,
-      criteria: (parsed.criterios || []).map(c => ({
+      criteria: slicedCriteria.map(c => ({
         name: c.criterio,
-        weight: c.puntos || 5,
+        weight: c.puntos || Math.max(1, Math.round(20 / (slicedCriteria.length || 1))),
         levels: c.descriptores || {}
       }))
     };
