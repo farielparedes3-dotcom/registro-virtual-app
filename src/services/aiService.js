@@ -56,6 +56,73 @@ export const getActiveApiKey = () => {
   return envKey || localKey || docKey || '';
 };
 
+export const callGeminiWithModelFallback = async (apiKey, systemInstruction, userPrompt) => {
+  const modelsToTry = [
+    { ver: 'v1beta', name: 'gemini-1.5-flash-latest' },
+    { ver: 'v1beta', name: 'gemini-1.5-flash' },
+    { ver: 'v1',     name: 'gemini-1.5-flash' },
+    { ver: 'v1beta', name: 'gemini-2.0-flash' },
+    { ver: 'v1beta', name: 'gemini-pro' }
+  ];
+
+  let lastError = null;
+
+  for (const target of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/${target.ver}/models/${target.name}:generateContent?key=${apiKey}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: `${systemInstruction}\n\n${userPrompt}` }
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.2,
+            responseMimeType: "application/json"
+          }
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+        return data.candidates[0].content.parts[0].text;
+      }
+
+      if (data.error) {
+        if (data.error?.message?.includes('API key not valid') || (response.status === 400 && data.error?.message?.includes('API key'))) {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('s_ai_api_key');
+            localStorage.removeItem('docente_ai_key');
+          }
+          throw new Error(data.error.message || "API key not valid");
+        }
+        if (data.error.message?.includes('not found') || data.error.message?.includes('is not supported') || response.status === 404) {
+          console.warn(`Modelo ${target.name} (${target.ver}) no encontrado/soportado, probando siguiente...`);
+          lastError = data.error.message;
+          continue;
+        }
+        throw new Error(data.error?.message || `HTTP ${response.status}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+    } catch (err) {
+      lastError = err.message;
+      if (err.message?.includes('API key not valid')) {
+        throw err;
+      }
+    }
+  }
+
+  throw new Error(`Ningún modelo de Gemini respondió con éxito: ${lastError}`);
+};
+
 export const generateEvaluationInstrument = async ({ topic, instrumentType, grade, subject, documentContext = '' }) => {
   let activeKey = cleanApiKeyString(getActiveApiKey());
 
@@ -91,35 +158,7 @@ ${documentContext ? `Contexto extraído de la planificación/secuencia:\n${docum
 `;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: `${SYSTEM_PROMPT_MINERD}\n\n${userPrompt}` }
-          ]
-        }],
-        generationConfig: {
-          temperature: 0.2,
-          responseMimeType: "application/json"
-        }
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || data.error) {
-      if (data.error?.message?.includes('API key not valid') || response.status === 400) {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.removeItem('s_ai_api_key');
-          localStorage.removeItem('docente_ai_key');
-        }
-      }
-      throw new Error(data.error?.message || "Fallo en la llamada a Gemini");
-    }
-
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const rawText = await callGeminiWithModelFallback(activeKey, SYSTEM_PROMPT_MINERD, userPrompt);
     const parsed = parseUniversalAIResponse(rawText, instrumentType);
 
     const finalCleanTopic = parsed.cleanTopic ? cleanTopicString(parsed.cleanTopic) : (topicCleaned || topic);
