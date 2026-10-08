@@ -4,29 +4,28 @@ const SYSTEM_PROMPT_MINERD = `
 Eres el Asesor Pedagógico Institucional del Liceo Ana Rosa Castillo, experto en la adecuación curricular del MINERD bajo la Ordenanza 04-2023.
 Tu objetivo es estructurar instrumentos de evaluación formativa y sumativa con máximo rigor técnico.
 
-REGLAS DE ORO:
-1. EXTRACCIÓN LIMPIA DEL TEMA: Si el usuario escribe una instrucción libre como "haz una lista de cotejo sobre la célula animal", el campo 'cleanTopic' DEBE ser exactamente: "La célula animal y sus organelos".
-2. TIPOLOGÍA ESTRICTA SEGÚN 'instrumentType':
-   - 'lista_cotejo': Criterios observables dicotómicos (Sí / No / Puntos).
-   - 'escala_estimativa': Criterios graduados (Excelente 100%, Muy Bueno 80%, Bueno 60%, Insuficiente 40%).
-   - 'rubrica_analitica': Criterios con descriptores por los 4 niveles MINERD (Estratégico, Autónomo, Resolutivo, Receptivo).
-   - 'rubrica_sintetica': Descriptores integrales globales por nivel.
-   - 'guia_observacion': Registro de aspectos observados y nivel de logro.
-3. SUJETO: Criterios centrados en desempeños y evidencias reales observables en el estudiante.
+REGLAS DE ORO OBLIGATORIAS:
+1. RESPONDE ÚNICAMENTE CON UN OBJETO JSON VÁLIDO. NO incluyas saludos, explicaciones, ni bloques de texto fuera del JSON.
+2. NO devuelvas los nombres del esquema ("cleanTopic", "criterios", etc.) como ítems de evaluación. Debes redactar de 4 a 6 criterios pedagógicos reales y específicos sobre el tema solicitado.
+3. Para cada criterio, redacta los 4 descriptores por nivel MINERD:
+   - "estrategico": Nivel máximo de desempeño y autonomía.
+   - "autonomo": Nivel satisfactorio de desempeño.
+   - "resolutivo": Nivel elemental/aceptable.
+   - "receptivo": Nivel inicial o con necesidad de acompañamiento.
 
-Devuelve strictly un objeto JSON con este esquema:
+EJEMPLO DE ESTRUCTURA JSON QUE DEBES DEVOLVER:
 {
-  "cleanTopic": "Nombre curricular del contenido",
-  "activityName": "Nombre pedagógico de la actividad",
+  "cleanTopic": "Nombre limpio del tema curricular",
+  "activityName": "Título pedagógico de la actividad",
   "criterios": [
     {
-      "criterio": "Descripción clara del desempeño",
+      "criterio": "Descripción clara del desempeño observable a evaluar",
       "puntos": 5,
       "descriptores": {
-        "estrategico": "Descriptor nivel alto",
-        "autonomo": "Descriptor nivel medio-alto",
-        "resolutivo": "Descriptor nivel medio",
-        "receptivo": "Descriptor nivel básico"
+        "estrategico": "Descripción del nivel estratégico",
+        "autonomo": "Descripción del nivel autónomo",
+        "resolutivo": "Descripción del nivel resolutivo",
+        "receptivo": "Descripción del nivel receptivo"
       }
     }
   ]
@@ -196,12 +195,15 @@ export const generateEvaluationInstrument = async ({ topic, instrumentType, grad
   const topicCleaned = cleanTopicString(topic || '');
 
   const userPrompt = `
-Grado: ${grade || 'Secundaria'}
-Asignatura: ${subject || 'Tronco Común'}
-Tipo de Instrumento: ${instrumentType || 'rubrica_analitica'}
-Instrucción / Tema del Docente: ${topic || 'Contenido Curricular'}
-Tema Curricular Limpio: ${topicCleaned}
-${documentContext ? `Contexto extraído de la planificación/secuencia:\n${documentContext.slice(0, 3000)}` : ''}
+Genera un instrumento de evaluación en JSON para:
+- Grado: ${grade || 'Secundaria'}
+- Asignatura: ${subject || 'Tronco Común'}
+- Tipo de Instrumento: ${instrumentType || 'rubrica_analitica'}
+- Tema Curricular Principal: ${topicCleaned || topic || 'Contenido Curricular'}
+- Indicación Completa del Docente: ${topic || 'Contenido Curricular'}
+${documentContext ? `- Contexto del Documento Adjunto:\n${documentContext.slice(0, 3000)}` : ''}
+
+REQUERIMIENTO: Redacta entre 4 y 6 criterios pedagógicos específicos sobre "${topicCleaned || topic}" con descriptores detallados para los 4 niveles MINERD (estrategico, autonomo, resolutivo, receptivo). Responde SOLAMENTE con el objeto JSON.
 `;
 
   try {
